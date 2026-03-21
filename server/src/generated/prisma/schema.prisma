@@ -28,9 +28,8 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  profile  Profile?
-  services Service[]
-  orders   Order[]
+  profile Profile?
+  orders  Order[]
 }
 
 model Profile {
@@ -48,12 +47,9 @@ model Service {
   id          String   @id @default(cuid())
   title       String
   description String?
-  price       Float
-  ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  owner  User    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   orders Order[]
 }
 

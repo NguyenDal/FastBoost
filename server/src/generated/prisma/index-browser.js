@@ -142,8 +142,6 @@ exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
-  price: 'price',
-  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
