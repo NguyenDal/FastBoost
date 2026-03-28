@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -9,70 +9,23 @@ function App() {
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const healthResponse = await fetch("http://localhost:5000/api/health");
-        if (!healthResponse.ok) {
-          throw new Error("Health check failed");
-        }
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+  ];
 
-        const healthData = await healthResponse.json();
-        setHealthMessage(healthData.message || "Backend is running");
-      } catch (error) {
-        setHealthError("Could not connect to backend");
-      }
-
-      try {
-        const servicesResponse = await fetch("http://localhost:5000/api/services");
-        if (!servicesResponse.ok) {
-          throw new Error("Failed to fetch services");
-        }
-
-        const servicesData = await servicesResponse.json();
-        setServices(servicesData.services || []);
-      } catch (error) {
-        setServicesError("Could not load services");
-      } finally {
-        setServicesLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const categoryCards = useMemo(() => {
-    const defaults = [
-      {
-        title: "Rank Boost",
-        subtitle: "Climb divisions faster",
-        image:
-          "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
-      },
-      {
-        title: "Win Boost",
-        subtitle: "Target your next wins",
-        image:
-          "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
-      },
-      {
-        title: "Placement Matches",
-        subtitle: "Start the season stronger",
-        image:
-          "https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=1200&q=80",
-      },
-      {
-        title: "Hire a Teammate",
-        subtitle: "Play with experienced support",
-        image:
-          "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
-      },
-    ];
-
-    return defaults;
-  }, []);
-
-  const featuredServices = services.slice(0, 4);
+  const serviceImageMap = {
+    "Rank Boost":
+      "https://squadboost-assets.s3.amazonaws.com/services/rank-boost.webp",
+    "Placement Boost":
+      "https://squadboost-assets.s3.amazonaws.com/services/placement-boost.webp",
+    "Win Boost":
+      "https://squadboost-assets.s3.amazonaws.com/services/win-boost.png",
+    "Hire a Teammate":
+      "https://squadboost-assets.s3.amazonaws.com/services/hire-a-teammate.png",
+  };
 
   const patchHighlights = [
     {
@@ -91,6 +44,67 @@ function App() {
       tag: "Guide",
     },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const healthResponse = await fetch("http://localhost:5000/api/health");
+
+        if (!healthResponse.ok) {
+          throw new Error("Health check failed");
+        }
+
+        const healthData = await healthResponse.json();
+        setHealthMessage(healthData.message || "Backend is running");
+      } catch (error) {
+        setHealthError("Could not connect to backend");
+      }
+
+      try {
+        const servicesResponse = await fetch("http://localhost:5000/api/services");
+
+        if (!servicesResponse.ok) {
+          throw new Error("Failed to fetch services");
+        }
+
+        const servicesData = await servicesResponse.json();
+        const normalizedServices = Array.isArray(servicesData)
+          ? servicesData
+          : servicesData.services || [];
+
+        setServices(normalizedServices);
+      } catch (error) {
+        setServicesError("Could not load services");
+      } finally {
+        setServicesLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const servicePriority = {
+    "Rank Boost": 1,
+    "Placement Boost": 2,
+    "Win Boost": 3,
+    "Hire a Teammate": 4,
+  };
+
+  const featuredServices = [...services]
+    .sort((a, b) => {
+      const aPriority = servicePriority[a.title] ?? 999;
+      const bPriority = servicePriority[b.title] ?? 999;
+      return aPriority - bPriority;
+    })
+    .slice(0, 4);
+
+  const handleOrderNow = (service) => {
+    alert(`Selected service: ${service.title}`);
+  };
+
+  const handleDetails = (service) => {
+    alert(`View details for: ${service.title}`);
+  };
 
   return (
     <div className="app-shell">
@@ -116,6 +130,7 @@ function App() {
         <section className="hero-section">
           <div className="hero-banner">
             <div className="hero-overlay" />
+
             <img
               className="hero-image"
               src="https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1600&q=80"
@@ -150,7 +165,6 @@ function App() {
               <button className="side-card-btn">Read More</button>
             </div>
           </div>
-          
         </section>
 
         <section id="services" className="content-section">
@@ -174,18 +188,17 @@ function App() {
           {!servicesLoading && !servicesError && featuredServices.length > 0 && (
             <div className="hover-service-grid">
               {featuredServices.map((service, index) => {
-                const fallbackImages = [
-                  "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
-                  "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
-                  "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80",
-                  "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
-                ];
+                const serviceImage =
+                  serviceImageMap[service.title] ||
+                  fallbackImages[index % fallbackImages.length];
 
                 return (
                   <article
                     key={service.id}
                     className="hover-service-card"
-                    style={{ backgroundImage: `url(${fallbackImages[index % fallbackImages.length]})` }}
+                    style={{
+                      backgroundImage: `url(${serviceImage})`,
+                    }}
                   >
                     <div className="hover-service-overlay" />
 
@@ -203,11 +216,14 @@ function App() {
                       <div className="hover-service-actions">
                         <button
                           className="card-btn primary-card-btn"
-                          onClick={() => alert(`Selected service: ${service.title}`)}
+                          onClick={() => handleOrderNow(service)}
                         >
                           Order Now
                         </button>
-                        <button className="card-btn secondary-card-btn">
+                        <button
+                          className="card-btn secondary-card-btn"
+                          onClick={() => handleDetails(service)}
+                        >
                           Details
                         </button>
                       </div>
