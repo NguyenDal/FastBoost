@@ -23,9 +23,24 @@ function HomePage() {
     role: "CUSTOMER",
   });
 
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotError, setForgotError] = useState(false);
+
   const [authLoading, setAuthLoading] = useState(false);
   const [authMessage, setAuthMessage] = useState("");
   const [authSuccess, setAuthSuccess] = useState(false);
+  const [authSuccessTitle, setAuthSuccessTitle] = useState("");
+  const [authSuccessText, setAuthSuccessText] = useState("");
+
+  const [loginErrors, setLoginErrors] = useState({
+    email: false,
+    password: false,
+  });
+
+  const [registerErrors, setRegisterErrors] = useState({
+    email: false,
+    password: false,
+  });
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -160,17 +175,35 @@ function HomePage() {
   };
 
   const handleLoginInputChange = (event) => {
+    const { name, value } = event.target;
+
     setLoginForm({
       ...loginForm,
-      [event.target.name]: event.target.value,
+      [name]: value,
     });
+
+    setLoginErrors((prev) => ({
+      ...prev,
+      [name]: false,
+    }));
+
+    setAuthMessage("");
   };
 
   const handleRegisterInputChange = (event) => {
+    const { name, value } = event.target;
+
     setRegisterForm({
       ...registerForm,
-      [event.target.name]: event.target.value,
+      [name]: value,
     });
+
+    setRegisterErrors((prev) => ({
+      ...prev,
+      [name]: false,
+    }));
+
+    setAuthMessage("");
   };
 
   const closeAuthModal = () => {
@@ -179,6 +212,20 @@ function HomePage() {
     setAuthLoading(false);
     setAuthMessage("");
     setAuthSuccess(false);
+    setAuthSuccessTitle("");
+    setAuthSuccessText("");
+    setForgotEmail("");
+    setForgotError(false);
+
+    setLoginErrors({
+      email: false,
+      password: false,
+    });
+
+    setRegisterErrors({
+      email: false,
+      password: false,
+    });
 
     setLoginForm({
       email: "",
@@ -199,11 +246,38 @@ function HomePage() {
     setShowProfileMenu(false);
   };
 
+  const finishLogin = ({ token, email, profileImage = "", role = "CUSTOMER" }) => {
+    const loggedInUser = {
+      email,
+      profileImage,
+      role,
+    };
+
+    localStorage.setItem("token", token || "logged-in");
+    localStorage.setItem("user", JSON.stringify(loggedInUser));
+    setCurrentUser(loggedInUser);
+
+    setAuthLoading(false);
+    setAuthSuccess(true);
+    setAuthMessage("");
+    setAuthSuccessTitle("Login Successful");
+    setAuthSuccessText("Welcome to SquadBoost.");
+
+    setTimeout(() => {
+      closeAuthModal();
+    }, 1200);
+  };
+
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     setAuthLoading(true);
     setAuthMessage("");
     setAuthSuccess(false);
+
+    setLoginErrors({
+      email: false,
+      password: false,
+    });
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -217,42 +291,29 @@ function HomePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setAuthMessage(data.message || "Login failed");
+        setLoginErrors({
+          email: true,
+          password: true,
+        });
+        setAuthMessage(data.message || "Incorrect email or password");
         return;
       }
 
-      const loggedInUser = {
-        email:
-          data?.user?.email ||
-          data?.email ||
-          loginForm.email,
+      finishLogin({
+        token: data?.token,
+        email: data?.user?.email || data?.email || loginForm.email,
         profileImage:
           data?.user?.profileImage ||
           data?.user?.avatar ||
           data?.user?.photoUrl ||
           "",
-        role:
-          data?.user?.role ||
-          "CUSTOMER",
-      };
-
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
-      } else {
-        localStorage.setItem("token", "logged-in");
-      }
-
-      localStorage.setItem("user", JSON.stringify(loggedInUser));
-      setCurrentUser(loggedInUser);
-
-      setAuthLoading(false);
-      setAuthSuccess(true);
-      setAuthMessage("Login successful");
-
-      setTimeout(() => {
-        closeAuthModal();
-      }, 1200);
+        role: data?.user?.role || "CUSTOMER",
+      });
     } catch (error) {
+      setLoginErrors({
+        email: true,
+        password: true,
+      });
       setAuthMessage("Could not connect to backend");
     } finally {
       setAuthLoading(false);
@@ -265,8 +326,13 @@ function HomePage() {
     setAuthMessage("");
     setAuthSuccess(false);
 
+    setRegisterErrors({
+      email: false,
+      password: false,
+    });
+
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -274,25 +340,109 @@ function HomePage() {
         body: JSON.stringify(registerForm),
       });
 
-      const data = await response.json();
+      const registerData = await registerResponse.json();
 
-      if (!response.ok) {
-        setAuthMessage(data.message || "Registration failed");
+      if (!registerResponse.ok) {
+        setRegisterErrors({
+          email: true,
+          password: true,
+        });
+        setAuthMessage(registerData.message || "Registration failed");
         return;
       }
 
-      setAuthMessage("Account created successfully");
+      const loginResponse = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: registerForm.email,
+          password: registerForm.password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        setAuthSuccess(true);
+        setAuthSuccessTitle("Registration Successful");
+        setAuthSuccessText("Your account was created. Please login.");
+        setAuthMessage("");
+
+        setTimeout(() => {
+          setAuthSuccess(false);
+          setAuthMode("login");
+          setLoginForm({
+            email: registerForm.email,
+            password: "",
+          });
+          setRegisterForm({
+            email: "",
+            password: "",
+            role: "CUSTOMER",
+          });
+          setAuthSuccessTitle("");
+          setAuthSuccessText("");
+        }, 1200);
+
+        return;
+      }
+
+      finishLogin({
+        token: loginData?.token,
+        email: loginData?.user?.email || loginData?.email || registerForm.email,
+        profileImage:
+          loginData?.user?.profileImage ||
+          loginData?.user?.avatar ||
+          loginData?.user?.photoUrl ||
+          "",
+        role: loginData?.user?.role || "CUSTOMER",
+      });
+    } catch (error) {
+      setRegisterErrors({
+        email: true,
+        password: true,
+      });
+      setAuthMessage("Could not connect to backend");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleForgotPasswordSubmit = async (event) => {
+    event.preventDefault();
+    setAuthLoading(true);
+    setAuthMessage("");
+    setForgotError(false);
+    setAuthSuccess(false);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setForgotError(true);
+        setAuthMessage(data.message || "Could not send reset link");
+        return;
+      }
+
+      setAuthSuccess(true);
+      setAuthSuccessTitle("Reset Link Sent");
+      setAuthSuccessText("Check your email for the password reset link.");
 
       setTimeout(() => {
-        setAuthMode("login");
-        setAuthMessage("Account created. Please login.");
-        setRegisterForm({
-          email: "",
-          password: "",
-          role: "CUSTOMER",
-        });
-      }, 900);
+        closeAuthModal();
+      }, 1200);
     } catch (error) {
+      setForgotError(true);
       setAuthMessage("Could not connect to backend");
     } finally {
       setAuthLoading(false);
@@ -329,6 +479,10 @@ function HomePage() {
                 setAuthMode("login");
                 setAuthMessage("");
                 setAuthSuccess(false);
+                setLoginErrors({ email: false, password: false });
+                setRegisterErrors({ email: false, password: false });
+                setForgotError(false);
+                setForgotEmail("");
                 setShowAuthModal(true);
               }}
             >
@@ -559,20 +713,26 @@ function HomePage() {
                     <span className="success-checkmark">✓</span>
                   </div>
                 </div>
-                <h2 className="modal-title">Login Successful</h2>
+                <h2 className="modal-title">{authSuccessTitle}</h2>
                 <p className="section-description modal-description">
-                  Welcome back to SquadBoost.
+                  {authSuccessText}
                 </p>
               </div>
             ) : (
               <>
                 <p className="section-label">Account Access</p>
                 <h2 className="modal-title">
-                  {authMode === "login" ? "Login" : "Register"}
+                  {authMode === "login"
+                    ? "Login"
+                    : authMode === "forgot"
+                    ? "Forgot Password"
+                    : "Register"}
                 </h2>
                 <p className="section-description modal-description">
                   {authMode === "login"
                     ? "Sign in without leaving the homepage."
+                    : authMode === "forgot"
+                    ? "Enter your registered email to receive a reset link."
                     : "Create an account without leaving the homepage."}
                 </p>
 
@@ -584,6 +744,7 @@ function HomePage() {
                       placeholder="Email"
                       value={loginForm.email}
                       onChange={handleLoginInputChange}
+                      className={loginErrors.email ? "auth-input-error" : ""}
                       required
                     />
 
@@ -593,6 +754,7 @@ function HomePage() {
                       placeholder="Password"
                       value={loginForm.password}
                       onChange={handleLoginInputChange}
+                      className={loginErrors.password ? "auth-input-error" : ""}
                       required
                     />
 
@@ -603,6 +765,43 @@ function HomePage() {
                     >
                       {authLoading ? "Logging in..." : "Login"}
                     </button>
+
+                    <p className="forgot-password-line">
+                      <button
+                        type="button"
+                        className="auth-switch-btn"
+                        onClick={() => {
+                          setAuthMode("forgot");
+                          setAuthMessage("");
+                          setForgotError(false);
+                        }}
+                      >
+                        Forgot password?
+                      </button>
+                    </p>
+                  </form>
+                ) : authMode === "forgot" ? (
+                  <form className="auth-modal-form" onSubmit={handleForgotPasswordSubmit}>
+                    <input
+                      type="email"
+                      placeholder="Enter your registered email"
+                      value={forgotEmail}
+                      onChange={(event) => {
+                        setForgotEmail(event.target.value);
+                        setForgotError(false);
+                        setAuthMessage("");
+                      }}
+                      className={forgotError ? "auth-input-error" : ""}
+                      required
+                    />
+
+                    <button
+                      type="submit"
+                      className="primary-btn modal-submit-btn"
+                      disabled={authLoading}
+                    >
+                      {authLoading ? "Sending..." : "Send Reset Link"}
+                    </button>
                   </form>
                 ) : (
                   <form className="auth-modal-form" onSubmit={handleRegisterSubmit}>
@@ -612,6 +811,7 @@ function HomePage() {
                       placeholder="Email"
                       value={registerForm.email}
                       onChange={handleRegisterInputChange}
+                      className={registerErrors.email ? "auth-input-error" : ""}
                       required
                     />
 
@@ -621,6 +821,7 @@ function HomePage() {
                       placeholder="Password"
                       value={registerForm.password}
                       onChange={handleRegisterInputChange}
+                      className={registerErrors.password ? "auth-input-error" : ""}
                       required
                     />
 
@@ -634,7 +835,9 @@ function HomePage() {
                   </form>
                 )}
 
-                {authMessage && <p className="info-message">{authMessage}</p>}
+                {authMessage && (
+                  <p className="info-message auth-error-message">{authMessage}</p>
+                )}
 
                 <p className="auth-switch-line">
                   {authMode === "login" ? (
@@ -646,9 +849,27 @@ function HomePage() {
                         onClick={() => {
                           setAuthMode("register");
                           setAuthMessage("");
+                          setLoginErrors({ email: false, password: false });
+                          setRegisterErrors({ email: false, password: false });
+                          setForgotError(false);
                         }}
                       >
                         Register
+                      </button>
+                    </>
+                  ) : authMode === "forgot" ? (
+                    <>
+                      Remembered your password?{" "}
+                      <button
+                        type="button"
+                        className="auth-switch-btn"
+                        onClick={() => {
+                          setAuthMode("login");
+                          setAuthMessage("");
+                          setForgotError(false);
+                        }}
+                      >
+                        Back to Login
                       </button>
                     </>
                   ) : (
@@ -660,6 +881,8 @@ function HomePage() {
                         onClick={() => {
                           setAuthMode("login");
                           setAuthMessage("");
+                          setLoginErrors({ email: false, password: false });
+                          setRegisterErrors({ email: false, password: false });
                         }}
                       >
                         Login

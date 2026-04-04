@@ -156,6 +156,15 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  tokenHash: 'tokenHash',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -187,7 +196,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   Profile: 'Profile',
   Service: 'Service',
-  Order: 'Order'
+  Order: 'Order',
+  PasswordResetToken: 'PasswordResetToken'
 };
 
 /**

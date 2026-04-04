@@ -7,6 +7,60 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       Order[]
+  passwordResetTokens PasswordResetToken[]
+  profile      Profile?
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  displayName String?
+  bio         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  customerId String
+  serviceId  String
+  notes      String?
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  customer   User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service    Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum UserRole {
   CUSTOMER
   PROVIDER
@@ -18,50 +72,4 @@ enum OrderStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
-}
-
-model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(CUSTOMER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  profile Profile?
-  orders  Order[]
-}
-
-model Profile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  displayName String?
-  bio         String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Service {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  orders Order[]
-}
-
-model Order {
-  id         String      @id @default(cuid())
-  customerId String
-  serviceId  String
-  notes      String?
-  status     OrderStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  customer User    @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  service  Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
