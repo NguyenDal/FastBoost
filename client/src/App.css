@@ -1051,23 +1051,34 @@ button {
 }
 
 .password-strength-track {
+  position: relative;
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
   margin-bottom: 12px;
+  background: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f97316 25%,
+    #eab308 50%,
+    #84cc16 75%,
+    #22c55e 100%
+  );
 }
 
-.password-strength-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #eab308, #22c55e);
-  transition: width 0.25s ease;
+.password-strength-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #1b2233;
+  transition: left 0.25s ease;
 }
 
-.password-strength-fill.is-strong {
-  box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);
+.password-strength-track.is-strong {
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.35);
 }
 
 .password-rules p {
