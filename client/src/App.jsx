@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import OrderPage from "./pages/OrderPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import MatchPage from "./pages/MatchPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/order/:serviceId" element={<OrderPage />} />
       <Route path="/services/:serviceId" element={<ServiceDetailsPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/match/:serviceId" element={<MatchPage />} />
     </Routes>
   );
 }

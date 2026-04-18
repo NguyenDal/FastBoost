@@ -2,7 +2,7 @@
 
 A full-stack portfolio project built with **React**, **Vite**, **Express**, **Prisma**, and **PostgreSQL**.
 
-This project is a **game services marketplace demo** where users can register, log in securely, reset passwords by email, browse service types, and later place customized service orders. It’s being developed as a **software engineering portfolio project** to demonstrate a real full-stack workflow: UI → API → database → auth.
+This project is a **game services marketplace demo** where users can register, log in securely, reset passwords by email, browse service types, configure a demo order, and continue into a demo match/chat flow. It’s being developed as a **software engineering portfolio project** to demonstrate a real full-stack workflow: UI → API → database → auth.
 
 ---
 
@@ -45,9 +45,9 @@ This project is a **game services marketplace demo** where users can register, l
   - one-time-use reset links
   - Gmail SMTP / Nodemailer email sending
 - Added frontend forgot-password entry from the auth modal
-- Started dedicated `/reset-password` frontend route/page for:
+- Added dedicated `/reset-password` frontend route/page for:
   - strong password validation
-  - green strength bar
+  - red → green strength bar
   - rule checklist
   - confirm password validation
   - auto-login after reset
@@ -57,12 +57,59 @@ This project is a **game services marketplace demo** where users can register, l
   - Bucket: `squadboost-assets`
   - Folder: `services/`
   - Uploaded 4 service images:
-    - `rank-boost.png`
+    - `rank-boost.webp`
     - `placement-boost.webp`
     - `win-boost.png`
     - `hire-a-teammate.png`
+- Added a second S3 asset folder for order configurator rank images:
+  - Folder: `services/ranks/`
+  - Uploaded rank images:
+    - `iron.png`
+    - `bronze.png`
+    - `silver.png`
+    - `gold.png`
+    - `platinum.png`
+    - `emerald.png`
+    - `diamond.png`
+    - `master.png`
 - Verified S3 image URLs load in a browser.
-- Updated frontend to use S3 image URLs per service title (fallback still supported).
+- Updated frontend to use S3 image URLs per service title and rank selection.
+
+### Order / configurator UI
+- Replaced placeholder order flow with a real frontend demo flow:
+  - service details page
+  - service order page
+  - demo match/chat page
+- Built a live order configurator direction inspired by real gaming service checkouts.
+- Added top service tabs on the order page:
+  - Division
+  - Placements
+  - Ranked Wins
+  - Pro Duo
+- Removed unnecessary Platform field because this demo is LoL-focused.
+- Added visual current rank / desired rank cards using S3-hosted rank images.
+- Improved layout and alignment for:
+  - Current LP
+  - Queue Type
+  - desired rank queue type
+- Reworked the right checkout summary:
+  - current → target strip
+  - thinner Solo / Duo toggle
+  - thinner Standard / Express toggle
+  - add-ons grouped in the right summary column
+  - different add-on layouts for Solo vs Duo
+  - cleaner inline total price layout
+  - CTA spacing cleanup
+- Removed extra notes/comments box from the summary because the demo chat flow covers follow-up communication.
+
+### Demo match/chat flow
+- Added a follow-up demo page after the order flow.
+- Current direction includes:
+  - booster matched / searching state
+  - assigned booster card
+  - live chat-style layout
+  - grouped order summary
+  - demo order status presentation
 
 ---
 
@@ -116,6 +163,9 @@ A **Service** is a **platform-wide service category**, not a user-owned listing.
 ### Email
 - Nodemailer
 - Gmail SMTP App Password
+
+### Assets
+- AWS S3
 
 ---
 
@@ -242,25 +292,32 @@ npx prisma studio
 - forgot-password backend
 - password reset token table
 - password reset email sending
+- reset password page and validation flow
+- service details page
+- real order navigation
+- live order configurator UI
+- S3-hosted rank image integration
+- right-side checkout summary redesign
+- solo/duo-specific add-on layouts
+- demo match/chat page flow
 
 ### In progress
-- `/reset-password` frontend page final verification
-- real order flow
-- details/order navigation instead of alerts
+- real backend-driven order persistence
+- real pricing logic
 - patch section real endpoint
+- additional profile dropdown polish
+- match/chat UI polish
 
 ---
 
 ## Next steps (recommended)
 
-1. Finish and verify `ResetPasswordPage.jsx`
-2. Verify the full password reset flow end-to-end
-3. Replace alert() buttons:
-   - “Order Now” should navigate to a service order page/flow
-   - “Details” should open a service details page/modal
-4. Redesign `Order` schema (service-specific fields, quoting, etc.)
-5. Build order APIs + order UI flow
-6. (Later) Patch section: connect to a real backend endpoint
+1. Design and build the real `Order` schema for service-specific requests
+2. Build order APIs + persistence
+3. Connect the configurator UI to real backend order creation
+4. Continue polishing the match/chat page
+5. Connect the patch section to a real backend endpoint
+6. Later add profile/account settings
 
 ---
 

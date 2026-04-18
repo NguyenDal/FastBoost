@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 
 function HomePage() {
+  const navigate = useNavigate();
   const [healthMessage, setHealthMessage] = useState("Checking backend...");
   const [healthError, setHealthError] = useState("");
 
@@ -167,11 +169,11 @@ function HomePage() {
   const hasSession = Boolean(localStorage.getItem("token")) || Boolean(currentUser);
 
   const handleOrderNow = (service) => {
-    alert(`Selected service: ${service.title}`);
+    navigate(`/order/${service.id}`);
   };
 
   const handleDetails = (service) => {
-    alert(`View details for: ${service.title}`);
+    navigate(`/services/${service.id}`);
   };
 
   const handleLoginInputChange = (event) => {
@@ -514,6 +516,12 @@ function HomePage() {
                   <p className="profile-menu-email">
                     {currentUser?.email || "Signed in"}
                   </p>
+                  <button className="profile-menu-item">
+                    My Orders
+                  </button>
+                  <button className="profile-menu-item">
+                    Account Settings
+                  </button>
                   <button className="profile-menu-item" onClick={handleLogout}>
                     Logout
                   </button>
@@ -725,15 +733,15 @@ function HomePage() {
                   {authMode === "login"
                     ? "Login"
                     : authMode === "forgot"
-                    ? "Forgot Password"
-                    : "Register"}
+                      ? "Forgot Password"
+                      : "Register"}
                 </h2>
                 <p className="section-description modal-description">
                   {authMode === "login"
                     ? "Sign in without leaving the homepage."
                     : authMode === "forgot"
-                    ? "Enter your registered email to receive a reset link."
-                    : "Create an account without leaving the homepage."}
+                      ? "Enter your registered email to receive a reset link."
+                      : "Create an account without leaving the homepage."}
                 </p>
 
                 {authMode === "login" ? (

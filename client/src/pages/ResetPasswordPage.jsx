@@ -156,17 +156,16 @@ function ResetPasswordPage() {
                 placeholder="New password"
                 value={form.password}
                 onChange={handleChange}
-                className={`${allValid ? "auth-input-valid" : ""} ${
-                  errors.password ? "auth-input-error" : ""
-                }`}
+                className={`${allValid ? "auth-input-valid" : ""} ${errors.password ? "auth-input-error" : ""
+                  }`}
                 required
               />
 
               <div className="password-strength">
-                <div className="password-strength-track">
+                <div className={`password-strength-track ${allValid ? "is-strong" : ""}`}>
                   <div
-                    className={`password-strength-fill ${allValid ? "is-strong" : ""}`}
-                    style={{ width: barPercent }}
+                    className="password-strength-cover"
+                    style={{ left: barPercent }}
                   />
                 </div>
 
@@ -195,9 +194,8 @@ function ResetPasswordPage() {
                 placeholder="Confirm new password"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                className={`${passwordsMatch ? "auth-input-valid" : ""} ${
-                  errors.confirmPassword ? "auth-input-error" : ""
-                }`}
+                className={`${passwordsMatch ? "auth-input-valid" : ""} ${errors.confirmPassword ? "auth-input-error" : ""
+                  }`}
                 required
               />
 
