@@ -7,6 +7,7 @@ function OrderPage() {
   const { serviceId } = useParams();
 
   const [service, setService] = useState(null);
+  const [selectedBoostType, setSelectedBoostType] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -21,12 +22,18 @@ function OrderPage() {
     numberOfGames: "3",
     region: "North America",
     queueType: "Solo/Duo",
+    playMode: "Solo",
     notes: "",
     priorityOrder: false,
     duoWithBooster: false,
     liveStream: false,
     appearOffline: false,
     championsRoles: false,
+    bonusWin: false,
+    soloOnly: false,
+    undercoverWinrate: false,
+    moderateKDA: false,
+    highMMRDuo: false,
   });
 
   useEffect(() => {
@@ -41,6 +48,7 @@ function OrderPage() {
         const data = await response.json();
         const normalizedService = data.service || data;
         setService(normalizedService);
+        setSelectedBoostType(normalizedService.title);
       } catch (error) {
         setError("Could not load this service");
       } finally {
@@ -51,8 +59,7 @@ function OrderPage() {
     fetchService();
   }, [serviceId]);
 
-  const serviceType = service?.title || "";
-
+  const serviceType = selectedBoostType || service?.title || "";
   const basePrice = useMemo(() => {
     if (serviceType === "Rank Boost") {
       const rankSteps = getRankStepDifference(
@@ -114,7 +121,7 @@ function OrderPage() {
 
     const demoOrder = {
       serviceId: service.id,
-      serviceTitle: service.title,
+      serviceTitle: serviceType,
       serviceDescription: service.description || "",
       totalPrice,
       formData,
@@ -167,87 +174,170 @@ function OrderPage() {
           </Link>
         </div>
 
-        <div className="order-page-header">
+        <div className="order-page-header order-page-header-compact">
           <div>
-            <p className="section-label">Configure Your Order</p>
-            <h1 className="order-page-title">
-              Build your <span>{service.title}</span> request
-            </h1>
-            <p className="section-description order-page-description">
-              This is a polished demo order flow for the SquadBoost portfolio
-              project. The structure is inspired by real gaming service
-              configurators, but simplified for a beginner full-stack build.
-            </p>
+            <p className="section-label">Checkout</p>
+            <h1 className="order-page-title compact-title">Secure order summary</h1>
           </div>
 
           <div className="order-header-badges">
-            <div className="order-header-badge">Secure demo flow</div>
-            <div className="order-header-badge">Live UI concept</div>
+            <div className="order-header-badge order-header-badge-green">74+ online now</div>
+            <div className="order-header-badge">~ 0-1 days</div>
           </div>
         </div>
 
         <form className="order-layout" onSubmit={handleSubmit}>
           <section className="order-form-panel">
             <div className="order-grid">
-              <div className="order-field order-field-wide">
-                <label>Platform</label>
-                <select name="platform" value="League of Legends" disabled>
-                  <option>League of Legends</option>
-                </select>
-              </div>
 
               <div className="order-field order-field-wide">
-                <label>Boost Type</label>
-                <select name="boostType" value={service.title} disabled>
-                  <option>{service.title}</option>
-                </select>
+                <div className="boost-type-tabs">
+                  {[
+                    { value: "Rank Boost", label: "Division" },
+                    { value: "Placement Boost", label: "Placements" },
+                    { value: "Win Boost", label: "Ranked Wins" },
+                    { value: "Hire a Teammate", label: "Pro Duo" },
+                  ].map((type) => (
+                    <button
+                      key={type.value}
+                      type="button"
+                      className={`boost-type-tab ${serviceType === type.value ? "active" : ""}`}
+                      onClick={() => setSelectedBoostType(type.value)}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {serviceType === "Rank Boost" && (
                 <>
-                  <div className="order-field order-field-wide">
-                    <label>Current Division</label>
-                    <select
-                      name="currentRank"
-                      value={formData.currentRank}
-                      onChange={handleInputChange}
-                    >
-                      {rankOptions.map((rank) => (
-                        <option key={rank} value={rank}>
-                          {rank}
-                        </option>
+                  <div className="rank-selector-card rank-selector-current">
+                    <div className="rank-selector-header">
+                      <img
+                        src={rankImageMap[getTierFromRank(formData.currentRank)]}
+                        alt={formData.currentRank}
+                        className="rank-selector-icon"
+                      />
+                      <div>
+                        <h3>Current Rank</h3>
+                        <p>Select your current tier and division</p>
+                      </div>
+                    </div>
+
+                    <div className="rank-tier-grid">
+                      {tierOrder.map((tier) => (
+                        <button
+                          key={`current-${tier}`}
+                          type="button"
+                          className={`rank-tier-btn ${getTierFromRank(formData.currentRank) === tier ? "active" : ""
+                            }`}
+                          onClick={() =>
+                            updateRankSelection(setFormData, "currentRank", tier, null)
+                          }
+                        >
+                          <img src={rankImageMap[tier]} alt={tier} />
+                        </button>
                       ))}
-                    </select>
+                    </div>
+
+                    {getTierFromRank(formData.currentRank) !== "Master" && (
+                      <div className="rank-division-row">
+                        {divisionOrder.map((division) => (
+                          <button
+                            key={`current-division-${division}`}
+                            type="button"
+                            className={`rank-division-btn ${getDivisionFromRank(formData.currentRank) === division ? "active" : ""
+                              }`}
+                            onClick={() =>
+                              updateRankSelection(setFormData, "currentRank", null, division)
+                            }
+                          >
+                            {division}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="rank-bottom-selects">
+                      <div className="order-field">
+                        <label>Current LP</label>
+                        <select
+                          name="currentLP"
+                          value={formData.currentLP}
+                          onChange={handleInputChange}
+                        >
+                          <option>0-20 LP</option>
+                          <option>21-40 LP</option>
+                          <option>41-60 LP</option>
+                          <option>61-80 LP</option>
+                          <option>81-99 LP</option>
+                        </select>
+                      </div>
+
+                      <div className="order-field">
+                        <label>Queue Type</label>
+                        <select
+                          name="queueType"
+                          value={formData.queueType}
+                          onChange={handleInputChange}
+                        >
+                          <option>Solo/Duo</option>
+                          <option>Flex</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="order-field order-field-wide">
-                    <label>Desired Division</label>
-                    <select
-                      name="desiredRank"
-                      value={formData.desiredRank}
-                      onChange={handleInputChange}
-                    >
-                      {rankOptions.map((rank) => (
-                        <option key={rank} value={rank}>
-                          {rank}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <div className="rank-selector-divider">↓</div>
 
-                  <div className="order-field">
-                    <label>Current LP</label>
-                    <select
-                      name="currentLP"
-                      value={formData.currentLP}
-                      onChange={handleInputChange}
-                    >
-                      <option>0-20 LP</option>
-                      <option>21-40 LP</option>
-                      <option>41-60 LP</option>
-                      <option>61-80 LP</option>
-                      <option>81-99 LP</option>
-                    </select>
+                  <div className="rank-selector-card rank-selector-target">
+                    <div className="rank-selector-header">
+                      <img
+                        src={rankImageMap[getTierFromRank(formData.desiredRank)]}
+                        alt={formData.desiredRank}
+                        className="rank-selector-icon"
+                      />
+                      <div>
+                        <h3>Desired Rank</h3>
+                        <p>Select your target tier and division</p>
+                      </div>
+                    </div>
+
+                    <div className="rank-tier-grid">
+                      {tierOrder.map((tier) => (
+                        <button
+                          key={`desired-${tier}`}
+                          type="button"
+                          className={`rank-tier-btn ${getTierFromRank(formData.desiredRank) === tier ? "active" : ""
+                            }`}
+                          onClick={() =>
+                            updateRankSelection(setFormData, "desiredRank", tier, null)
+                          }
+                        >
+                          <img src={rankImageMap[tier]} alt={tier} />
+                        </button>
+                      ))}
+                    </div>
+
+                    {getTierFromRank(formData.desiredRank) !== "Master" && (
+                      <div className="rank-division-row">
+                        {divisionOrder.map((division) => (
+                          <button
+                            key={`desired-division-${division}`}
+                            type="button"
+                            className={`rank-division-btn ${getDivisionFromRank(formData.desiredRank) === division ? "active" : ""
+                              }`}
+                            onClick={() =>
+                              updateRankSelection(setFormData, "desiredRank", null, division)
+                            }
+                          >
+                            {division}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
                   </div>
                 </>
               )}
@@ -356,107 +446,329 @@ function OrderPage() {
                 </>
               )}
 
-              <div className="order-field">
-                <label>Region</label>
-                <select
-                  name="region"
-                  value={formData.region}
-                  onChange={handleInputChange}
-                >
-                  <option>North America</option>
-                  <option>Europe West</option>
-                  <option>Europe Nordic & East</option>
-                  <option>Korea</option>
-                </select>
-              </div>
+              {serviceType !== "Rank Boost" && (
+                <>
+                  <div className="order-field">
+                    <label>Region</label>
+                    <select
+                      name="region"
+                      value={formData.region}
+                      onChange={handleInputChange}
+                    >
+                      <option>North America</option>
+                      <option>Europe West</option>
+                      <option>Europe Nordic & East</option>
+                      <option>Korea</option>
+                    </select>
+                  </div>
 
-              <div className="order-field">
-                <label>Queue Type</label>
-                <select
-                  name="queueType"
-                  value={formData.queueType}
-                  onChange={handleInputChange}
-                >
-                  <option>Solo/Duo</option>
-                  <option>Flex</option>
-                </select>
-              </div>
-            </div>
+                  <div className="order-field">
+                    <label>Queue Type</label>
+                    <select
+                      name="queueType"
+                      value={formData.queueType}
+                      onChange={handleInputChange}
+                    >
+                      <option>Solo/Duo</option>
+                      <option>Flex</option>
+                    </select>
+                  </div>
+                </>
+              )}
 
-            <div className="order-addon-panel">
-              <p className="order-panel-title">Optional Add-ons</p>
 
-              <div className="order-addon-grid">
-                <label className="order-addon-item">
-                  <input
-                    type="checkbox"
-                    name="duoWithBooster"
-                    checked={formData.duoWithBooster}
-                    onChange={handleInputChange}
-                  />
-                  <span>Play with Booster</span>
-                </label>
-
-                <label className="order-addon-item">
-                  <input
-                    type="checkbox"
-                    name="priorityOrder"
-                    checked={formData.priorityOrder}
-                    onChange={handleInputChange}
-                  />
-                  <span>Priority Order</span>
-                </label>
-
-                <label className="order-addon-item">
-                  <input
-                    type="checkbox"
-                    name="liveStream"
-                    checked={formData.liveStream}
-                    onChange={handleInputChange}
-                  />
-                  <span>Live Stream</span>
-                </label>
-
-                <label className="order-addon-item">
-                  <input
-                    type="checkbox"
-                    name="appearOffline"
-                    checked={formData.appearOffline}
-                    onChange={handleInputChange}
-                  />
-                  <span>Appear Offline</span>
-                </label>
-
-                <label className="order-addon-item">
-                  <input
-                    type="checkbox"
-                    name="championsRoles"
-                    checked={formData.championsRoles}
-                    onChange={handleInputChange}
-                  />
-                  <span>Champions / Roles</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="order-notes-panel">
-              <p className="order-panel-title">Additional Notes</p>
-              <textarea
-                name="notes"
-                rows="5"
-                placeholder="Add extra instructions for this demo order..."
-                value={formData.notes}
-                onChange={handleInputChange}
-              />
             </div>
           </section>
 
           <aside className="order-summary-panel">
             <p className="section-label">Order Summary</p>
-            <h2>{service.title}</h2>
-            <p className="section-description">
-              {service.description || "No description available."}
-            </p>
+            <h2>{serviceType}</h2>
+
+            {serviceType === "Rank Boost" && (
+              <div className="order-rank-strip">
+                <div className="order-rank-box">
+                  <span className="order-rank-label">Current</span>
+                  <strong>{formData.currentRank} {formData.currentLP}</strong>
+                </div>
+
+                <div className="order-rank-arrow">→</div>
+
+                <div className="order-rank-box order-rank-target">
+                  <span className="order-rank-label">Target</span>
+                  <strong>{formData.desiredRank}</strong>
+                </div>
+              </div>
+            )}
+
+            {serviceType !== "Rank Boost" && (
+              <p className="order-summary-subtitle">
+                Review your setup before placing the order.
+              </p>
+            )}
+            <div className="summary-mode-strip">
+              <button
+                type="button"
+                className={`summary-mode-btn ${formData.playMode === "Solo" ? "active" : ""}`}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    playMode: "Solo",
+                    duoWithBooster: false,
+                  }))
+                }
+              >
+                Solo
+              </button>
+
+              <button
+                type="button"
+                className={`summary-mode-btn ${formData.playMode === "Duo" ? "active" : ""}`}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    playMode: "Duo",
+                    duoWithBooster: true,
+                  }))
+                }
+              >
+                Duo
+              </button>
+            </div>
+
+            <div className="order-addon-panel">
+              <div className="order-addon-grid">
+                {formData.playMode === "Solo" ? (
+                  <>
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Stream games</span>
+                        <span className="order-addon-badge">+20%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="liveStream"
+                          checked={formData.liveStream}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">+1 Bonus win</span>
+                        <span className="order-addon-badge">+8.2 $</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="bonusWin"
+                          checked={formData.bonusWin || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Solo Only</span>
+                        <span className="order-addon-badge">+35%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="soloOnly"
+                          checked={formData.soloOnly || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <p className="summary-section-title privacy-title">Privacy Settings</p>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Appear Offline</span>
+                        <span className="order-addon-badge neutral">FREE</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="appearOffline"
+                          checked={formData.appearOffline}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Roles/Champions</span>
+                        <span className="order-addon-badge recommended">RECOMMENDED</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="championsRoles"
+                          checked={formData.championsRoles}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Undercover Winrate</span>
+                        <span className="order-addon-badge">+40%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="undercoverWinrate"
+                          checked={formData.undercoverWinrate || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Moderate KDA</span>
+                        <span className="order-addon-badge">+30%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="moderateKDA"
+                          checked={formData.moderateKDA || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+                  </>
+                ) : (
+                  <>
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Premium coaching</span>
+                        <span className="order-addon-badge">+30%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="duoWithBooster"
+                          checked={formData.duoWithBooster}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">High MMR Duo</span>
+                        <span className="order-addon-badge">+20%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="highMMRDuo"
+                          checked={formData.highMMRDuo || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">+1 Bonus win</span>
+                        <span className="order-addon-badge">+8.2 $</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="bonusWin"
+                          checked={formData.bonusWin || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <p className="summary-section-title privacy-title">Privacy Settings</p>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Untrackable Duo</span>
+                        <span className="order-addon-badge">+30%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="appearOffline"
+                          checked={formData.appearOffline}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Undercover Winrate</span>
+                        <span className="order-addon-badge">+40%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="undercoverWinrate"
+                          checked={formData.undercoverWinrate || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+
+                    <label className="order-addon-row">
+                      <div className="order-addon-copy">
+                        <span className="order-addon-name">Moderate KDA</span>
+                        <span className="order-addon-badge">+30%</span>
+                      </div>
+                      <span className="order-addon-switch">
+                        <input
+                          type="checkbox"
+                          name="moderateKDA"
+                          checked={formData.moderateKDA || false}
+                          onChange={handleInputChange}
+                        />
+                        <span className="order-addon-slider" />
+                      </span>
+                    </label>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="summary-speed-strip">
+              <button type="button" className="summary-speed-btn active">
+                Standard
+              </button>
+              <button type="button" className="summary-speed-btn">
+                Express
+              </button>
+            </div>
+
+            <div className="summary-save-bar">
+              <span>Go higher and save $6 on your order!</span>
+            </div>
 
             <div className="order-summary-list">
               <div className="order-summary-row">
@@ -471,7 +783,7 @@ function OrderPage() {
 
               {serviceType === "Rank Boost" && (
                 <div className="order-summary-row">
-                  <span>Boost Path</span>
+                  <span>Path</span>
                   <strong>
                     {formData.currentRank} → {formData.desiredRank}
                   </strong>
@@ -487,7 +799,7 @@ function OrderPage() {
 
               {serviceType === "Win Boost" && (
                 <div className="order-summary-row">
-                  <span>Desired Wins</span>
+                  <span>Wins</span>
                   <strong>{formData.desiredWins}</strong>
                 </div>
               )}
@@ -500,36 +812,92 @@ function OrderPage() {
               )}
             </div>
 
-            <div className="order-price-box">
-              <div className="order-summary-row">
-                <span>Base Price</span>
-                <strong>${basePrice.toFixed(2)}</strong>
+            <div className="order-summary-total-inline">
+              <div className="order-summary-price-lines">
+                <div className="order-summary-row">
+                  <span>Base Price</span>
+                  <strong>${basePrice.toFixed(2)}</strong>
+                </div>
+
+                <div className="order-summary-row">
+                  <span>Add-ons</span>
+                  <strong>${addonPrice.toFixed(2)}</strong>
+                </div>
               </div>
 
-              <div className="order-summary-row">
-                <span>Add-ons</span>
-                <strong>${addonPrice.toFixed(2)}</strong>
-              </div>
-
-              <div className="order-summary-total">
+              <div className="order-summary-total-inline-main">
                 <span>Total Price</span>
                 <strong>${totalPrice}</strong>
               </div>
             </div>
 
             <button type="submit" className="primary-btn order-submit-btn">
-              Place Demo Order
+              Continue
             </button>
-
-            <Link to="/" className="order-back-link">
-              Back to homepage
-            </Link>
+            
           </aside>
         </form>
       </div>
     </div>
   );
 }
+
+const rankImageMap = {
+  Iron: "https://squadboost-assets.s3.amazonaws.com/services/ranks/iron.png",
+  Bronze: "https://squadboost-assets.s3.amazonaws.com/services/ranks/bronze.png",
+  Silver: "https://squadboost-assets.s3.amazonaws.com/services/ranks/silver.png",
+  Gold: "https://squadboost-assets.s3.amazonaws.com/services/ranks/gold.png",
+  Platinum: "https://squadboost-assets.s3.amazonaws.com/services/ranks/platinum.png",
+  Emerald: "https://squadboost-assets.s3.amazonaws.com/services/ranks/emerald.png",
+  Diamond: "https://squadboost-assets.s3.amazonaws.com/services/ranks/diamond.png",
+  Master: "https://squadboost-assets.s3.amazonaws.com/services/ranks/master.png",
+};
+
+const tierOrder = [
+  "Iron",
+  "Bronze",
+  "Silver",
+  "Gold",
+  "Platinum",
+  "Emerald",
+  "Diamond",
+  "Master",
+];
+
+const divisionOrder = ["IV", "III", "II", "I"];
+
+function getTierFromRank(rank) {
+  return rank.split(" ")[0];
+}
+
+function getDivisionFromRank(rank) {
+  return rank.split(" ")[1] || "";
+}
+
+function buildRankValue(tier, division) {
+  if (tier === "Master") return "Master I";
+  return `${tier} ${division}`;
+}
+
+function updateRankSelection(setFormData, fieldName, nextTier, nextDivision) {
+  setFormData((prev) => {
+    const currentRank = prev[fieldName];
+    const currentTier = getTierFromRank(currentRank);
+    const currentDivision = getDivisionFromRank(currentRank) || "I";
+
+    const tier = nextTier || currentTier;
+    const division =
+      tier === "Master"
+        ? "I"
+        : nextDivision || (currentTier === "Master" ? "IV" : currentDivision);
+
+    return {
+      ...prev,
+      [fieldName]: buildRankValue(tier, division),
+    };
+  });
+}
+
 
 const rankOptions = [
   "Iron IV",
