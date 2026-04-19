@@ -16,10 +16,10 @@ function OrderPage() {
     currentRank: "Silver I",
     desiredRank: "Gold IV",
     currentLP: "0-20 LP",
+    lpGain: "",
     peakRank: "Unranked",
     desiredWins: "",
     placementGames: "",
-    preferredRole: "Middle",
     numberOfGames: "",
     region: "North America",
     queueType: "Solo/Duo",
@@ -69,7 +69,7 @@ function OrderPage() {
   }, [serviceId]);
 
   const serviceType = selectedBoostType || service?.title || "";
-  
+
   useEffect(() => {
     if (!serviceType) return;
 
@@ -77,6 +77,8 @@ function OrderPage() {
       if (serviceType === "Rank Boost") {
         return {
           ...prev,
+          currentLP: "0-20 LP",
+          lpGain: "18-23 LP / win",
           desiredWins: "",
           placementGames: "",
           numberOfGames: "",
@@ -86,8 +88,9 @@ function OrderPage() {
       if (serviceType === "Placement Boost") {
         return {
           ...prev,
-          placementGames: "1",
+          lpGain: "",
           desiredWins: "",
+          placementGames: "1",
           numberOfGames: "",
         };
       }
@@ -95,6 +98,7 @@ function OrderPage() {
       if (serviceType === "Win Boost") {
         return {
           ...prev,
+          lpGain: "18-23 LP / win",
           desiredWins: "1",
           placementGames: "",
           numberOfGames: "",
@@ -104,9 +108,10 @@ function OrderPage() {
       if (serviceType === "Pro Duo") {
         return {
           ...prev,
-          numberOfGames: "1",
-          placementGames: "",
+          lpGain: "18-23 LP / win",
           desiredWins: "",
+          placementGames: "",
+          numberOfGames: "1",
         };
       }
 
@@ -141,7 +146,7 @@ function OrderPage() {
     loadChampions();
   }, []);
 
-  
+
 
   const isInvalidRankPath =
     serviceType === "Rank Boost" &&
@@ -152,7 +157,8 @@ function OrderPage() {
       return calculateRankBoostPrice(
         formData.currentRank,
         formData.desiredRank,
-        formData.currentLP
+        formData.currentLP,
+        formData.lpGain
       );
     }
 
@@ -166,7 +172,7 @@ function OrderPage() {
     if (serviceType === "Win Boost") {
       return calculateWinBoostPrice(
         formData.currentRank,
-        formData.currentLP,
+        formData.lpGain,
         Number(formData.desiredWins)
       );
     }
@@ -174,7 +180,7 @@ function OrderPage() {
     if (serviceType === "Pro Duo") {
       return calculateProDuoPrice(
         formData.currentRank,
-        formData.currentLP,
+        formData.lpGain,
         Number(formData.numberOfGames)
       );
     }
@@ -595,14 +601,16 @@ function OrderPage() {
                       </div>
 
                       <div className="order-field">
-                        <label>Queue Type</label>
+                        <label>LP per win</label>
                         <select
-                          name="queueType"
-                          value={formData.queueType}
+                          name="lpGain"
+                          value={formData.lpGain}
                           onChange={handleInputChange}
                         >
-                          <option>Solo/Duo</option>
-                          <option>Flex</option>
+                          <option>0-18 LP / win</option>
+                          <option>18-23 LP / win</option>
+                          <option>23-28 LP / win</option>
+                          <option>28+ LP / win</option>
                         </select>
                       </div>
                     </div>
@@ -657,6 +665,38 @@ function OrderPage() {
                       </div>
                     )}
 
+                    <div className="rank-bottom-selects">
+                      <div className="order-field">
+                        <label>Server</label>
+                        <select
+                          name="region"
+                          value={formData.region}
+                          onChange={handleInputChange}
+                        >
+                          <option>North America</option>
+                          <option>Europe West</option>
+                          <option>Europe Nordic & East</option>
+                          <option>Korea</option>
+                          <option>Brazil</option>
+                          <option>Latin America North</option>
+                          <option>Latin America South</option>
+                          <option>Oceania</option>
+                          <option>Japan</option>
+                        </select>
+                      </div>
+
+                      <div className="order-field">
+                        <label>Queue Type</label>
+                        <select
+                          name="queueType"
+                          value={formData.queueType}
+                          onChange={handleInputChange}
+                        >
+                          <option>Solo/Duo</option>
+                          <option>Flex</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -1408,7 +1448,23 @@ function getLpBandModifierForNetWins(lpText) {
   return 1;
 }
 
-function calculateRankBoostPrice(currentRank, desiredRank, currentLP) {
+function getLpGainModifierForDivision(lpGain) {
+  if (lpGain === "0-18 LP / win") return 1.1;
+  if (lpGain === "18-23 LP / win") return 1;
+  if (lpGain === "23-28 LP / win") return 0.95;
+  if (lpGain === "28+ LP / win") return 0.9;
+  return 1;
+}
+
+function getLpGainModifierForNetWins(lpGain) {
+  if (lpGain === "0-18 LP / win") return 1;
+  if (lpGain === "18-23 LP / win") return 1;
+  if (lpGain === "23-28 LP / win") return 1.05;
+  if (lpGain === "28+ LP / win") return 1.1;
+  return 1;
+}
+
+function calculateRankBoostPrice(currentRank, desiredRank, currentLP, lpGain) {
   const currentIndex = rankOptions.indexOf(currentRank);
   const desiredIndex = rankOptions.indexOf(desiredRank);
 
@@ -1423,9 +1479,12 @@ function calculateRankBoostPrice(currentRank, desiredRank, currentLP) {
     const stepPrice = divisionStepPrices[stepRank] || 0;
 
     if (i === currentIndex) {
-      total += stepPrice * getLpBandModifierForDivision(currentLP);
+      total +=
+        stepPrice *
+        getLpBandModifierForDivision(currentLP) *
+        getLpGainModifierForDivision(lpGain);
     } else {
-      total += stepPrice;
+      total += stepPrice * getLpGainModifierForDivision(lpGain);
     }
   }
 
@@ -1463,16 +1522,16 @@ function getNetWinBasePrice(currentRank) {
   return 3;
 }
 
-function calculateWinBoostPrice(currentRank, currentLP, desiredWins) {
+function calculateWinBoostPrice(currentRank, lpGain, desiredWins) {
   const safeWins = Math.max(1, desiredWins || 1);
   const basePerWin = getNetWinBasePrice(currentRank);
-  const modifier = getLpBandModifierForNetWins(currentLP);
+  const modifier = getLpGainModifierForNetWins(lpGain);
   return basePerWin * modifier * safeWins;
 }
 
-function calculateProDuoPrice(currentRank, currentLP, numberOfGames) {
+function calculateProDuoPrice(currentRank, lpGain, numberOfGames) {
   const safeGames = Math.max(1, numberOfGames || 1);
-  const winBoostEquivalent = calculateWinBoostPrice(currentRank, currentLP, 1);
+  const winBoostEquivalent = calculateWinBoostPrice(currentRank, lpGain, 1);
   return winBoostEquivalent * 0.75 * safeGames;
 }
 
