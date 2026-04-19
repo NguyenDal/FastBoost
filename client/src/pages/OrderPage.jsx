@@ -17,25 +17,33 @@ function OrderPage() {
     desiredRank: "Gold IV",
     currentLP: "0-20 LP",
     peakRank: "Unranked",
-    desiredWins: "5",
-    placementGames: "5",
-    preferredRole: "Mid",
-    numberOfGames: "3",
+    desiredWins: "",
+    placementGames: "",
+    preferredRole: "Middle",
+    numberOfGames: "",
     region: "North America",
     queueType: "Solo/Duo",
     playMode: "Solo",
-    notes: "",
     priorityOrder: false,
     duoWithBooster: false,
     liveStream: false,
     appearOffline: false,
-    championsRoles: false,
     bonusWin: false,
     soloOnly: false,
-    undercoverWinrate: false,
-    moderateKDA: false,
     highMMRDuo: false,
+    championPreferenceTier: "4+",
   });
+
+  const [isChampionPanelOpen, setIsChampionPanelOpen] = useState(false);
+  const [championPreferenceEnabled, setChampionPreferenceEnabled] = useState(false);
+  const [championPrefs, setChampionPrefs] = useState({
+    firstRole: "Top",
+    secondRole: "Fill",
+    selectedChampions: [],
+  });
+
+  const [allChampions, setAllChampions] = useState([]);
+  const [championSearch, setChampionSearch] = useState("");
 
   useEffect(() => {
     const fetchService = async () => {
@@ -61,32 +69,123 @@ function OrderPage() {
   }, [serviceId]);
 
   const serviceType = selectedBoostType || service?.title || "";
+  
+  useEffect(() => {
+    if (!serviceType) return;
+
+    setFormData((prev) => {
+      if (serviceType === "Rank Boost") {
+        return {
+          ...prev,
+          desiredWins: "",
+          placementGames: "",
+          numberOfGames: "",
+        };
+      }
+
+      if (serviceType === "Placement Boost") {
+        return {
+          ...prev,
+          placementGames: "1",
+          desiredWins: "",
+          numberOfGames: "",
+        };
+      }
+
+      if (serviceType === "Win Boost") {
+        return {
+          ...prev,
+          desiredWins: "1",
+          placementGames: "",
+          numberOfGames: "",
+        };
+      }
+
+      if (serviceType === "Pro Duo") {
+        return {
+          ...prev,
+          numberOfGames: "1",
+          placementGames: "",
+          desiredWins: "",
+        };
+      }
+
+      return prev;
+    });
+  }, [serviceType]);
+
+  useEffect(() => {
+    const loadChampions = async () => {
+      try {
+        const versionResponse = await fetch("https://ddragon.leagueoflegends.com/api/versions.json");
+        const versions = await versionResponse.json();
+        const latestVersion = versions[0];
+
+        const championResponse = await fetch(
+          `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+        );
+        const championData = await championResponse.json();
+
+        const champions = Object.values(championData.data).map((champion) => ({
+          id: champion.id,
+          name: champion.name,
+          icon: `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion.image.full}`,
+        }));
+
+        setAllChampions(champions);
+      } catch (error) {
+        console.error("Failed to load champions:", error);
+      }
+    };
+
+    loadChampions();
+  }, []);
+
+  
+
+  const isInvalidRankPath =
+    serviceType === "Rank Boost" &&
+    rankOptions.indexOf(formData.desiredRank) <= rankOptions.indexOf(formData.currentRank);
+
   const basePrice = useMemo(() => {
     if (serviceType === "Rank Boost") {
-      const rankSteps = getRankStepDifference(
+      return calculateRankBoostPrice(
         formData.currentRank,
-        formData.desiredRank
+        formData.desiredRank,
+        formData.currentLP
       );
-      return 12 + rankSteps * 6;
     }
 
     if (serviceType === "Placement Boost") {
-      return 10 + Number(formData.placementGames) * 2;
+      return calculatePlacementBoostPrice(
+        formData.peakRank,
+        Number(formData.placementGames)
+      );
     }
 
     if (serviceType === "Win Boost") {
-      return 8 + Number(formData.desiredWins) * 2.5;
+      return calculateWinBoostPrice(
+        formData.currentRank,
+        formData.currentLP,
+        Number(formData.desiredWins)
+      );
     }
 
     if (serviceType === "Pro Duo") {
-      return 7 + Number(formData.numberOfGames) * 3;
+      return calculateProDuoPrice(
+        formData.currentRank,
+        formData.currentLP,
+        Number(formData.numberOfGames)
+      );
     }
 
-    return 10;
+    return 0;
   }, [
     serviceType,
     formData.currentRank,
     formData.desiredRank,
+    formData.currentLP,
+    formData.peakRank,
     formData.placementGames,
     formData.desiredWins,
     formData.numberOfGames,
@@ -94,19 +193,49 @@ function OrderPage() {
 
   const addonPrice = useMemo(() => {
     let total = 0;
-    if (formData.priorityOrder) total += 5;
-    if (formData.duoWithBooster) total += 6;
-    if (formData.liveStream) total += 3;
-    if (formData.championsRoles) total += 2;
+
+    if (formData.priorityOrder) total += basePrice * 0.15;
+    if (formData.playMode === "Duo" && formData.duoWithBooster) {
+      total += basePrice * 0.4;
+    }
+    if (formData.soloOnly) total += basePrice * 0.3;
+    if (formData.highMMRDuo) total += basePrice * 0.2;
+
+    if (formData.bonusWin) {
+      total += getBonusWinPriceByRank(formData.currentRank);
+    }
+
+    total += getChampionPreferencePrice(basePrice, formData.championPreferenceTier);
+
     return total;
   }, [
+    basePrice,
     formData.priorityOrder,
     formData.duoWithBooster,
-    formData.liveStream,
-    formData.championsRoles,
+    formData.soloOnly,
+    formData.highMMRDuo,
+    formData.bonusWin,
+    formData.currentRank,
+    formData.championPreferenceTier,
   ]);
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
+
+  const filteredChampions = allChampions.filter((champion) =>
+    champion.name.toLowerCase().includes(championSearch.toLowerCase())
+  );
+
+  const getSecondRoleOptions = (firstRole) => {
+    const roleMap = {
+      Top: ["Fill", "Jungle", "Middle", "Bottom", "Support"],
+      Jungle: ["Fill", "Top", "Middle", "Bottom", "Support"],
+      Middle: ["Fill", "Top", "Jungle", "Bottom", "Support"],
+      Bottom: ["Fill", "Top", "Jungle", "Middle", "Support"],
+      Support: ["Fill", "Top", "Jungle", "Middle", "Bottom"],
+    };
+
+    return roleMap[firstRole] || ["Fill", "Jungle", "Middle", "Bottom", "Support"];
+  };
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -117,11 +246,147 @@ function OrderPage() {
     }));
   };
 
+  const openChampionPanel = () => {
+    setChampionPreferenceEnabled(true);
+    setIsChampionPanelOpen(true);
+  };
+
+  const closeChampionPanel = () => {
+    if (championPrefs.selectedChampions.length === 0) {
+      setChampionPreferenceEnabled(false);
+      setChampionPrefs({
+        firstRole: "Top",
+        secondRole: "Fill",
+        selectedChampions: [],
+      });
+      setFormData((prev) => ({
+        ...prev,
+        championPreferenceTier: "4+",
+      }));
+    }
+
+    setChampionSearch("");
+    setIsChampionPanelOpen(false);
+  };
+
+  const handleChampionToggle = () => {
+    if (championPreferenceEnabled) {
+      setChampionPreferenceEnabled(false);
+      setChampionPrefs({
+        firstRole: "Top",
+        secondRole: "Fill",
+        selectedChampions: [],
+      });
+      setFormData((prev) => ({
+        ...prev,
+        championPreferenceTier: "4+",
+      }));
+      setIsChampionPanelOpen(false);
+      return;
+    }
+
+    openChampionPanel();
+  };
+
+  const updateChampionTierFromSelection = (selectedChampions) => {
+    if (selectedChampions.length <= 1) return "1";
+    if (selectedChampions.length <= 3) return "2-3";
+    return "4+";
+  };
+
+  const handleFirstRoleChange = (newRole) => {
+    setChampionPrefs((prev) => {
+      if (prev.secondRole === newRole) {
+        return {
+          ...prev,
+          firstRole: newRole,
+          secondRole: prev.firstRole,
+        };
+      }
+
+      return {
+        ...prev,
+        firstRole: newRole,
+      };
+    });
+  };
+
+  const handleSecondRoleChange = (newRole) => {
+    setChampionPrefs((prev) => {
+      if (prev.firstRole === newRole) {
+        return {
+          ...prev,
+          firstRole: prev.secondRole,
+          secondRole: newRole,
+        };
+      }
+
+      return {
+        ...prev,
+        secondRole: newRole,
+      };
+    });
+  };
+
+  const handleSaveChampionSelection = () => {
+    if (championPrefs.selectedChampions.length === 0) {
+      setChampionPreferenceEnabled(false);
+      setChampionPrefs({
+        firstRole: "Top",
+        secondRole: "Fill",
+        selectedChampions: [],
+      });
+      setFormData((prev) => ({
+        ...prev,
+        championPreferenceTier: "4+",
+      }));
+      setChampionSearch("");
+      setIsChampionPanelOpen(false);
+      return;
+    }
+
+    setChampionPreferenceEnabled(true);
+    setFormData((prev) => ({
+      ...prev,
+      championPreferenceTier: updateChampionTierFromSelection(
+        championPrefs.selectedChampions
+      ),
+    }));
+    setChampionSearch("");
+    setIsChampionPanelOpen(false);
+  };
+
+  const addChampion = (champion) => {
+    setChampionPrefs((prev) => {
+      if (prev.selectedChampions.some((item) => item.id === champion.id)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        selectedChampions: [...prev.selectedChampions, champion],
+      };
+    });
+
+    setChampionSearch("");
+  };
+
+  const removeChampion = (championId) => {
+    setChampionPrefs((prev) => ({
+      ...prev,
+      selectedChampions: prev.selectedChampions.filter((item) => item.id !== championId),
+    }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       setSubmitError("");
+
+      if (isInvalidRankPath) {
+        return;
+      }
 
       const token = localStorage.getItem("token");
 
@@ -145,7 +410,18 @@ function OrderPage() {
           peakRank: formData.peakRank,
           desiredWins: formData.desiredWins,
           placementGames: formData.placementGames,
-          preferredRole: formData.preferredRole,
+          firstRole:
+            championPreferenceEnabled && championPrefs.selectedChampions.length > 0
+              ? championPrefs.firstRole
+              : null,
+          secondRole:
+            championPreferenceEnabled && championPrefs.selectedChampions.length > 0
+              ? championPrefs.secondRole
+              : null,
+          selectedChampions:
+            championPreferenceEnabled && championPrefs.selectedChampions.length > 0
+              ? championPrefs.selectedChampions.map((champion) => champion.name)
+              : [],
           numberOfGames: formData.numberOfGames,
           region: formData.region,
           queueType: formData.queueType,
@@ -154,16 +430,13 @@ function OrderPage() {
           duoWithBooster: formData.duoWithBooster,
           liveStream: formData.liveStream,
           appearOffline: formData.appearOffline,
-          championsRoles: formData.championsRoles,
+          championPreferenceTier: formData.championPreferenceTier,
           bonusWin: formData.bonusWin,
           soloOnly: formData.soloOnly,
-          undercoverWinrate: formData.undercoverWinrate,
-          moderateKDA: formData.moderateKDA,
           highMMRDuo: formData.highMMRDuo,
           basePrice,
           addonPrice,
           totalPrice,
-          notes: formData.notes,
         }),
       });
 
@@ -223,8 +496,7 @@ function OrderPage() {
 
         <div className="order-page-header order-page-header-compact">
           <div>
-            <p className="section-label">Checkout</p>
-            <h1 className="order-page-title compact-title">Secure order summary</h1>
+            <h1 className="order-page-title compact-title">Order summary</h1>
           </div>
 
           <div className="order-header-badges">
@@ -462,21 +734,6 @@ function OrderPage() {
               {serviceType === "Pro Duo" && (
                 <>
                   <div className="order-field order-field-wide">
-                    <label>Preferred Role</label>
-                    <select
-                      name="preferredRole"
-                      value={formData.preferredRole}
-                      onChange={handleInputChange}
-                    >
-                      <option>Top</option>
-                      <option>Jungle</option>
-                      <option>Mid</option>
-                      <option>ADC</option>
-                      <option>Support</option>
-                    </select>
-                  </div>
-
-                  <div className="order-field order-field-wide">
                     <label>Number of Games</label>
                     <select
                       name="numberOfGames"
@@ -528,14 +785,14 @@ function OrderPage() {
           </section>
 
           <aside className="order-summary-panel">
-            <p className="section-label">Order Summary</p>
-            <h2>{serviceType}</h2>
+            <p className="section-label">Checkout</p>
+            <h2 className="order-summary-heading">{serviceType}</h2>
 
             {serviceType === "Rank Boost" && (
               <div className="order-rank-strip">
                 <div className="order-rank-box">
                   <span className="order-rank-label">Current</span>
-                  <strong>{formData.currentRank} {formData.currentLP}</strong>
+                  <strong>{formData.currentRank}</strong>
                 </div>
 
                 <div className="order-rank-arrow">→</div>
@@ -574,7 +831,6 @@ function OrderPage() {
                   setFormData((prev) => ({
                     ...prev,
                     playMode: "Duo",
-                    duoWithBooster: true,
                   }))
                 }
               >
@@ -589,7 +845,7 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">Stream games</span>
-                        <span className="order-addon-badge">+20%</span>
+                        <span className="order-addon-badge">Free</span>
                       </div>
                       <span className="order-addon-switch">
                         <input
@@ -605,7 +861,7 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">+1 Bonus win</span>
-                        <span className="order-addon-badge">+8.2 $</span>
+                        <span className="order-addon-badge">By rank</span>
                       </div>
                       <span className="order-addon-switch">
                         <input
@@ -621,7 +877,7 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">Solo Only</span>
-                        <span className="order-addon-badge">+35%</span>
+                        <span className="order-addon-badge">+30%</span>
                       </div>
                       <span className="order-addon-switch">
                         <input
@@ -655,46 +911,21 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">Roles/Champions</span>
-                        <span className="order-addon-badge recommended">RECOMMENDED</span>
+                        <span className="order-addon-badge">
+                          {!championPreferenceEnabled
+                            ? "Free"
+                            : championPrefs.selectedChampions.length === 1
+                              ? "+10%"
+                              : championPrefs.selectedChampions.length <= 3
+                                ? "+5%"
+                                : "Free"}
+                        </span>
                       </div>
                       <span className="order-addon-switch">
                         <input
                           type="checkbox"
-                          name="championsRoles"
-                          checked={formData.championsRoles}
-                          onChange={handleInputChange}
-                        />
-                        <span className="order-addon-slider" />
-                      </span>
-                    </label>
-
-                    <label className="order-addon-row">
-                      <div className="order-addon-copy">
-                        <span className="order-addon-name">Undercover Winrate</span>
-                        <span className="order-addon-badge">+40%</span>
-                      </div>
-                      <span className="order-addon-switch">
-                        <input
-                          type="checkbox"
-                          name="undercoverWinrate"
-                          checked={formData.undercoverWinrate || false}
-                          onChange={handleInputChange}
-                        />
-                        <span className="order-addon-slider" />
-                      </span>
-                    </label>
-
-                    <label className="order-addon-row">
-                      <div className="order-addon-copy">
-                        <span className="order-addon-name">Moderate KDA</span>
-                        <span className="order-addon-badge">+30%</span>
-                      </div>
-                      <span className="order-addon-switch">
-                        <input
-                          type="checkbox"
-                          name="moderateKDA"
-                          checked={formData.moderateKDA || false}
-                          onChange={handleInputChange}
+                          checked={championPreferenceEnabled}
+                          onChange={handleChampionToggle}
                         />
                         <span className="order-addon-slider" />
                       </span>
@@ -705,7 +936,7 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">Premium coaching</span>
-                        <span className="order-addon-badge">+30%</span>
+                        <span className="order-addon-badge">+40%</span>
                       </div>
                       <span className="order-addon-switch">
                         <input
@@ -737,7 +968,7 @@ function OrderPage() {
                     <label className="order-addon-row">
                       <div className="order-addon-copy">
                         <span className="order-addon-name">+1 Bonus win</span>
-                        <span className="order-addon-badge">+8.2 $</span>
+                        <span className="order-addon-badge">By rank</span>
                       </div>
                       <span className="order-addon-switch">
                         <input
@@ -767,48 +998,35 @@ function OrderPage() {
                         <span className="order-addon-slider" />
                       </span>
                     </label>
-
-                    <label className="order-addon-row">
-                      <div className="order-addon-copy">
-                        <span className="order-addon-name">Undercover Winrate</span>
-                        <span className="order-addon-badge">+40%</span>
-                      </div>
-                      <span className="order-addon-switch">
-                        <input
-                          type="checkbox"
-                          name="undercoverWinrate"
-                          checked={formData.undercoverWinrate || false}
-                          onChange={handleInputChange}
-                        />
-                        <span className="order-addon-slider" />
-                      </span>
-                    </label>
-
-                    <label className="order-addon-row">
-                      <div className="order-addon-copy">
-                        <span className="order-addon-name">Moderate KDA</span>
-                        <span className="order-addon-badge">+30%</span>
-                      </div>
-                      <span className="order-addon-switch">
-                        <input
-                          type="checkbox"
-                          name="moderateKDA"
-                          checked={formData.moderateKDA || false}
-                          onChange={handleInputChange}
-                        />
-                        <span className="order-addon-slider" />
-                      </span>
-                    </label>
                   </>
                 )}
               </div>
             </div>
 
             <div className="summary-speed-strip">
-              <button type="button" className="summary-speed-btn active">
+              <button
+                type="button"
+                className={`summary-speed-btn ${!formData.priorityOrder ? "active" : ""}`}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    priorityOrder: false,
+                  }))
+                }
+              >
                 Standard
               </button>
-              <button type="button" className="summary-speed-btn">
+
+              <button
+                type="button"
+                className={`summary-speed-btn ${formData.priorityOrder ? "active" : ""}`}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    priorityOrder: true,
+                  }))
+                }
+              >
                 Express
               </button>
             </div>
@@ -827,15 +1045,6 @@ function OrderPage() {
                 <span>Queue</span>
                 <strong>{formData.queueType}</strong>
               </div>
-
-              {serviceType === "Rank Boost" && (
-                <div className="order-summary-row">
-                  <span>Path</span>
-                  <strong>
-                    {formData.currentRank} → {formData.desiredRank}
-                  </strong>
-                </div>
-              )}
 
               {serviceType === "Placement Boost" && (
                 <div className="order-summary-row">
@@ -859,37 +1068,195 @@ function OrderPage() {
               )}
             </div>
 
-            <div className="order-summary-total-inline">
-              <div className="order-summary-price-lines">
-                <div className="order-summary-row">
-                  <span>Base Price</span>
-                  <strong>${basePrice.toFixed(2)}</strong>
+            {isInvalidRankPath ? (
+              <div className="price-warning-box price-warning-box-blocking">
+                <p className="price-warning-text">
+                  Current rank must be smaller than the desired rank.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="order-summary-total-inline">
+                  <div className="order-summary-total-inline-main">
+                    <span>Total Price</span>
+                    <strong>${totalPrice}</strong>
+                  </div>
                 </div>
 
-                <div className="order-summary-row">
-                  <span>Add-ons</span>
-                  <strong>${addonPrice.toFixed(2)}</strong>
-                </div>
-              </div>
+                {submitError && <p className="error-message">{submitError}</p>}
 
-              <div className="order-summary-total-inline-main">
-                <span>Total Price</span>
-                <strong>${totalPrice}</strong>
-              </div>
-            </div>
-
-            {submitError && <p className="error-message">{submitError}</p>}
-
-            <button type="submit" className="primary-btn order-submit-btn">
-              Continue
-            </button>
+                <button type="submit" className="primary-btn order-submit-btn">
+                  Continue
+                </button>
+              </>
+            )}
 
           </aside>
         </form>
+
+        {isChampionPanelOpen && (
+          <div className="champion-modal-overlay" onClick={closeChampionPanel}>
+            <div
+              className="champion-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="champion-modal-header">
+                <h3>Specific Champions</h3>
+                <button
+                  type="button"
+                  className="champion-modal-close"
+                  onClick={closeChampionPanel}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="champion-modal-body">
+                <div className="champion-role-section">
+                  <div className="champion-role-header">
+                    <span>First role</span>
+                    <span className="order-addon-badge neutral">Free</span>
+                  </div>
+
+                  <div className="champion-role-tabs champion-role-tabs-5">
+                    {[
+                      { key: "Top", label: "Top", icon: roleIconMap.Top },
+                      { key: "Jungle", label: "Jungle", icon: roleIconMap.Jungle },
+                      { key: "Middle", label: "Middle", icon: roleIconMap.Middle },
+                      { key: "Bottom", label: "Bottom", icon: roleIconMap.Bottom },
+                      { key: "Support", label: "Support", icon: roleIconMap.Support },
+                    ].map((role) => (
+                      <button
+                        key={role.key}
+                        type="button"
+                        className={`champion-role-tab ${championPrefs.firstRole === role.key ? "active" : ""
+                          }`}
+                        onClick={() => handleFirstRoleChange(role.key)}
+                      >
+                        <img src={role.icon} alt={role.label} className="champion-role-icon" />
+                        <span>{role.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="champion-role-section">
+                  <div className="champion-role-header">
+                    <span>Select champion</span>
+                    <span className="order-addon-badge">
+                      {championPrefs.selectedChampions.length === 1
+                        ? "+10%"
+                        : championPrefs.selectedChampions.length <= 3
+                          ? "+5%"
+                          : "Free"}
+                    </span>
+                  </div>
+
+                  <div className="champion-search-wrap">
+                    <input
+                      type="text"
+                      className="champion-search-input"
+                      placeholder={`Search by champion name...`}
+                      value={championSearch}
+                      onChange={(e) => setChampionSearch(e.target.value)}
+                    />
+
+                    {championSearch.trim() && (
+                      <div className="champion-search-results">
+                        {filteredChampions.slice(0, 12).map((champion) => (
+                          <button
+                            key={champion.id}
+                            type="button"
+                            className="champion-search-result"
+                            onClick={() => addChampion(champion)}
+                          >
+                            <img
+                              src={champion.icon}
+                              alt={champion.name}
+                              className="champion-result-icon"
+                            />
+                            <span>{champion.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="champion-icon-grid">
+                    {championPrefs.selectedChampions.map((champion) => (
+                      <button
+                        key={champion.id}
+                        type="button"
+                        className="champion-icon-card active"
+                        onClick={() => removeChampion(champion.id)}
+                      >
+                        <img
+                          src={champion.icon}
+                          alt={champion.name}
+                          className="champion-icon-image"
+                        />
+                        <span>{champion.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="champion-role-section">
+                  <div className="champion-role-header">
+                    <span>Second role</span>
+                    <span className="order-addon-badge neutral">Free</span>
+                  </div>
+
+                  <div className="champion-role-tabs champion-role-tabs-5">
+                    {getSecondRoleOptions(championPrefs.firstRole).map((roleKey) => {
+                      const role = {
+                        key: roleKey,
+                        label: roleKey,
+                        icon: roleIconMap[roleKey],
+                      };
+
+                      return (
+                        <button
+                          key={role.key}
+                          type="button"
+                          className={`champion-role-tab ${championPrefs.secondRole === role.key ? "active" : ""
+                            }`}
+                          onClick={() => handleSecondRoleChange(role.key)}
+                        >
+                          <img src={role.icon} alt={role.label} className="champion-role-icon" />
+                          <span>{role.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="champion-modal-footer">
+                <button
+                  type="button"
+                  className="primary-btn champion-save-btn"
+                  onClick={handleSaveChampionSelection}
+                >
+                  Save selection
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
+
+const roleIconMap = {
+  Top: "https://fastboost-assets.s3.amazonaws.com/roles/top.png",
+  Jungle: "https://fastboost-assets.s3.amazonaws.com/roles/jungle.png",
+  Middle: "https://fastboost-assets.s3.amazonaws.com/roles/mid.png",
+  Bottom: "https://fastboost-assets.s3.amazonaws.com/roles/bot.png",
+  Support: "https://fastboost-assets.s3.amazonaws.com/roles/support.png",
+  Fill: "https://fastboost-assets.s3.amazonaws.com/roles/fill.png",
+};
 
 const rankImageMap = {
   Iron: "https://fastboost-assets.s3.amazonaws.com/services/ranks/iron.png",
@@ -988,6 +1355,142 @@ function getRankStepDifference(currentRank, desiredRank) {
   }
 
   return desiredIndex - currentIndex;
+}
+
+const divisionStepPrices = {
+  "Iron IV": 8,
+  "Iron III": 8,
+  "Iron II": 8,
+  "Iron I": 8,
+  "Bronze IV": 8,
+  "Bronze III": 8,
+  "Bronze II": 8,
+  "Bronze I": 8,
+  "Silver IV": 10,
+  "Silver III": 10,
+  "Silver II": 10,
+  "Silver I": 10,
+  "Gold IV": 12,
+  "Gold III": 14,
+  "Gold II": 16,
+  "Gold I": 18,
+  "Platinum IV": 20,
+  "Platinum III": 22,
+  "Platinum II": 24,
+  "Platinum I": 26,
+  "Emerald IV": 30,
+  "Emerald III": 35,
+  "Emerald II": 40,
+  "Emerald I": 45,
+  "Diamond IV": 59,
+  "Diamond III": 69,
+  "Diamond II": 79,
+  "Diamond I": 120,
+};
+
+function getTierFromAnyRank(rank) {
+  return (rank || "").split(" ")[0];
+}
+
+function getLpBandModifierForDivision(lpText) {
+  if (lpText === "0-20 LP") return 1.1;
+  if (lpText === "21-40 LP") return 1;
+  if (lpText === "41-60 LP") return 0.95;
+  if (lpText === "61-80 LP" || lpText === "81-99 LP") return 0.9;
+  return 1;
+}
+
+function getLpBandModifierForNetWins(lpText) {
+  if (lpText === "0-20 LP") return 1;
+  if (lpText === "21-40 LP") return 1;
+  if (lpText === "41-60 LP") return 1.05;
+  if (lpText === "61-80 LP" || lpText === "81-99 LP") return 1.1;
+  return 1;
+}
+
+function calculateRankBoostPrice(currentRank, desiredRank, currentLP) {
+  const currentIndex = rankOptions.indexOf(currentRank);
+  const desiredIndex = rankOptions.indexOf(desiredRank);
+
+  if (currentIndex === -1 || desiredIndex === -1 || desiredIndex <= currentIndex) {
+    return 0;
+  }
+
+  let total = 0;
+
+  for (let i = currentIndex; i < desiredIndex; i += 1) {
+    const stepRank = rankOptions[i];
+    const stepPrice = divisionStepPrices[stepRank] || 0;
+
+    if (i === currentIndex) {
+      total += stepPrice * getLpBandModifierForDivision(currentLP);
+    } else {
+      total += stepPrice;
+    }
+  }
+
+  return total;
+}
+
+function getPlacementBasePrice(peakRank) {
+  const tier = getTierFromAnyRank(peakRank);
+
+  if (peakRank === "Unranked") return 24;
+  if (tier === "Iron" || tier === "Bronze") return 15;
+  if (tier === "Silver") return 21;
+  if (tier === "Gold") return 25;
+  if (tier === "Platinum") return 30;
+  if (tier === "Diamond") return 45;
+  if (tier === "Master") return 60;
+
+  return 24;
+}
+
+function calculatePlacementBoostPrice(peakRank, placementGames) {
+  const fullSetPrice = getPlacementBasePrice(peakRank);
+  const safeGames = Math.max(1, Math.min(5, placementGames || 5));
+  return (fullSetPrice / 5) * safeGames;
+}
+
+function getNetWinBasePrice(currentRank) {
+  const tier = getTierFromAnyRank(currentRank);
+
+  if (tier === "Silver") return 3;
+  if (tier === "Gold") return 5;
+  if (tier === "Platinum" || tier === "Emerald" || tier === "Diamond") return 6;
+  if (tier === "Master") return 30;
+
+  return 3;
+}
+
+function calculateWinBoostPrice(currentRank, currentLP, desiredWins) {
+  const safeWins = Math.max(1, desiredWins || 1);
+  const basePerWin = getNetWinBasePrice(currentRank);
+  const modifier = getLpBandModifierForNetWins(currentLP);
+  return basePerWin * modifier * safeWins;
+}
+
+function calculateProDuoPrice(currentRank, currentLP, numberOfGames) {
+  const safeGames = Math.max(1, numberOfGames || 1);
+  const winBoostEquivalent = calculateWinBoostPrice(currentRank, currentLP, 1);
+  return winBoostEquivalent * 0.75 * safeGames;
+}
+
+function getBonusWinPriceByRank(currentRank) {
+  const tier = getTierFromAnyRank(currentRank);
+
+  if (tier === "Silver") return 3;
+  if (tier === "Gold") return 5;
+  if (tier === "Platinum" || tier === "Emerald" || tier === "Diamond") return 6;
+  if (tier === "Master") return 30;
+
+  return 0;
+}
+
+function getChampionPreferencePrice(basePrice, tier) {
+  if (tier === "1") return basePrice * 0.1;
+  if (tier === "2-3") return basePrice * 0.05;
+  return 0;
 }
 
 export default OrderPage;
