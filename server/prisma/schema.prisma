@@ -42,39 +42,38 @@ model Order {
   id                String      @id @default(cuid())
   customerId        String
   serviceId         String
+  status            OrderStatus @default(PENDING)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   boostType         String
+  playMode          String?
+  region            String?
+  queueType         String?
+
   currentRank       String?
-  desiredRank       String?
   currentLP         String?
+  desiredRank       String?
   peakRank          String?
   desiredWins       Int?
   placementGames    Int?
-  preferredRole     String?
   numberOfGames     Int?
-  region            String?
-  queueType         String?
-  playMode          String?
+
+  firstRole         String?
+  secondRole        String?
+  selectedChampions Json?
 
   priorityOrder     Boolean     @default(false)
   duoWithBooster    Boolean     @default(false)
   liveStream        Boolean     @default(false)
   appearOffline     Boolean     @default(false)
-  championsRoles    Boolean     @default(false)
   bonusWin          Boolean     @default(false)
   soloOnly          Boolean     @default(false)
-  undercoverWinrate Boolean     @default(false)
-  moderateKDA       Boolean     @default(false)
   highMMRDuo        Boolean     @default(false)
 
   basePrice         Float       @default(0)
   addonPrice        Float       @default(0)
   totalPrice        Float       @default(0)
-
-  notes             String?
-  status            OrderStatus @default(PENDING)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
 
   customer          User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
   service           Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)

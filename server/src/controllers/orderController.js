@@ -11,7 +11,9 @@ const createOrder = async (req, res) => {
             peakRank,
             desiredWins,
             placementGames,
-            preferredRole,
+            firstRole,
+            secondRole,
+            selectedChampions,
             numberOfGames,
             region,
             queueType,
@@ -20,16 +22,12 @@ const createOrder = async (req, res) => {
             duoWithBooster,
             liveStream,
             appearOffline,
-            championsRoles,
             bonusWin,
             soloOnly,
-            undercoverWinrate,
-            moderateKDA,
             highMMRDuo,
             basePrice,
             addonPrice,
             totalPrice,
-            notes,
         } = req.body;
 
         if (!serviceId || !boostType) {
@@ -71,7 +69,9 @@ const createOrder = async (req, res) => {
                 peakRank: peakRank || null,
                 desiredWins: desiredWins ? Number(desiredWins) : null,
                 placementGames: placementGames ? Number(placementGames) : null,
-                preferredRole: preferredRole || null,
+                firstRole: firstRole || null,
+                secondRole: secondRole || null,
+                selectedChampions: selectedChampions || [],
                 numberOfGames: numberOfGames ? Number(numberOfGames) : null,
                 region: region || null,
                 queueType: queueType || null,
@@ -81,21 +81,13 @@ const createOrder = async (req, res) => {
                 duoWithBooster: Boolean(duoWithBooster),
                 liveStream: Boolean(liveStream),
                 appearOffline: Boolean(appearOffline),
-                championsRoles: Boolean(championsRoles),
                 bonusWin: Boolean(bonusWin),
                 soloOnly: Boolean(soloOnly),
-                undercoverWinrate: Boolean(undercoverWinrate),
-                moderateKDA: Boolean(moderateKDA),
                 highMMRDuo: Boolean(highMMRDuo),
 
                 basePrice: Number(basePrice || 0),
                 addonPrice: Number(addonPrice || 0),
                 totalPrice: Number(totalPrice || 0),
-
-                notes: notes || null,
-            },
-            include: {
-                service: true,
             },
         });
 
@@ -161,7 +153,7 @@ const getOrderById = async (req, res) => {
         }
 
         const customerId = req.user.id || req.user.userId;
-        
+
         if (order.customerId !== customerId && req.user.role !== "ADMIN") {
             return res.status(403).json({
                 ok: false,

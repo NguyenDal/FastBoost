@@ -150,35 +150,33 @@ exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   serviceId: 'serviceId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   boostType: 'boostType',
+  playMode: 'playMode',
+  region: 'region',
+  queueType: 'queueType',
   currentRank: 'currentRank',
-  desiredRank: 'desiredRank',
   currentLP: 'currentLP',
+  desiredRank: 'desiredRank',
   peakRank: 'peakRank',
   desiredWins: 'desiredWins',
   placementGames: 'placementGames',
-  preferredRole: 'preferredRole',
   numberOfGames: 'numberOfGames',
-  region: 'region',
-  queueType: 'queueType',
-  playMode: 'playMode',
+  firstRole: 'firstRole',
+  secondRole: 'secondRole',
+  selectedChampions: 'selectedChampions',
   priorityOrder: 'priorityOrder',
   duoWithBooster: 'duoWithBooster',
   liveStream: 'liveStream',
   appearOffline: 'appearOffline',
-  championsRoles: 'championsRoles',
   bonusWin: 'bonusWin',
   soloOnly: 'soloOnly',
-  undercoverWinrate: 'undercoverWinrate',
-  moderateKDA: 'moderateKDA',
   highMMRDuo: 'highMMRDuo',
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
-  totalPrice: 'totalPrice',
-  notes: 'notes',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  totalPrice: 'totalPrice'
 };
 
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {
@@ -195,6 +193,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -203,6 +206,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.UserRole = exports.$Enums.UserRole = {
   CUSTOMER: 'CUSTOMER',

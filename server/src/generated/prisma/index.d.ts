@@ -4656,105 +4656,97 @@ export namespace Prisma {
     id: string | null
     customerId: string | null
     serviceId: string | null
+    status: $Enums.OrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
     boostType: string | null
+    playMode: string | null
+    region: string | null
+    queueType: string | null
     currentRank: string | null
-    desiredRank: string | null
     currentLP: string | null
+    desiredRank: string | null
     peakRank: string | null
     desiredWins: number | null
     placementGames: number | null
-    preferredRole: string | null
     numberOfGames: number | null
-    region: string | null
-    queueType: string | null
-    playMode: string | null
+    firstRole: string | null
+    secondRole: string | null
     priorityOrder: boolean | null
     duoWithBooster: boolean | null
     liveStream: boolean | null
     appearOffline: boolean | null
-    championsRoles: boolean | null
     bonusWin: boolean | null
     soloOnly: boolean | null
-    undercoverWinrate: boolean | null
-    moderateKDA: boolean | null
     highMMRDuo: boolean | null
     basePrice: number | null
     addonPrice: number | null
     totalPrice: number | null
-    notes: string | null
-    status: $Enums.OrderStatus | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type OrderMaxAggregateOutputType = {
     id: string | null
     customerId: string | null
     serviceId: string | null
+    status: $Enums.OrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
     boostType: string | null
+    playMode: string | null
+    region: string | null
+    queueType: string | null
     currentRank: string | null
-    desiredRank: string | null
     currentLP: string | null
+    desiredRank: string | null
     peakRank: string | null
     desiredWins: number | null
     placementGames: number | null
-    preferredRole: string | null
     numberOfGames: number | null
-    region: string | null
-    queueType: string | null
-    playMode: string | null
+    firstRole: string | null
+    secondRole: string | null
     priorityOrder: boolean | null
     duoWithBooster: boolean | null
     liveStream: boolean | null
     appearOffline: boolean | null
-    championsRoles: boolean | null
     bonusWin: boolean | null
     soloOnly: boolean | null
-    undercoverWinrate: boolean | null
-    moderateKDA: boolean | null
     highMMRDuo: boolean | null
     basePrice: number | null
     addonPrice: number | null
     totalPrice: number | null
-    notes: string | null
-    status: $Enums.OrderStatus | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type OrderCountAggregateOutputType = {
     id: number
     customerId: number
     serviceId: number
+    status: number
+    createdAt: number
+    updatedAt: number
     boostType: number
+    playMode: number
+    region: number
+    queueType: number
     currentRank: number
-    desiredRank: number
     currentLP: number
+    desiredRank: number
     peakRank: number
     desiredWins: number
     placementGames: number
-    preferredRole: number
     numberOfGames: number
-    region: number
-    queueType: number
-    playMode: number
+    firstRole: number
+    secondRole: number
+    selectedChampions: number
     priorityOrder: number
     duoWithBooster: number
     liveStream: number
     appearOffline: number
-    championsRoles: number
     bonusWin: number
     soloOnly: number
-    undercoverWinrate: number
-    moderateKDA: number
     highMMRDuo: number
     basePrice: number
     addonPrice: number
     totalPrice: number
-    notes: number
-    status: number
-    createdAt: number
-    updatedAt: number
     _all: number
   }
 
@@ -4781,105 +4773,97 @@ export namespace Prisma {
     id?: true
     customerId?: true
     serviceId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
     boostType?: true
+    playMode?: true
+    region?: true
+    queueType?: true
     currentRank?: true
-    desiredRank?: true
     currentLP?: true
+    desiredRank?: true
     peakRank?: true
     desiredWins?: true
     placementGames?: true
-    preferredRole?: true
     numberOfGames?: true
-    region?: true
-    queueType?: true
-    playMode?: true
+    firstRole?: true
+    secondRole?: true
     priorityOrder?: true
     duoWithBooster?: true
     liveStream?: true
     appearOffline?: true
-    championsRoles?: true
     bonusWin?: true
     soloOnly?: true
-    undercoverWinrate?: true
-    moderateKDA?: true
     highMMRDuo?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
-    notes?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type OrderMaxAggregateInputType = {
     id?: true
     customerId?: true
     serviceId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
     boostType?: true
+    playMode?: true
+    region?: true
+    queueType?: true
     currentRank?: true
-    desiredRank?: true
     currentLP?: true
+    desiredRank?: true
     peakRank?: true
     desiredWins?: true
     placementGames?: true
-    preferredRole?: true
     numberOfGames?: true
-    region?: true
-    queueType?: true
-    playMode?: true
+    firstRole?: true
+    secondRole?: true
     priorityOrder?: true
     duoWithBooster?: true
     liveStream?: true
     appearOffline?: true
-    championsRoles?: true
     bonusWin?: true
     soloOnly?: true
-    undercoverWinrate?: true
-    moderateKDA?: true
     highMMRDuo?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
-    notes?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type OrderCountAggregateInputType = {
     id?: true
     customerId?: true
     serviceId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
     boostType?: true
+    playMode?: true
+    region?: true
+    queueType?: true
     currentRank?: true
-    desiredRank?: true
     currentLP?: true
+    desiredRank?: true
     peakRank?: true
     desiredWins?: true
     placementGames?: true
-    preferredRole?: true
     numberOfGames?: true
-    region?: true
-    queueType?: true
-    playMode?: true
+    firstRole?: true
+    secondRole?: true
+    selectedChampions?: true
     priorityOrder?: true
     duoWithBooster?: true
     liveStream?: true
     appearOffline?: true
-    championsRoles?: true
     bonusWin?: true
     soloOnly?: true
-    undercoverWinrate?: true
-    moderateKDA?: true
     highMMRDuo?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
-    notes?: true
-    status?: true
-    createdAt?: true
-    updatedAt?: true
     _all?: true
   }
 
@@ -4973,35 +4957,33 @@ export namespace Prisma {
     id: string
     customerId: string
     serviceId: string
+    status: $Enums.OrderStatus
+    createdAt: Date
+    updatedAt: Date
     boostType: string
+    playMode: string | null
+    region: string | null
+    queueType: string | null
     currentRank: string | null
-    desiredRank: string | null
     currentLP: string | null
+    desiredRank: string | null
     peakRank: string | null
     desiredWins: number | null
     placementGames: number | null
-    preferredRole: string | null
     numberOfGames: number | null
-    region: string | null
-    queueType: string | null
-    playMode: string | null
+    firstRole: string | null
+    secondRole: string | null
+    selectedChampions: JsonValue | null
     priorityOrder: boolean
     duoWithBooster: boolean
     liveStream: boolean
     appearOffline: boolean
-    championsRoles: boolean
     bonusWin: boolean
     soloOnly: boolean
-    undercoverWinrate: boolean
-    moderateKDA: boolean
     highMMRDuo: boolean
     basePrice: number
     addonPrice: number
     totalPrice: number
-    notes: string | null
-    status: $Enums.OrderStatus
-    createdAt: Date
-    updatedAt: Date
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -5027,35 +5009,33 @@ export namespace Prisma {
     id?: boolean
     customerId?: boolean
     serviceId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     boostType?: boolean
+    playMode?: boolean
+    region?: boolean
+    queueType?: boolean
     currentRank?: boolean
-    desiredRank?: boolean
     currentLP?: boolean
+    desiredRank?: boolean
     peakRank?: boolean
     desiredWins?: boolean
     placementGames?: boolean
-    preferredRole?: boolean
     numberOfGames?: boolean
-    region?: boolean
-    queueType?: boolean
-    playMode?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    selectedChampions?: boolean
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
-    notes?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -5064,35 +5044,33 @@ export namespace Prisma {
     id?: boolean
     customerId?: boolean
     serviceId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     boostType?: boolean
+    playMode?: boolean
+    region?: boolean
+    queueType?: boolean
     currentRank?: boolean
-    desiredRank?: boolean
     currentLP?: boolean
+    desiredRank?: boolean
     peakRank?: boolean
     desiredWins?: boolean
     placementGames?: boolean
-    preferredRole?: boolean
     numberOfGames?: boolean
-    region?: boolean
-    queueType?: boolean
-    playMode?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    selectedChampions?: boolean
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
-    notes?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -5101,35 +5079,33 @@ export namespace Prisma {
     id?: boolean
     customerId?: boolean
     serviceId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     boostType?: boolean
+    playMode?: boolean
+    region?: boolean
+    queueType?: boolean
     currentRank?: boolean
-    desiredRank?: boolean
     currentLP?: boolean
+    desiredRank?: boolean
     peakRank?: boolean
     desiredWins?: boolean
     placementGames?: boolean
-    preferredRole?: boolean
     numberOfGames?: boolean
-    region?: boolean
-    queueType?: boolean
-    playMode?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    selectedChampions?: boolean
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
-    notes?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -5138,38 +5114,36 @@ export namespace Prisma {
     id?: boolean
     customerId?: boolean
     serviceId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     boostType?: boolean
+    playMode?: boolean
+    region?: boolean
+    queueType?: boolean
     currentRank?: boolean
-    desiredRank?: boolean
     currentLP?: boolean
+    desiredRank?: boolean
     peakRank?: boolean
     desiredWins?: boolean
     placementGames?: boolean
-    preferredRole?: boolean
     numberOfGames?: boolean
-    region?: boolean
-    queueType?: boolean
-    playMode?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    selectedChampions?: boolean
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
-    notes?: boolean
-    status?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "boostType" | "currentRank" | "desiredRank" | "currentLP" | "peakRank" | "desiredWins" | "placementGames" | "preferredRole" | "numberOfGames" | "region" | "queueType" | "playMode" | "priorityOrder" | "duoWithBooster" | "liveStream" | "appearOffline" | "championsRoles" | "bonusWin" | "soloOnly" | "undercoverWinrate" | "moderateKDA" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice" | "notes" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "boostType" | "playMode" | "region" | "queueType" | "currentRank" | "currentLP" | "desiredRank" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "duoWithBooster" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -5193,35 +5167,33 @@ export namespace Prisma {
       id: string
       customerId: string
       serviceId: string
+      status: $Enums.OrderStatus
+      createdAt: Date
+      updatedAt: Date
       boostType: string
+      playMode: string | null
+      region: string | null
+      queueType: string | null
       currentRank: string | null
-      desiredRank: string | null
       currentLP: string | null
+      desiredRank: string | null
       peakRank: string | null
       desiredWins: number | null
       placementGames: number | null
-      preferredRole: string | null
       numberOfGames: number | null
-      region: string | null
-      queueType: string | null
-      playMode: string | null
+      firstRole: string | null
+      secondRole: string | null
+      selectedChampions: Prisma.JsonValue | null
       priorityOrder: boolean
       duoWithBooster: boolean
       liveStream: boolean
       appearOffline: boolean
-      championsRoles: boolean
       bonusWin: boolean
       soloOnly: boolean
-      undercoverWinrate: boolean
-      moderateKDA: boolean
       highMMRDuo: boolean
       basePrice: number
       addonPrice: number
       totalPrice: number
-      notes: string | null
-      status: $Enums.OrderStatus
-      createdAt: Date
-      updatedAt: Date
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -5650,35 +5622,33 @@ export namespace Prisma {
     readonly id: FieldRef<"Order", 'String'>
     readonly customerId: FieldRef<"Order", 'String'>
     readonly serviceId: FieldRef<"Order", 'String'>
+    readonly status: FieldRef<"Order", 'OrderStatus'>
+    readonly createdAt: FieldRef<"Order", 'DateTime'>
+    readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly boostType: FieldRef<"Order", 'String'>
+    readonly playMode: FieldRef<"Order", 'String'>
+    readonly region: FieldRef<"Order", 'String'>
+    readonly queueType: FieldRef<"Order", 'String'>
     readonly currentRank: FieldRef<"Order", 'String'>
-    readonly desiredRank: FieldRef<"Order", 'String'>
     readonly currentLP: FieldRef<"Order", 'String'>
+    readonly desiredRank: FieldRef<"Order", 'String'>
     readonly peakRank: FieldRef<"Order", 'String'>
     readonly desiredWins: FieldRef<"Order", 'Int'>
     readonly placementGames: FieldRef<"Order", 'Int'>
-    readonly preferredRole: FieldRef<"Order", 'String'>
     readonly numberOfGames: FieldRef<"Order", 'Int'>
-    readonly region: FieldRef<"Order", 'String'>
-    readonly queueType: FieldRef<"Order", 'String'>
-    readonly playMode: FieldRef<"Order", 'String'>
+    readonly firstRole: FieldRef<"Order", 'String'>
+    readonly secondRole: FieldRef<"Order", 'String'>
+    readonly selectedChampions: FieldRef<"Order", 'Json'>
     readonly priorityOrder: FieldRef<"Order", 'Boolean'>
     readonly duoWithBooster: FieldRef<"Order", 'Boolean'>
     readonly liveStream: FieldRef<"Order", 'Boolean'>
     readonly appearOffline: FieldRef<"Order", 'Boolean'>
-    readonly championsRoles: FieldRef<"Order", 'Boolean'>
     readonly bonusWin: FieldRef<"Order", 'Boolean'>
     readonly soloOnly: FieldRef<"Order", 'Boolean'>
-    readonly undercoverWinrate: FieldRef<"Order", 'Boolean'>
-    readonly moderateKDA: FieldRef<"Order", 'Boolean'>
     readonly highMMRDuo: FieldRef<"Order", 'Boolean'>
     readonly basePrice: FieldRef<"Order", 'Float'>
     readonly addonPrice: FieldRef<"Order", 'Float'>
     readonly totalPrice: FieldRef<"Order", 'Float'>
-    readonly notes: FieldRef<"Order", 'String'>
-    readonly status: FieldRef<"Order", 'OrderStatus'>
-    readonly createdAt: FieldRef<"Order", 'DateTime'>
-    readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
     
 
@@ -7227,35 +7197,33 @@ export namespace Prisma {
     id: 'id',
     customerId: 'customerId',
     serviceId: 'serviceId',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     boostType: 'boostType',
+    playMode: 'playMode',
+    region: 'region',
+    queueType: 'queueType',
     currentRank: 'currentRank',
-    desiredRank: 'desiredRank',
     currentLP: 'currentLP',
+    desiredRank: 'desiredRank',
     peakRank: 'peakRank',
     desiredWins: 'desiredWins',
     placementGames: 'placementGames',
-    preferredRole: 'preferredRole',
     numberOfGames: 'numberOfGames',
-    region: 'region',
-    queueType: 'queueType',
-    playMode: 'playMode',
+    firstRole: 'firstRole',
+    secondRole: 'secondRole',
+    selectedChampions: 'selectedChampions',
     priorityOrder: 'priorityOrder',
     duoWithBooster: 'duoWithBooster',
     liveStream: 'liveStream',
     appearOffline: 'appearOffline',
-    championsRoles: 'championsRoles',
     bonusWin: 'bonusWin',
     soloOnly: 'soloOnly',
-    undercoverWinrate: 'undercoverWinrate',
-    moderateKDA: 'moderateKDA',
     highMMRDuo: 'highMMRDuo',
     basePrice: 'basePrice',
     addonPrice: 'addonPrice',
-    totalPrice: 'totalPrice',
-    notes: 'notes',
-    status: 'status',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    totalPrice: 'totalPrice'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -7281,6 +7249,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -7295,6 +7271,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -7345,6 +7330,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'OrderStatus'
+   */
+  export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'OrderStatus[]'
+   */
+  export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -7355,6 +7354,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -7376,20 +7389,6 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'OrderStatus'
-   */
-  export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'OrderStatus[]'
-   */
-  export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
     
   /**
    * Deep Input Types
@@ -7584,35 +7583,33 @@ export namespace Prisma {
     id?: StringFilter<"Order"> | string
     customerId?: StringFilter<"Order"> | string
     serviceId?: StringFilter<"Order"> | string
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
     boostType?: StringFilter<"Order"> | string
+    playMode?: StringNullableFilter<"Order"> | string | null
+    region?: StringNullableFilter<"Order"> | string | null
+    queueType?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
-    desiredRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
+    desiredRank?: StringNullableFilter<"Order"> | string | null
     peakRank?: StringNullableFilter<"Order"> | string | null
     desiredWins?: IntNullableFilter<"Order"> | number | null
     placementGames?: IntNullableFilter<"Order"> | number | null
-    preferredRole?: StringNullableFilter<"Order"> | string | null
     numberOfGames?: IntNullableFilter<"Order"> | number | null
-    region?: StringNullableFilter<"Order"> | string | null
-    queueType?: StringNullableFilter<"Order"> | string | null
-    playMode?: StringNullableFilter<"Order"> | string | null
+    firstRole?: StringNullableFilter<"Order"> | string | null
+    secondRole?: StringNullableFilter<"Order"> | string | null
+    selectedChampions?: JsonNullableFilter<"Order">
     priorityOrder?: BoolFilter<"Order"> | boolean
     duoWithBooster?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
-    championsRoles?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
-    undercoverWinrate?: BoolFilter<"Order"> | boolean
-    moderateKDA?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
-    notes?: StringNullableFilter<"Order"> | string | null
-    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    createdAt?: DateTimeFilter<"Order"> | Date | string
-    updatedAt?: DateTimeFilter<"Order"> | Date | string
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
   }
@@ -7621,35 +7618,33 @@ export namespace Prisma {
     id?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     boostType?: SortOrder
+    playMode?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    queueType?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
-    desiredRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
+    desiredRank?: SortOrderInput | SortOrder
     peakRank?: SortOrderInput | SortOrder
     desiredWins?: SortOrderInput | SortOrder
     placementGames?: SortOrderInput | SortOrder
-    preferredRole?: SortOrderInput | SortOrder
     numberOfGames?: SortOrderInput | SortOrder
-    region?: SortOrderInput | SortOrder
-    queueType?: SortOrderInput | SortOrder
-    playMode?: SortOrderInput | SortOrder
+    firstRole?: SortOrderInput | SortOrder
+    secondRole?: SortOrderInput | SortOrder
+    selectedChampions?: SortOrderInput | SortOrder
     priorityOrder?: SortOrder
     duoWithBooster?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
-    championsRoles?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
-    undercoverWinrate?: SortOrder
-    moderateKDA?: SortOrder
     highMMRDuo?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
-    notes?: SortOrderInput | SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     customer?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
   }
@@ -7661,35 +7656,33 @@ export namespace Prisma {
     NOT?: OrderWhereInput | OrderWhereInput[]
     customerId?: StringFilter<"Order"> | string
     serviceId?: StringFilter<"Order"> | string
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
     boostType?: StringFilter<"Order"> | string
+    playMode?: StringNullableFilter<"Order"> | string | null
+    region?: StringNullableFilter<"Order"> | string | null
+    queueType?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
-    desiredRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
+    desiredRank?: StringNullableFilter<"Order"> | string | null
     peakRank?: StringNullableFilter<"Order"> | string | null
     desiredWins?: IntNullableFilter<"Order"> | number | null
     placementGames?: IntNullableFilter<"Order"> | number | null
-    preferredRole?: StringNullableFilter<"Order"> | string | null
     numberOfGames?: IntNullableFilter<"Order"> | number | null
-    region?: StringNullableFilter<"Order"> | string | null
-    queueType?: StringNullableFilter<"Order"> | string | null
-    playMode?: StringNullableFilter<"Order"> | string | null
+    firstRole?: StringNullableFilter<"Order"> | string | null
+    secondRole?: StringNullableFilter<"Order"> | string | null
+    selectedChampions?: JsonNullableFilter<"Order">
     priorityOrder?: BoolFilter<"Order"> | boolean
     duoWithBooster?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
-    championsRoles?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
-    undercoverWinrate?: BoolFilter<"Order"> | boolean
-    moderateKDA?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
-    notes?: StringNullableFilter<"Order"> | string | null
-    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    createdAt?: DateTimeFilter<"Order"> | Date | string
-    updatedAt?: DateTimeFilter<"Order"> | Date | string
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
   }, "id">
@@ -7698,35 +7691,33 @@ export namespace Prisma {
     id?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     boostType?: SortOrder
+    playMode?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    queueType?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
-    desiredRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
+    desiredRank?: SortOrderInput | SortOrder
     peakRank?: SortOrderInput | SortOrder
     desiredWins?: SortOrderInput | SortOrder
     placementGames?: SortOrderInput | SortOrder
-    preferredRole?: SortOrderInput | SortOrder
     numberOfGames?: SortOrderInput | SortOrder
-    region?: SortOrderInput | SortOrder
-    queueType?: SortOrderInput | SortOrder
-    playMode?: SortOrderInput | SortOrder
+    firstRole?: SortOrderInput | SortOrder
+    secondRole?: SortOrderInput | SortOrder
+    selectedChampions?: SortOrderInput | SortOrder
     priorityOrder?: SortOrder
     duoWithBooster?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
-    championsRoles?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
-    undercoverWinrate?: SortOrder
-    moderateKDA?: SortOrder
     highMMRDuo?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
-    notes?: SortOrderInput | SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -7741,35 +7732,33 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Order"> | string
     customerId?: StringWithAggregatesFilter<"Order"> | string
     serviceId?: StringWithAggregatesFilter<"Order"> | string
+    status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     boostType?: StringWithAggregatesFilter<"Order"> | string
+    playMode?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    region?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    queueType?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    desiredRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentLP?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    desiredRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
     peakRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
     desiredWins?: IntNullableWithAggregatesFilter<"Order"> | number | null
     placementGames?: IntNullableWithAggregatesFilter<"Order"> | number | null
-    preferredRole?: StringNullableWithAggregatesFilter<"Order"> | string | null
     numberOfGames?: IntNullableWithAggregatesFilter<"Order"> | number | null
-    region?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    queueType?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    playMode?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    firstRole?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    secondRole?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    selectedChampions?: JsonNullableWithAggregatesFilter<"Order">
     priorityOrder?: BoolWithAggregatesFilter<"Order"> | boolean
     duoWithBooster?: BoolWithAggregatesFilter<"Order"> | boolean
     liveStream?: BoolWithAggregatesFilter<"Order"> | boolean
     appearOffline?: BoolWithAggregatesFilter<"Order"> | boolean
-    championsRoles?: BoolWithAggregatesFilter<"Order"> | boolean
     bonusWin?: BoolWithAggregatesFilter<"Order"> | boolean
     soloOnly?: BoolWithAggregatesFilter<"Order"> | boolean
-    undercoverWinrate?: BoolWithAggregatesFilter<"Order"> | boolean
-    moderateKDA?: BoolWithAggregatesFilter<"Order"> | boolean
     highMMRDuo?: BoolWithAggregatesFilter<"Order"> | boolean
     basePrice?: FloatWithAggregatesFilter<"Order"> | number
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
-    notes?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
-    createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
 
   export type PasswordResetTokenWhereInput = {
@@ -8031,35 +8020,33 @@ export namespace Prisma {
 
   export type OrderCreateInput = {
     id?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
   }
@@ -8068,68 +8055,64 @@ export namespace Prisma {
     id?: string
     customerId: string
     serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
   }
@@ -8138,138 +8121,130 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderCreateManyInput = {
     id?: string
     customerId: string
     serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PasswordResetTokenCreateInput = {
@@ -8555,6 +8530,13 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnumOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -8564,6 +8546,29 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -8582,13 +8587,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type EnumOrderStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
-  }
-
   export type ServiceScalarRelationFilter = {
     is?: ServiceWhereInput
     isNot?: ServiceWhereInput
@@ -8598,35 +8596,33 @@ export namespace Prisma {
     id?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     boostType?: SortOrder
+    playMode?: SortOrder
+    region?: SortOrder
+    queueType?: SortOrder
     currentRank?: SortOrder
-    desiredRank?: SortOrder
     currentLP?: SortOrder
+    desiredRank?: SortOrder
     peakRank?: SortOrder
     desiredWins?: SortOrder
     placementGames?: SortOrder
-    preferredRole?: SortOrder
     numberOfGames?: SortOrder
-    region?: SortOrder
-    queueType?: SortOrder
-    playMode?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
+    selectedChampions?: SortOrder
     priorityOrder?: SortOrder
     duoWithBooster?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
-    championsRoles?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
-    undercoverWinrate?: SortOrder
-    moderateKDA?: SortOrder
     highMMRDuo?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
-    notes?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -8642,70 +8638,64 @@ export namespace Prisma {
     id?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     boostType?: SortOrder
+    playMode?: SortOrder
+    region?: SortOrder
+    queueType?: SortOrder
     currentRank?: SortOrder
-    desiredRank?: SortOrder
     currentLP?: SortOrder
+    desiredRank?: SortOrder
     peakRank?: SortOrder
     desiredWins?: SortOrder
     placementGames?: SortOrder
-    preferredRole?: SortOrder
     numberOfGames?: SortOrder
-    region?: SortOrder
-    queueType?: SortOrder
-    playMode?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
     priorityOrder?: SortOrder
     duoWithBooster?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
-    championsRoles?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
-    undercoverWinrate?: SortOrder
-    moderateKDA?: SortOrder
     highMMRDuo?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
-    notes?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     boostType?: SortOrder
+    playMode?: SortOrder
+    region?: SortOrder
+    queueType?: SortOrder
     currentRank?: SortOrder
-    desiredRank?: SortOrder
     currentLP?: SortOrder
+    desiredRank?: SortOrder
     peakRank?: SortOrder
     desiredWins?: SortOrder
     placementGames?: SortOrder
-    preferredRole?: SortOrder
     numberOfGames?: SortOrder
-    region?: SortOrder
-    queueType?: SortOrder
-    playMode?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
     priorityOrder?: SortOrder
     duoWithBooster?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
-    championsRoles?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
-    undercoverWinrate?: SortOrder
-    moderateKDA?: SortOrder
     highMMRDuo?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
-    notes?: SortOrder
-    status?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -8715,6 +8705,16 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
+  }
+
+  export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -8731,6 +8731,32 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -8755,16 +8781,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
-    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -9019,6 +9035,10 @@ export namespace Prisma {
     connect?: ServiceWhereUniqueInput
   }
 
+  export type EnumOrderStatusFieldUpdateOperationsInput = {
+    set?: $Enums.OrderStatus
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -9037,10 +9057,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type EnumOrderStatusFieldUpdateOperationsInput = {
-    set?: $Enums.OrderStatus
   }
 
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
@@ -9203,6 +9219,13 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -9219,11 +9242,14 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
+  export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
+    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -9252,6 +9278,29 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
@@ -9275,16 +9324,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
-    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -9314,70 +9353,66 @@ export namespace Prisma {
 
   export type OrderCreateWithoutCustomerInput = {
     id?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
     service: ServiceCreateNestedOneWithoutOrdersInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
     id?: string
     serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -9460,35 +9495,33 @@ export namespace Prisma {
     id?: StringFilter<"Order"> | string
     customerId?: StringFilter<"Order"> | string
     serviceId?: StringFilter<"Order"> | string
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
     boostType?: StringFilter<"Order"> | string
+    playMode?: StringNullableFilter<"Order"> | string | null
+    region?: StringNullableFilter<"Order"> | string | null
+    queueType?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
-    desiredRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
+    desiredRank?: StringNullableFilter<"Order"> | string | null
     peakRank?: StringNullableFilter<"Order"> | string | null
     desiredWins?: IntNullableFilter<"Order"> | number | null
     placementGames?: IntNullableFilter<"Order"> | number | null
-    preferredRole?: StringNullableFilter<"Order"> | string | null
     numberOfGames?: IntNullableFilter<"Order"> | number | null
-    region?: StringNullableFilter<"Order"> | string | null
-    queueType?: StringNullableFilter<"Order"> | string | null
-    playMode?: StringNullableFilter<"Order"> | string | null
+    firstRole?: StringNullableFilter<"Order"> | string | null
+    secondRole?: StringNullableFilter<"Order"> | string | null
+    selectedChampions?: JsonNullableFilter<"Order">
     priorityOrder?: BoolFilter<"Order"> | boolean
     duoWithBooster?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
-    championsRoles?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
-    undercoverWinrate?: BoolFilter<"Order"> | boolean
-    moderateKDA?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
-    notes?: StringNullableFilter<"Order"> | string | null
-    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    createdAt?: DateTimeFilter<"Order"> | Date | string
-    updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
 
   export type PasswordResetTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -9608,70 +9641,66 @@ export namespace Prisma {
 
   export type OrderCreateWithoutServiceInput = {
     id?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
     customer: UserCreateNestedOneWithoutOrdersInput
   }
 
   export type OrderUncheckedCreateWithoutServiceInput = {
     id?: string
     customerId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderCreateOrConnectWithoutServiceInput = {
@@ -9871,35 +9900,33 @@ export namespace Prisma {
   export type OrderCreateManyCustomerInput = {
     id?: string
     serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type PasswordResetTokenCreateManyUserInput = {
@@ -9912,104 +9939,98 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PasswordResetTokenUpdateWithoutUserInput = {
@@ -10039,137 +10060,129 @@ export namespace Prisma {
   export type OrderCreateManyServiceInput = {
     id?: string
     customerId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
     boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
     currentRank?: string | null
-    desiredRank?: string | null
     currentLP?: string | null
+    desiredRank?: string | null
     peakRank?: string | null
     desiredWins?: number | null
     placementGames?: number | null
-    preferredRole?: string | null
     numberOfGames?: number | null
-    region?: string | null
-    queueType?: string | null
-    playMode?: string | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: boolean
     duoWithBooster?: boolean
     liveStream?: boolean
     appearOffline?: boolean
-    championsRoles?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
-    undercoverWinrate?: boolean
-    moderateKDA?: boolean
     highMMRDuo?: boolean
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
-    notes?: string | null
-    status?: $Enums.OrderStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type OrderUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
-    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
     peakRank?: NullableStringFieldUpdateOperationsInput | string | null
     desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
     placementGames?: NullableIntFieldUpdateOperationsInput | number | null
-    preferredRole?: NullableStringFieldUpdateOperationsInput | string | null
     numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
-    region?: NullableStringFieldUpdateOperationsInput | string | null
-    queueType?: NullableStringFieldUpdateOperationsInput | string | null
-    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
     priorityOrder?: BoolFieldUpdateOperationsInput | boolean
     duoWithBooster?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
-    championsRoles?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
-    undercoverWinrate?: BoolFieldUpdateOperationsInput | boolean
-    moderateKDA?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
