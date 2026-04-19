@@ -448,8 +448,8 @@ function getOrderTitle(order) {
         return `Win Boost — ${order.formData.desiredWins} Ranked Wins`;
     }
 
-    if (order.serviceTitle === "Hire a Teammate") {
-        return `Hire a Teammate — ${order.formData.numberOfGames} Games`;
+    if (order.serviceTitle === "Pro Duo") {
+        return `Pro Duo — ${order.formData.numberOfGames} Games`;
     }
 
     return order.serviceTitle;

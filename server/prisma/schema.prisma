@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(CUSTOMER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  orders       Order[]
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  passwordHash        String
+  role                UserRole             @default(CUSTOMER)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  orders              Order[]
   passwordResetTokens PasswordResetToken[]
-  profile      Profile?
+  profile             Profile?
 }
 
 model Profile {
@@ -39,26 +39,50 @@ model Service {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  customerId String
-  serviceId  String
-  notes      String?
-  status     OrderStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  customer   User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  service    Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  id                String      @id @default(cuid())
+  customerId        String
+  serviceId         String
+  notes             String?
+  status            OrderStatus @default(PENDING)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  addonPrice        Float       @default(0)
+  appearOffline     Boolean     @default(false)
+  basePrice         Float       @default(0)
+  bonusWin          Boolean     @default(false)
+  boostType         String
+  championsRoles    Boolean     @default(false)
+  currentLP         String?
+  currentRank       String?
+  desiredRank       String?
+  desiredWins       Int?
+  duoWithBooster    Boolean     @default(false)
+  highMMRDuo        Boolean     @default(false)
+  liveStream        Boolean     @default(false)
+  moderateKDA       Boolean     @default(false)
+  numberOfGames     Int?
+  peakRank          String?
+  placementGames    Int?
+  playMode          String?
+  preferredRole     String?
+  priorityOrder     Boolean     @default(false)
+  queueType         String?
+  region            String?
+  soloOnly          Boolean     @default(false)
+  totalPrice        Float       @default(0)
+  undercoverWinrate Boolean     @default(false)
+  customer          User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service           Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
-  tokenHash String   @unique
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
   userId    String
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

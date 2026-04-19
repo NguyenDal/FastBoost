@@ -77,7 +77,7 @@ function OrderPage() {
       return 8 + Number(formData.desiredWins) * 2.5;
     }
 
-    if (serviceType === "Hire a Teammate") {
+    if (serviceType === "Pro Duo") {
       return 7 + Number(formData.numberOfGames) * 3;
     }
 
@@ -196,7 +196,7 @@ function OrderPage() {
                     { value: "Rank Boost", label: "Division" },
                     { value: "Placement Boost", label: "Placements" },
                     { value: "Win Boost", label: "Ranked Wins" },
-                    { value: "Hire a Teammate", label: "Pro Duo" },
+                    { value: "Pro Duo", label: "Pro Duo" },
                   ].map((type) => (
                     <button
                       key={type.value}
@@ -412,7 +412,7 @@ function OrderPage() {
                 </>
               )}
 
-              {serviceType === "Hire a Teammate" && (
+              {serviceType === "Pro Duo" && (
                 <>
                   <div className="order-field order-field-wide">
                     <label>Preferred Role</label>
@@ -804,7 +804,7 @@ function OrderPage() {
                 </div>
               )}
 
-              {serviceType === "Hire a Teammate" && (
+              {serviceType === "Pro Duo" && (
                 <div className="order-summary-row">
                   <span>Games</span>
                   <strong>{formData.numberOfGames}</strong>

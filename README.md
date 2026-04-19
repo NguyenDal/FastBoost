@@ -19,7 +19,7 @@ This project is a **game services marketplace demo** where users can register, l
   1. Rank Boost
   2. Placement Boost
   3. Win Boost
-  4. Hire a Teammate
+  4. Pro Duo
 - Improved the services fetch to handle either an array response or `{ services: [...] }`.
 - Reworked auth into a modal flow:
   - Login modal
@@ -131,7 +131,7 @@ Core entities:
 - Rank Boost
 - Placement Boost
 - Win Boost
-- Hire a Teammate
+- Pro Duo
 
 ### Important design decision
 A **Service** is a **platform-wide service category**, not a user-owned listing.

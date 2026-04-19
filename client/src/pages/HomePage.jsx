@@ -79,7 +79,7 @@ function HomePage() {
       "https://fastboost-assets.s3.amazonaws.com/services/placement-boost.webp",
     "Win Boost":
       "https://fastboost-assets.s3.amazonaws.com/services/win-boost.png",
-    "Hire a Teammate":
+    "Pro Duo":
       "https://fastboost-assets.s3.amazonaws.com/services/hire-a-teammate.png",
   };
 
@@ -155,7 +155,7 @@ function HomePage() {
     "Rank Boost": 1,
     "Placement Boost": 2,
     "Win Boost": 3,
-    "Hire a Teammate": 4,
+    "Pro Duo": 4,
   };
 
   const featuredServices = [...services]
