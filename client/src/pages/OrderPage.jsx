@@ -293,10 +293,22 @@ function OrderPage() {
     const duoExtra = formData.playMode === "Duo" ? basePrice * 0.4 : 0;
 
     if (formData.priorityOrder) total += modeAdjustedBasePrice * 0.15;
-    if (formData.premiumCoaching) total += modeAdjustedBasePrice * 0.4;
-    if (formData.soloOnly) total += modeAdjustedBasePrice * 0.3;
-    if (formData.highMMRDuo) total += modeAdjustedBasePrice * 0.2;
-    if (formData.untrackableDuo) total += modeAdjustedBasePrice * 0.3;
+
+    if (formData.playMode === "Duo" && formData.premiumCoaching) {
+      total += modeAdjustedBasePrice * 0.4;
+    }
+
+    if (formData.playMode === "Solo" && formData.soloOnly) {
+      total += modeAdjustedBasePrice * 0.3;
+    }
+
+    if (formData.playMode === "Duo" && formData.highMMRDuo) {
+      total += modeAdjustedBasePrice * 0.2;
+    }
+
+    if (formData.playMode === "Duo" && formData.untrackableDuo) {
+      total += modeAdjustedBasePrice * 0.3;
+    }
 
     if (formData.bonusWin) {
       total += getBonusWinPriceByRank(formData.currentRank, formData.playMode);
@@ -810,235 +822,91 @@ function OrderPage() {
         </div>
 
         <form className="order-layout" onSubmit={handleSubmit}>
-          <section className="order-form-panel">
-            <div className="order-grid">
-
-              <div className="order-field order-field-wide">
-                <div className="boost-type-tabs">
-                  {[
-                    { value: "Rank Boost", label: "Division" },
-                    { value: "Placement Boost", label: "Placements" },
-                    { value: "Win Boost", label: "Ranked Wins" },
-                    { value: "Pro Duo", label: "Pro Duo" },
-                  ].map((type) => (
-                    <button
-                      key={type.value}
-                      type="button"
-                      className={`boost-type-tab ${serviceType === type.value ? "active" : ""}`}
-                      onClick={() => setSelectedBoostType(type.value)}
-                    >
-                      {type.label}
-                    </button>
-                  ))}
-                </div>
+          <div className="order-main-column">
+            <div className="boost-type-panel">
+              <div className="boost-type-tabs">
+                {[
+                  { value: "Rank Boost", label: "Division" },
+                  { value: "Placement Boost", label: "Placements" },
+                  { value: "Win Boost", label: "Ranked Wins" },
+                  { value: "Pro Duo", label: "Pro Duo" },
+                ].map((type) => (
+                  <button
+                    key={type.value}
+                    type="button"
+                    className={`boost-type-tab ${serviceType === type.value ? "active" : ""}`}
+                    onClick={() => setSelectedBoostType(type.value)}
+                  >
+                    {type.label}
+                  </button>
+                ))}
               </div>
+            </div>
 
-              {serviceType === "Rank Boost" && (
-                <>
-                  <div className="rank-selector-card rank-selector-current">
-                    <div className="rank-selector-header">
-                      <img
-                        src={rankImageMap[getTierFromRank(formData.currentRank)]}
-                        alt={formData.currentRank}
-                        className="rank-selector-icon"
-                      />
-                      <div>
-                        <h3>Current Rank</h3>
-                        <p>Select your current tier and division</p>
+            <section className="order-form-panel">
+              <div className="order-grid">
+                {serviceType === "Rank Boost" && (
+                  <>
+                    <div className="rank-selector-card rank-selector-current">
+                      <div className="rank-selector-header">
+                        <img
+                          src={rankImageMap[getTierFromRank(formData.currentRank)]}
+                          alt={formData.currentRank}
+                          className="rank-selector-icon"
+                        />
+                        <div>
+                          <h3>Current Rank</h3>
+                          <p>Select your current tier and division</p>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="rank-tier-grid">
-                      {tierOrder.map((tier) => (
-                        <button
-                          key={`current-${tier}`}
-                          type="button"
-                          className={`rank-tier-btn ${getTierFromRank(formData.currentRank) === tier ? "active" : ""
-                            }`}
-                          onClick={() =>
-                            updateRankSelection(setFormData, "currentRank", tier, null)
-                          }
-                        >
-                          <img src={rankImageMap[tier]} alt={tier} />
-                        </button>
-                      ))}
-                    </div>
-
-                    {getTierFromRank(formData.currentRank) !== "Master" && (
-                      <div className="rank-division-row">
-                        {divisionOrder.map((division) => (
+                      <div className="rank-tier-grid">
+                        {tierOrder.map((tier) => (
                           <button
-                            key={`current-division-${division}`}
+                            key={`current-${tier}`}
                             type="button"
-                            className={`rank-division-btn ${getDivisionFromRank(formData.currentRank) === division ? "active" : ""
+                            className={`rank-tier-btn rank-tooltip-wrap ${getTierFromRank(formData.currentRank) === tier ? "active" : ""
                               }`}
                             onClick={() =>
-                              updateRankSelection(setFormData, "currentRank", null, division)
+                              updateRankSelection(setFormData, "currentRank", tier, null)
                             }
+                            aria-label={tier}
                           >
-                            {division}
+                            <img src={rankImageMap[tier]} alt={tier} />
+                            <span className="rank-tooltip">{tier}</span>
                           </button>
                         ))}
                       </div>
-                    )}
 
-                    {getTierFromRank(formData.currentRank) === "Master" ? (
-                      <div className="rank-bottom-selects">
-                        <div className="order-field">
-                          <label>Current LP</label>
-                          <div className="master-lp-stepper">
+                      {getTierFromRank(formData.currentRank) !== "Master" && (
+                        <div className="rank-division-row">
+                          {divisionOrder.map((division) => (
                             <button
+                              key={`current-division-${division}`}
                               type="button"
+                              className={`rank-division-btn ${getDivisionFromRank(formData.currentRank) === division ? "active" : ""
+                                }`}
                               onClick={() =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  currentMasterLp: Math.max(0, (prev.currentMasterLp || 0) - 1),
-                                }))
+                                updateRankSelection(setFormData, "currentRank", null, division)
                               }
                             >
-                              -
+                              {division}
                             </button>
-
-                            <input
-                              type="number"
-                              min="0"
-                              max="999"
-                              value={formData.currentMasterLp}
-                              onChange={(event) =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  currentMasterLp: Math.max(
-                                    0,
-                                    Math.min(999, Number(event.target.value) || 0)
-                                  ),
-                                }))
-                              }
-                              className="master-lp-input"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  currentMasterLp: Math.min(999, (prev.currentMasterLp || 0) + 1),
-                                }))
-                              }
-                            >
-                              +
-                            </button>
-                          </div>
+                          ))}
                         </div>
+                      )}
 
-                        <div className="order-field">
-                          <label>LP per win</label>
-                          <select
-                            name="lpGain"
-                            value={formData.lpGain}
-                            onChange={handleInputChange}
-                          >
-                            <option>0-18 LP / win</option>
-                            <option>18-23 LP / win</option>
-                            <option>23-28 LP / win</option>
-                            <option>28+ LP / win</option>
-                          </select>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="rank-bottom-selects">
-                        <div className="order-field">
-                          <label>Current LP</label>
-                          <select
-                            name="currentLP"
-                            value={formData.currentLP}
-                            onChange={handleInputChange}
-                          >
-                            <option>0-20 LP</option>
-                            <option>21-40 LP</option>
-                            <option>41-60 LP</option>
-                            <option>61-80 LP</option>
-                            <option>81-99 LP</option>
-                          </select>
-                        </div>
-
-                        <div className="order-field">
-                          <label>LP per win</label>
-                          <select
-                            name="lpGain"
-                            value={formData.lpGain}
-                            onChange={handleInputChange}
-                          >
-                            <option>0-18 LP / win</option>
-                            <option>18-23 LP / win</option>
-                            <option>23-28 LP / win</option>
-                            <option>28+ LP / win</option>
-                          </select>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="rank-selector-divider">↓</div>
-
-                  <div className="rank-selector-card rank-selector-target">
-                    <div className="rank-selector-header">
-                      <img
-                        src={rankImageMap[getTierFromRank(formData.desiredRank)]}
-                        alt={formData.desiredRank}
-                        className="rank-selector-icon"
-                      />
-                      <div>
-                        <h3>Desired Rank</h3>
-                        <p>Select your target tier and division</p>
-                      </div>
-                    </div>
-
-                    <div className="rank-tier-grid">
-                      {tierOrder.map((tier) => (
-                        <button
-                          key={`desired-${tier}`}
-                          type="button"
-                          className={`rank-tier-btn ${getTierFromRank(formData.desiredRank) === tier ? "active" : ""
-                            }`}
-                          onClick={() =>
-                            updateRankSelection(setFormData, "desiredRank", tier, null)
-                          }
-                        >
-                          <img src={rankImageMap[tier]} alt={tier} />
-                        </button>
-                      ))}
-                    </div>
-
-                    {getTierFromRank(formData.desiredRank) !== "Master" && (
-                      <div className="rank-division-row">
-                        {divisionOrder.map((division) => (
-                          <button
-                            key={`desired-division-${division}`}
-                            type="button"
-                            className={`rank-division-btn ${getDivisionFromRank(formData.desiredRank) === division ? "active" : ""
-                              }`}
-                            onClick={() =>
-                              updateRankSelection(setFormData, "desiredRank", null, division)
-                            }
-                          >
-                            {division}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {getTierFromRank(formData.desiredRank) === "Master" ? (
-                      <>
+                      {getTierFromRank(formData.currentRank) === "Master" ? (
                         <div className="rank-bottom-selects">
                           <div className="order-field">
-                            <label>Desired LP</label>
+                            <label>Current LP</label>
                             <div className="master-lp-stepper">
                               <button
                                 type="button"
                                 onClick={() =>
                                   setFormData((prev) => ({
                                     ...prev,
-                                    desiredMasterLp: Math.max(0, (prev.desiredMasterLp || 0) - 1),
+                                    currentMasterLp: Math.max(0, (prev.currentMasterLp || 0) - 1),
                                   }))
                                 }
                               >
@@ -1049,11 +917,11 @@ function OrderPage() {
                                 type="number"
                                 min="0"
                                 max="999"
-                                value={formData.desiredMasterLp}
+                                value={formData.currentMasterLp}
                                 onChange={(event) =>
                                   setFormData((prev) => ({
                                     ...prev,
-                                    desiredMasterLp: Math.max(
+                                    currentMasterLp: Math.max(
                                       0,
                                       Math.min(999, Number(event.target.value) || 0)
                                     ),
@@ -1067,7 +935,7 @@ function OrderPage() {
                                 onClick={() =>
                                   setFormData((prev) => ({
                                     ...prev,
-                                    desiredMasterLp: Math.min(999, (prev.desiredMasterLp || 0) + 1),
+                                    currentMasterLp: Math.min(999, (prev.currentMasterLp || 0) + 1),
                                   }))
                                 }
                               >
@@ -1075,8 +943,189 @@ function OrderPage() {
                               </button>
                             </div>
                           </div>
-                        </div>
 
+                          <div className="order-field">
+                            <label>LP per win</label>
+                            <select
+                              name="lpGain"
+                              value={formData.lpGain}
+                              onChange={handleInputChange}
+                            >
+                              <option>0-18 LP / win</option>
+                              <option>18-23 LP / win</option>
+                              <option>23-28 LP / win</option>
+                              <option>28+ LP / win</option>
+                            </select>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rank-bottom-selects">
+                          <div className="order-field">
+                            <label>Current LP</label>
+                            <select
+                              name="currentLP"
+                              value={formData.currentLP}
+                              onChange={handleInputChange}
+                            >
+                              <option>0-20 LP</option>
+                              <option>21-40 LP</option>
+                              <option>41-60 LP</option>
+                              <option>61-80 LP</option>
+                              <option>81-99 LP</option>
+                            </select>
+                          </div>
+
+                          <div className="order-field">
+                            <label>LP per win</label>
+                            <select
+                              name="lpGain"
+                              value={formData.lpGain}
+                              onChange={handleInputChange}
+                            >
+                              <option>0-18 LP / win</option>
+                              <option>18-23 LP / win</option>
+                              <option>23-28 LP / win</option>
+                              <option>28+ LP / win</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rank-selector-divider">↓</div>
+
+                    <div className="rank-selector-card rank-selector-target">
+                      <div className="rank-selector-header">
+                        <img
+                          src={rankImageMap[getTierFromRank(formData.desiredRank)]}
+                          alt={formData.desiredRank}
+                          className="rank-selector-icon"
+                        />
+                        <div>
+                          <h3>Desired Rank</h3>
+                          <p>Select your target tier and division</p>
+                        </div>
+                      </div>
+
+                      <div className="rank-tier-grid">
+                        {tierOrder.map((tier) => (
+                          <button
+                            key={`desired-${tier}`}
+                            type="button"
+                            className={`rank-tier-btn rank-tooltip-wrap ${getTierFromRank(formData.desiredRank) === tier ? "active" : ""
+                              }`}
+                            onClick={() =>
+                              updateRankSelection(setFormData, "desiredRank", tier, null)
+                            }
+                          >
+                            <img src={rankImageMap[tier]} alt={tier} />
+                            <span className="rank-tooltip">{tier}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {getTierFromRank(formData.desiredRank) !== "Master" && (
+                        <div className="rank-division-row">
+                          {divisionOrder.map((division) => (
+                            <button
+                              key={`desired-division-${division}`}
+                              type="button"
+                              className={`rank-division-btn ${getDivisionFromRank(formData.desiredRank) === division ? "active" : ""
+                                }`}
+                              onClick={() =>
+                                updateRankSelection(setFormData, "desiredRank", null, division)
+                              }
+                            >
+                              {division}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {getTierFromRank(formData.desiredRank) === "Master" ? (
+                        <>
+                          <div className="rank-bottom-selects">
+                            <div className="order-field">
+                              <label>Desired LP</label>
+                              <div className="master-lp-stepper">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      desiredMasterLp: Math.max(0, (prev.desiredMasterLp || 0) - 1),
+                                    }))
+                                  }
+                                >
+                                  -
+                                </button>
+
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="999"
+                                  value={formData.desiredMasterLp}
+                                  onChange={(event) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      desiredMasterLp: Math.max(
+                                        0,
+                                        Math.min(999, Number(event.target.value) || 0)
+                                      ),
+                                    }))
+                                  }
+                                  className="master-lp-input"
+                                />
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      desiredMasterLp: Math.min(999, (prev.desiredMasterLp || 0) + 1),
+                                    }))
+                                  }
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="rank-bottom-selects">
+                            <div className="order-field">
+                              <label>Server</label>
+                              <select
+                                name="region"
+                                value={formData.region}
+                                onChange={handleInputChange}
+                              >
+                                <option>North America</option>
+                                <option>Europe West</option>
+                                <option>Europe Nordic & East</option>
+                                <option>Korea</option>
+                                <option>Brazil</option>
+                                <option>Latin America North</option>
+                                <option>Latin America South</option>
+                                <option>Oceania</option>
+                                <option>Japan</option>
+                              </select>
+                            </div>
+
+                            <div className="order-field">
+                              <label>Queue Type</label>
+                              <select
+                                name="queueType"
+                                value={formData.queueType}
+                                onChange={handleInputChange}
+                              >
+                                <option>Solo/Duo</option>
+                                <option>Flex</option>
+                              </select>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
                         <div className="rank-bottom-selects">
                           <div className="order-field">
                             <label>Server</label>
@@ -1109,184 +1158,239 @@ function OrderPage() {
                             </select>
                           </div>
                         </div>
-                      </>
-                    ) : (
-                      <div className="rank-bottom-selects">
-                        <div className="order-field">
-                          <label>Server</label>
-                          <select
-                            name="region"
-                            value={formData.region}
-                            onChange={handleInputChange}
-                          >
-                            <option>North America</option>
-                            <option>Europe West</option>
-                            <option>Europe Nordic & East</option>
-                            <option>Korea</option>
-                            <option>Brazil</option>
-                            <option>Latin America North</option>
-                            <option>Latin America South</option>
-                            <option>Oceania</option>
-                            <option>Japan</option>
-                          </select>
-                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
-                        <div className="order-field">
-                          <label>Queue Type</label>
-                          <select
-                            name="queueType"
-                            value={formData.queueType}
-                            onChange={handleInputChange}
-                          >
-                            <option>Solo/Duo</option>
-                            <option>Flex</option>
-                          </select>
+                {serviceType === "Placement Boost" && (
+                  <>
+                    <div className="rank-selector-card rank-selector-current placement-selector-card">
+                      <div className="rank-selector-header">
+                        <img
+                          src={rankImageMap[getTierFromAnyRank(formData.peakRank)]}
+                          alt={formData.peakRank}
+                          className="rank-selector-icon"
+                        />
+
+                        <div>
+                          <h3>Peak Active Rank</h3>
+                          <p>Select your highest rank from last season</p>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </>
-              )}
 
-              {serviceType === "Placement Boost" && (
-                <>
-                  <div className="order-field order-field-wide">
-                    <label>Peak Active Rank</label>
-                    <select
-                      name="peakRank"
-                      value={formData.peakRank}
-                      onChange={handleInputChange}
-                    >
-                      <option>Unranked</option>
-                      {rankOptions.map((rank) => (
-                        <option key={rank} value={rank}>
-                          {rank}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      <div className="placement-tier-grid">
+                        {placementTierOrder.map((tier) => (
+                          <button
+                            key={`placement-${tier}`}
+                            type="button"
+                            className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.peakRank) === tier ? "active" : ""
+                              }`}
+                            onClick={() =>
+                              updatePlacementRankSelection(setFormData, tier)
+                            }
+                            aria-label={tier}
+                          >
+                            <img src={rankImageMap[tier]} alt={tier} />
+                            <span className="rank-tooltip">{tier}</span>
+                          </button>
+                        ))}
+                      </div>
 
-                  <div className="order-field order-field-wide">
-                    <label>Placement Games</label>
-                    <select
-                      name="placementGames"
-                      value={formData.placementGames}
-                      onChange={handleInputChange}
-                    >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                      <option>5</option>
-                    </select>
-                  </div>
-                </>
-              )}
+                      <div className="placement-options-area">
+                        <div className="order-field">
+                          <label>Placement Games</label>
 
-              {serviceType === "Win Boost" && (
-                <>
-                  <div className="order-field order-field-wide">
-                    <label>Current Division</label>
-                    <select
-                      name="currentRank"
-                      value={formData.currentRank}
-                      onChange={handleInputChange}
-                    >
-                      {rankOptions.map((rank) => (
-                        <option key={rank} value={rank}>
-                          {rank}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                          <div className="placement-games-row">
+                            {["1", "2", "3", "4", "5"].map((game) => (
+                              <button
+                                key={`placement-game-${game}`}
+                                type="button"
+                                className={`rank-division-btn placement-game-btn ${formData.placementGames === game ? "active" : ""
+                                  }`}
+                                onClick={() =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    placementGames: game,
+                                  }))
+                                }
+                              >
+                                {game}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
 
-                  <div className="order-field order-field-wide">
-                    <label>Desired Wins</label>
-                    <select
-                      name="desiredWins"
-                      value={formData.desiredWins}
-                      onChange={handleInputChange}
-                    >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                      <option>5</option>
-                      <option>10</option>
-                    </select>
-                  </div>
-                </>
-              )}
+                        <div className="placement-server-queue-row">
+                          <div className="order-field">
+                            <label>Queue Type</label>
+                            <select
+                              name="queueType"
+                              value={formData.queueType}
+                              onChange={handleInputChange}
+                            >
+                              <option>Solo/Duo</option>
+                              <option>Flex</option>
+                            </select>
+                          </div>
 
-              {serviceType === "Pro Duo" && (
-                <>
-                  <div className="order-field order-field-wide">
-                    <label>Number of Games</label>
-                    <select
-                      name="numberOfGames"
-                      value={formData.numberOfGames}
-                      onChange={handleInputChange}
-                    >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>5</option>
-                      <option>10</option>
-                    </select>
-                  </div>
-                </>
-              )}
+                          <div className="order-field">
+                            <label>Server</label>
+                            <select
+                              name="region"
+                              value={formData.region}
+                              onChange={handleInputChange}
+                            >
+                              <option>North America</option>
+                              <option>Europe West</option>
+                              <option>Europe Nordic & East</option>
+                              <option>Korea</option>
+                              <option>Brazil</option>
+                              <option>Latin America North</option>
+                              <option>Latin America South</option>
+                              <option>Oceania</option>
+                              <option>Japan</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
-              {serviceType !== "Rank Boost" && (
-                <>
-                  <div className="order-field">
-                    <label>Region</label>
-                    <select
-                      name="region"
-                      value={formData.region}
-                      onChange={handleInputChange}
-                    >
-                      <option>North America</option>
-                      <option>Europe West</option>
-                      <option>Europe Nordic & East</option>
-                      <option>Korea</option>
-                    </select>
-                  </div>
+                {serviceType === "Win Boost" && (
+                  <>
+                    <div className="order-field order-field-wide">
+                      <label>Current Division</label>
+                      <select
+                        name="currentRank"
+                        value={formData.currentRank}
+                        onChange={handleInputChange}
+                      >
+                        {rankOptions.map((rank) => (
+                          <option key={rank} value={rank}>
+                            {rank}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="order-field">
-                    <label>Queue Type</label>
-                    <select
-                      name="queueType"
-                      value={formData.queueType}
-                      onChange={handleInputChange}
-                    >
-                      <option>Solo/Duo</option>
-                      <option>Flex</option>
-                    </select>
-                  </div>
-                </>
-              )}
+                    <div className="order-field order-field-wide">
+                      <label>Desired Wins</label>
+                      <select
+                        name="desiredWins"
+                        value={formData.desiredWins}
+                        onChange={handleInputChange}
+                      >
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>10</option>
+                      </select>
+                    </div>
+                  </>
+                )}
 
+                {serviceType === "Pro Duo" && (
+                  <>
+                    <div className="order-field order-field-wide">
+                      <label>Number of Games</label>
+                      <select
+                        name="numberOfGames"
+                        value={formData.numberOfGames}
+                        onChange={handleInputChange}
+                      >
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>5</option>
+                        <option>10</option>
+                      </select>
+                    </div>
+                  </>
+                )}
 
-            </div>
-          </section>
+                {serviceType !== "Rank Boost" && serviceType !== "Placement Boost" && (
+                  <>
+                    <div className="order-field">
+                      <label>Region</label>
+                      <select
+                        name="region"
+                        value={formData.region}
+                        onChange={handleInputChange}
+                      >
+                        <option>North America</option>
+                        <option>Europe West</option>
+                        <option>Europe Nordic & East</option>
+                        <option>Korea</option>
+                      </select>
+                    </div>
+
+                    <div className="order-field">
+                      <label>Queue Type</label>
+                      <select
+                        name="queueType"
+                        value={formData.queueType}
+                        onChange={handleInputChange}
+                      >
+                        <option>Solo/Duo</option>
+                        <option>Flex</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
+          </div>
 
           <aside className="order-summary-panel">
             <p className="section-label">Checkout</p>
             <h2 className="order-summary-heading">{serviceType}</h2>
 
             {serviceType === "Rank Boost" && (
-              <div className="order-rank-strip">
-                <div className="order-rank-box">
-                  <span className="order-rank-label">Current</span>
-                  <strong>{formData.currentRank}</strong>
+              <div className="order-rank-strip order-rank-track">
+                <div className="order-rank-track-side">
+                  <img
+                    src={rankImageMap[getTierFromRank(formData.currentRank)]}
+                    alt={formData.currentRank}
+                    className="order-rank-track-icon"
+                  />
+
+                  <div className="order-rank-track-copy">
+                    <span className="order-rank-label">Current</span>
+
+                    <div className="order-rank-track-main">
+                      <strong>{formData.currentRank}</strong>
+
+                      {!isMasterRank(formData.currentRank) ? (
+                        <span className="order-rank-lp-pill">{formData.currentLP}</span>
+                      ) : (
+                        <span className="order-rank-lp-pill">
+                          {formData.currentMasterLp} LP
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="order-rank-arrow">→</div>
 
-                <div className="order-rank-box order-rank-target">
-                  <span className="order-rank-label">Target</span>
-                  <strong>{formData.desiredRank}</strong>
+                <div className="order-rank-track-side order-rank-track-side-target">
+                  <div className="order-rank-track-copy">
+                    <span className="order-rank-label order-rank-target-label">Target</span>
+
+                    <div className="order-rank-track-main">
+                      <strong>{formData.desiredRank}</strong>
+                    </div>
+                  </div>
+
+                  <img
+                    src={rankImageMap[getTierFromRank(formData.desiredRank)]}
+                    alt={formData.desiredRank}
+                    className="order-rank-track-icon"
+                  />
                 </div>
               </div>
             )}
@@ -1305,6 +1409,8 @@ function OrderPage() {
                     ...prev,
                     playMode: "Solo",
                     premiumCoaching: false,
+                    highMMRDuo: false,
+                    untrackableDuo: false,
                   }))
                 }
               >
@@ -1318,6 +1424,8 @@ function OrderPage() {
                   setFormData((prev) => ({
                     ...prev,
                     playMode: "Duo",
+                    soloOnly: false,
+                    appearOffline: false,
                   }))
                 }
               >
@@ -1782,6 +1890,7 @@ const roleIconMap = {
 };
 
 const rankImageMap = {
+  Unranked: "https://fastboost-assets.s3.amazonaws.com/services/ranks/unranked.webp",
   Iron: "https://fastboost-assets.s3.amazonaws.com/services/ranks/iron.png",
   Bronze: "https://fastboost-assets.s3.amazonaws.com/services/ranks/bronze.png",
   Silver: "https://fastboost-assets.s3.amazonaws.com/services/ranks/silver.png",
@@ -1790,6 +1899,8 @@ const rankImageMap = {
   Emerald: "https://fastboost-assets.s3.amazonaws.com/services/ranks/emerald.png",
   Diamond: "https://fastboost-assets.s3.amazonaws.com/services/ranks/diamond.png",
   Master: "https://fastboost-assets.s3.amazonaws.com/services/ranks/master.png",
+  Grandmaster: "https://fastboost-assets.s3.amazonaws.com/services/ranks/grandmaster.png",
+  Challenger: "https://fastboost-assets.s3.amazonaws.com/services/ranks/challenger.png",
 };
 
 const tierOrder = [
@@ -1802,6 +1913,21 @@ const tierOrder = [
   "Diamond",
   "Master",
 ];
+
+const placementTierOrder = [
+  "Unranked",
+  "Iron",
+  "Bronze",
+  "Silver",
+  "Gold",
+  "Platinum",
+  "Diamond",
+  "Master",
+  "Grandmaster",
+  "Challenger",
+];
+
+const placementNoDivisionTiers = ["Unranked", "Master", "Grandmaster", "Challenger"];
 
 const divisionOrder = ["IV", "III", "II", "I"];
 
@@ -1837,6 +1963,12 @@ function updateRankSelection(setFormData, fieldName, nextTier, nextDivision) {
   });
 }
 
+function updatePlacementRankSelection(setFormData, nextTier) {
+  setFormData((prev) => ({
+    ...prev,
+    peakRank: nextTier === "Unranked" ? "Unranked" : `${nextTier} I`,
+  }));
+}
 
 const rankOptions = [
   "Iron IV",
@@ -2043,6 +2175,7 @@ function getPlacementBasePrice(peakRank) {
   if (tier === "Platinum") return 30;
   if (tier === "Diamond") return 45;
   if (tier === "Master") return 60;
+  if (tier === "Grandmaster" || tier === "Challenger") return 88;
 
   return 24;
 }

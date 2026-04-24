@@ -102,6 +102,35 @@ This project is a **game services marketplace demo** where users can register, l
   - CTA spacing cleanup
 - Removed extra notes/comments box from the summary because the demo chat flow covers follow-up communication.
 
+### Order creation / schema expansion
+- Connected the configurator to a real backend demo order creation flow.
+- Confirmed protected order submission works with authenticated user context.
+- Expanded the `Order` direction beyond a minimal placeholder to include service-specific configuration fields such as:
+  - boost type / play mode / region / queue type
+  - current rank / target rank / LP-related fields
+  - Master LP-related fields
+  - placements / wins / number of games
+  - first role / second role
+  - selected champions
+  - addon booleans
+  - base price / addon price / total price
+- Removed the older `preferredRole` direction in favor of separate `firstRole` and `secondRole` fields.
+- Continued refining order payload structure so configurator selections can be stored more cleanly.
+
+### Shared navbar / auth modal direction
+- Continued moving away from page-specific fake top bars toward a shared navbar direction.
+- Homepage remains the reference for the correct auth popup experience.
+- Order page and match page work started toward using the same shared navbar/auth behavior.
+- Current architectural direction is to keep a shared auth modal experience across pages instead of rebuilding separate auth UIs.
+
+### Pricing logic progress
+- Added pricing structure for division, placements, wins, and Pro Duo flows.
+- Added LP-related helper logic and Master-specific pricing direction.
+- Split Duo mode and Premium Coaching into separate concepts.
+- Continued refining add-on pricing so duo-related add-ons can use duo-adjusted pricing instead of solo-only base pricing.
+- Clarified that `appearOffline` is for Solo privacy, while Duo privacy should stay separate as `untrackableDuo`.
+- Bonus win pricing is rank-based and still requires clean solo/duo handling in the latest pricing pass.
+
 ### Demo match/chat flow
 - Added a follow-up demo page after the order flow.
 - Current direction includes:
@@ -224,6 +253,9 @@ http://localhost:5173/
 ### Protected
 - `GET /api/user/me` (Bearer token)
 - `POST /api/services` (Bearer token + ADMIN role)
+- `POST /api/orders` (Bearer token)
+- `GET /api/orders` (Bearer token)
+- `GET /api/orders/:id` (Bearer token)
 
 ---
 
@@ -299,22 +331,27 @@ npx prisma studio
 - S3-hosted rank image integration
 - right-side checkout summary redesign
 - solo/duo-specific add-on layouts
+- real backend demo order creation flow
+- expanded order schema direction
+- first role / second role direction
+- shared navbar/auth direction started across pages
 - demo match/chat page flow
 
 ### In progress
-- real backend-driven order persistence
-- real pricing logic
+- shared auth modal consistency across all pages
+- real pricing logic cleanup and verification
+- duo-specific addon field cleanup (including `untrackableDuo`)
 - patch section real endpoint
-- additional profile dropdown polish
+- additional profile dropdown/navbar polish on later pages
 - match/chat UI polish
 
 ---
 
 ## Next steps (recommended)
 
-1. Design and build the real `Order` schema for service-specific requests
-2. Build order APIs + persistence
-3. Connect the configurator UI to real backend order creation
+1. Finish shared navbar/auth modal consistency on all key pages
+2. Continue cleaning pricing logic and verify all duo/solo addon rules
+3. Finalize the real `Order` schema + payload parity across frontend/backend
 4. Continue polishing the match/chat page
 5. Connect the patch section to a real backend endpoint
 6. Later add profile/account settings
