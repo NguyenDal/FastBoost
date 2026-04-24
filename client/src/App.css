@@ -1151,6 +1151,8 @@ button {
 }
 
 .rank-selector-card {
+  position: relative;
+  overflow: hidden;
   grid-column: 1 / -1;
   border: 1px solid rgba(98, 112, 203, 0.2);
   border-radius: 24px;
@@ -1159,6 +1161,259 @@ button {
     radial-gradient(circle at top right, rgba(255, 160, 90, 0.08), transparent 30%);
   padding: 26px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.rank-selector-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+
+.rank-selector-card>* {
+  position: relative;
+  z-index: 1;
+}
+
+.ranked-wins-selector-card,
+.ranked-wins-goal-card {
+  grid-column: 1 / -1;
+}
+
+.ranked-wins-current-bottom {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ranked-wins-goal-card {
+  min-height: 300px;
+}
+
+.ranked-wins-goal-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.ranked-wins-big-number {
+  width: 64px;
+  min-width: 64px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.ranked-wins-goal-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.9rem;
+}
+
+.ranked-wins-goal-header p {
+  margin: 6px 0 0;
+  color: #aeb8f8;
+}
+
+.ranked-wins-slider-wrap {
+  padding: 10px 4px 26px;
+  border-bottom: 1px solid rgba(98, 112, 203, 0.12);
+  margin-bottom: 0;
+}
+
+.ranked-wins-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(90deg,
+      #ff8a4d 0%,
+      #ff8a4d calc(var(--wins-progress, 0) * 1%),
+      rgba(255, 255, 255, 0.08) calc(var(--wins-progress, 0) * 1%),
+      rgba(255, 255, 255, 0.08) 100%);
+}
+
+.ranked-wins-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 34px;
+  height: 24px;
+  border-radius: 999px;
+  background: #f4f4f5;
+  border: 3px solid rgba(255, 138, 77, 0.55);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.ranked-wins-slider::-moz-range-thumb {
+  width: 34px;
+  height: 24px;
+  border-radius: 999px;
+  background: #f4f4f5;
+  border: 3px solid rgba(255, 138, 77, 0.55);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.ranked-wins-goal-bottom {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: none !important;
+  padding-top: 10px;
+  padding-bottom: 14px;
+}
+
+.ranked-wins-goal-bottom .order-field {
+  width: min(520px, 100%);
+  margin: 0 auto;
+}
+
+.ranked-wins-goal-bottom select {
+  width: 100%;
+  min-height: 52px;
+}
+
+.ranked-wins-goal-card .rank-bottom-selects {
+  border-top: none !important;
+}
+
+.ranked-wins-rank-track {
+  grid-template-columns: 1fr;
+}
+
+.ranked-wins-rank-track .order-rank-track-main strong {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+@media (max-width: 700px) {
+  .ranked-wins-current-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .ranked-wins-goal-header {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .ranked-wins-big-number {
+    width: 52px;
+    min-width: 52px;
+    font-size: 2.4rem;
+  }
+
+  .ranked-wins-goal-bottom {
+    width: 100%;
+  }
+}
+
+.rank-card-unranked {
+  border-color: rgba(120, 130, 150, 0.28);
+  box-shadow: 0 24px 60px rgba(120, 130, 150, 0.08);
+}
+
+.rank-card-unranked::before {
+  background: radial-gradient(circle at top left, rgba(120, 130, 150, 0.1), transparent 42%);
+}
+
+.rank-card-iron {
+  border-color: rgba(116, 93, 78, 0.34);
+  box-shadow: 0 24px 60px rgba(116, 93, 78, 0.1);
+}
+
+.rank-card-iron::before {
+  background: radial-gradient(circle at top left, rgba(116, 93, 78, 0.12), transparent 42%);
+}
+
+.rank-card-bronze {
+  border-color: rgba(180, 105, 70, 0.34);
+  box-shadow: 0 24px 60px rgba(180, 105, 70, 0.1);
+}
+
+.rank-card-bronze::before {
+  background: radial-gradient(circle at top left, rgba(180, 105, 70, 0.12), transparent 42%);
+}
+
+.rank-card-silver {
+  border-color: rgba(170, 190, 205, 0.3);
+  box-shadow: 0 24px 60px rgba(170, 190, 205, 0.08);
+}
+
+.rank-card-silver::before {
+  background: radial-gradient(circle at top left, rgba(170, 190, 205, 0.1), transparent 42%);
+}
+
+.rank-card-gold {
+  border-color: rgba(245, 180, 75, 0.34);
+  box-shadow: 0 24px 60px rgba(245, 180, 75, 0.1);
+}
+
+.rank-card-gold::before {
+  background: radial-gradient(circle at top left, rgba(245, 180, 75, 0.12), transparent 42%);
+}
+
+.rank-card-platinum {
+  border-color: rgba(70, 210, 220, 0.3);
+  box-shadow: 0 24px 60px rgba(70, 210, 220, 0.08);
+}
+
+.rank-card-platinum::before {
+  background: radial-gradient(circle at top left, rgba(70, 210, 220, 0.1), transparent 42%);
+}
+
+.rank-card-emerald {
+  border-color: rgba(60, 220, 135, 0.3);
+  box-shadow: 0 24px 60px rgba(60, 220, 135, 0.08);
+}
+
+.rank-card-emerald::before {
+  background: radial-gradient(circle at top left, rgba(60, 220, 135, 0.1), transparent 42%);
+}
+
+.rank-card-diamond {
+  border-color: rgba(100, 145, 255, 0.32);
+  box-shadow: 0 24px 60px rgba(100, 145, 255, 0.09);
+}
+
+.rank-card-diamond::before {
+  background: radial-gradient(circle at top left, rgba(100, 145, 255, 0.11), transparent 42%);
+}
+
+.rank-card-master {
+  border-color: rgba(190, 95, 255, 0.32);
+  box-shadow: 0 24px 60px rgba(190, 95, 255, 0.09);
+}
+
+.rank-card-master::before {
+  background: radial-gradient(circle at top left, rgba(190, 95, 255, 0.11), transparent 42%);
+}
+
+.rank-card-grandmaster {
+  border-color: rgba(255, 80, 70, 0.32);
+  box-shadow: 0 24px 60px rgba(255, 80, 70, 0.09);
+}
+
+.rank-card-grandmaster::before {
+  background: radial-gradient(circle at top left, rgba(255, 80, 70, 0.11), transparent 42%);
+}
+
+.rank-card-challenger {
+  border-color: rgba(90, 210, 255, 0.32);
+  box-shadow: 0 24px 60px rgba(90, 210, 255, 0.09);
+}
+
+.rank-card-challenger::before {
+  background: radial-gradient(circle at top left, rgba(90, 210, 255, 0.11), transparent 42%);
 }
 
 .rank-selector-header {
@@ -1360,7 +1615,126 @@ button {
     radial-gradient(circle at top right, rgba(255, 160, 90, 0.06), transparent 35%);
 }
 
+.order-rank-track {
+  position: relative;
+  overflow: hidden;
+}
+
+.order-rank-track::before,
+.order-rank-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.order-rank-track::before {
+  opacity: 1;
+}
+
+.order-rank-track::after {
+  opacity: 1;
+}
+
+.order-rank-track>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Current side glow: left edge to before arrow */
+.rank-track-current-unranked::before {
+  background: radial-gradient(circle at 16% center, rgba(120, 130, 150, 0.14), transparent 34%);
+}
+
+.rank-track-current-iron::before {
+  background: radial-gradient(circle at 16% center, rgba(116, 93, 78, 0.16), transparent 34%);
+}
+
+.rank-track-current-bronze::before {
+  background: radial-gradient(circle at 16% center, rgba(180, 105, 70, 0.16), transparent 34%);
+}
+
+.rank-track-current-silver::before {
+  background: radial-gradient(circle at 16% center, rgba(170, 190, 205, 0.13), transparent 34%);
+}
+
+.rank-track-current-gold::before {
+  background: radial-gradient(circle at 16% center, rgba(245, 180, 75, 0.15), transparent 34%);
+}
+
+.rank-track-current-platinum::before {
+  background: radial-gradient(circle at 16% center, rgba(70, 210, 220, 0.13), transparent 34%);
+}
+
+.rank-track-current-emerald::before {
+  background: radial-gradient(circle at 16% center, rgba(60, 220, 135, 0.13), transparent 34%);
+}
+
+.rank-track-current-diamond::before {
+  background: radial-gradient(circle at 16% center, rgba(100, 145, 255, 0.14), transparent 34%);
+}
+
+.rank-track-current-master::before {
+  background: radial-gradient(circle at 16% center, rgba(190, 95, 255, 0.14), transparent 34%);
+}
+
+.rank-track-current-grandmaster::before {
+  background: radial-gradient(circle at 16% center, rgba(255, 80, 70, 0.14), transparent 34%);
+}
+
+.rank-track-current-challenger::before {
+  background: radial-gradient(circle at 16% center, rgba(90, 210, 255, 0.14), transparent 34%);
+}
+
+/* Target side glow: after arrow to right edge */
+.rank-track-target-iron::after {
+  background: radial-gradient(circle at 84% center, rgba(116, 93, 78, 0.16), transparent 34%);
+}
+
+.rank-track-target-bronze::after {
+  background: radial-gradient(circle at 84% center, rgba(180, 105, 70, 0.16), transparent 34%);
+}
+
+.rank-track-target-silver::after {
+  background: radial-gradient(circle at 84% center, rgba(170, 190, 205, 0.13), transparent 34%);
+}
+
+.rank-track-target-gold::after {
+  background: radial-gradient(circle at 84% center, rgba(245, 180, 75, 0.15), transparent 34%);
+}
+
+.rank-track-target-platinum::after {
+  background: radial-gradient(circle at 84% center, rgba(70, 210, 220, 0.13), transparent 34%);
+}
+
+.rank-track-target-emerald::after {
+  background: radial-gradient(circle at 84% center, rgba(60, 220, 135, 0.13), transparent 34%);
+}
+
+.rank-track-target-diamond::after {
+  background: radial-gradient(circle at 84% center, rgba(100, 145, 255, 0.14), transparent 34%);
+}
+
+.rank-track-target-master::after {
+  background: radial-gradient(circle at 84% center, rgba(190, 95, 255, 0.14), transparent 34%);
+}
+
+.placement-rank-track {
+  grid-template-columns: 1fr;
+}
+
+.placement-track-full {
+  width: 100%;
+}
+
+.placement-rank-track .order-rank-track-main strong {
+  white-space: normal;
+  line-height: 1.2;
+}
+
 .order-rank-track-side {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1368,6 +1742,7 @@ button {
 }
 
 .order-rank-track-side-target {
+  width: 100%;
   justify-content: flex-end;
   text-align: right;
 }
