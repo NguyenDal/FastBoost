@@ -1641,39 +1641,6 @@ function OrderPage() {
               🪙 10 coins = $1.00 | Earn coins with every order
             </p>
 
-            <div className="order-summary-list">
-              <div className="order-summary-row">
-                <span>Region</span>
-                <strong>{formData.region}</strong>
-              </div>
-
-              <div className="order-summary-row">
-                <span>Queue</span>
-                <strong>{formData.queueType}</strong>
-              </div>
-
-              {serviceType === "Placement Boost" && (
-                <div className="order-summary-row">
-                  <span>Placements</span>
-                  <strong>{formData.placementGames} Games</strong>
-                </div>
-              )}
-
-              {serviceType === "Win Boost" && (
-                <div className="order-summary-row">
-                  <span>Wins</span>
-                  <strong>{formData.desiredWins}</strong>
-                </div>
-              )}
-
-              {serviceType === "Pro Duo" && (
-                <div className="order-summary-row">
-                  <span>Games</span>
-                  <strong>{formData.numberOfGames}</strong>
-                </div>
-              )}
-            </div>
-
             {isInvalidRankPath ? (
               <div className="price-warning-box price-warning-box-blocking">
                 <p className="price-warning-text">
