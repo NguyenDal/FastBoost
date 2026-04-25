@@ -1191,22 +1191,35 @@ function OrderPage() {
                         </div>
                       </div>
 
-                      <div className="placement-tier-grid">
-                        {placementTierOrder.map((tier) => (
-                          <button
-                            key={`placement-${tier}`}
-                            type="button"
-                            className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.peakRank) === tier ? "active" : ""
-                              }`}
-                            onClick={() =>
-                              updatePlacementRankSelection(setFormData, tier)
-                            }
-                            aria-label={tier}
-                          >
-                            <img src={rankImageMap[tier]} alt={tier} />
-                            <span className="rank-tooltip">{tier}</span>
-                          </button>
-                        ))}
+                      <div className="placement-tier-rows">
+                        <div className="placement-tier-row placement-tier-row-6">
+                          {placementTierOrder.slice(0, 6).map((tier) => (
+                            <button
+                              key={`placement-top-${tier}`}
+                              type="button"
+                              className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.peakRank) === tier ? "active" : ""}`}
+                              onClick={() => updatePlacementRankSelection(setFormData, tier)}
+                              aria-label={tier}
+                            >
+                              <img src={rankImageMap[tier]} alt={tier} />
+                              <span className="rank-tooltip">{tier}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <div className="placement-tier-row placement-tier-row-5">
+                          {placementTierOrder.slice(6).map((tier) => (
+                            <button
+                              key={`placement-bottom-${tier}`}
+                              type="button"
+                              className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.peakRank) === tier ? "active" : ""}`}
+                              onClick={() => updatePlacementRankSelection(setFormData, tier)}
+                              aria-label={tier}
+                            >
+                              <img src={rankImageMap[tier]} alt={tier} />
+                              <span className="rank-tooltip">{tier}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
                       <div className="placement-options-area">
@@ -2061,6 +2074,7 @@ const placementTierOrder = [
   "Silver",
   "Gold",
   "Platinum",
+  "Emerald",
   "Diamond",
   "Master",
   "Grandmaster",
@@ -2347,6 +2361,7 @@ function getPlacementBasePrice(peakRank) {
   if (tier === "Silver") return 21;
   if (tier === "Gold") return 25;
   if (tier === "Platinum") return 30;
+  if (tier === "Emerald") return 38;
   if (tier === "Diamond") return 45;
   if (tier === "Master") return 60;
   if (tier === "Grandmaster" || tier === "Challenger") return 88;
