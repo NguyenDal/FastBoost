@@ -1,0 +1,92 @@
+/* Match page: chat and assigned booster UI */
+
+.match-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.match-main-panel { display: flex; flex-direction: column; gap: 20px; }
+
+.match-status-card,
+.chat-panel {
+  background: rgba(8, 14, 40, 0.84);
+  border: 1px solid rgba(102, 115, 204, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  padding: 24px;
+}
+
+.searching-state, .matched-state { display: flex; gap: 16px; align-items: center; }
+.searching-spinner { width: 46px; height: 46px; border-radius: 50%; border: 4px solid rgba(89, 201, 255, 0.18); border-top-color: #4fc8ff; animation: spinDemo 1s linear infinite; }
+@keyframes spinDemo { to { transform: rotate(360deg); } }
+
+.chat-panel-header { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; }
+.chat-status-pill { padding: 8px 12px; border-radius: 999px; background: rgba(79, 200, 255, 0.12); color: #bfeeff; font-size: 0.9rem; font-weight: 600; }
+
+.chat-messages { display: flex; flex-direction: column; gap: 14px; min-height: 320px; max-height: 430px; overflow-y: auto; padding-right: 6px; margin-bottom: 16px; }
+.chat-row { display: flex; align-items: flex-end; gap: 10px; }
+.chat-row-system { justify-content: center; }
+.chat-row-user { justify-content: flex-end; }
+.chat-row-booster { justify-content: flex-start; }
+.chat-message { border-radius: 18px; padding: 14px 16px; max-width: 78%; border: 1px solid rgba(98, 112, 203, 0.18); }
+.chat-message-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.chat-message-system { background: rgba(17, 24, 54, 0.9); color: #dbe3ff; max-width: 70%; }
+.chat-message-user { background: linear-gradient(135deg, #ff8a4d, #ff5ca8); color: #ffffff; }
+.chat-message-booster { background: rgba(7, 14, 35, 0.95); color: #eaf0ff; }
+.chat-sender { display: block; font-size: 0.88rem; font-weight: 700; color: #7edcff; }
+.chat-timestamp { color: #7f8acb; font-size: 0.78rem; white-space: nowrap; }
+.chat-message p { margin: 0; line-height: 1.5; }
+
+.chat-input-row { display: flex; gap: 12px; }
+.chat-input-row input { flex: 1; border-radius: 16px; border: 1px solid rgba(98, 112, 203, 0.22); background: rgba(3, 9, 30, 0.96); color: #ffffff; padding: 14px 16px; font-size: 1rem; outline: none; }
+.chat-input-row input:focus { border-color: rgba(90, 199, 255, 0.7); box-shadow: 0 0 0 3px rgba(90, 199, 255, 0.12); }
+.chat-input-row button { border: none; cursor: pointer; white-space: nowrap; }
+
+/* Booster profile */
+.booster-profile-card { display: flex; flex-direction: column; gap: 16px; }
+.booster-profile-top { display: flex; align-items: center; gap: 14px; }
+.booster-avatar { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(91, 201, 255, 0.45); box-shadow: 0 0 0 4px rgba(91, 201, 255, 0.08); }
+.booster-profile-main { flex: 1; min-width: 0; }
+.booster-name-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.booster-name-row h3 { margin: 0; font-size: 1.1rem; color: #ffffff; }
+.booster-online-dot { padding: 6px 10px; border-radius: 999px; background: rgba(79, 200, 255, 0.14); color: #9ee8ff; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+.booster-rank-role { margin: 6px 0 8px; color: #bfc8ff; font-size: 0.95rem; }
+.booster-rating-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.booster-stars { color: #ffcc4d; font-size: 1rem; letter-spacing: 1px; }
+.booster-rating-text { color: #dbe3ff; font-size: 0.9rem; }
+.booster-bio { margin: 0; color: #b8c2f8; line-height: 1.6; font-size: 0.95rem; }
+.booster-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.booster-stat-item { border: 1px solid rgba(98, 112, 203, 0.18); background: rgba(8, 13, 38, 0.8); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.booster-stat-item span { color: #9ca9ef; font-size: 0.82rem; }
+.booster-stat-item strong { color: #ffffff; font-size: 1rem; }
+
+/* Match sidebar cards */
+.match-sidebar { display: flex; flex-direction: column; gap: 20px; }
+.match-side-card, .match-options-card { background: rgba(8, 14, 40, 0.84); border: 1px solid rgba(102, 115, 204, 0.2); border-radius: 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28); padding: 24px; }
+.match-card-header h3 { margin: 0 0 18px; color: #ffffff; }
+.option-list, .info-list { display: flex; flex-direction: column; gap: 14px; }
+.option-row, .info-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(98, 112, 203, 0.14); }
+.option-row:last-child, .info-row:last-child { border-bottom: none; }
+.option-row span, .info-row span { color: #a9b5f5; }
+.option-row strong, .info-row strong { color: #ffffff; }
+
+/* Chat header profile visuals */
+.chat-header-profile { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.chat-header-avatar, .chat-message-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(91, 201, 255, 0.35); display: block; }
+.chat-avatar-online-dot { position: absolute; right: 1px; bottom: 1px; width: 12px; height: 12px; border-radius: 50%; background: #16c784; border: 2px solid #081233; }
+.chat-header-info { display: flex; flex-direction: column; justify-content: center; }
+.chat-header-title { margin: 0; color: #ffffff; font-weight: 700; font-size: 1.05rem; }
+.chat-header-subtitle { margin: 4px 0 0; color: #aeb8f8; font-size: 0.92rem; }
+.chat-avatar-wrap { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
+
+/* Tabs used on match page */
+.match-tabs { display: flex; gap: 12px; margin-bottom: 18px; }
+.match-tab { border: none; padding: 12px 18px; border-radius: 14px; background: rgba(14, 20, 48, 0.84); color: #c6cffb; cursor: pointer; font-weight: 600; }
+.match-tab.active { background: linear-gradient(135deg, #ff8a4d, #ff5ca8); color: #ffffff; }
+
+/* Responsive */
+@media (max-width: 980px) {
+  .match-layout { grid-template-columns: 1fr; }
+}

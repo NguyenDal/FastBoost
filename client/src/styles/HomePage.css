@@ -1,0 +1,424 @@
+/* HomePage specific styles */
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 25%),
+    radial-gradient(circle at top left, rgba(239, 68, 68, 0.08), transparent 20%);
+}
+
+.hero-section {
+  margin-top: 10px;
+}
+
+.hero-banner {
+  position: relative;
+  min-height: 560px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111827;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(8, 12, 20, 0.88) 0%, rgba(8, 12, 20, 0.64) 45%, rgba(8, 12, 20, 0.3) 100%),
+    linear-gradient(180deg, rgba(8, 12, 20, 0.2), rgba(8, 12, 20, 0.55));
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 58px 52px;
+  max-width: 670px;
+}
+
+.hero-kicker {
+  margin: 0 0 12px;
+  color: #f87171;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.hero-content h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  line-height: 1.04;
+  max-width: 620px;
+}
+
+.hero-text {
+  margin-top: 18px;
+  color: #d1d5db;
+  line-height: 1.8;
+  font-size: 1.02rem;
+  max-width: 560px;
+}
+
+.hero-actions {
+  margin-top: 28px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-side-card {
+  position: absolute;
+  right: 36px;
+  top: 56px;
+  z-index: 2;
+  width: 320px;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(14, 18, 28, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.side-card-tag {
+  margin: 0 0 10px;
+  color: #60a5fa;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.hero-side-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.hero-side-card p {
+  margin: 14px 0 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.side-card-btn {
+  margin-top: 18px;
+  border: none;
+  background: white;
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.content-section {
+  margin-top: 34px;
+}
+
+.left-aligned {
+  display: block;
+}
+
+/* News/Patch section */
+.news-layout {
+  display: grid;
+  grid-template-columns: 0.95fr 1.25fr;
+  gap: 18px;
+}
+
+.news-left,
+.news-feature {
+  min-width: 0;
+}
+
+.news-list {
+  display: grid;
+  gap: 12px;
+}
+
+.news-item {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.96), rgba(11, 18, 32, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.news-item-active {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.news-thumb {
+  border-radius: 12px;
+  min-height: 88px;
+  background:
+    linear-gradient(135deg, rgba(217, 30, 54, 0.55), rgba(91, 33, 182, 0.6)),
+    url("https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=800&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+.news-content h3 {
+  margin: 8px 0 0;
+  font-size: 1rem;
+}
+
+.news-content p {
+  margin: 8px 0 0;
+  color: #9ca3af;
+  line-height: 1.65;
+  font-size: 0.94rem;
+}
+
+.news-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.news-feature {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #0f172a;
+}
+
+.feature-image-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.feature-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feature-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 12, 20, 0.18), rgba(8, 12, 20, 0.88));
+}
+
+.feature-card {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1;
+  max-width: 520px;
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(10, 15, 24, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.feature-chip {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.feature-card h3 {
+  margin: 12px 0 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.feature-card p {
+  margin: 12px 0 0;
+  color: #d1d5db;
+  line-height: 1.7;
+}
+
+/* Status panel */
+.status-panel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.96), rgba(11, 18, 32, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.status-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.14);
+  flex-shrink: 0;
+}
+
+.status-title {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.86rem;
+}
+
+.status-text,
+.status-error {
+  margin: 4px 0 0;
+}
+
+.status-error {
+  color: #f87171;
+}
+
+/* Hover service grid/cards */
+.hover-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.hover-service-card {
+  position: relative;
+  min-height: 340px;
+  border-radius: 18px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hover-service-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(248, 113, 113, 0.35);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+}
+
+.hover-service-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 12, 20, 0.12), rgba(8, 12, 20, 0.88));
+  transition: background 0.25s ease;
+}
+
+.hover-service-card:hover .hover-service-overlay {
+  background:
+    linear-gradient(180deg, rgba(8, 12, 20, 0.18), rgba(8, 12, 20, 0.92));
+}
+
+.hover-service-default,
+.hover-service-content {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  z-index: 1;
+}
+
+.hover-service-default {
+  bottom: 20px;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.hover-service-default h3 {
+  margin: 14px 0 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  color: white;
+}
+
+.hover-service-content {
+  /* Fill between a fixed top and bottom so title/paragraph
+     always start at the same height across cards */
+  top: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.hover-service-content h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: white;
+}
+
+.hover-service-content p {
+  margin: 14px 0 0;
+  color: #d1d5db;
+  line-height: 1.7;
+  font-size: 0.98rem;
+  /* Clamp so longer descriptions don't push buttons */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hover-service-actions {
+  margin-top: auto; /* pin actions to bottom of content area */
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hover-service-card:hover .hover-service-default {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.hover-service-card:hover .hover-service-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive for Home */
+@media (max-width: 1100px) {
+  .news-layout { grid-template-columns: 1fr; }
+
+  .hero-side-card {
+    position: static;
+    margin: 0 24px 24px;
+    width: auto;
+  }
+
+  .hero-banner { display: flex; flex-direction: column; justify-content: flex-end; }
+
+  .hover-service-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .hero-content { padding: 44px 28px; }
+}
+
+@media (max-width: 640px) {
+  .page-content { padding-left: 16px; padding-right: 16px; }
+  .hero-content h1 { font-size: 2.2rem; }
+  .hero-actions { flex-direction: column; }
+  .news-item { grid-template-columns: 1fr; }
+  .hover-service-grid { grid-template-columns: 1fr; }
+  .hover-service-actions { flex-direction: column; }
+}

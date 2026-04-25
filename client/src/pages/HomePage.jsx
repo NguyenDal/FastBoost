@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AuthModal from "../components/AuthModal";
-import "../App.css";
+import "../styles/HomePage.css";
 
 function HomePage() {
   const navigate = useNavigate();

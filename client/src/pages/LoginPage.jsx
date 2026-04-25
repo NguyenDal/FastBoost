@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../App.css";
+import "../styles/AuthPages.css";
 
 function LoginPage() {
   const location = useLocation();

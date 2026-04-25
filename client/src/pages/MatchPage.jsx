@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import "../App.css";
+import "../styles/MatchPage.css";
 
 const demoBoosters = [
     {

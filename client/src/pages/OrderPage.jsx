@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AuthModal from "../components/AuthModal";
-import "../App.css";
+import "../styles/OrderPage.css";
 
 function OrderPage() {
   const navigate = useNavigate();
