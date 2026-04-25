@@ -92,6 +92,11 @@
 .ranked-wins-selector-card, .ranked-wins-goal-card { grid-column: 1 / -1; }
 .ranked-wins-current-bottom { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ranked-wins-goal-card { min-height: 300px; }
+.ranked-wins-tier-rows { display: grid; gap: 12px; margin-bottom: 14px; }
+.ranked-wins-tier-row { display: grid; gap: 12px; }
+.ranked-wins-tier-row-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.ranked-wins-tier-row-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ranked-wins-tier-row .rank-tier-btn { width: 100%; }
 .ranked-wins-goal-header { display: flex; align-items: center; gap: 24px; margin-bottom: 34px; }
 .ranked-wins-big-number { width: 64px; min-width: 64px; text-align: center; color: #ffffff; font-size: 3rem; font-weight: 900; line-height: 1; }
 .ranked-wins-goal-header h3 { margin: 0; color: #ffffff; font-size: 1.9rem; }

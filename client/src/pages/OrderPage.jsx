@@ -1303,25 +1303,40 @@ function OrderPage() {
                         </div>
                       </div>
 
-                      <div className="rank-tier-grid">
-                        {tierOrder.map((tier) => (
-                          <button
-                            key={`win-current-${tier}`}
-                            type="button"
-                            className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.currentRank) === tier ? "active" : ""
-                              }`}
-                            onClick={() =>
-                              updateRankSelection(setFormData, "currentRank", tier, null)
-                            }
-                            aria-label={tier}
-                          >
-                            <img src={rankImageMap[tier]} alt={tier} />
-                            <span className="rank-tooltip">{tier}</span>
-                          </button>
-                        ))}
+                      {/* Two-line layout: 5 tiers on top, 4 below (includes Grandmaster) */}
+                      <div className="ranked-wins-tier-rows">
+                        <div className="ranked-wins-tier-row ranked-wins-tier-row-5">
+                          {tierOrderWithGrandmaster.slice(0, 5).map((tier) => (
+                            <button
+                              key={`win-current-top-${tier}`}
+                              type="button"
+                              className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.currentRank) === tier ? "active" : ""}`}
+                              onClick={() => updateRankSelection(setFormData, "currentRank", tier, null)}
+                              aria-label={tier}
+                            >
+                              <img src={rankImageMap[tier]} alt={tier} />
+                              <span className="rank-tooltip">{tier}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="ranked-wins-tier-row ranked-wins-tier-row-4">
+                          {tierOrderWithGrandmaster.slice(5).map((tier) => (
+                            <button
+                              key={`win-current-bottom-${tier}`}
+                              type="button"
+                              className={`rank-tier-btn rank-tooltip-wrap ${getTierFromAnyRank(formData.currentRank) === tier ? "active" : ""}`}
+                              onClick={() => updateRankSelection(setFormData, "currentRank", tier, null)}
+                              aria-label={tier}
+                            >
+                              <img src={rankImageMap[tier]} alt={tier} />
+                              <span className="rank-tooltip">{tier}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
-                      {getTierFromAnyRank(formData.currentRank) !== "Master" && (
+                      {!["Master", "Grandmaster", "Challenger"].includes(getTierFromAnyRank(formData.currentRank)) && (
                         <div className="rank-division-row">
                           {divisionOrder.map((division) => (
                             <button
@@ -1577,8 +1592,7 @@ function OrderPage() {
                     <div className="order-rank-track-main">
                       <strong>
                         {formData.desiredWins}{" "}
-                        {Number(formData.desiredWins) === 1 ? "win" : "wins"} in{" "}
-                        {getTierFromAnyRank(formData.currentRank)}
+                        {Number(formData.desiredWins) === 1 ? "win" : "wins"} in {formatWinsRankDisplay(formData.currentRank)}
                       </strong>
                     </div>
                   </div>
@@ -2067,6 +2081,9 @@ const tierOrder = [
   "Master",
 ];
 
+// Win Boost: include Grandmaster in selection
+const tierOrderWithGrandmaster = [...tierOrder, "Grandmaster"];
+
 const placementTierOrder = [
   "Unranked",
   "Iron",
@@ -2096,6 +2113,7 @@ function getDivisionFromRank(rank) {
 
 function buildRankValue(tier, division) {
   if (tier === "Master") return "Master I";
+  if (tier === "Grandmaster" || tier === "Challenger" || tier === "Unranked") return tier;
   return `${tier} ${division}`;
 }
 
@@ -2106,10 +2124,11 @@ function updateRankSelection(setFormData, fieldName, nextTier, nextDivision) {
     const currentDivision = getDivisionFromRank(currentRank) || "I";
 
     const tier = nextTier || currentTier;
-    const division =
-      tier === "Master"
-        ? "I"
-        : nextDivision || (currentTier === "Master" ? "IV" : currentDivision);
+    if (tier === "Grandmaster" || tier === "Challenger" || tier === "Unranked") {
+      return { ...prev, [fieldName]: tier };
+    }
+
+    const division = tier === "Master" ? "I" : nextDivision || (currentTier === "Master" ? "IV" : currentDivision);
 
     return {
       ...prev,
@@ -2235,6 +2254,20 @@ function formatPlacementRankForSummary(rank) {
   if (tier === "Challenger") return "Challenger";
 
   return tier;
+}
+
+
+// For Ranked Wins summary: show division for tiers with divisions (Iron → Diamond),
+// keep Master/Grandmaster/Challenger/Unranked without division.
+function formatWinsRankDisplay(rank) {
+  const tier = getTierFromAnyRank(rank);
+
+  if (["Master", "Grandmaster", "Challenger", "Unranked"].includes(tier)) {
+    return tier;
+  }
+
+  const division = getDivisionFromRank(rank) || "I";
+  return `${tier} ${division}`;
 }
 
 
@@ -2377,11 +2410,30 @@ function calculatePlacementBoostPrice(peakRank, placementGames) {
 
 function getNetWinBasePrice(currentRank) {
   const tier = getTierFromAnyRank(currentRank);
+  const division = getDivisionFromRank(currentRank);
 
-  if (tier === "Silver") return 3;
+  // Iron → Silver I: $3 per match
+  if (tier === "Iron" || tier === "Bronze" || tier === "Silver") return 3;
+  // Gold IV → Gold I: $5 per match
   if (tier === "Gold") return 5;
-  if (tier === "Platinum" || tier === "Emerald" || tier === "Diamond") return 6;
-  if (tier === "Master") return 30;
+  // Platinum IV → Platinum I: $6 per match
+  if (tier === "Platinum") return 6;
+  // Emerald gradation by division
+  if (tier === "Emerald") {
+    if (division === "IV") return 7;   // E4 → E3
+    if (division === "III") return 8;  // E3 → E2
+    if (division === "II") return 9;   // E2 → E1
+    return 10;                           // E1 → D4
+  }
+  // Diamond gradation by division
+  if (tier === "Diamond") {
+    if (division === "IV") return 12;  // D4 → D3
+    if (division === "III") return 14; // D3 → D2
+    if (division === "II") return 18;  // D2 → D1
+    return 22;                           // D1 → Master
+  }
+  if (tier === "Master") return 30;      // Master net win stays $30
+  if (tier === "Grandmaster") return 40; // Grandmaster option
 
   return 3;
 }
@@ -2400,20 +2452,8 @@ function calculateProDuoPrice(currentRank, lpGain, numberOfGames) {
 }
 
 function getBonusWinPriceByRank(currentRank, playMode = "Solo") {
-  const tier = getTierFromAnyRank(currentRank);
-
-  let soloPrice = 0;
-
-  if (tier === "Silver") soloPrice = 3;
-  else if (tier === "Gold") soloPrice = 5;
-  else if (tier === "Platinum" || tier === "Emerald" || tier === "Diamond") soloPrice = 6;
-  else if (tier === "Master") soloPrice = 30;
-
-  if (playMode === "Duo") {
-    return soloPrice * 1.4;
-  }
-
-  return soloPrice;
+  const soloPrice = getNetWinBasePrice(currentRank) || 0;
+  return playMode === "Duo" ? soloPrice * 1.4 : soloPrice;
 }
 
 function getChampionPreferencePrice(basePrice, tier) {
