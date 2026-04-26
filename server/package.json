@@ -21,7 +21,8 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.4",
     "pg": "^8.20.0",
-    "prisma": "^7.5.0"
+    "prisma": "^7.5.0",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

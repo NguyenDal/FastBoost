@@ -182,6 +182,38 @@ exports.Prisma.OrderScalarFieldEnum = {
   totalPrice: 'totalPrice'
 };
 
+exports.Prisma.OrderAssignmentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  boosterId: 'boosterId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ConversationScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastMessageAt: 'lastMessageAt'
+};
+
+exports.Prisma.ConversationParticipantScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  roleAtJoin: 'roleAtJoin',
+  joinedAt: 'joinedAt',
+  lastReadAt: 'lastReadAt'
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  content: 'content',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   id: 'id',
   tokenHash: 'tokenHash',
@@ -234,6 +266,10 @@ exports.Prisma.ModelName = {
   Profile: 'Profile',
   Service: 'Service',
   Order: 'Order',
+  OrderAssignment: 'OrderAssignment',
+  Conversation: 'Conversation',
+  ConversationParticipant: 'ConversationParticipant',
+  Message: 'Message',
   PasswordResetToken: 'PasswordResetToken'
 };
 
