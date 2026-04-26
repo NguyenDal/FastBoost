@@ -593,10 +593,6 @@ function HomePage() {
                 <p className="section-label">Latest Patch</p>
                 <h2>League Patch Center</h2>
               </div>
-              <p className="section-description">
-                Placeholder content for now. Later we can connect this to a real
-                latest-patch backend route.
-              </p>
             </div>
 
             <div className="news-list">
