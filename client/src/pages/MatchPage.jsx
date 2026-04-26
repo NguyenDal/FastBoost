@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/MatchPage.css";
 
@@ -50,6 +50,7 @@ const demoBoosters = [
 
 function MatchPage() {
     const { orderId } = useParams();
+    const navigate = useNavigate();
 
     const [hasSession, setHasSession] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -101,7 +102,30 @@ function MatchPage() {
         setCurrentUser(null);
         setProfileImage("");
         setShowProfileMenu(false);
+        try { window.dispatchEvent(new Event("auth:changed")); } catch {}
+        navigate("/", { replace: true });
     };
+
+    // Require auth: if token disappears, go home
+    useEffect(() => {
+        const check = () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/", { replace: true });
+            }
+        };
+        check();
+        window.addEventListener("auth:changed", check);
+        window.addEventListener("storage", check);
+        window.addEventListener("focus", check);
+        document.addEventListener("visibilitychange", check);
+        return () => {
+            window.removeEventListener("auth:changed", check);
+            window.removeEventListener("storage", check);
+            window.removeEventListener("focus", check);
+            document.removeEventListener("visibilitychange", check);
+        };
+    }, [navigate]);
 
     useEffect(() => {
         const fetchOrder = async () => {

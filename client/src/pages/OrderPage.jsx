@@ -552,6 +552,8 @@ function OrderPage() {
     localStorage.removeItem("user");
     setCurrentUser(null);
     setShowProfileMenu(false);
+    try { window.dispatchEvent(new Event("auth:changed")); } catch {}
+    navigate("/", { replace: true });
   };
 
   const finishLogin = ({ token, email, profileImage = "", role = "CUSTOMER" }) => {
