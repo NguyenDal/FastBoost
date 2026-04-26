@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import "../App.css";
+import Navbar from "../components/Navbar";
+import "../styles/MatchPage.css";
 
 const demoBoosters = [
     {
@@ -50,6 +51,20 @@ const demoBoosters = [
 function MatchPage() {
     const { orderId } = useParams();
 
+    const [hasSession, setHasSession] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [profileImage, setProfileImage] = useState("");
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState("login");
+    const [authMessage, setAuthMessage] = useState("");
+    const [authSuccess, setAuthSuccess] = useState(false);
+    const [loginErrors, setLoginErrors] = useState({ email: false, password: false });
+    const [registerErrors, setRegisterErrors] = useState({ email: false, password: false });
+    const [forgotError, setForgotError] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState("");
+
     const [order, setOrder] = useState(null);
     const [matchStatus, setMatchStatus] = useState("searching");
     const [matchedBooster, setMatchedBooster] = useState(null);
@@ -62,6 +77,31 @@ function MatchPage() {
         },
     ]);
     const [chatInput, setChatInput] = useState("");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const savedUser = localStorage.getItem("user");
+
+        if (token && savedUser) {
+            const parsedUser = JSON.parse(savedUser);
+            setHasSession(true);
+            setCurrentUser(parsedUser);
+            setProfileImage(parsedUser?.profileImage || "");
+        } else {
+            setHasSession(false);
+            setCurrentUser(null);
+            setProfileImage("");
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setHasSession(false);
+        setCurrentUser(null);
+        setProfileImage("");
+        setShowProfileMenu(false);
+    };
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -174,21 +214,23 @@ function MatchPage() {
     return (
         <div className="order-page-shell">
             <div className="order-page-bg-overlay" />
-
+            <Navbar
+                hasSession={hasSession}
+                currentUser={currentUser}
+                profileImage={profileImage}
+                showProfileMenu={showProfileMenu}
+                setShowProfileMenu={setShowProfileMenu}
+                setAuthMode={setAuthMode}
+                setAuthMessage={setAuthMessage}
+                setAuthSuccess={setAuthSuccess}
+                setLoginErrors={setLoginErrors}
+                setRegisterErrors={setRegisterErrors}
+                setForgotError={setForgotError}
+                setForgotEmail={setForgotEmail}
+                setShowAuthModal={setShowAuthModal}
+                handleLogout={handleLogout}
+            />
             <div className="order-page-container">
-                <div className="order-page-topbar">
-                    <Link to="/" className="order-page-brand">
-                        <div className="brand-icon">F</div>
-                        <div>
-                            <p className="brand-title">FastBoost</p>
-                            <p className="brand-subtitle">Match & Chat</p>
-                        </div>
-                    </Link>
-
-                    <Link to="/" className="order-cancel-btn">
-                        Back to Home
-                    </Link>
-                </div>
 
                 <section className="service-banner-card">
                     <div className="service-banner-left">

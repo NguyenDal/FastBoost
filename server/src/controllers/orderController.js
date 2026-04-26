@@ -8,28 +8,29 @@ const createOrder = async (req, res) => {
             currentRank,
             desiredRank,
             currentLP,
+            currentMasterLp,
+            desiredMasterLp,
+            lpGain,
             peakRank,
             desiredWins,
             placementGames,
-            preferredRole,
+            firstRole,
+            secondRole,
+            selectedChampions,
             numberOfGames,
             region,
             queueType,
             playMode,
             priorityOrder,
-            duoWithBooster,
+            premiumCoaching,
             liveStream,
             appearOffline,
-            championsRoles,
             bonusWin,
             soloOnly,
-            undercoverWinrate,
-            moderateKDA,
             highMMRDuo,
             basePrice,
             addonPrice,
             totalPrice,
-            notes,
         } = req.body;
 
         if (!serviceId || !boostType) {
@@ -68,34 +69,35 @@ const createOrder = async (req, res) => {
                 currentRank: currentRank || null,
                 desiredRank: desiredRank || null,
                 currentLP: currentLP || null,
+                currentMasterLp: currentMasterLp !== null && currentMasterLp !== undefined
+                    ? Number(currentMasterLp)
+                    : null,
+                desiredMasterLp: desiredMasterLp !== null && desiredMasterLp !== undefined
+                    ? Number(desiredMasterLp)
+                    : null,
+                lpGain: lpGain || null,
                 peakRank: peakRank || null,
                 desiredWins: desiredWins ? Number(desiredWins) : null,
                 placementGames: placementGames ? Number(placementGames) : null,
-                preferredRole: preferredRole || null,
+                firstRole: firstRole || null,
+                secondRole: secondRole || null,
+                selectedChampions: selectedChampions || [],
                 numberOfGames: numberOfGames ? Number(numberOfGames) : null,
                 region: region || null,
                 queueType: queueType || null,
                 playMode: playMode || null,
 
                 priorityOrder: Boolean(priorityOrder),
-                duoWithBooster: Boolean(duoWithBooster),
+                premiumCoaching: Boolean(premiumCoaching),
                 liveStream: Boolean(liveStream),
                 appearOffline: Boolean(appearOffline),
-                championsRoles: Boolean(championsRoles),
                 bonusWin: Boolean(bonusWin),
                 soloOnly: Boolean(soloOnly),
-                undercoverWinrate: Boolean(undercoverWinrate),
-                moderateKDA: Boolean(moderateKDA),
                 highMMRDuo: Boolean(highMMRDuo),
 
                 basePrice: Number(basePrice || 0),
                 addonPrice: Number(addonPrice || 0),
                 totalPrice: Number(totalPrice || 0),
-
-                notes: notes || null,
-            },
-            include: {
-                service: true,
             },
         });
 
@@ -161,7 +163,7 @@ const getOrderById = async (req, res) => {
         }
 
         const customerId = req.user.id || req.user.userId;
-        
+
         if (order.customerId !== customerId && req.user.role !== "ADMIN") {
             return res.status(403).json({
                 ok: false,
@@ -187,4 +189,86 @@ module.exports = {
     createOrder,
     getMyOrders,
     getOrderById,
+};
+
+// Admin: assign a booster (provider) to an order
+module.exports.assignBooster = async (req, res) => {
+    try {
+        const { id: orderId, boosterId } = req.params;
+
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (!order) return res.status(404).json({ ok: false, message: "Order not found" });
+
+        const booster = await prisma.user.findUnique({ where: { id: boosterId } });
+        if (!booster) return res.status(404).json({ ok: false, message: "User not found" });
+        if (booster.role !== "PROVIDER") {
+            return res.status(400).json({ ok: false, message: "User is not a provider" });
+        }
+
+        try {
+            await prisma.orderAssignment.create({ data: { orderId, boosterId } });
+        } catch (e) {
+            // ignore unique violation if already assigned
+            if (!String(e?.code || "").includes("P2002")) {
+                throw e;
+            }
+        }
+
+        // Ensure conversation exists and booster is a participant
+        const convo = await prisma.conversation.upsert({
+            where: { orderId },
+            create: { orderId },
+            update: {},
+        });
+
+        try {
+            await prisma.conversationParticipant.create({
+                data: { conversationId: convo.id, userId: boosterId, roleAtJoin: booster.role },
+            });
+        } catch {}
+
+        const participants = await prisma.conversationParticipant.findMany({
+            where: { conversationId: convo.id },
+            include: { user: { select: { id: true, email: true, role: true } } },
+        });
+
+        return res.json({ ok: true, message: "Booster assigned", conversationId: convo.id, participants });
+    } catch (error) {
+        return res.status(500).json({ ok: false, message: "Failed to assign booster" });
+    }
+};
+
+// Admin: unassign a booster from an order
+module.exports.unassignBooster = async (req, res) => {
+    try {
+        const { id: orderId, boosterId } = req.params;
+
+        await prisma.orderAssignment.deleteMany({ where: { orderId, boosterId } });
+
+        // Optionally remove from conversation participants (keep history intact)
+        const convo = await prisma.conversation.findUnique({ where: { orderId } });
+        if (convo) {
+            await prisma.conversationParticipant.deleteMany({
+                where: { conversationId: convo.id, userId: boosterId },
+            });
+        }
+
+        return res.json({ ok: true, message: "Booster unassigned" });
+    } catch (error) {
+        return res.status(500).json({ ok: false, message: "Failed to unassign booster" });
+    }
+};
+
+// Admin: list booster assignments for an order
+module.exports.listAssignments = async (req, res) => {
+    try {
+        const { id: orderId } = req.params;
+        const items = await prisma.orderAssignment.findMany({
+            where: { orderId },
+            include: { booster: { select: { id: true, email: true, role: true } } },
+        });
+        return res.json({ ok: true, assignments: items });
+    } catch (error) {
+        return res.status(500).json({ ok: false, message: "Failed to list assignments" });
+    }
 };

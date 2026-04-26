@@ -150,35 +150,68 @@ exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   serviceId: 'serviceId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   boostType: 'boostType',
+  playMode: 'playMode',
+  region: 'region',
+  queueType: 'queueType',
   currentRank: 'currentRank',
-  desiredRank: 'desiredRank',
   currentLP: 'currentLP',
+  currentMasterLp: 'currentMasterLp',
+  desiredRank: 'desiredRank',
+  desiredMasterLp: 'desiredMasterLp',
+  lpGain: 'lpGain',
   peakRank: 'peakRank',
   desiredWins: 'desiredWins',
   placementGames: 'placementGames',
-  preferredRole: 'preferredRole',
   numberOfGames: 'numberOfGames',
-  region: 'region',
-  queueType: 'queueType',
-  playMode: 'playMode',
+  firstRole: 'firstRole',
+  secondRole: 'secondRole',
+  selectedChampions: 'selectedChampions',
   priorityOrder: 'priorityOrder',
-  duoWithBooster: 'duoWithBooster',
+  premiumCoaching: 'premiumCoaching',
   liveStream: 'liveStream',
   appearOffline: 'appearOffline',
-  championsRoles: 'championsRoles',
   bonusWin: 'bonusWin',
   soloOnly: 'soloOnly',
-  undercoverWinrate: 'undercoverWinrate',
-  moderateKDA: 'moderateKDA',
   highMMRDuo: 'highMMRDuo',
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
-  totalPrice: 'totalPrice',
-  notes: 'notes',
-  status: 'status',
+  totalPrice: 'totalPrice'
+};
+
+exports.Prisma.OrderAssignmentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  boosterId: 'boosterId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ConversationScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  lastMessageAt: 'lastMessageAt'
+};
+
+exports.Prisma.ConversationParticipantScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  roleAtJoin: 'roleAtJoin',
+  joinedAt: 'joinedAt',
+  lastReadAt: 'lastReadAt'
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  content: 'content',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {
@@ -195,6 +228,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -203,6 +241,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.UserRole = exports.$Enums.UserRole = {
   CUSTOMER: 'CUSTOMER',
@@ -222,6 +266,10 @@ exports.Prisma.ModelName = {
   Profile: 'Profile',
   Service: 'Service',
   Order: 'Order',
+  OrderAssignment: 'OrderAssignment',
+  Conversation: 'Conversation',
+  ConversationParticipant: 'ConversationParticipant',
+  Message: 'Message',
   PasswordResetToken: 'PasswordResetToken'
 };
 

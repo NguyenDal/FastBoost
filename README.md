@@ -102,6 +102,35 @@ This project is a **game services marketplace demo** where users can register, l
   - CTA spacing cleanup
 - Removed extra notes/comments box from the summary because the demo chat flow covers follow-up communication.
 
+### Order creation / schema expansion
+- Connected the configurator to a real backend demo order creation flow.
+- Confirmed protected order submission works with authenticated user context.
+- Expanded the `Order` direction beyond a minimal placeholder to include service-specific configuration fields such as:
+  - boost type / play mode / region / queue type
+  - current rank / target rank / LP-related fields
+  - Master LP-related fields
+  - placements / wins / number of games
+  - first role / second role
+  - selected champions
+  - addon booleans
+  - base price / addon price / total price
+- Removed the older `preferredRole` direction in favor of separate `firstRole` and `secondRole` fields.
+- Continued refining order payload structure so configurator selections can be stored more cleanly.
+
+### Shared navbar / auth modal direction
+- Continued moving away from page-specific fake top bars toward a shared navbar direction.
+- Homepage remains the reference for the correct auth popup experience.
+- Order page and match page work started toward using the same shared navbar/auth behavior.
+- Current architectural direction is to keep a shared auth modal experience across pages instead of rebuilding separate auth UIs.
+
+### Pricing logic progress
+- Added pricing structure for division, placements, wins, and Pro Duo flows.
+- Added LP-related helper logic and Master-specific pricing direction.
+- Split Duo mode and Premium Coaching into separate concepts.
+- Continued refining add-on pricing so duo-related add-ons can use duo-adjusted pricing instead of solo-only base pricing.
+- Clarified that `appearOffline` is for Solo privacy, while Duo privacy should stay separate as `untrackableDuo`.
+- Bonus win pricing is rank-based and still requires clean solo/duo handling in the latest pricing pass.
+
 ### Demo match/chat flow
 - Added a follow-up demo page after the order flow.
 - Current direction includes:
@@ -110,6 +139,24 @@ This project is a **game services marketplace demo** where users can register, l
   - live chat-style layout
   - grouped order summary
   - demo order status presentation
+
+### Chat backend (real-time + history)
+- Added Socket.IO server with JWT-based auth (handshake `auth.token`).
+- Introduced per-order Conversation with participants and message history.
+- Access control: admin, order customer, and assigned boosters share the same chat.
+- REST endpoints for history (cursor pagination) and fallback message posting.
+- Admin endpoints to assign/unassign boosters to an order (controls booster chat access).
+
+Data models (Prisma):
+- `OrderAssignment` — links providers (boosters) to an order.
+- `Conversation` — one conversation per order (`orderId` unique), `lastMessageAt` for sorting.
+- `ConversationParticipant` — member list per conversation with `lastReadAt`.
+- `Message` — chat messages indexed by `(conversationId, createdAt)`.
+
+Socket events:
+- `chat:join { orderId }` → validates access, ensures conversation + participant, joins room, returns last 20 messages.
+- `chat:message { conversationId, content }` → validates membership, saves + broadcasts message.
+- `chat:typing { conversationId, isTyping }` → ephemeral typing indicator to room participants.
 
 ---
 
@@ -126,6 +173,12 @@ Core entities:
 - **Service**
 - **Order**
 - **PasswordResetToken**
+  
+Chat-related entities:
+- **OrderAssignment** (order ←→ provider linkage)
+- **Conversation** (per-order thread)
+- **ConversationParticipant** (conversation membership)
+- **Message** (chat line items)
 
 ### Current service types
 - Rank Boost
@@ -206,6 +259,16 @@ Frontend URL:
 http://localhost:5173/
 ```
 
+### Live chat (server) quick test
+Socket server runs on the same port (`:5000`). Connect with JWT token:
+```js
+import { io } from "socket.io-client";
+const token = localStorage.getItem("token");
+const socket = io("http://localhost:5000", { auth: { token } });
+socket.emit("chat:join", { orderId: "<order-id>" }, (res) => console.log(res));
+socket.on("chat:message", (m) => console.log("msg", m));
+```
+
 ---
 
 ## API routes (current)
@@ -224,6 +287,19 @@ http://localhost:5173/
 ### Protected
 - `GET /api/user/me` (Bearer token)
 - `POST /api/services` (Bearer token + ADMIN role)
+- `POST /api/orders` (Bearer token)
+- `GET /api/orders` (Bearer token)
+- `GET /api/orders/:id` (Bearer token)
+
+### Admin (booster assignment)
+- `GET /api/orders/:id/assignments` (ADMIN) — list assigned boosters
+- `POST /api/orders/:id/assign/:boosterId` (ADMIN) — assign a booster
+- `DELETE /api/orders/:id/assign/:boosterId` (ADMIN) — unassign a booster
+
+### Chat
+- `GET /api/chats/orders/:orderId` — ensure/get conversation for an order; returns participants
+- `GET /api/chats/conversations/:conversationId/messages?limit=20&cursor=<id>` — paginated history (newest→older)
+- `POST /api/chats/conversations/:conversationId/messages` — post a message (REST fallback)
 
 ---
 
@@ -258,16 +334,19 @@ npx prisma studio
 ```
 
 ### Prisma commands
-For the current remote database workflow used in this project:
 
-### Generate Prisma client
+Option A — Local development (recommended):
 ```bash
-npx prisma db pull
-npx prisma db push
-npx prisma generate
+npx prisma migrate dev --name add-chat --schema=prisma/schema.prisma
+npx prisma generate --schema=prisma/schema.prisma
 ```
 
-`prisma migrate dev` was avoided for the live remote Prisma database after drift was detected, because resetting would have deleted data.
+Option B — Remote/shared database (cautious):
+```bash
+npx prisma db push --schema=prisma/schema.prisma
+npx prisma generate --schema=prisma/schema.prisma
+```
+Note: For production/remote DBs with existing data, prefer planned migrations. Use `db push` only if you understand the implications and have backups.
 
 ### View database
 ```bash
@@ -299,25 +378,31 @@ npx prisma studio
 - S3-hosted rank image integration
 - right-side checkout summary redesign
 - solo/duo-specific add-on layouts
+- real backend demo order creation flow
+- expanded order schema direction
+- first role / second role direction
+- shared navbar/auth direction started across pages
 - demo match/chat page flow
 
 ### In progress
-- real backend-driven order persistence
-- real pricing logic
+- shared auth modal consistency across all pages
+- real pricing logic cleanup and verification
+- duo-specific addon field cleanup (including `untrackableDuo`)
 - patch section real endpoint
-- additional profile dropdown polish
+- additional profile dropdown/navbar polish on later pages
 - match/chat UI polish
 
 ---
 
 ## Next steps (recommended)
 
-1. Design and build the real `Order` schema for service-specific requests
-2. Build order APIs + persistence
-3. Connect the configurator UI to real backend order creation
-4. Continue polishing the match/chat page
-5. Connect the patch section to a real backend endpoint
-6. Later add profile/account settings
+1. Build Admin Management UI to assign/unassign boosters to orders (uses the new admin endpoints)
+2. Wire frontend chat to the backend: join by `orderId`, render history (cursor), send messages, typing state
+3. Finish shared navbar/auth modal consistency on all key pages
+4. Continue cleaning pricing logic and verify all duo/solo addon rules
+5. Finalize the real `Order` schema + payload parity across frontend/backend
+6. Connect the patch section to a real backend endpoint
+7. Later add profile/account settings
 
 ---
 

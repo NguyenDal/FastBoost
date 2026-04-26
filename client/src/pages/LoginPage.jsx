@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../App.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import "../styles/AuthPages.css";
 
 function LoginPage() {
+  const location = useLocation();
+  const redirectTo = location.state?.from || "/";
   const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
@@ -40,7 +42,7 @@ function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.user || {}));
 
       setMessage("Login successful");
-      navigate("/");
+      navigate(redirectTo);
     } catch (error) {
       setMessage("Could not connect to backend");
     } finally {

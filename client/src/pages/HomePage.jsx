@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import Navbar from "../components/Navbar";
+import AuthModal from "../components/AuthModal";
+import "../styles/HomePage.css";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -459,79 +461,22 @@ function HomePage() {
 
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <div className="brand-icon">F</div>
-          <div>
-            <p className="brand-title">FastBoost</p>
-            <p className="brand-subtitle">League Services Platform</p>
-          </div>
-        </div>
-
-        <nav className="nav">
-          <a href="#home">Home</a>
-          <a href="#services">Services</a>
-          <a href="#patch">Latest Patch</a>
-          <a href="#status">Status</a>
-
-          {!hasSession ? (
-            <button
-              className="nav-cta"
-              onClick={() => {
-                setAuthMode("login");
-                setAuthMessage("");
-                setAuthSuccess(false);
-                setLoginErrors({ email: false, password: false });
-                setRegisterErrors({ email: false, password: false });
-                setForgotError(false);
-                setForgotEmail("");
-                setShowAuthModal(true);
-              }}
-            >
-              Login
-            </button>
-          ) : (
-            <div
-              className="profile-menu-wrap"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <button
-                className="profile-avatar-btn"
-                onClick={() => setShowProfileMenu((prev) => !prev)}
-                title={currentUser?.email || "Profile"}
-              >
-                {profileImage ? (
-                  <img
-                    src={profileImage}
-                    alt="User profile"
-                    className="profile-avatar-image"
-                  />
-                ) : (
-                  <span className="default-avatar-icon">👤</span>
-                )}
-              </button>
-
-              {showProfileMenu && (
-                <div className="profile-menu">
-                  <p className="profile-menu-email">
-                    {currentUser?.email || "Signed in"}
-                  </p>
-                  <button className="profile-menu-item">
-                    My Orders
-                  </button>
-                  <button className="profile-menu-item">
-                    Account Settings
-                  </button>
-                  <button className="profile-menu-item" onClick={handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </nav>
-      </header>
-
+      <Navbar
+        hasSession={hasSession}
+        currentUser={currentUser}
+        profileImage={profileImage}
+        showProfileMenu={showProfileMenu}
+        setShowProfileMenu={setShowProfileMenu}
+        setAuthMode={setAuthMode}
+        setAuthMessage={setAuthMessage}
+        setAuthSuccess={setAuthSuccess}
+        setLoginErrors={setLoginErrors}
+        setRegisterErrors={setRegisterErrors}
+        setForgotError={setForgotError}
+        setForgotEmail={setForgotEmail}
+        setShowAuthModal={setShowAuthModal}
+        handleLogout={handleLogout}
+      />
       <main id="home" className="page-content">
         <section className="hero-section">
           <div className="hero-banner">
@@ -707,202 +652,31 @@ function HomePage() {
         </section>
       </main>
 
-      {showAuthModal && (
-        <div className="modal-backdrop" onClick={closeAuthModal}>
-          <div className="auth-modal" onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close-btn" onClick={closeAuthModal}>
-              ×
-            </button>
-
-            {authSuccess ? (
-              <div className="auth-success-state">
-                <div className="success-checkmark-wrap">
-                  <div className="success-checkmark-circle">
-                    <span className="success-checkmark">✓</span>
-                  </div>
-                </div>
-                <h2 className="modal-title">{authSuccessTitle}</h2>
-                <p className="section-description modal-description">
-                  {authSuccessText}
-                </p>
-              </div>
-            ) : (
-              <>
-                <p className="section-label">Account Access</p>
-                <h2 className="modal-title">
-                  {authMode === "login"
-                    ? "Login"
-                    : authMode === "forgot"
-                      ? "Forgot Password"
-                      : "Register"}
-                </h2>
-                <p className="section-description modal-description">
-                  {authMode === "login"
-                    ? "Sign in without leaving the homepage."
-                    : authMode === "forgot"
-                      ? "Enter your registered email to receive a reset link."
-                      : "Create an account without leaving the homepage."}
-                </p>
-
-                {authMode === "login" ? (
-                  <form className="auth-modal-form" onSubmit={handleLoginSubmit}>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email"
-                      value={loginForm.email}
-                      onChange={handleLoginInputChange}
-                      className={loginErrors.email ? "auth-input-error" : ""}
-                      required
-                    />
-
-                    <input
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                      value={loginForm.password}
-                      onChange={handleLoginInputChange}
-                      className={loginErrors.password ? "auth-input-error" : ""}
-                      required
-                    />
-
-                    <button
-                      type="submit"
-                      className="primary-btn modal-submit-btn"
-                      disabled={authLoading}
-                    >
-                      {authLoading ? "Logging in..." : "Login"}
-                    </button>
-
-                    <p className="forgot-password-line">
-                      <button
-                        type="button"
-                        className="auth-switch-btn"
-                        onClick={() => {
-                          setAuthMode("forgot");
-                          setAuthMessage("");
-                          setForgotError(false);
-                        }}
-                      >
-                        Forgot password?
-                      </button>
-                    </p>
-                  </form>
-                ) : authMode === "forgot" ? (
-                  <form className="auth-modal-form" onSubmit={handleForgotPasswordSubmit}>
-                    <input
-                      type="email"
-                      placeholder="Enter your registered email"
-                      value={forgotEmail}
-                      onChange={(event) => {
-                        setForgotEmail(event.target.value);
-                        setForgotError(false);
-                        setAuthMessage("");
-                      }}
-                      className={forgotError ? "auth-input-error" : ""}
-                      required
-                    />
-
-                    <button
-                      type="submit"
-                      className="primary-btn modal-submit-btn"
-                      disabled={authLoading}
-                    >
-                      {authLoading ? "Sending..." : "Send Reset Link"}
-                    </button>
-                  </form>
-                ) : (
-                  <form className="auth-modal-form" onSubmit={handleRegisterSubmit}>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email"
-                      value={registerForm.email}
-                      onChange={handleRegisterInputChange}
-                      className={registerErrors.email ? "auth-input-error" : ""}
-                      required
-                    />
-
-                    <input
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                      value={registerForm.password}
-                      onChange={handleRegisterInputChange}
-                      className={registerErrors.password ? "auth-input-error" : ""}
-                      required
-                    />
-
-                    <button
-                      type="submit"
-                      className="primary-btn modal-submit-btn"
-                      disabled={authLoading}
-                    >
-                      {authLoading ? "Creating account..." : "Register"}
-                    </button>
-                  </form>
-                )}
-
-                {authMessage && (
-                  <p className="info-message auth-error-message">{authMessage}</p>
-                )}
-
-                <p className="auth-switch-line">
-                  {authMode === "login" ? (
-                    <>
-                      Don&apos;t have an account?{" "}
-                      <button
-                        type="button"
-                        className="auth-switch-btn"
-                        onClick={() => {
-                          setAuthMode("register");
-                          setAuthMessage("");
-                          setLoginErrors({ email: false, password: false });
-                          setRegisterErrors({ email: false, password: false });
-                          setForgotError(false);
-                        }}
-                      >
-                        Register
-                      </button>
-                    </>
-                  ) : authMode === "forgot" ? (
-                    <>
-                      Remembered your password?{" "}
-                      <button
-                        type="button"
-                        className="auth-switch-btn"
-                        onClick={() => {
-                          setAuthMode("login");
-                          setAuthMessage("");
-                          setForgotError(false);
-                        }}
-                      >
-                        Back to Login
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      Already have an account?{" "}
-                      <button
-                        type="button"
-                        className="auth-switch-btn"
-                        onClick={() => {
-                          setAuthMode("login");
-                          setAuthMessage("");
-                          setLoginErrors({ email: false, password: false });
-                          setRegisterErrors({ email: false, password: false });
-                        }}
-                      >
-                        Login
-                      </button>
-                    </>
-                  )}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <AuthModal
+        showAuthModal={showAuthModal}
+        closeAuthModal={closeAuthModal}
+        authSuccess={authSuccess}
+        authSuccessTitle={authSuccessTitle}
+        authSuccessText={authSuccessText}
+        authMode={authMode}
+        setAuthMode={setAuthMode}
+        authLoading={authLoading}
+        authMessage={authMessage}
+        setAuthMessage={setAuthMessage}
+        loginForm={loginForm}
+        handleLoginInputChange={handleLoginInputChange}
+        handleLoginSubmit={handleLoginSubmit}
+        loginErrors={loginErrors}
+        registerForm={registerForm}
+        handleRegisterInputChange={handleRegisterInputChange}
+        handleRegisterSubmit={handleRegisterSubmit}
+        registerErrors={registerErrors}
+        forgotEmail={forgotEmail}
+        setForgotEmail={setForgotEmail}
+        forgotError={forgotError}
+        setForgotError={setForgotError}
+        handleForgotPasswordSubmit={handleForgotPasswordSubmit}
+      />
     </div>
   );
 }

@@ -1,0 +1,60 @@
+/* Login/Register/Details page form layouts */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 560px;
+  background: rgba(10, 15, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.auth-card h1 {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.auth-card input,
+.auth-input,
+.auth-textarea {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font: inherit;
+  outline: none;
+}
+
+.auth-card input::placeholder,
+.auth-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.auth-submit-btn {
+  margin-top: 18px;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-switch-text {
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.auth-switch-text a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
