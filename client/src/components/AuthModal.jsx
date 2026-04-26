@@ -1,3 +1,6 @@
+import { useEffect, useMemo, useState } from "react";
+import "../styles/ResetPasswordPage.css";
+
 function AuthModal({
   showAuthModal,
   closeAuthModal,
@@ -23,6 +26,78 @@ function AuthModal({
   setForgotError,
   handleForgotPasswordSubmit,
 }) {
+  // Local computed state for Register mode
+  const [nameStatus, setNameStatus] = useState({
+    checked: false,
+    available: false,
+    reason: "",
+  });
+
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const checks = useMemo(() => {
+    const password = (registerForm?.password) || "";
+    return {
+      length: password.length >= 8,
+      upper: /[A-Z]/.test(password),
+      lower: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password),
+    };
+  }, [registerForm?.password]);
+
+  const score = Object.values(checks).filter(Boolean).length;
+  const allValid = score === 5;
+  const passwordsMatch = Boolean(registerForm?.confirmPassword) && registerForm?.password === registerForm?.confirmPassword;
+
+  const passwordsDoNotMatch =
+    submitAttempted &&
+    (!registerForm?.confirmPassword ||
+      registerForm?.password !== registerForm?.confirmPassword);
+
+  // Debounced username availability check (register mode only)
+  useEffect(() => {
+    if (authMode !== "register") return;
+    const u = (registerForm?.username || "").trim();
+    setNameStatus((s) => ({ ...s, checked: false }));
+    if (u.length < 3) return;
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/user/check-username?u=${encodeURIComponent(u)}`);
+        const data = await res.json();
+        setNameStatus({ checked: true, available: !!data.available, reason: data.reason || "" });
+      } catch {
+        setNameStatus({ checked: true, available: false, reason: "error" });
+      }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [authMode, registerForm?.username]);
+
+  const handleValidatedRegisterSubmit = (event) => {
+    event.preventDefault();
+    setSubmitAttempted(true);
+    setAuthMessage("");
+
+    const username = (registerForm?.username || "").trim();
+
+    if (!username || username.length < 3 || !nameStatus.available) {
+      setAuthMessage("Please choose an available username.");
+      return;
+    }
+
+    if (!allValid) {
+      setAuthMessage("Password does not meet all requirements.");
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setAuthMessage("Passwords do not match.");
+      return;
+    }
+
+    handleRegisterSubmit(event);
+  };
+
   if (!showAuthModal) return null;
 
   return (
@@ -131,7 +206,38 @@ function AuthModal({
                 </button>
               </form>
             ) : (
-              <form className="auth-modal-form" onSubmit={handleRegisterSubmit}>
+              <form className="auth-modal-form" onSubmit={handleValidatedRegisterSubmit}>
+                <div
+                  className={`username-field-wrap ${submitAttempted && nameStatus.checked && !nameStatus.available
+                    ? "show-username-tooltip"
+                    : ""
+                    }`}
+                >
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    value={registerForm.username || ""}
+                    onChange={handleRegisterInputChange}
+                    className={`${nameStatus.checked && nameStatus.available ? "auth-input-valid" : ""} ${submitAttempted && nameStatus.checked && !nameStatus.available
+                      ? "auth-input-error"
+                      : ""
+                      }`}
+                    aria-invalid={nameStatus.checked && !nameStatus.available}
+                    required
+                  />
+
+                  {nameStatus.checked && !nameStatus.available && (
+                    <div className="username-tooltip">
+                      {nameStatus.reason === "taken"
+                        ? "Username is already taken"
+                        : nameStatus.reason === "invalid"
+                          ? "Username is not available"
+                          : "Username is already taken"}
+                    </div>
+                  )}
+                </div>
+
                 <input
                   type="email"
                   name="email"
@@ -148,22 +254,52 @@ function AuthModal({
                   placeholder="Password"
                   value={registerForm.password}
                   onChange={handleRegisterInputChange}
-                  className={registerErrors.password ? "auth-input-error" : ""}
+                  className={`${allValid ? "auth-input-valid" : ""} ${registerErrors.password ? "auth-input-error" : ""}`}
                   required
                 />
+
+                <div className="password-strength">
+                  <div className={`password-strength-track ${allValid ? "is-strong" : ""}`}>
+                    <div className="password-strength-cover" style={{ left: `${(score / 5) * 100}%` }} />
+                  </div>
+                  <div className="password-rules">
+                    <p className={checks.length ? "rule-valid" : ""}>{checks.length ? "✓" : "•"} At least 8 characters</p>
+                    <p className={checks.upper ? "rule-valid" : ""}>{checks.upper ? "✓" : "•"} One uppercase letter</p>
+                    <p className={checks.lower ? "rule-valid" : ""}>{checks.lower ? "✓" : "•"} One lowercase letter</p>
+                    <p className={checks.number ? "rule-valid" : ""}>{checks.number ? "✓" : "•"} One number</p>
+                    <p className={checks.special ? "rule-valid" : ""}>{checks.special ? "✓" : "•"} One special character</p>
+                  </div>
+                </div>
+
+                <div className={`password-match-wrap ${passwordsDoNotMatch ? "show-password-tooltip" : ""}`}>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    value={registerForm.confirmPassword || ""}
+                    onChange={handleRegisterInputChange}
+                    className={`${passwordsMatch ? "auth-input-valid" : ""} ${passwordsDoNotMatch ? "auth-input-error" : ""
+                      }`}
+                    aria-invalid={passwordsDoNotMatch}
+                    required
+                  />
+
+                  {passwordsDoNotMatch && (
+                    <div className="password-match-tooltip">
+                      Passwords do not match
+                    </div>
+                  )}
+                </div>
 
                 <button
                   type="submit"
                   className="primary-btn modal-submit-btn"
                   disabled={authLoading}
+                  onClick={() => setSubmitAttempted(true)}
                 >
                   {authLoading ? "Creating account..." : "Register"}
                 </button>
               </form>
-            )}
-
-            {authMessage && (
-              <p className="info-message auth-error-message">{authMessage}</p>
             )}
 
             <p className="auth-switch-line">

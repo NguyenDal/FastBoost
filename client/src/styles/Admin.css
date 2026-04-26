@@ -9,7 +9,7 @@
 }
 
 .page-container {
-  width: min(1200px, calc(100% - 48px));
+  width: min(1360px, calc(100% - 48px));
   margin: 0 auto;
   padding: 24px 0 48px;
 }
@@ -66,7 +66,16 @@
 .admin-list-item { display:flex; align-items:center; justify-content:space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
 
 /* Status badge */
-.status-badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid transparent; }
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  padding: 7px 12px; /* match .admin-chip for equal height */
+  border-radius: 999px;
+  border: 1px solid transparent;
+  line-height: 1; /* tighter text baseline */
+}
 .status-pending   { color:#9ca3af; background:#9ca3af22; border-color:#9ca3af44; }
 .status-progress  { color:#60a5fa; background:#60a5fa22; border-color:#60a5fa44; }
 .status-complete  { color:#34d399; background:#34d39922; border-color:#34d39944; }
@@ -169,6 +178,13 @@
   border-top: 1px solid rgba(255,255,255,.08);
 }
 
+/* Borderless assign section to avoid double separator above the search */
+.assign-section {
+  margin-top: 16px;
+  padding-top: 0;
+  border-top: none;
+}
+
 .status-row {
   margin-top: 20px;
   padding-top: 18px;
@@ -213,6 +229,24 @@
   gap: 12px;
 }
 
+/* Styled conversation button with animated arrow */
+.conversation-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conversation-btn .arrow {
+  font-weight: 800;
+  color: #a78bfa;
+  transition: transform .18s ease, color .18s ease;
+}
+
+.conversation-btn:hover .arrow {
+  transform: translateX(4px);
+  color: #c4b5fd;
+}
+
 .conversation-code {
   display: inline-block;
   max-width: 100%;
@@ -239,6 +273,51 @@
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
+/* Remove the extra divider below the last assignment row */
+.assignment-list .assignment-item:last-child {
+  border-bottom: none;
+}
+
+/* Smaller red danger button for Unassign */
+.danger-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fecaca;
+  font-weight: 500; /* lighter text, keep button format */
+}
+.danger-btn:hover {
+  background: rgba(239, 68, 68, 0.26);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* Subtle, smaller assign button to match admin palette */
+.admin-assign-btn {
+  padding: 8px 12px;
+  min-height: 34px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e5e7eb;
+  font-weight: 800;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.admin-assign-btn:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.admin-assign-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
 .assignment-email {
   font-weight: 700;
   color: #fff;
@@ -254,8 +333,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 12px;
   margin-bottom: 12px;
+}
+.assign-header .card-title {
+  margin: 0;
+  white-space: nowrap; /* keep on one line */
+  flex: 1 1 auto;      /* take remaining space */
+}
+.assign-header .admin-input {
+  flex: 0 1 280px;     /* allow shrink when space is tight */
+  min-width: 160px;
+  width: auto;
+  min-height: 40px;
 }
 
 .addon-grid {
@@ -522,4 +613,58 @@
   .admin-table {
     min-width: 920px;
   }
+}
+
+/* Fix native select dropdown visibility */
+.admin-select {
+  appearance: auto;
+  color: #ffffff;
+  background-color: #1f2530;
+  border: 1px solid rgba(255,255,255,.18);
+  cursor: pointer;
+}
+
+.admin-select option {
+  color: #ffffff;
+  background-color: #1f2530;
+}
+
+.admin-select option:hover,
+.admin-select option:checked {
+  color: #ffffff;
+  background-color: #7c3aed;
+}
+
+.admin-select:focus {
+  border-color: rgba(168,85,247,.75);
+  box-shadow: 0 0 0 4px rgba(168,85,247,.16);
+}
+
+/* Improve status select + save button layout */
+.status-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-control .admin-select {
+  min-width: 170px;
+  min-height: 46px;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-weight: 700;
+}
+
+.status-control .primary-btn {
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 14px;
+}
+
+/* Small admin-sized button helper to pair with .secondary-btn */
+.admin-btn-sm {
+  padding: 8px 12px !important;
+  min-height: 34px;
+  border-radius: 10px !important;
+  font-weight: 500 !important; /* not bold */
 }

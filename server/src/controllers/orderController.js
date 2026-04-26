@@ -219,9 +219,9 @@ module.exports.listAllOrders = async (req, res) => {
                 take: pageSize,
                 include: {
                     service: true,
-                    customer: { select: { id: true, email: true, role: true } },
+                    customer: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } },
                     assignments: {
-                        include: { booster: { select: { id: true, email: true, role: true } } },
+                        include: { booster: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } } },
                     },
                     conversation: { select: { id: true, lastMessageAt: true } },
                 },
@@ -249,14 +249,14 @@ module.exports.getOrderAdminById = async (req, res) => {
             where: { id },
             include: {
                 service: true,
-                customer: { select: { id: true, email: true, role: true } },
+                customer: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } },
                 assignments: {
-                    include: { booster: { select: { id: true, email: true, role: true } } },
+                    include: { booster: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } } },
                 },
                 conversation: {
                     include: {
                         participants: {
-                            include: { user: { select: { id: true, email: true, role: true } } },
+                            include: { user: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } } },
                         },
                         _count: { select: { messages: true } },
                     },
@@ -289,7 +289,8 @@ module.exports.updateOrderStatus = async (req, res) => {
             data: { status },
             include: {
                 service: true,
-                customer: { select: { id: true, email: true, role: true } },
+                    customer: { select: { id: true, username: true, role: true, profile: { select: { displayName: true } } } },
+                    conversation: true,
             },
         });
 
@@ -341,7 +342,7 @@ module.exports.assignBooster = async (req, res) => {
 
         const participants = await prisma.conversationParticipant.findMany({
             where: { conversationId: convo.id },
-            include: { user: { select: { id: true, email: true, role: true } } },
+            include: { user: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } } },
         });
 
         return res.json({ ok: true, message: "Booster assigned", conversationId: convo.id, participants });
@@ -377,7 +378,7 @@ module.exports.listAssignments = async (req, res) => {
         const { id: orderId } = req.params;
         const items = await prisma.orderAssignment.findMany({
             where: { orderId },
-            include: { booster: { select: { id: true, email: true, role: true } } },
+            include: { booster: { select: { id: true, email: true, username: true, role: true, profile: { select: { displayName: true } } } } },
         });
         return res.json({ ok: true, assignments: items });
     } catch (error) {

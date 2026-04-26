@@ -25,6 +25,8 @@ function HomePage() {
     email: "",
     password: "",
     role: "CUSTOMER",
+    username: "",
+    confirmPassword: "",
   });
 
   const [forgotEmail, setForgotEmail] = useState("");
@@ -240,6 +242,8 @@ function HomePage() {
       email: "",
       password: "",
       role: "CUSTOMER",
+      username: "",
+      confirmPassword: "",
     });
   };
 
@@ -336,12 +340,15 @@ function HomePage() {
     });
 
     try {
+      // Only send expected fields to backend
+      const { email, password, role, username } = registerForm;
+
       const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(registerForm),
+        body: JSON.stringify({ email, password, role, username }),
       });
 
       const registerData = await registerResponse.json();

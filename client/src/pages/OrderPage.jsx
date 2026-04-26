@@ -70,7 +70,7 @@ function OrderPage() {
     currentMasterLp: 0,
     desiredMasterLp: 50,
     lpGain: "",
-    peakRank: "Unranked",
+    peakRank: "",
     desiredWins: "",
     placementGames: "",
     numberOfGames: "",
@@ -135,6 +135,7 @@ function OrderPage() {
           currentMasterLp: 0,
           desiredMasterLp: 50,
           lpGain: "18-23 LP / win",
+          peakRank: "", // not applicable
           desiredWins: "",
           placementGames: "",
           numberOfGames: "",
@@ -145,6 +146,7 @@ function OrderPage() {
         return {
           ...prev,
           lpGain: "",
+          peakRank: prev.peakRank || "Unranked", // applicable; default to Unranked if empty
           desiredWins: "",
           placementGames: "1",
           numberOfGames: "",
@@ -155,6 +157,7 @@ function OrderPage() {
         return {
           ...prev,
           lpGain: "18-23 LP / win",
+          peakRank: "", // not applicable
           desiredWins: "1",
           placementGames: "",
           numberOfGames: "",
@@ -165,6 +168,7 @@ function OrderPage() {
         return {
           ...prev,
           lpGain: "18-23 LP / win",
+          peakRank: "", // not applicable
           desiredWins: "",
           placementGames: "",
           numberOfGames: "1",
@@ -694,7 +698,7 @@ function OrderPage() {
             ? Number(formData.desiredMasterLp)
             : null,
           lpGain: formData.lpGain || null,
-          peakRank: formData.peakRank,
+          peakRank: serviceType === "Placement Boost" ? (formData.peakRank || null) : null,
           desiredWins: formData.desiredWins,
           placementGames: formData.placementGames,
           firstRole:

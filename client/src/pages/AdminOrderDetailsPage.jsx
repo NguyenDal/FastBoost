@@ -66,6 +66,7 @@ export default function AdminOrderDetailsPage() {
     const [assignLoading, setAssignLoading] = useState(false);
 
     const assignedEmails = useMemo(() => assignments.map(a => a.booster?.email).filter(Boolean), [assignments]);
+    const assignedIds = useMemo(() => assignments.map(a => a.boosterId).filter(Boolean), [assignments]);
 
     useEffect(() => {
         if (!isAdmin) return;
@@ -100,8 +101,10 @@ export default function AdminOrderDetailsPage() {
 
     const onStatusSave = async () => {
         try {
-            const updated = await adminUpdateOrderStatus(id, status);
-            setOrder(updated);
+            await adminUpdateOrderStatus(id, status);
+            // Re-fetch full order to keep conversation/assignments intact
+            const fresh = await adminGetOrder(id);
+            setOrder(fresh);
         } catch (e) {
             alert(e?.message || "Failed to update status");
         }
@@ -137,10 +140,6 @@ export default function AdminOrderDetailsPage() {
         <div className="page-shell">
             <Navbar />
             <div className="page-container">
-                <div className="admin-toolbar" style={{ justifyContent: "flex-start" }}>
-                    <Link to="/admin/orders" className="secondary-btn">Back</Link>
-                    <h1 style={{ margin: 0 }}>Order #{id?.slice?.(0, 6)}</h1>
-                </div>
 
                 {loading ? (
                     <p>Loading…</p>
@@ -165,8 +164,7 @@ export default function AdminOrderDetailsPage() {
                             </div>
 
                             <div className="admin-hero-actions">
-                                <Link to="/admin/orders" className="secondary-btn">Back</Link>
-                                <Link className="secondary-btn" to={`/match/${order.id}`}>Open Chat</Link>
+                                <Link to="/admin/orders" className="secondary-btn">Close</Link>
                             </div>
                         </div>
 
@@ -175,7 +173,7 @@ export default function AdminOrderDetailsPage() {
                                 <h3 className="card-title">Order Overview</h3>
 
                                 <div className="order-overview-grid">
-                                    <Field label="Customer" value={order.customer?.email || "-"} />
+                                    <Field label="Customer" value={order.customer?.username || order.customer?.profile?.displayName || (order.customer?.email ? order.customer.email.split("@")[0] : "-")} />
                                     <Field label="Service" value={order.service?.title || order.boostType || "-"} />
                                     <Field label="Region" value={order.region || "-"} />
                                     <Field label="Queue Type" value={order.queueType || "-"} />
@@ -197,7 +195,7 @@ export default function AdminOrderDetailsPage() {
                                             <option value="CANCELLED">CANCELLED</option>
                                         </select>
 
-                                        <button className="primary-btn" onClick={onStatusSave}>
+                                        <button className="secondary-btn admin-btn-sm" onClick={onStatusSave}>
                                             Save
                                         </button>
                                     </div>
@@ -240,61 +238,24 @@ export default function AdminOrderDetailsPage() {
                                     </div>
                                 </div>
 
-                                <div className="admin-card premium-card">
-                                    <h3 className="card-title">Conversation</h3>
+                                {order.conversation ? (
+                                    <div className="conversation-box">
+                                        <Link className="secondary-btn admin-btn-sm conversation-btn" to={`/match/${order.id}`}>
+                                            <span>Go to Conversation</span>
+                                            <span aria-hidden="true" className="arrow">→</span>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <p className="muted-text">
+                                        No conversation yet. Assign a booster to create one.
+                                    </p>
+                                )}
 
-                                    {order.conversation ? (
-                                        <div className="conversation-box">
-                                            <p><strong>Conversation ID:</strong></p>
-                                            <code className="conversation-code">
-                                                {order.conversation.id}
-                                            </code>
-                                            <Link className="primary-btn" to={`/match/${order.id}`}>
-                                                Open Chat
-                                            </Link>
-                                        </div>
-                                    ) : (
-                                        <p className="muted-text">
-                                            No conversation yet. Assign a booster to create one.
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="admin-card premium-card">
-                                    <h3 className="card-title">Assignments</h3>
-
-                                    <ul className="assignment-list">
-                                        {assignments.map((a) => (
-                                            <li key={a.id} className="assignment-item">
-                                                <div>
-                                                    <div className="assignment-email">
-                                                        {a.booster?.email}
-                                                    </div>
-                                                    <div className="assignment-role">
-                                                        {a.booster?.role}
-                                                    </div>
-                                                </div>
-
-                                                <button
-                                                    className="secondary-btn"
-                                                    disabled={assignLoading}
-                                                    onClick={() => onUnassign(a.boosterId)}
-                                                >
-                                                    Unassign
-                                                </button>
-                                            </li>
-                                        ))}
-
-                                        {assignments.length === 0 && (
-                                            <li className="muted-text">No assignments</li>
-                                        )}
-                                    </ul>
-                                </div>
+                                
 
                                 <div className="admin-card premium-card">
                                     <div className="assign-header">
                                         <h3 className="card-title">Assign Booster</h3>
-
                                         <input
                                             placeholder="Search providers..."
                                             value={providerQuery}
@@ -309,30 +270,50 @@ export default function AdminOrderDetailsPage() {
                                     </div>
 
                                     <div className="admin-list">
-                                        {providers.map((u) => (
-                                            <div key={u.id} className="admin-list-item">
+                                        {/* Assigned first */}
+                                        {assignments.map((a) => (
+                                            <div key={a.id} className="admin-list-item">
                                                 <div>
-                                                    <div className="assignment-email">{u.email}</div>
-                                                    <div className="assignment-role">
-                                                        Joined {new Date(u.createdAt).toLocaleDateString()}
+                                                    <div className="assignment-email">
+                                                        {a.booster?.username || a.booster?.profile?.displayName || a.booster?.email}
                                                     </div>
+                                                    <div className="assignment-role">{a.booster?.role}</div>
                                                 </div>
-
                                                 <button
-                                                    className="primary-btn"
-                                                    disabled={assignLoading || assignedEmails.includes(u.email)}
-                                                    onClick={() => onAssign(u.id)}
+                                                    className="danger-btn"
+                                                    disabled={assignLoading}
+                                                    onClick={() => onUnassign(a.boosterId)}
                                                 >
-                                                    {assignedEmails.includes(u.email) ? "Assigned" : "Assign"}
+                                                    Unassign
                                                 </button>
                                             </div>
                                         ))}
 
-                                        {providers.length === 0 && (
+                                        {/* Unassigned after */}
+                                        {providers
+                                            .filter((u) => !assignedIds.includes(u.id) && !assignedEmails.includes(u.email))
+                                            .map((u) => (
+                                                <div key={u.id} className="admin-list-item">
+                                                    <div>
+                                                        <div className="assignment-email">{u.username || u.profile?.displayName || u.email}</div>
+                                                        <div className="assignment-role">Joined {new Date(u.createdAt).toLocaleDateString()}</div>
+                                                    </div>
+                                                    <button
+                                                        className="secondary-btn admin-btn-sm"
+                                                        disabled={assignLoading}
+                                                        onClick={() => onAssign(u.id)}
+                                                    >
+                                                        Assign
+                                                    </button>
+                                                </div>
+                                            ))}
+
+                                        {assignments.length === 0 && providers.filter((u) => !assignedIds.includes(u.id) && !assignedEmails.includes(u.email)).length === 0 && (
                                             <p className="muted-text">No providers</p>
                                         )}
                                     </div>
                                 </div>
+
                             </aside>
                         </div>
                     </>
@@ -349,6 +330,20 @@ function Field({ label, value }) {
             <div className="field-value">{value}</div>
         </div>
     );
+}
+
+function SmartField({ label, value }) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        value === "-" ||
+        value === false
+    ) {
+        return null;
+    }
+
+    return <Field label={label} value={value} />;
 }
 
 function OrderTypeDetails({ order }) {
@@ -373,21 +368,29 @@ function OrderTypeDetails({ order }) {
 
             {isRankBoost && (
                 <div className="order-detail-grid">
-                    <Field label="Current Rank" value={order.currentRank || "-"} />
-                    <Field label="Current LP" value={formatValue(order.currentLP)} />
-                    <Field label="Current Master LP" value={formatValue(order.currentMasterLp)} />
-                    <Field label="Desired Rank" value={order.desiredRank || "-"} />
-                    <Field label="Desired Master LP" value={formatValue(order.desiredMasterLp)} />
-                    <Field label="LP Gain" value={order.lpGain || "-"} />
-                    <Field label="Peak Rank" value={order.peakRank || "-"} />
-                    <Field label="First Role" value={order.firstRole || "-"} />
-                    <Field label="Second Role" value={order.secondRole || "-"} />
-                    <Field label="Selected Champions" value={formatArray(order.selectedChampions)} />
+                    <SmartField label="Current Rank" value={order.currentRank} />
+                    <SmartField label="Current LP" value={order.currentLP} />
+
+                    {isMasterRank(order.currentRank) && (
+                        <SmartField label="Current Master LP" value={order.currentMasterLp} />
+                    )}
+
+                    <SmartField label="Desired Rank" value={order.desiredRank} />
+
+                    {isMasterRank(order.desiredRank) && (
+                        <SmartField label="Desired Master LP" value={order.desiredMasterLp} />
+                    )}
+
+                    <SmartField label="LP Gain" value={order.lpGain} />
+                    <SmartField label="First Role" value={order.firstRole} />
+                    <SmartField label="Second Role" value={order.secondRole} />
+                    <SmartField label="Selected Champions" value={formatArray(order.selectedChampions)} />
                 </div>
             )}
 
             {isPlacement && (
                 <div className="order-detail-grid">
+                    <SmartField label="Peak Rank" value={order.peakRank} />
                     <Field label="Placement Games" value={formatValue(order.placementGames)} />
                     <Field label="Current Rank" value={order.currentRank || "-"} />
                     <Field label="Queue Type" value={order.queueType || "-"} />
@@ -483,6 +486,18 @@ function formatBoolean(value) {
 
 function formatValue(value) {
     return value === null || value === undefined || value === "" ? "-" : value;
+}
+
+function isMasterRank(rank) {
+    if (!rank) return false;
+
+    const normalized = String(rank).toLowerCase();
+
+    return (
+        normalized.includes("master") ||
+        normalized.includes("grandmaster") ||
+        normalized.includes("challenger")
+    );
 }
 
 function formatArray(value) {
