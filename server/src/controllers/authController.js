@@ -50,6 +50,7 @@ const signToken = (user) => {
     {
       userId: user.id,
       email: user.email,
+      username: user.username || undefined,
       role: user.role,
     },
     process.env.JWT_SECRET,
@@ -97,7 +98,7 @@ const sendPasswordResetEmail = async ({ to, resetUrl }) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, username } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -132,8 +133,15 @@ const registerUser = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
+        username: username ? String(username).trim() || null : null,
         passwordHash: hashedPassword,
         role: role || "CUSTOMER",
+        profile: username
+          ? { create: { displayName: String(username).trim() || null } }
+          : undefined,
+      },
+      include: {
+        profile: true,
       },
     });
 
@@ -144,6 +152,8 @@ const registerUser = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        username: user.username || null,
+        profile: user.profile ? { displayName: user.profile.displayName } : null,
       },
     });
   } catch (error) {
@@ -170,6 +180,7 @@ const loginUser = async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
+      include: { profile: true },
     });
 
     if (!user) {
@@ -198,6 +209,8 @@ const loginUser = async (req, res) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        username: user.username || null,
+        profile: user.profile ? { displayName: user.profile.displayName } : null,
       },
     });
   } catch (error) {

@@ -8,6 +8,7 @@ function RegisterPage() {
     email: "",
     password: "",
     role: "CUSTOMER",
+    username: "",
   });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,14 @@ function RegisterPage() {
         <p className="section-description">
           Create an account to browse and order services.
         </p>
+
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={form.username}
+          onChange={handleChange}
+        />
 
         <input
           type="email"

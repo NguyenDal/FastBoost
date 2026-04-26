@@ -18,6 +18,8 @@ body {
   color: #f3f4f6;
 }
 
+.lock-scroll { overflow: hidden; }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -217,6 +219,44 @@ button {
   position: relative;
 }
 
+/* Avatar + hover-username pill */
+.profile-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0; /* keep compact */
+  padding: 4px 6px 4px 10px; /* keep constant to avoid layout shift */
+  border-radius: 999px;
+  background: transparent; /* hidden look by default */
+  border: 1px solid transparent; /* constant width; only color changes on hover */
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.profile-identity:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.profile-username-ellipsis {
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(10px); /* start slightly to the right */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #e5e7eb;
+  font-weight: 500; /* not bold */
+  font-size: 0.9rem; /* a bit smaller */
+  margin-right: 0; /* avoid gap when hidden */
+  transition: max-width .25s ease, opacity .25s ease, transform .25s ease, margin-right .2s ease;
+}
+
+.profile-identity:hover .profile-username-ellipsis {
+  max-width: 180px;
+  opacity: 1;
+  transform: translateX(0); /* slide from right to left */
+  margin-right: 8px; /* space before avatar once visible */
+}
+
 .profile-avatar-btn {
   width: 42px;
   height: 42px;
@@ -252,24 +292,18 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-  padding: 10px;
+  padding: 8px;
   z-index: 1000;
-}
-
-.profile-menu-email {
-  margin: 0;
-  padding: 10px 12px;
-  color: rgba(255, 255, 255, 0.82);
-  word-break: break-word;
 }
 
 .profile-menu-item {
   width: 100%;
+  display: block;
   border: none;
   background: transparent;
   color: #ffffff;
   text-align: left;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
   font: inherit;
@@ -277,6 +311,127 @@ button {
 
 .profile-menu-item:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* Quick tiles (notifications/messages) in profile menu */
+
+.profile-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two tiles side-by-side */
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.quick-tile {
+  position: relative;
+  width: 100%;
+  height: 44px; /* fixed height for perfect vertical centering */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px; /* equal space top/bottom around 20px icon -> (44-20)/2 = 12 */
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.quick-tile:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.quick-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: #e5e7eb;
+  fill: none;
+}
+
+.quick-count {
+  margin-left: auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+/* Right-side slide panel */
+.slide-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 24, 0.55);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity .32s ease;
+  z-index: 1300;
+}
+.slide-panel-backdrop.open { opacity: 1; }
+.slide-panel-backdrop.closing { opacity: 0; }
+
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(520px, 94vw);
+  background: rgba(13, 18, 30, 0.98);
+  border-left: 1px solid rgba(255,255,255,0.08);
+  box-shadow: -20px 0 50px rgba(0,0,0,.45);
+  transform: translateX(100%);
+  transition: transform .32s ease;
+  z-index: 1310;
+  display: flex;
+  flex-direction: column;
+}
+.slide-panel.open { transform: translateX(0); }
+.slide-panel.closing { transform: translateX(100%); }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.panel-icon {
+  width: 28px;
+  height: 28px;
+}
+.panel-icon.notif { color: #fca5a5; } /* soft red for notifications */
+.panel-icon.msg { color: #93c5fd; }   /* soft blue for messages */
+
+.panel-titles h3 { margin: 0; font-size: 1.05rem; }
+.panel-sub { margin: 2px 0 0; color: #9ca3af; font-size: .86rem; }
+.panel-close {
+  margin-left: auto;
+  width: 36px; height: 36px;
+  border: none; border-radius: 8px;
+  background: rgba(255,255,255,.06);
+  color: #fff; cursor: pointer;
+}
+.panel-close:hover { background: rgba(255,255,255,.10); }
+.panel-body { padding: 16px; overflow: auto; }
+.panel-empty { display: grid; place-items: center; gap: 10px; padding: 40px 0; text-align: center; }
+.panel-illustration svg { width: 96px; height: 96px; }
+.panel-empty-title { margin: 8px 0 0; font-size: 1.05rem; font-weight: 800; }
+.panel-empty-sub { margin: 0; color: #9ca3af; }
+
+.quick-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 /* Auth Modal (shared component) */

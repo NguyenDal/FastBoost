@@ -146,8 +146,8 @@ export default function AdminOrdersPage() {
                                         <td><StatusBadge status={o.status} /></td>
                                         <td>
                                             <div className="customer-cell">
-                                                <span>{o.customer?.email}</span>
-                                                <small>{o.customer?.role || "CUSTOMER"}</small>
+                                                <span>{o.customer?.username || o.customer?.profile?.displayName || (o.customer?.email ? o.customer.email.split("@")[0] : "Customer")}</span>
+                                                <small>{o.customer?.email}</small>
                                             </div>
                                         </td>
                                         <td>
@@ -164,7 +164,7 @@ export default function AdminOrdersPage() {
                                                 <div className="assignee-stack">
                                                     {o.assignments.map((a) => (
                                                         <span key={a.id || a.booster?.email} className="assignee-pill">
-                                                            {a.booster?.email}
+                                                            {a.booster?.username || a.booster?.profile?.displayName || (a.booster?.email ? a.booster.email.split("@")[0] : "Booster")}
                                                         </span>
                                                     ))}
                                                 </div>
