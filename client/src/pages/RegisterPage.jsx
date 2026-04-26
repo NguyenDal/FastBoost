@@ -14,6 +14,7 @@ function RegisterPage() {
   });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [nameStatus, setNameStatus] = useState({ checked: false, available: false, reason: "" });
 
   const handleChange = (event) => {
@@ -36,6 +37,9 @@ function RegisterPage() {
   const allValid = score === 5;
   const passwordsMatch = form.confirmPassword.length > 0 && form.password === form.confirmPassword;
 
+  const confirmPasswordTouched = form.confirmPassword.length > 0;
+  const passwordsDoNotMatch =
+    submitAttempted && confirmPasswordTouched && form.password !== form.confirmPassword;
   // Debounced username availability
   useEffect(() => {
     const u = (form.username || "").trim();
@@ -55,9 +59,10 @@ function RegisterPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setSubmitAttempted(true);
     setLoading(true);
     setMessage("");
-
+    
     try {
       // client-side validations
       if (!form.username || !nameStatus.available) {
@@ -159,17 +164,24 @@ function RegisterPage() {
           className={`${allValid ? "auth-input-valid" : ""}`}
         />
 
-        <div className="password-strength">
-          <div className={`password-strength-track ${allValid ? "is-strong" : ""}`}>
-            <div className="password-strength-cover" style={{ left: `${(score / 5) * 100}%` }} />
-          </div>
-          <div className="password-rules">
-            <p className={checks.length ? "rule-valid" : ""}>{checks.length ? "✓" : "•"} At least 8 characters</p>
-            <p className={checks.upper ? "rule-valid" : ""}>{checks.upper ? "✓" : "•"} One uppercase letter</p>
-            <p className={checks.lower ? "rule-valid" : ""}>{checks.lower ? "✓" : "•"} One lowercase letter</p>
-            <p className={checks.number ? "rule-valid" : ""}>{checks.number ? "✓" : "•"} One number</p>
-            <p className={checks.special ? "rule-valid" : ""}>{checks.special ? "✓" : "•"} One special character</p>
-          </div>
+        <div className={`password-match-wrap ${passwordsDoNotMatch ? "show-password-tooltip" : ""}`}>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+            className={`${passwordsMatch ? "auth-input-valid" : ""} ${passwordsDoNotMatch ? "auth-input-error" : ""
+              }`}
+            aria-invalid={passwordsDoNotMatch}
+          />
+
+          {passwordsDoNotMatch && (
+            <div className="password-match-tooltip">
+              Passwords do not match
+            </div>
+          )}
         </div>
 
         <input

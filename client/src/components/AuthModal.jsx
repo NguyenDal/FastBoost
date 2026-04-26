@@ -33,6 +33,8 @@ function AuthModal({
     reason: "",
   });
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   const checks = useMemo(() => {
     const password = (registerForm?.password) || "";
     return {
@@ -47,6 +49,11 @@ function AuthModal({
   const score = Object.values(checks).filter(Boolean).length;
   const allValid = score === 5;
   const passwordsMatch = Boolean(registerForm?.confirmPassword) && registerForm?.password === registerForm?.confirmPassword;
+
+  const passwordsDoNotMatch =
+    submitAttempted &&
+    (!registerForm?.confirmPassword ||
+      registerForm?.password !== registerForm?.confirmPassword);
 
   // Debounced username availability check (register mode only)
   useEffect(() => {
@@ -65,6 +72,31 @@ function AuthModal({
     }, 250);
     return () => clearTimeout(t);
   }, [authMode, registerForm?.username]);
+
+  const handleValidatedRegisterSubmit = (event) => {
+    event.preventDefault();
+    setSubmitAttempted(true);
+    setAuthMessage("");
+
+    const username = (registerForm?.username || "").trim();
+
+    if (!username || username.length < 3 || !nameStatus.available) {
+      setAuthMessage("Please choose an available username.");
+      return;
+    }
+
+    if (!allValid) {
+      setAuthMessage("Password does not meet all requirements.");
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setAuthMessage("Passwords do not match.");
+      return;
+    }
+
+    handleRegisterSubmit(event);
+  };
 
   if (!showAuthModal) return null;
 
@@ -174,9 +206,11 @@ function AuthModal({
                 </button>
               </form>
             ) : (
-              <form className="auth-modal-form" onSubmit={handleRegisterSubmit}>
+              <form className="auth-modal-form" onSubmit={handleValidatedRegisterSubmit}>
                 <div
-                  className={`username-field-wrap ${nameStatus.checked && !nameStatus.available ? "show-username-tooltip" : ""
+                  className={`username-field-wrap ${submitAttempted && nameStatus.checked && !nameStatus.available
+                    ? "show-username-tooltip"
+                    : ""
                     }`}
                 >
                   <input
@@ -185,7 +219,9 @@ function AuthModal({
                     placeholder="Username"
                     value={registerForm.username || ""}
                     onChange={handleRegisterInputChange}
-                    className={`${nameStatus.checked && nameStatus.available ? "auth-input-valid" : ""} ${nameStatus.checked && !nameStatus.available ? "auth-input-error" : ""
+                    className={`${nameStatus.checked && nameStatus.available ? "auth-input-valid" : ""} ${submitAttempted && nameStatus.checked && !nameStatus.available
+                      ? "auth-input-error"
+                      : ""
                       }`}
                     aria-invalid={nameStatus.checked && !nameStatus.available}
                     required
@@ -235,29 +271,35 @@ function AuthModal({
                   </div>
                 </div>
 
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm password"
-                  value={registerForm.confirmPassword || ""}
-                  onChange={handleRegisterInputChange}
-                  className={`${passwordsMatch ? "auth-input-valid" : ""}`}
-                  required
-                />
+                <div className={`password-match-wrap ${passwordsDoNotMatch ? "show-password-tooltip" : ""}`}>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    value={registerForm.confirmPassword || ""}
+                    onChange={handleRegisterInputChange}
+                    className={`${passwordsMatch ? "auth-input-valid" : ""} ${passwordsDoNotMatch ? "auth-input-error" : ""
+                      }`}
+                    aria-invalid={passwordsDoNotMatch}
+                    required
+                  />
+
+                  {passwordsDoNotMatch && (
+                    <div className="password-match-tooltip">
+                      Passwords do not match
+                    </div>
+                  )}
+                </div>
 
                 <button
                   type="submit"
                   className="primary-btn modal-submit-btn"
-                  disabled={authLoading || !nameStatus.available || !allValid || !passwordsMatch}
-                  title={!nameStatus.available ? "Choose an available username" : (!allValid ? "Password does not meet all rules" : (!passwordsMatch ? "Passwords do not match" : undefined))}
+                  disabled={authLoading}
+                  onClick={() => setSubmitAttempted(true)}
                 >
                   {authLoading ? "Creating account..." : "Register"}
                 </button>
               </form>
-            )}
-
-            {authMessage && (
-              <p className="info-message auth-error-message">{authMessage}</p>
             )}
 
             <p className="auth-switch-line">
