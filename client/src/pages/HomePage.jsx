@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import AuthModal from "../components/AuthModal";
+import RegisterPage from "./RegisterPage";
 import "../styles/HomePage.css";
 
 function HomePage() {
@@ -655,7 +655,7 @@ function HomePage() {
         </section>
       </main>
 
-      <AuthModal
+      <RegisterPage
         showAuthModal={showAuthModal}
         closeAuthModal={closeAuthModal}
         authSuccess={authSuccess}

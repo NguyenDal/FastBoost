@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import AuthModal from "../components/AuthModal";
+import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
 
 function OrderPage() {
@@ -2165,7 +2165,7 @@ function OrderPage() {
           </div>
         )}
 
-        <AuthModal
+        <RegisterPage
           showAuthModal={showAuthModal}
           closeAuthModal={closeAuthModal}
           authMode={authMode}

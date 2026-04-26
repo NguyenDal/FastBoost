@@ -1,29 +1,42 @@
-import { useMemo, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/AuthPages.css";
+import { useEffect, useMemo, useState } from "react";
 import "../styles/ResetPasswordPage.css";
 
-function RegisterPage() {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    role: "CUSTOMER",
-    username: "",
-    confirmPassword: "",
+function RegisterPage({
+  showAuthModal,
+  closeAuthModal,
+  authSuccess,
+  authSuccessTitle,
+  authSuccessText,
+  authMode,
+  setAuthMode,
+  authLoading,
+  authMessage,
+  setAuthMessage,
+  loginForm,
+  handleLoginInputChange,
+  handleLoginSubmit,
+  loginErrors,
+  registerForm,
+  handleRegisterInputChange,
+  handleRegisterSubmit,
+  registerErrors,
+  forgotEmail,
+  setForgotEmail,
+  forgotError,
+  setForgotError,
+  handleForgotPasswordSubmit,
+}) {
+  // Local computed state for Register mode
+  const [nameStatus, setNameStatus] = useState({
+    checked: false,
+    available: false,
+    reason: "",
   });
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const [nameStatus, setNameStatus] = useState({ checked: false, available: false, reason: "" });
 
-  const handleChange = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
-  };
-
-  // Password rules (reuse Reset Password logic)
   const checks = useMemo(() => {
-    const password = form.password || "";
+    const password = (registerForm?.password) || "";
     return {
       length: password.length >= 8,
       upper: /[A-Z]/.test(password),
@@ -31,18 +44,21 @@ function RegisterPage() {
       number: /[0-9]/.test(password),
       special: /[^A-Za-z0-9]/.test(password),
     };
-  }, [form.password]);
+  }, [registerForm?.password]);
 
   const score = Object.values(checks).filter(Boolean).length;
   const allValid = score === 5;
-  const passwordsMatch = form.confirmPassword.length > 0 && form.password === form.confirmPassword;
+  const passwordsMatch = Boolean(registerForm?.confirmPassword) && registerForm?.password === registerForm?.confirmPassword;
 
-  const confirmPasswordTouched = form.confirmPassword.length > 0;
   const passwordsDoNotMatch =
-    submitAttempted && confirmPasswordTouched && form.password !== form.confirmPassword;
-  // Debounced username availability
+    submitAttempted &&
+    (!registerForm?.confirmPassword ||
+      registerForm?.password !== registerForm?.confirmPassword);
+
+  // Debounced username availability check (register mode only)
   useEffect(() => {
-    const u = (form.username || "").trim();
+    if (authMode !== "register") return;
+    const u = (registerForm?.username || "").trim();
     setNameStatus((s) => ({ ...s, checked: false }));
     if (u.length < 3) return;
     const t = setTimeout(async () => {
@@ -55,155 +71,286 @@ function RegisterPage() {
       }
     }, 250);
     return () => clearTimeout(t);
-  }, [form.username]);
+  }, [authMode, registerForm?.username]);
 
-  const handleSubmit = async (event) => {
+  const handleValidatedRegisterSubmit = (event) => {
     event.preventDefault();
     setSubmitAttempted(true);
-    setLoading(true);
-    setMessage("");
-    
-    try {
-      // client-side validations
-      if (!form.username || !nameStatus.available) {
-        setMessage("Please choose an available username (min 3 chars)");
-        setLoading(false);
-        return;
-      }
-      if (!allValid) {
-        setMessage("Password does not meet all requirements");
-        setLoading(false);
-        return;
-      }
-      if (!passwordsMatch) {
-        setMessage("Passwords do not match");
-        setLoading(false);
-        return;
-      }
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-          role: form.role,
-          username: form.username,
-        }),
-      });
+    setAuthMessage("");
 
-      const data = await response.json();
+    const username = (registerForm?.username || "").trim();
 
-      if (!response.ok) {
-        setMessage(data.message || "Registration failed");
-        return;
-      }
-
-      setMessage("Account created successfully");
-      navigate("/login");
-    } catch (error) {
-      setMessage("Could not connect to backend");
-    } finally {
-      setLoading(false);
+    if (!username || username.length < 3 || !nameStatus.available) {
+      setAuthMessage("Please choose an available username.");
+      return;
     }
+
+    if (!allValid) {
+      setAuthMessage("Password does not meet all requirements.");
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setAuthMessage("Passwords do not match.");
+      return;
+    }
+
+    handleRegisterSubmit(event);
   };
 
+  if (!showAuthModal) return null;
+
   return (
-    <div className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="section-label">Create Account</p>
-        <h1>Register</h1>
-        <p className="section-description">
-          Create an account to browse and order services.
-        </p>
-
-        <div
-          className={`username-field-wrap ${nameStatus.checked && !nameStatus.available ? "show-username-tooltip" : ""
-            }`}
-        >
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={form.username}
-            onChange={handleChange}
-            required
-            className={`${nameStatus.checked && nameStatus.available ? "auth-input-valid" : ""} ${nameStatus.checked && !nameStatus.available ? "auth-input-error" : ""
-              }`}
-            aria-invalid={nameStatus.checked && !nameStatus.available}
-          />
-
-          {nameStatus.checked && !nameStatus.available && (
-            <div className="username-tooltip">
-              {nameStatus.reason === "taken"
-                ? "Username is already taken"
-                : nameStatus.reason === "invalid"
-                  ? "Username is not available"
-                  : "Username is already taken"}
-            </div>
-          )}
-        </div>
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          className={`${allValid ? "auth-input-valid" : ""}`}
-        />
-
-        <div className={`password-match-wrap ${passwordsDoNotMatch ? "show-password-tooltip" : ""}`}>
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            required
-            className={`${passwordsMatch ? "auth-input-valid" : ""} ${passwordsDoNotMatch ? "auth-input-error" : ""
-              }`}
-            aria-invalid={passwordsDoNotMatch}
-          />
-
-          {passwordsDoNotMatch && (
-            <div className="password-match-tooltip">
-              Passwords do not match
-            </div>
-          )}
-        </div>
-
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-          className={`${passwordsMatch ? "auth-input-valid" : ""}`}
-        />
-
-        <button className="primary-btn auth-submit-btn" type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Register"}
+    <div className="modal-backdrop" onClick={closeAuthModal}>
+      <div className="auth-modal" onClick={(event) => event.stopPropagation()}>
+        <button className="modal-close-btn" onClick={closeAuthModal}>
+          ×
         </button>
 
-        {message && <p className="info-message">{message}</p>}
+        {authSuccess ? (
+          <div className="auth-success-state">
+            <div className="success-checkmark-wrap">
+              <div className="success-checkmark-circle">
+                <span className="success-checkmark">✓</span>
+              </div>
+            </div>
+            <h2 className="modal-title">{authSuccessTitle}</h2>
+            <p className="section-description modal-description">
+              {authSuccessText}
+            </p>
+          </div>
+        ) : (
+          <>
+            <p className="section-label">Account Access</p>
+            <h2 className="modal-title">
+              {authMode === "login"
+                ? "Login"
+                : authMode === "forgot"
+                  ? "Forgot Password"
+                  : "Register"}
+            </h2>
 
-        <p className="auth-switch-text">
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
-      </form>
+            <p className="section-description modal-description">
+              {authMode === "login"
+                ? "Sign in without leaving the homepage."
+                : authMode === "forgot"
+                  ? "Enter your registered email to receive a reset link."
+                  : "Create an account without leaving the homepage."}
+            </p>
+
+            {authMode === "login" ? (
+              <form className="auth-modal-form" onSubmit={handleLoginSubmit}>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={loginForm.email}
+                  onChange={handleLoginInputChange}
+                  className={loginErrors.email ? "auth-input-error" : ""}
+                  required
+                />
+
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={loginForm.password}
+                  onChange={handleLoginInputChange}
+                  className={loginErrors.password ? "auth-input-error" : ""}
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="primary-btn modal-submit-btn"
+                  disabled={authLoading}
+                >
+                  {authLoading ? "Logging in..." : "Login"}
+                </button>
+
+                <p className="forgot-password-line">
+                  <button
+                    type="button"
+                    className="auth-switch-btn"
+                    onClick={() => {
+                      setAuthMode("forgot");
+                      setAuthMessage("");
+                      setForgotError(false);
+                    }}
+                  >
+                    Forgot password?
+                  </button>
+                </p>
+              </form>
+            ) : authMode === "forgot" ? (
+              <form className="auth-modal-form" onSubmit={handleForgotPasswordSubmit}>
+                <input
+                  type="email"
+                  placeholder="Enter your registered email"
+                  value={forgotEmail}
+                  onChange={(event) => {
+                    setForgotEmail(event.target.value);
+                    setForgotError(false);
+                    setAuthMessage("");
+                  }}
+                  className={forgotError ? "auth-input-error" : ""}
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="primary-btn modal-submit-btn"
+                  disabled={authLoading}
+                >
+                  {authLoading ? "Sending..." : "Send Reset Link"}
+                </button>
+              </form>
+            ) : (
+              <form className="auth-modal-form" onSubmit={handleValidatedRegisterSubmit}>
+                <div
+                  className={`username-field-wrap ${submitAttempted && nameStatus.checked && !nameStatus.available
+                    ? "show-username-tooltip"
+                    : ""
+                    }`}
+                >
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    value={registerForm.username || ""}
+                    onChange={handleRegisterInputChange}
+                    className={`${nameStatus.checked && nameStatus.available ? "auth-input-valid" : ""} ${submitAttempted && nameStatus.checked && !nameStatus.available
+                      ? "auth-input-error"
+                      : ""
+                      }`}
+                    aria-invalid={nameStatus.checked && !nameStatus.available}
+                    required
+                  />
+
+                  {nameStatus.checked && !nameStatus.available && (
+                    <div className="username-tooltip">
+                      {nameStatus.reason === "taken"
+                        ? "Username is already taken"
+                        : nameStatus.reason === "invalid"
+                          ? "Username is not available"
+                          : "Username is already taken"}
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={registerForm.email}
+                  onChange={handleRegisterInputChange}
+                  className={registerErrors.email ? "auth-input-error" : ""}
+                  required
+                />
+
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={registerForm.password}
+                  onChange={handleRegisterInputChange}
+                  className={`${allValid ? "auth-input-valid" : ""} ${registerErrors.password ? "auth-input-error" : ""}`}
+                  required
+                />
+
+                <div className="password-strength">
+                  <div className={`password-strength-track ${allValid ? "is-strong" : ""}`}>
+                    <div className="password-strength-cover" style={{ left: `${(score / 5) * 100}%` }} />
+                  </div>
+                  <div className="password-rules">
+                    <p className={checks.length ? "rule-valid" : ""}>{checks.length ? "✓" : "•"} At least 8 characters</p>
+                    <p className={checks.upper ? "rule-valid" : ""}>{checks.upper ? "✓" : "•"} One uppercase letter</p>
+                    <p className={checks.lower ? "rule-valid" : ""}>{checks.lower ? "✓" : "•"} One lowercase letter</p>
+                    <p className={checks.number ? "rule-valid" : ""}>{checks.number ? "✓" : "•"} One number</p>
+                    <p className={checks.special ? "rule-valid" : ""}>{checks.special ? "✓" : "•"} One special character</p>
+                  </div>
+                </div>
+
+                <div className={`password-match-wrap ${passwordsDoNotMatch ? "show-password-tooltip" : ""}`}>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    value={registerForm.confirmPassword || ""}
+                    onChange={handleRegisterInputChange}
+                    className={`${passwordsMatch ? "auth-input-valid" : ""} ${passwordsDoNotMatch ? "auth-input-error" : ""
+                      }`}
+                    aria-invalid={passwordsDoNotMatch}
+                    required
+                  />
+
+                  {passwordsDoNotMatch && (
+                    <div className="password-match-tooltip">
+                      Passwords do not match
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="primary-btn modal-submit-btn"
+                  disabled={authLoading}
+                  onClick={() => setSubmitAttempted(true)}
+                >
+                  {authLoading ? "Creating account..." : "Register"}
+                </button>
+              </form>
+            )}
+
+            <p className="auth-switch-line">
+              {authMode === "login" ? (
+                <>
+                  Don&apos;t have an account?{" "}
+                  <button
+                    type="button"
+                    className="auth-switch-btn"
+                    onClick={() => {
+                      setAuthMode("register");
+                      setAuthMessage("");
+                    }}
+                  >
+                    Register
+                  </button>
+                </>
+              ) : authMode === "forgot" ? (
+                <>
+                  Remembered your password?{" "}
+                  <button
+                    type="button"
+                    className="auth-switch-btn"
+                    onClick={() => {
+                      setAuthMode("login");
+                      setAuthMessage("");
+                      setForgotError(false);
+                    }}
+                  >
+                    Back to Login
+                  </button>
+                </>
+              ) : (
+                <>
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    className="auth-switch-btn"
+                    onClick={() => {
+                      setAuthMode("login");
+                      setAuthMessage("");
+                    }}
+                  >
+                    Login
+                  </button>
+                </>
+              )}
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
