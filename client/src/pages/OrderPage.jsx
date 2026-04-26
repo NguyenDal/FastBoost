@@ -168,6 +168,7 @@ function OrderPage() {
           desiredWins: "",
           placementGames: "",
           numberOfGames: "1",
+          playMode: "Duo",
         };
       }
 
@@ -280,17 +281,19 @@ function OrderPage() {
   ]);
 
   const modeAdjustedBasePrice = useMemo(() => {
-    if (formData.playMode === "Duo") {
+    // Pro Duo already priced as duo; do not apply duo multiplier
+    if (serviceType !== "Pro Duo" && formData.playMode === "Duo") {
       return basePrice * 1.4;
     }
 
     return basePrice;
-  }, [basePrice, formData.playMode]);
+  }, [basePrice, formData.playMode, serviceType]);
 
   const addonPrice = useMemo(() => {
     let total = 0;
 
-    const duoExtra = formData.playMode === "Duo" ? basePrice * 0.4 : 0;
+    // Skip base duo surcharge for Pro Duo (already factored into base price)
+    const duoExtra = serviceType !== "Pro Duo" && formData.playMode === "Duo" ? basePrice * 0.4 : 0;
 
     if (formData.priorityOrder) total += modeAdjustedBasePrice * 0.15;
 
@@ -329,6 +332,7 @@ function OrderPage() {
     formData.bonusWin,
     formData.currentRank,
     formData.championPreferenceTier,
+    serviceType,
   ]);
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
@@ -1736,6 +1740,7 @@ function OrderPage() {
               </div>
             )}
 
+            {serviceType !== "Pro Duo" && (
             <div className="summary-mode-strip">
               <button
                 type="button"
@@ -1768,6 +1773,7 @@ function OrderPage() {
                 Duo
               </button>
             </div>
+            )}
 
             <div className="order-addon-panel">
               <div className="order-addon-grid">
