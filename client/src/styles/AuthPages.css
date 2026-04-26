@@ -58,3 +58,59 @@
   text-decoration: none;
   font-weight: 600;
 }
+
+/* Username availability tooltip */
+.username-field-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.username-field-wrap input {
+  width: 100%;
+}
+
+.username-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(12, 17, 28, 0.96);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.username-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: rgba(239, 68, 68, 0.85) transparent transparent transparent;
+}
+
+.username-field-wrap:hover .username-tooltip,
+.username-field-wrap:focus-within .username-tooltip,
+.username-field-wrap.show-username-tooltip .username-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.username-field-wrap.username-ok .username-tooltip {
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.username-field-wrap.username-ok .username-tooltip::after {
+  border-color: rgba(34, 197, 94, 0.85) transparent transparent transparent;
+}

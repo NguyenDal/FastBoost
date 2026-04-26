@@ -40,3 +40,23 @@ module.exports.listProviders = async (req, res) => {
     return res.status(500).json({ ok: false, message: "Failed to list providers" });
   }
 };
+
+// Public: check if a username is available
+module.exports.checkUsername = async (req, res) => {
+  try {
+    const raw = (req.query.u || "").toString().trim();
+    if (!raw || raw.length < 3) {
+      return res.json({ ok: true, available: false, reason: "too_short" });
+    }
+
+    // Case-insensitive lookup so Starlight/starlight collide
+    const existing = await prisma.user.findFirst({
+      where: { username: { equals: raw, mode: "insensitive" } },
+      select: { id: true },
+    });
+
+    return res.json({ ok: true, available: !Boolean(existing) });
+  } catch (error) {
+    return res.status(500).json({ ok: false, available: false });
+  }
+};
