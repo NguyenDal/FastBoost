@@ -75,8 +75,7 @@ function Navbar({
 
     const onLogout = () => {
         if (handleLogout) {
-            handleLogout();
-            return;
+            try { handleLogout(); } catch {}
         }
 
         localStorage.removeItem("token");
@@ -84,6 +83,9 @@ function Navbar({
         setLocalHasSession(false);
         setLocalCurrentUser(null);
         setLocalShowProfileMenu(false);
+        // Notify other parts of the app and redirect away from protected pages
+        try { window.dispatchEvent(new Event("auth:changed")); } catch {}
+        navigate("/", { replace: true });
     };
 
     return (
@@ -103,6 +105,9 @@ function Navbar({
                 <a href="/#services">Services</a>
                 <a href="/#patch">Latest Patch</a>
                 <a href="/#status">Status</a>
+                {effectiveCurrentUser?.role === "ADMIN" && (
+                    <Link to="/admin/orders">Admin</Link>
+                )}
 
                 {!effectiveHasSession ? (
                     <button
@@ -161,6 +166,9 @@ function Navbar({
                                 <p className="profile-menu-email">
                                     {effectiveCurrentUser?.email || "Signed in"}
                                 </p>
+                                {effectiveCurrentUser?.role === "ADMIN" && (
+                                    <Link className="profile-menu-item" to="/admin/orders">Admin Panel</Link>
+                                )}
                                 <button className="profile-menu-item">My Orders</button>
                                 <button className="profile-menu-item">Account Settings</button>
                                 <button className="profile-menu-item" onClick={onLogout}>

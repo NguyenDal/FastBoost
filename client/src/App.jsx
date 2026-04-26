@@ -6,6 +6,8 @@ import OrderPage from "./pages/OrderPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MatchPage from "./pages/MatchPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
       <Route path="/services/:serviceId" element={<ServiceDetailsPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/match/:orderId" element={<MatchPage />} />
+      <Route path="/admin/orders" element={<AdminOrdersPage />} />
+      <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
     </Routes>
   );
 }

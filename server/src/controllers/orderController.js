@@ -191,6 +191,118 @@ module.exports = {
     getOrderById,
 };
 
+// Admin: list all orders with filters/pagination
+module.exports.listAllOrders = async (req, res) => {
+    try {
+        const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
+        const pageSize = Math.min(Math.max(parseInt(req.query.pageSize ?? "20", 10), 1), 100);
+        const status = req.query.status;
+        const serviceId = req.query.serviceId;
+        const q = (req.query.q || "").toString().trim();
+
+        const where = {};
+        if (status) where.status = status;
+        if (serviceId) where.serviceId = serviceId;
+        if (q) {
+            where.OR = [
+                { id: { contains: q, mode: "insensitive" } },
+                { customer: { email: { contains: q, mode: "insensitive" } } },
+            ];
+        }
+
+        const [total, items] = await Promise.all([
+            prisma.order.count({ where }),
+            prisma.order.findMany({
+                where,
+                orderBy: { createdAt: "desc" },
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+                include: {
+                    service: true,
+                    customer: { select: { id: true, email: true, role: true } },
+                    assignments: {
+                        include: { booster: { select: { id: true, email: true, role: true } } },
+                    },
+                    conversation: { select: { id: true, lastMessageAt: true } },
+                },
+            }),
+        ]);
+
+        return res.json({
+            ok: true,
+            page,
+            pageSize,
+            total,
+            items,
+        });
+    } catch (error) {
+        console.error("listAllOrders error:", error);
+        return res.status(500).json({ ok: false, message: "Failed to list orders" });
+    }
+};
+
+// Admin: get an order with admin details
+module.exports.getOrderAdminById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: {
+                service: true,
+                customer: { select: { id: true, email: true, role: true } },
+                assignments: {
+                    include: { booster: { select: { id: true, email: true, role: true } } },
+                },
+                conversation: {
+                    include: {
+                        participants: {
+                            include: { user: { select: { id: true, email: true, role: true } } },
+                        },
+                        _count: { select: { messages: true } },
+                    },
+                },
+            },
+        });
+
+        if (!order) return res.status(404).json({ ok: false, message: "Order not found" });
+
+        return res.json({ ok: true, order });
+    } catch (error) {
+        console.error("getOrderAdminById error:", error);
+        return res.status(500).json({ ok: false, message: "Failed to get order" });
+    }
+};
+
+// Admin: update order status
+module.exports.updateOrderStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body || {};
+
+        const allowed = ["PENDING", "IN_PROGRESS", "COMPLETED", "CANCELLED"];
+        if (!allowed.includes(status)) {
+            return res.status(400).json({ ok: false, message: "Invalid status" });
+        }
+
+        const updated = await prisma.order.update({
+            where: { id },
+            data: { status },
+            include: {
+                service: true,
+                customer: { select: { id: true, email: true, role: true } },
+            },
+        });
+
+        return res.json({ ok: true, order: updated });
+    } catch (error) {
+        console.error("updateOrderStatus error:", error);
+        if (String(error?.code || "").includes("P2025")) {
+            return res.status(404).json({ ok: false, message: "Order not found" });
+        }
+        return res.status(500).json({ ok: false, message: "Failed to update order status" });
+    }
+};
+
 // Admin: assign a booster (provider) to an order
 module.exports.assignBooster = async (req, res) => {
     try {
