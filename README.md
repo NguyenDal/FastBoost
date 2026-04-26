@@ -140,6 +140,24 @@ This project is a **game services marketplace demo** where users can register, l
   - grouped order summary
   - demo order status presentation
 
+### Chat backend (real-time + history)
+- Added Socket.IO server with JWT-based auth (handshake `auth.token`).
+- Introduced per-order Conversation with participants and message history.
+- Access control: admin, order customer, and assigned boosters share the same chat.
+- REST endpoints for history (cursor pagination) and fallback message posting.
+- Admin endpoints to assign/unassign boosters to an order (controls booster chat access).
+
+Data models (Prisma):
+- `OrderAssignment` — links providers (boosters) to an order.
+- `Conversation` — one conversation per order (`orderId` unique), `lastMessageAt` for sorting.
+- `ConversationParticipant` — member list per conversation with `lastReadAt`.
+- `Message` — chat messages indexed by `(conversationId, createdAt)`.
+
+Socket events:
+- `chat:join { orderId }` → validates access, ensures conversation + participant, joins room, returns last 20 messages.
+- `chat:message { conversationId, content }` → validates membership, saves + broadcasts message.
+- `chat:typing { conversationId, isTyping }` → ephemeral typing indicator to room participants.
+
 ---
 
 ## Project concept
@@ -155,6 +173,12 @@ Core entities:
 - **Service**
 - **Order**
 - **PasswordResetToken**
+  
+Chat-related entities:
+- **OrderAssignment** (order ←→ provider linkage)
+- **Conversation** (per-order thread)
+- **ConversationParticipant** (conversation membership)
+- **Message** (chat line items)
 
 ### Current service types
 - Rank Boost
@@ -235,6 +259,16 @@ Frontend URL:
 http://localhost:5173/
 ```
 
+### Live chat (server) quick test
+Socket server runs on the same port (`:5000`). Connect with JWT token:
+```js
+import { io } from "socket.io-client";
+const token = localStorage.getItem("token");
+const socket = io("http://localhost:5000", { auth: { token } });
+socket.emit("chat:join", { orderId: "<order-id>" }, (res) => console.log(res));
+socket.on("chat:message", (m) => console.log("msg", m));
+```
+
 ---
 
 ## API routes (current)
@@ -256,6 +290,16 @@ http://localhost:5173/
 - `POST /api/orders` (Bearer token)
 - `GET /api/orders` (Bearer token)
 - `GET /api/orders/:id` (Bearer token)
+
+### Admin (booster assignment)
+- `GET /api/orders/:id/assignments` (ADMIN) — list assigned boosters
+- `POST /api/orders/:id/assign/:boosterId` (ADMIN) — assign a booster
+- `DELETE /api/orders/:id/assign/:boosterId` (ADMIN) — unassign a booster
+
+### Chat
+- `GET /api/chats/orders/:orderId` — ensure/get conversation for an order; returns participants
+- `GET /api/chats/conversations/:conversationId/messages?limit=20&cursor=<id>` — paginated history (newest→older)
+- `POST /api/chats/conversations/:conversationId/messages` — post a message (REST fallback)
 
 ---
 
@@ -290,16 +334,19 @@ npx prisma studio
 ```
 
 ### Prisma commands
-For the current remote database workflow used in this project:
 
-### Generate Prisma client
+Option A — Local development (recommended):
 ```bash
-npx prisma db pull
-npx prisma db push
-npx prisma generate
+npx prisma migrate dev --name add-chat --schema=prisma/schema.prisma
+npx prisma generate --schema=prisma/schema.prisma
 ```
 
-`prisma migrate dev` was avoided for the live remote Prisma database after drift was detected, because resetting would have deleted data.
+Option B — Remote/shared database (cautious):
+```bash
+npx prisma db push --schema=prisma/schema.prisma
+npx prisma generate --schema=prisma/schema.prisma
+```
+Note: For production/remote DBs with existing data, prefer planned migrations. Use `db push` only if you understand the implications and have backups.
 
 ### View database
 ```bash
@@ -349,12 +396,13 @@ npx prisma studio
 
 ## Next steps (recommended)
 
-1. Finish shared navbar/auth modal consistency on all key pages
-2. Continue cleaning pricing logic and verify all duo/solo addon rules
-3. Finalize the real `Order` schema + payload parity across frontend/backend
-4. Continue polishing the match/chat page
-5. Connect the patch section to a real backend endpoint
-6. Later add profile/account settings
+1. Build Admin Management UI to assign/unassign boosters to orders (uses the new admin endpoints)
+2. Wire frontend chat to the backend: join by `orderId`, render history (cursor), send messages, typing state
+3. Finish shared navbar/auth modal consistency on all key pages
+4. Continue cleaning pricing logic and verify all duo/solo addon rules
+5. Finalize the real `Order` schema + payload parity across frontend/backend
+6. Connect the patch section to a real backend endpoint
+7. Later add profile/account settings
 
 ---
 
