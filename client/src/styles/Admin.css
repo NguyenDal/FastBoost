@@ -523,3 +523,49 @@
     min-width: 920px;
   }
 }
+
+/* Fix native select dropdown visibility */
+.admin-select {
+  appearance: auto;
+  color: #ffffff;
+  background-color: #1f2530;
+  border: 1px solid rgba(255,255,255,.18);
+  cursor: pointer;
+}
+
+.admin-select option {
+  color: #ffffff;
+  background-color: #1f2530;
+}
+
+.admin-select option:hover,
+.admin-select option:checked {
+  color: #ffffff;
+  background-color: #7c3aed;
+}
+
+.admin-select:focus {
+  border-color: rgba(168,85,247,.75);
+  box-shadow: 0 0 0 4px rgba(168,85,247,.16);
+}
+
+/* Improve status select + save button layout */
+.status-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-control .admin-select {
+  min-width: 170px;
+  min-height: 46px;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-weight: 700;
+}
+
+.status-control .primary-btn {
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 14px;
+}

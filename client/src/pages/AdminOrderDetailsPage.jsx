@@ -351,6 +351,20 @@ function Field({ label, value }) {
     );
 }
 
+function SmartField({ label, value }) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        value === "-" ||
+        value === false
+    ) {
+        return null;
+    }
+
+    return <Field label={label} value={value} />;
+}
+
 function OrderTypeDetails({ order }) {
     const serviceTitle = (order.service?.title || "").toLowerCase();
     const boostType = (order.boostType || "").toLowerCase();
@@ -373,16 +387,24 @@ function OrderTypeDetails({ order }) {
 
             {isRankBoost && (
                 <div className="order-detail-grid">
-                    <Field label="Current Rank" value={order.currentRank || "-"} />
-                    <Field label="Current LP" value={formatValue(order.currentLP)} />
-                    <Field label="Current Master LP" value={formatValue(order.currentMasterLp)} />
-                    <Field label="Desired Rank" value={order.desiredRank || "-"} />
-                    <Field label="Desired Master LP" value={formatValue(order.desiredMasterLp)} />
-                    <Field label="LP Gain" value={order.lpGain || "-"} />
-                    <Field label="Peak Rank" value={order.peakRank || "-"} />
-                    <Field label="First Role" value={order.firstRole || "-"} />
-                    <Field label="Second Role" value={order.secondRole || "-"} />
-                    <Field label="Selected Champions" value={formatArray(order.selectedChampions)} />
+                    <SmartField label="Current Rank" value={order.currentRank} />
+                    <SmartField label="Current LP" value={order.currentLP} />
+
+                    {isMasterRank(order.currentRank) && (
+                        <SmartField label="Current Master LP" value={order.currentMasterLp} />
+                    )}
+
+                    <SmartField label="Desired Rank" value={order.desiredRank} />
+
+                    {isMasterRank(order.desiredRank) && (
+                        <SmartField label="Desired Master LP" value={order.desiredMasterLp} />
+                    )}
+
+                    <SmartField label="LP Gain" value={order.lpGain} />
+                    <SmartField label="Peak Rank" value={order.peakRank} />
+                    <SmartField label="First Role" value={order.firstRole} />
+                    <SmartField label="Second Role" value={order.secondRole} />
+                    <SmartField label="Selected Champions" value={formatArray(order.selectedChampions)} />
                 </div>
             )}
 
@@ -483,6 +505,18 @@ function formatBoolean(value) {
 
 function formatValue(value) {
     return value === null || value === undefined || value === "" ? "-" : value;
+}
+
+function isMasterRank(rank) {
+    if (!rank) return false;
+
+    const normalized = String(rank).toLowerCase();
+
+    return (
+        normalized.includes("master") ||
+        normalized.includes("grandmaster") ||
+        normalized.includes("challenger")
+    );
 }
 
 function formatArray(value) {
