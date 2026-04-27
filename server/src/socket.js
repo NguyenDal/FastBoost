@@ -97,7 +97,17 @@ function initSocket(httpServer) {
                     where: { conversationId: convo.id },
                     orderBy: { createdAt: "desc" },
                     take: 20,
-                    include: { sender: { select: { id: true, email: true } } },
+                    include: {
+                        sender: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                role: true,
+                                profile: true,
+                            },
+                        },
+                    },
                 });
 
                 cb?.({ ok: true, conversationId: convo.id, messages: recent.reverse() });
@@ -142,7 +152,9 @@ function initSocket(httpServer) {
                             select: {
                                 id: true,
                                 email: true,
+                                username: true,
                                 role: true,
+                                profile: true,
                             },
                         },
                     },

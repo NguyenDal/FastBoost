@@ -229,7 +229,9 @@ exports.getMessages = async (req, res) => {
           select: {
             id: true,
             email: true,
+            username: true,
             role: true,
+            profile: true,
           },
         },
       },
@@ -300,7 +302,9 @@ exports.postMessage = async (req, res) => {
           select: {
             id: true,
             email: true,
+            username: true,
             role: true,
+            profile: true,
           },
         },
       },

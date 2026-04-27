@@ -93,10 +93,10 @@
 
 /* Improve chat bubble readability */
 .chat-message-user {
-  background: linear-gradient(135deg, #7c3aed, #db2777);
+  background: rgba(12, 18, 40, 0.96);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 10px 26px rgba(219, 39, 119, 0.22);
+  border: 1px solid rgba(168, 85, 247, 0.55);
+  box-shadow: none;
 }
 
 .chat-message-user .chat-sender,
@@ -110,17 +110,24 @@
 }
 
 .chat-message-booster {
-  background: rgba(15, 23, 42, 0.98);
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.10), rgba(12, 18, 40, 0.96)),
+    rgba(12, 18, 40, 0.96);
   color: #eaf0ff;
-  border-color: rgba(91, 201, 255, 0.22);
+  border: 1px solid rgba(59, 130, 246, 0.42);
+  box-shadow: none;
 }
 
 .chat-message-booster .chat-sender {
-  color: #8ee7ff;
+  color: #7dd3fc;
 }
 
 .chat-message-booster .chat-timestamp {
-  color: #aeb8f8;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.chat-message-booster p {
+  color: #ffffff;
 }
 
 .chat-message-system {
@@ -141,4 +148,73 @@
 
 .chat-row-booster .chat-message {
   border-bottom-left-radius: 6px;
+}
+
+/* New chat sender classes based on logged-in user ID */
+.chat-row-mine {
+  justify-content: flex-end;
+}
+
+.chat-row-other {
+  justify-content: flex-start;
+}
+
+.chat-row-system {
+  justify-content: center;
+}
+
+.chat-message-mine {
+  background:
+    linear-gradient(180deg, rgba(168, 85, 247, 0.10), rgba(12, 18, 40, 0.96)),
+    rgba(12, 18, 40, 0.96);
+  color: #ffffff;
+  border: 1px solid rgba(168, 85, 247, 0.55);
+  box-shadow: none;
+  border-bottom-right-radius: 6px;
+}
+
+.chat-message-mine .chat-sender,
+.chat-message-mine .chat-timestamp,
+.chat-message-mine p {
+  color: #ffffff;
+}
+
+.chat-message-mine .chat-timestamp {
+  opacity: 0.78;
+}
+
+.chat-message-other {
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.10), rgba(12, 18, 40, 0.96)),
+    rgba(12, 18, 40, 0.96);
+  color: #eaf0ff;
+  border: 1px solid rgba(59, 130, 246, 0.42);
+  box-shadow: none;
+  border-bottom-left-radius: 6px;
+}
+
+.chat-message-other .chat-sender {
+  color: #7dd3fc;
+}
+
+.chat-message-other .chat-timestamp {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.chat-message-other p {
+  color: #ffffff;
+}
+
+.chat-message-system {
+  background: rgba(30, 41, 59, 0.88);
+  color: #dbeafe;
+  border-color: rgba(148, 163, 184, 0.18);
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.chat-message-system .chat-sender,
+.chat-message-system .chat-timestamp,
+.chat-message-system p {
+  color: #dbeafe;
 }

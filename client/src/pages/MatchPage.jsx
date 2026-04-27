@@ -135,21 +135,28 @@ function MatchPage() {
                 const savedMessages = await getConversationMessages(loadedConversation.id);
 
                 if (savedMessages.length > 0) {
+                    const currentUserRaw = localStorage.getItem("user");
+                    const loggedInUser = currentUserRaw ? JSON.parse(currentUserRaw) : null;
+                    const loggedInUserId = getCurrentUserId(loggedInUser);
+
                     setMessages(
-                        savedMessages.map((msg) => ({
-                            id: msg.id,
-                            sender:
-                                msg.senderId === loadedOrder.customerId
-                                    ? "user"
-                                    : msg.sender?.role === "PROVIDER"
-                                        ? "booster"
-                                        : msg.sender?.role === "ADMIN"
-                                            ? "admin"
-                                            : "user",
-                            text: msg.content || msg.text || msg.body || msg.message || "",
-                            timestamp: formatChatTime(msg.createdAt),
-                            senderName: msg.sender?.username || msg.sender?.email,
-                        }))
+                        savedMessages.map((msg) => {
+                            const isMine = msg.senderId === loggedInUserId;
+                            const senderRole = String(msg.sender?.role || "").toUpperCase();
+
+                            return {
+                                id: msg.id,
+                                sender: isMine ? "mine" : senderRole === "PROVIDER" ? "booster" : senderRole === "ADMIN" ? "admin" : "other",
+                                isMine,
+                                senderId: msg.senderId,
+                                senderRole,
+                                senderUser: msg.sender,
+                                text: msg.content || msg.text || msg.body || msg.message || "",
+                                timestamp: formatChatTime(msg.createdAt),
+                                senderName: getSenderDisplayName(msg.sender),
+                                senderAvatar: getSenderAvatar(msg.sender),
+                            };
+                        })
                     );
                 } else {
                     setMessages([
@@ -184,7 +191,13 @@ function MatchPage() {
         try {
             const tempMessage = {
                 id: `temp-${Date.now()}`,
-                sender: "user",
+                sender: "mine",
+                isMine: true,
+                senderId: getCurrentUserId(currentUser),
+                senderRole: currentUser?.role,
+                senderUser: currentUser,
+                senderName: "You",
+                senderAvatar: getSenderAvatar(currentUser),
                 text,
                 timestamp: formatChatTime(new Date()),
             };
@@ -199,11 +212,15 @@ function MatchPage() {
                     msg.id === tempMessage.id
                         ? {
                             id: savedMessage.id,
-                            sender: "user",
+                            sender: "mine",
+                            isMine: true,
+                            senderId: savedMessage.senderId,
+                            senderRole: savedMessage.sender?.role,
+                            senderUser: savedMessage.sender || currentUser,
+                            senderName: "You",
+                            senderAvatar: getSenderAvatar(savedMessage.sender || currentUser),
                             text: savedMessage.content || savedMessage.text || savedMessage.body || savedMessage.message || text,
                             timestamp: formatChatTime(savedMessage.createdAt),
-                            senderName:
-                                savedMessage.sender?.username || savedMessage.sender?.email || "You",
                         }
                         : msg
                 )
@@ -326,20 +343,20 @@ function MatchPage() {
 
                             <div className="chat-messages">
                                 {messages.map((message) => {
-                                    const isBooster = message.sender === "booster";
-                                    const isUser = message.sender === "user";
+                                    const isMine = message.isMine || message.sender === "mine";
                                     const isSystem = message.sender === "system";
+                                    const showAvatar = !isMine && !isSystem;
 
                                     return (
                                         <div
                                             key={message.id}
-                                            className={`chat-row chat-row-${message.sender}`}
+                                            className={`chat-row ${isMine ? "chat-row-mine" : isSystem ? "chat-row-system" : "chat-row-other"}`}
                                         >
-                                            {isBooster && matchedBooster && (
+                                            {showAvatar && (
                                                 <div className="chat-avatar-wrap">
                                                     <img
-                                                        src={getBoosterAvatar(matchedBooster)}
-                                                        alt={getBoosterDisplayName(matchedBooster)}
+                                                        src={message.senderAvatar || getSenderAvatar(message.senderUser)}
+                                                        alt={message.senderName || "Sender"}
                                                         className="chat-message-avatar"
                                                     />
                                                     <span className="chat-avatar-online-dot" />
@@ -347,15 +364,11 @@ function MatchPage() {
                                             )}
 
                                             <div
-                                                className={`chat-message chat-message-${message.sender}`}
+                                                className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
                                             >
                                                 <div className="chat-message-top">
                                                     <span className="chat-sender">
-                                                        {isUser
-                                                            ? "You"
-                                                            : isBooster
-                                                                ? getBoosterDisplayName(matchedBooster)
-                                                                : "System"}
+                                                        {getMessageSenderName(message, matchedBooster)}
                                                     </span>
 
                                                     <span className="chat-timestamp">
@@ -600,6 +613,48 @@ function renderStars(rating) {
     const emptyStars = 5 - fullStars;
 
     return "★".repeat(fullStars) + "☆".repeat(emptyStars);
+}
+
+function getCurrentUserId(currentUser) {
+    return currentUser?.id || currentUser?.userId;
+}
+
+function getMessageSenderName(message, matchedBooster) {
+    if (message.isMine) return "You";
+
+    if (message.senderName) return message.senderName;
+
+    if (message.senderRole === "ADMIN") return "Admin";
+
+    if (message.senderRole === "PROVIDER") {
+        return getBoosterDisplayName(matchedBooster);
+    }
+
+    if (message.senderRole === "CUSTOMER") return "Customer";
+
+    return "System";
+}
+
+function getSenderDisplayName(sender) {
+    return (
+        sender?.username ||
+        sender?.profile?.displayName ||
+        sender?.email?.split("@")[0] ||
+        "User"
+    );
+}
+
+function getSenderAvatar(sender) {
+    const name = getSenderDisplayName(sender);
+
+    return (
+        sender?.profileImage ||
+        sender?.avatar ||
+        sender?.profile?.profileImage ||
+        sender?.profile?.avatar ||
+        sender?.profile?.photoUrl ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+    );
 }
 
 export default MatchPage;
