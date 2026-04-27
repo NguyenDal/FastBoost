@@ -8,20 +8,26 @@ datasource db {
 }
 
 model User {
-  id                  String                    @id @default(cuid())
-  email               String                    @unique
-  username            String?                   @unique
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  username            String?              @unique
   passwordHash        String
-  role                UserRole                  @default(CUSTOMER)
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime                  @updatedAt
+  role                UserRole             @default(CUSTOMER)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
   orders              Order[]
   passwordResetTokens PasswordResetToken[]
   profile             Profile?
+
   // Chat relations
   providedAssignments OrderAssignment[]
   conversationMembers ConversationParticipant[]
   sentMessages        Message[]
+
+  // Assignment request relations
+  boosterAssignmentRequests AssignmentRequest[] @relation("BoosterAssignmentRequests")
+  adminAssignmentRequests   AssignmentRequest[] @relation("AdminAssignmentRequests")
+  notifications             Notification[]
 }
 
 model Profile {
@@ -83,11 +89,12 @@ model Order {
   addonPrice Float @default(0)
   totalPrice Float @default(0)
 
-  customer     User              @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  service      Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customer           User                @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service            Service             @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   // Chat / assignment back-relations
-  assignments  OrderAssignment[]
-  conversation Conversation?
+  assignments        OrderAssignment[]
+  assignmentRequests AssignmentRequest[]
+  conversation       Conversation?
 }
 
 /// Link assigned boosters/providers to an order
@@ -102,6 +109,28 @@ model OrderAssignment {
 
   @@unique([orderId, boosterId])
   @@index([boosterId])
+}
+
+enum AssignmentRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  EXPIRED
+}
+
+model AssignmentRequest {
+  id          String                  @id @default(cuid())
+  orderId     String
+  boosterId   String
+  requestedBy String
+  status      AssignmentRequestStatus @default(PENDING)
+  createdAt   DateTime                @default(now())
+  respondedAt DateTime?
+
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  booster   User  @relation("BoosterAssignmentRequests", fields: [boosterId], references: [id])
+  requester User  @relation("AdminAssignmentRequests", fields: [requestedBy], references: [id])
 }
 
 /// Conversation (thread) for chat, optionally tied to an order
@@ -155,6 +184,20 @@ model PasswordResetToken {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  read      Boolean          @default(false)
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum UserRole {
   CUSTOMER
   PROVIDER
@@ -166,4 +209,11 @@ enum OrderStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum NotificationType {
+  ASSIGNMENT_REQUEST
+  ASSIGNMENT_ACCEPTED
+  ASSIGNMENT_DECLINED
+  ASSIGNMENT_CANCELLED
 }

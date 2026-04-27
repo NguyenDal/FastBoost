@@ -16,9 +16,10 @@ export async function adminListOrders({ page = 1, pageSize = 20, status, service
   if (serviceId) params.set("serviceId", serviceId);
   if (q) params.set("q", q);
 
-  const res = await fetch(`${API_BASE_URL}/orders/admin?${params.toString()}` , {
+  const res = await fetch(`${API_BASE_URL}/orders/admin?${params.toString()}`, {
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load orders");
   return data;
@@ -28,6 +29,7 @@ export async function adminGetOrder(id) {
   const res = await fetch(`${API_BASE_URL}/orders/admin/${id}`, {
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load order");
   return data.order;
@@ -39,6 +41,7 @@ export async function adminUpdateOrderStatus(id, status) {
     headers: authHeaders(),
     body: JSON.stringify({ status }),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to update status");
   return data.order;
@@ -47,9 +50,11 @@ export async function adminUpdateOrderStatus(id, status) {
 export async function adminListProviders(q) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
+
   const res = await fetch(`${API_BASE_URL}/user/providers?${params.toString()}`, {
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load providers");
   return data.users;
@@ -59,16 +64,19 @@ export async function adminListAssignments(orderId) {
   const res = await fetch(`${API_BASE_URL}/orders/${orderId}/assignments`, {
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to load assignments");
   return data.assignments;
 }
 
+// Keep this only for manual override/fallback. Do not use it for the new invite button.
 export async function adminAssignBooster(orderId, boosterId) {
   const res = await fetch(`${API_BASE_URL}/orders/${orderId}/assign/${boosterId}`, {
     method: "POST",
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to assign booster");
   return data;
@@ -79,6 +87,7 @@ export async function adminUnassignBooster(orderId, boosterId) {
     method: "DELETE",
     headers: authHeaders(),
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Failed to unassign booster");
   return data;

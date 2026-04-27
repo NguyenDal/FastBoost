@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-    adminAssignBooster,
     adminGetOrder,
     adminListAssignments,
     adminListProviders,
     adminUpdateOrderStatus,
     adminUnassignBooster,
 } from "../api/admin";
+
+import {
+    createAssignmentRequest,
+    cancelAssignmentRequest,
+    listOrderAssignmentRequests,
+} from "../api/assignmentRequests";
+
 import Navbar from "../components/Navbar";
 import "../styles/Admin.css";
 
@@ -63,10 +69,32 @@ export default function AdminOrderDetailsPage() {
     const [providers, setProviders] = useState([]);
     const [providerQuery, setProviderQuery] = useState("");
     const [assignments, setAssignments] = useState([]);
+    const [assignmentRequests, setAssignmentRequests] = useState([]);
     const [assignLoading, setAssignLoading] = useState(false);
+    const [confirmCancelRequestId, setConfirmCancelRequestId] = useState(null);
+    const [confirmTimerId, setConfirmTimerId] = useState(null);
 
-    const assignedEmails = useMemo(() => assignments.map(a => a.booster?.email).filter(Boolean), [assignments]);
-    const assignedIds = useMemo(() => assignments.map(a => a.boosterId).filter(Boolean), [assignments]);
+    const assignedEmails = useMemo(
+        () => assignments.map((a) => a.booster?.email).filter(Boolean),
+        [assignments]
+    );
+
+    const assignedIds = useMemo(
+        () => assignments.map((a) => a.boosterId || a.booster?.id).filter(Boolean),
+        [assignments]
+    );
+
+    const pendingRequestByBoosterId = useMemo(() => {
+        const map = {};
+
+        assignmentRequests.forEach((request) => {
+            if (request.status === "PENDING") {
+                map[request.boosterId] = request;
+            }
+        });
+
+        return map;
+    }, [assignmentRequests]);
 
     useEffect(() => {
         if (!isAdmin) return;
@@ -78,12 +106,15 @@ export default function AdminOrderDetailsPage() {
                 const o = await adminGetOrder(id);
                 setOrder(o);
                 setStatus(o.status);
-                const [prov, asg] = await Promise.all([
+                const [prov, asg, reqs] = await Promise.all([
                     adminListProviders(""),
-                    adminListAssignments(id)
+                    adminListAssignments(id),
+                    listOrderAssignmentRequests(id),
                 ]);
+
                 setProviders(prov);
                 setAssignments(asg);
+                setAssignmentRequests(reqs);
             } catch (e) {
                 setError(e?.message || "Failed to load order");
             } finally {
@@ -94,9 +125,22 @@ export default function AdminOrderDetailsPage() {
         load();
     }, [id, isAdmin]);
 
+    useEffect(() => {
+        return () => {
+            if (confirmTimerId) {
+                clearTimeout(confirmTimerId);
+            }
+        };
+    }, [confirmTimerId]);
+
     const refreshAssignments = async () => {
         const asg = await adminListAssignments(id);
         setAssignments(asg);
+    };
+
+    const refreshAssignmentRequests = async () => {
+        const reqs = await listOrderAssignmentRequests(id);
+        setAssignmentRequests(reqs);
     };
 
     const onStatusSave = async () => {
@@ -110,13 +154,55 @@ export default function AdminOrderDetailsPage() {
         }
     };
 
-    const onAssign = async (boosterId) => {
+    const onRequestAssign = async (boosterId) => {
         try {
             setAssignLoading(true);
-            await adminAssignBooster(id, boosterId);
-            await refreshAssignments();
+            await createAssignmentRequest(id, boosterId);
+            await refreshAssignmentRequests();
         } catch (e) {
-            alert(e?.message || "Failed to assign");
+            alert(e?.message || "Failed to send assignment request");
+        } finally {
+            setAssignLoading(false);
+        }
+    };
+
+    const onPendingRequestClick = (request) => {
+        if (!request) return;
+
+        if (confirmCancelRequestId !== request.id) {
+            if (confirmTimerId) {
+                clearTimeout(confirmTimerId);
+            }
+
+            setConfirmCancelRequestId(request.id);
+
+            const timer = setTimeout(() => {
+                setConfirmCancelRequestId(null);
+                setConfirmTimerId(null);
+            }, 5000);
+
+            setConfirmTimerId(timer);
+            return;
+        }
+
+        onCancelRequest(request.id);
+    };
+
+    const onCancelRequest = async (requestId) => {
+        try {
+            setAssignLoading(true);
+
+            if (confirmTimerId) {
+                clearTimeout(confirmTimerId);
+                setConfirmTimerId(null);
+            }
+
+            await cancelAssignmentRequest(requestId);
+
+            setConfirmCancelRequestId(null);
+            await refreshAssignmentRequests();
+        } catch (e) {
+            alert(e?.message || "Failed to cancel assignment request");
         } finally {
             setAssignLoading(false);
         }
@@ -126,7 +212,11 @@ export default function AdminOrderDetailsPage() {
         try {
             setAssignLoading(true);
             await adminUnassignBooster(id, boosterId);
-            await refreshAssignments();
+
+            await Promise.all([
+                refreshAssignments(),
+                refreshAssignmentRequests(),
+            ]);
         } catch (e) {
             alert(e?.message || "Failed to unassign");
         } finally {
@@ -251,7 +341,7 @@ export default function AdminOrderDetailsPage() {
                                     </p>
                                 )}
 
-                                
+
 
                                 <div className="admin-card premium-card">
                                     <div className="assign-header">
@@ -298,13 +388,15 @@ export default function AdminOrderDetailsPage() {
                                                         <div className="assignment-email">{u.username || u.profile?.displayName || u.email}</div>
                                                         <div className="assignment-role">Joined {new Date(u.createdAt).toLocaleDateString()}</div>
                                                     </div>
-                                                    <button
-                                                        className="secondary-btn admin-btn-sm"
+                                                    <AssignmentRequestButton
+                                                        provider={u}
                                                         disabled={assignLoading}
-                                                        onClick={() => onAssign(u.id)}
-                                                    >
-                                                        Assign
-                                                    </button>
+                                                        isAssigned={assignedIds.includes(u.id)}
+                                                        pendingRequest={pendingRequestByBoosterId[u.id]}
+                                                        confirmCancelRequestId={confirmCancelRequestId}
+                                                        onAssign={() => onRequestAssign(u.id)}
+                                                        onPendingClick={onPendingRequestClick}
+                                                    />
                                                 </div>
                                             ))}
 
@@ -320,6 +412,50 @@ export default function AdminOrderDetailsPage() {
                 ) : null}
             </div>
         </div>
+    );
+}
+
+function AssignmentRequestButton({
+    provider,
+    disabled,
+    isAssigned,
+    pendingRequest,
+    confirmCancelRequestId,
+    onAssign,
+    onPendingClick,
+}) {
+    if (isAssigned) {
+        return (
+            <button className="assign-btn assigned" disabled>
+                Assigned
+            </button>
+        );
+    }
+
+    if (pendingRequest) {
+        const isConfirming = confirmCancelRequestId === pendingRequest.id;
+
+        return (
+            <button
+                className={`assign-btn ${isConfirming ? "revoke countdown" : "waiting"}`}
+                disabled={disabled}
+                onClick={() => onPendingClick(pendingRequest)}
+                title={isConfirming ? "Click again to revoke" : "Waiting for booster response"}
+            >
+                <span>{isConfirming ? "Revoke" : "Waiting"}</span>
+            </button>
+        );
+    }
+
+    return (
+        <button
+            className="assign-btn assign"
+            disabled={disabled}
+            onClick={onAssign}
+            title={`Send assignment request to ${provider.username || provider.email}`}
+        >
+            <span>Assign</span>
+        </button>
     );
 }
 

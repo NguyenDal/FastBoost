@@ -6,6 +6,7 @@ const serviceRoutes = require("./routes/serviceRoutes");
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const assignmentRequestRoutes = require("./routes/assignmentRequestRoutes");
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/assignment-requests", assignmentRequestRoutes);
 
 module.exports = app;
