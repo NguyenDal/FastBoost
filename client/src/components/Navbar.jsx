@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { listMyNotifications } from "../api/notifications";
+import {
+    listMyNotifications,
+    markAllNotificationsRead,
+} from "../api/notifications";
 import {
     acceptAssignmentRequest,
     declineAssignmentRequest,
@@ -132,7 +135,8 @@ function Navbar({
         if (!localStorage.getItem("token")) {
             setNotifications([]);
             setUnreadNotifications(0);
-            return;
+            localStorage.setItem("unreadNotifications", "0");
+            return [];
         }
 
         try {
@@ -141,14 +145,21 @@ function Navbar({
 
             const items = await listMyNotifications();
 
-            setNotifications(items);
-            setUnreadNotifications(items.filter((item) => !item.read).length);
-            localStorage.setItem(
-                "unreadNotifications",
-                String(items.filter((item) => !item.read).length)
-            );
+            const sortedItems = [...items].sort((a, b) => {
+                if (a.read !== b.read) return a.read ? 1 : -1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            const unreadCount = sortedItems.filter((item) => !item.read).length;
+
+            setNotifications(sortedItems);
+            setUnreadNotifications(unreadCount);
+            localStorage.setItem("unreadNotifications", String(unreadCount));
+
+            return sortedItems;
         } catch (error) {
             setNotificationsError(error.message || "Failed to load notifications");
+            return [];
         } finally {
             setNotificationsLoading(false);
         }
@@ -165,36 +176,64 @@ function Navbar({
         loadNotifications();
     }, [effectiveHasSession]);
 
+    const markNotificationsReadOnClose = async () => {
+        try {
+            const hasUnread = notifications.some((item) => !item.read);
+
+            if (!hasUnread) return;
+
+            const readItems = await markAllNotificationsRead();
+
+            const sortedReadItems = [...readItems].sort((a, b) => {
+                if (a.read !== b.read) return a.read ? 1 : -1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            setNotifications(sortedReadItems);
+            setUnreadNotifications(0);
+            localStorage.setItem("unreadNotifications", "0");
+
+            try {
+                window.dispatchEvent(new Event("unread:update"));
+            } catch { }
+        } catch (error) {
+            console.error("Failed to mark notifications read on close:", error);
+        }
+    };
+
     const openSidePanel = (kind) => {
         setIsPanelClosing(false);
         setOpenPanel(kind);
 
-        if (kind === "notifications") {
-            loadNotifications();
-        }
         setPanelAnimIn(false);
-        // close menu so panel is unobstructed
         effectiveSetShowProfileMenu(false);
-        // next frame add 'open' class to trigger transition from translateX(100%) -> 0
+
         setTimeout(() => setPanelAnimIn(true), 20);
+
         try {
             const sbw = window.innerWidth - document.documentElement.clientWidth;
-            document.body.classList.add('lock-scroll');
+            document.body.classList.add("lock-scroll");
             if (sbw > 0) document.body.style.paddingRight = `${sbw}px`;
         } catch { }
     };
 
     const closeSidePanel = () => {
+        const closingPanel = openPanel;
+
         setIsPanelClosing(true);
         setPanelAnimIn(false);
-        // allow CSS animation to finish
-        setTimeout(() => {
+
+        setTimeout(async () => {
+            if (closingPanel === "notifications") {
+                await markNotificationsReadOnClose();
+            }
+
             setOpenPanel(null);
-            try {
-                document.body.classList.remove('lock-scroll');
-                document.body.style.paddingRight = '';
-            } catch { }
-        }, 360);
+            setIsPanelClosing(false);
+
+            document.body.classList.remove("lock-scroll");
+            document.body.style.paddingRight = "";
+        }, 180);
     };
 
     useEffect(() => {
@@ -370,9 +409,9 @@ function Navbar({
                                 <h3>{openPanel === 'notifications' ? 'Notifications' : 'Messages'}</h3>
                                 <p className="panel-sub">
                                     {openPanel === "notifications"
-                                        ? notifications.length > 0
-                                            ? `${notifications.length} notification${notifications.length === 1 ? "" : "s"}`
-                                            : "All caught up"
+                                        ? unreadNotifications > 0
+                                            ? `${unreadNotifications} new notification${unreadNotifications === 1 ? "" : "s"}`
+                                            : "No new notifications"
                                         : "All caught up"}
                                 </p>
                             </div>

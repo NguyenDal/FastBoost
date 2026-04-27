@@ -88,3 +88,52 @@ exports.markNotificationRead = async (req, res) => {
     });
   }
 };
+
+exports.markAllNotificationsRead = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        ok: false,
+        message: "Unauthorized: user id missing from token",
+      });
+    }
+
+    await prisma.notification.updateMany({
+      where: {
+        userId,
+        active: true,
+        read: false,
+      },
+      data: {
+        read: true,
+      },
+    });
+
+    const notifications = await prisma.notification.findMany({
+      where: {
+        userId,
+        active: true,
+      },
+      orderBy: [
+        { read: "asc" },
+        { createdAt: "desc" },
+      ],
+      take: 30,
+    });
+
+    return res.json({
+      ok: true,
+      notifications,
+    });
+  } catch (error) {
+    console.error("markAllNotificationsRead error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to mark notifications as read",
+      error: error.message,
+    });
+  }
+};

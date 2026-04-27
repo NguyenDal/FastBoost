@@ -575,6 +575,7 @@ button {
   background:
     radial-gradient(500px 140px at 0% 0%, rgba(168, 85, 247, .16), transparent 60%),
     rgba(10, 15, 24, .95);
+  box-shadow: 0 0 18px rgba(168, 85, 247, .16);
 }
 
 .notification-card-top {

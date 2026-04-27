@@ -39,3 +39,11 @@ export async function markNotificationRead(notificationId) {
 
   return data.notification;
 }
+
+export async function markAllNotificationsRead() {
+  const data = await request("/notifications/read-all", {
+    method: "PATCH",
+  });
+
+  return data.notifications || [];
+}
