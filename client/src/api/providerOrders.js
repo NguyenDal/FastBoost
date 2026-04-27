@@ -38,3 +38,33 @@ export async function providerListAssignedOrders({
 
     return data;
 }
+
+export async function providerCompleteOrder(orderId) {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}/provider-complete`, {
+        method: "PATCH",
+        headers: authHeaders(),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to complete order");
+    }
+
+    return data.order;
+}
+
+export async function providerLeaveOrder(orderId) {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}/provider-leave`, {
+        method: "DELETE",
+        headers: authHeaders(),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to leave order");
+    }
+
+    return data;
+}

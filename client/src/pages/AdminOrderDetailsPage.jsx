@@ -143,12 +143,16 @@ export default function AdminOrderDetailsPage() {
         setAssignmentRequests(reqs);
     };
 
-    const onStatusSave = async () => {
+    const onAdminSetStatus = async (nextStatus) => {
         try {
-            await adminUpdateOrderStatus(id, status);
-            // Re-fetch full order to keep conversation/assignments intact
-            const fresh = await adminGetOrder(id);
-            setOrder(fresh);
+            const updated = await adminUpdateOrderStatus(id, nextStatus);
+            setOrder(updated);
+            setStatus(updated.status);
+
+            await Promise.all([
+                refreshAssignments(),
+                refreshAssignmentRequests(),
+            ]);
         } catch (e) {
             alert(e?.message || "Failed to update status");
         }
@@ -213,6 +217,11 @@ export default function AdminOrderDetailsPage() {
             setAssignLoading(true);
             await adminUnassignBooster(id, boosterId);
 
+            const fresh = await adminGetOrder(id);
+
+            setOrder(fresh);
+            setStatus(fresh.status);
+
             await Promise.all([
                 refreshAssignments(),
                 refreshAssignmentRequests(),
@@ -272,23 +281,29 @@ export default function AdminOrderDetailsPage() {
                                 </div>
 
                                 <div className="status-row">
-                                    <label className="field-label">Status</label>
-                                    <div className="status-control">
-                                        <select
-                                            className="admin-select"
-                                            value={status}
-                                            onChange={(e) => setStatus(e.target.value)}
-                                        >
-                                            <option value="PENDING">PENDING</option>
-                                            <option value="IN_PROGRESS">IN_PROGRESS</option>
-                                            <option value="COMPLETED">COMPLETED</option>
-                                            <option value="CANCELLED">CANCELLED</option>
-                                        </select>
+                                    <label className="field-label">Admin Actions</label>
 
-                                        <button className="secondary-btn admin-btn-sm" onClick={onStatusSave}>
-                                            Save
+                                    <div className="status-control">
+                                        <button
+                                            className="secondary-btn admin-btn-sm"
+                                            disabled={order.status === "COMPLETED" || order.status === "CANCELLED"}
+                                            onClick={() => onAdminSetStatus("COMPLETED")}
+                                        >
+                                            Mark Completed
+                                        </button>
+
+                                        <button
+                                            className="danger-btn admin-btn-sm"
+                                            disabled={order.status === "CANCELLED"}
+                                            onClick={() => onAdminSetStatus("CANCELLED")}
+                                        >
+                                            Cancel Order
                                         </button>
                                     </div>
+
+                                    <p className="muted-text status-helper">
+                                        Pending and In Progress are automatic based on booster assignment.
+                                    </p>
                                 </div>
 
                                 {order.currentRank && order.desiredRank && (

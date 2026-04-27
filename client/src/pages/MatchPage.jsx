@@ -126,12 +126,8 @@ function MatchPage() {
                 const loadedConversation = await getOrderConversation(orderId);
                 setConversation(loadedConversation);
 
-                console.log("Loaded order:", loadedOrder);
-                console.log("Loaded conversation:", loadedConversation);
-
                 // 3. Try to find assigned booster from conversation participants or order assignments
                 const realBooster = findAssignedBooster(loadedConversation, loadedOrder);
-                console.log("Detected booster:", realBooster);
                 setMatchedBooster(realBooster);
                 setMatchStatus(realBooster ? "matched" : "searching");
 

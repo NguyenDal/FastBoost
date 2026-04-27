@@ -10,6 +10,8 @@ const {
   getOrderAdminById,
   updateOrderStatus,
   listAssignedOrdersForProvider,
+  providerCompleteAssignedOrder,
+  providerLeaveAssignedOrder,
 } = require("../controllers/orderController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -33,6 +35,11 @@ router.delete("/:id/assign/:boosterId", protect, adminOnly, unassignBooster);
 // Normal order endpoints
 router.post("/", protect, createOrder);
 router.get("/my", protect, getMyOrders);
+
+// Provider order actions
+router.patch("/:id/provider-complete", protect, providerCompleteAssignedOrder);
+router.delete("/:id/provider-leave", protect, providerLeaveAssignedOrder);
+
 router.get("/:id", protect, getOrderById);
 
 module.exports = router;

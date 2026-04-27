@@ -298,13 +298,6 @@ exports.acceptAssignmentRequest = async (req, res) => {
       });
     }
 
-    console.log("Accept assignment debug:", {
-      tokenUserId: userId,
-      requestBoosterId: request.boosterId,
-      requestId,
-      loggedInUser: req.user,
-    });
-
     if (request.boosterId !== userId) {
       return res.status(403).json({
         ok: false,
@@ -338,6 +331,13 @@ exports.acceptAssignmentRequest = async (req, res) => {
       create: {
         orderId: request.orderId,
         boosterId: request.boosterId,
+      },
+    });
+
+    await prisma.order.update({
+      where: { id: request.orderId },
+      data: {
+        status: "IN_PROGRESS",
       },
     });
 
