@@ -2,51 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/MatchPage.css";
-
-const demoBoosters = [
-    {
-        id: "b1",
-        name: "Nova",
-        rank: "Diamond I",
-        role: "Jungle",
-        winRate: "68%",
-        region: "North America",
-        status: "Online",
-        rating: 4.9,
-        reviews: 184,
-        bio: "Fast climbing specialist focused on clean communication and consistent ranked results.",
-        avatar:
-            "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-        id: "b2",
-        name: "Blitz",
-        rank: "Master",
-        role: "Mid",
-        winRate: "71%",
-        region: "Europe West",
-        status: "Online",
-        rating: 4.8,
-        reviews: 231,
-        bio: "Mid lane carry player with strong matchup knowledge and high-tempo decision making.",
-        avatar:
-            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
-    },
-    {
-        id: "b3",
-        name: "Vex",
-        rank: "Emerald I",
-        role: "Support",
-        winRate: "64%",
-        region: "North America",
-        status: "Online",
-        rating: 4.7,
-        reviews: 96,
-        bio: "Support-focused booster who prefers duo-friendly communication and safe macro play.",
-        avatar:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
-    },
-];
+import {
+    getOrderConversation,
+    getConversationMessages,
+    sendConversationMessage,
+} from "../api/chats";
 
 function MatchPage() {
     const { orderId } = useParams();
@@ -57,6 +17,9 @@ function MatchPage() {
     const [profileImage, setProfileImage] = useState("");
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
+    const [conversation, setConversation] = useState(null);
+    const [chatLoading, setChatLoading] = useState(true);
+    const [chatError, setChatError] = useState("");
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
     const [authMessage, setAuthMessage] = useState("");
@@ -65,6 +28,7 @@ function MatchPage() {
     const [registerErrors, setRegisterErrors] = useState({ email: false, password: false });
     const [forgotError, setForgotError] = useState(false);
     const [forgotEmail, setForgotEmail] = useState("");
+
 
     const [order, setOrder] = useState(null);
     const [matchStatus, setMatchStatus] = useState("searching");
@@ -77,7 +41,9 @@ function MatchPage() {
             timestamp: "3:37 PM",
         },
     ]);
+
     const [chatInput, setChatInput] = useState("");
+    const chatEnabled = Boolean(conversation && matchedBooster);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -102,7 +68,7 @@ function MatchPage() {
         setCurrentUser(null);
         setProfileImage("");
         setShowProfileMenu(false);
-        try { window.dispatchEvent(new Event("auth:changed")); } catch {}
+        try { window.dispatchEvent(new Event("auth:changed")); } catch { }
         navigate("/", { replace: true });
     };
 
@@ -128,8 +94,11 @@ function MatchPage() {
     }, [navigate]);
 
     useEffect(() => {
-        const fetchOrder = async () => {
+        const loadChatPage = async () => {
             try {
+                setChatLoading(true);
+                setChatError("");
+
                 const token = localStorage.getItem("token");
 
                 if (!token) {
@@ -137,96 +106,142 @@ function MatchPage() {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                // 1. Load normal order details
+                const orderResponse = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                const data = await response.json();
+                const orderData = await orderResponse.json();
 
-                if (!response.ok) {
-                    throw new Error(data.message || "Failed to load order");
+                if (!orderResponse.ok) {
+                    throw new Error(orderData.message || "Failed to load order");
                 }
 
-                setOrder(data.order);
+                const loadedOrder = orderData.order;
+                setOrder(loadedOrder);
+
+                // 2. Get or create conversation for this order
+                const loadedConversation = await getOrderConversation(orderId);
+                setConversation(loadedConversation);
+
+                console.log("Loaded order:", loadedOrder);
+                console.log("Loaded conversation:", loadedConversation);
+
+                // 3. Try to find assigned booster from conversation participants or order assignments
+                const realBooster = findAssignedBooster(loadedConversation, loadedOrder);
+                console.log("Detected booster:", realBooster);
+                setMatchedBooster(realBooster);
+                setMatchStatus(realBooster ? "matched" : "searching");
+
+                // 4. Load real saved messages
+                const savedMessages = await getConversationMessages(loadedConversation.id);
+
+                if (savedMessages.length > 0) {
+                    setMessages(
+                        savedMessages.map((msg) => ({
+                            id: msg.id,
+                            sender:
+                                msg.senderId === loadedOrder.customerId
+                                    ? "user"
+                                    : msg.sender?.role === "PROVIDER"
+                                        ? "booster"
+                                        : msg.sender?.role === "ADMIN"
+                                            ? "admin"
+                                            : "user",
+                            text: msg.content || msg.text || msg.body || msg.message || "",
+                            timestamp: formatChatTime(msg.createdAt),
+                            senderName: msg.sender?.username || msg.sender?.email,
+                        }))
+                    );
+                } else {
+                    setMessages([
+                        {
+                            id: "system-waiting",
+                            sender: "system",
+                            text: realBooster
+                                ? `${getBoosterDisplayName(realBooster)} has been assigned to your order.`
+                                : "Your order has been placed. Waiting for an admin to assign a booster.",
+                            timestamp: formatChatTime(new Date()),
+                        },
+                    ]);
+                }
             } catch (error) {
+                setChatError(error.message || "Failed to load chat");
                 setOrder(null);
+            } finally {
+                setChatLoading(false);
             }
         };
 
-        fetchOrder();
+        loadChatPage();
     }, [orderId]);
 
-    useEffect(() => {
-        if (!order) return;
-
-        const timer = setTimeout(() => {
-            const match = findDemoBooster(order);
-
-            if (match) {
-                setMatchedBooster(match);
-                setMatchStatus("matched");
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        id: prev.length + 1,
-                        sender: "system",
-                        text: `${match.name} has been assigned to your order.`,
-                        timestamp: "3:38 PM",
-                    },
-                    {
-                        id: prev.length + 2,
-                        sender: "booster",
-                        text: `Hey! I’m ${match.name}. I’ve reviewed your ${order.boostType || order.service?.title} request and I’m ready to help.`,
-                        timestamp: "3:39 PM",
-                    },
-                ]);
-            } else {
-                setMatchStatus("searching");
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        id: prev.length + 1,
-                        sender: "system",
-                        text: "Still searching for a booster. No suitable booster is available yet.",
-                        timestamp: "3:38 PM",
-                    },
-                ]);
-            }
-        }, 2500);
-
-        return () => clearTimeout(timer);
-    }, [order]);
-
-    const handleSendMessage = (event) => {
+    const handleSendMessage = async (event) => {
         event.preventDefault();
 
-        if (!chatInput.trim() || !matchedBooster) return;
+        const text = chatInput.trim();
 
-        const userMessage = {
-            id: messages.length + 1,
-            sender: "user",
-            text: chatInput.trim(),
-            timestamp: "3:40 PM",
-        };
+        if (!text || !chatEnabled) return;
 
-        const boosterReply = {
-            id: messages.length + 2,
-            sender: "booster",
-            text: "Got it. Thanks for the update — I’ll follow your notes for this demo order.",
-            timestamp: "3:41 PM",
-        };
+        try {
+            const tempMessage = {
+                id: `temp-${Date.now()}`,
+                sender: "user",
+                text,
+                timestamp: formatChatTime(new Date()),
+            };
 
-        setMessages((prev) => [...prev, userMessage, boosterReply]);
-        setChatInput("");
+            setMessages((prev) => [...prev, tempMessage]);
+            setChatInput("");
+
+            const savedMessage = await sendConversationMessage(conversation.id, text);
+
+            setMessages((prev) =>
+                prev.map((msg) =>
+                    msg.id === tempMessage.id
+                        ? {
+                            id: savedMessage.id,
+                            sender: "user",
+                            text: savedMessage.content || savedMessage.text || savedMessage.body || savedMessage.message || text,
+                            timestamp: formatChatTime(savedMessage.createdAt),
+                            senderName:
+                                savedMessage.sender?.username || savedMessage.sender?.email || "You",
+                        }
+                        : msg
+                )
+            );
+        } catch (error) {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: `error-${Date.now()}`,
+                    sender: "system",
+                    text: error.message || "Message failed to send.",
+                    timestamp: formatChatTime(new Date()),
+                },
+            ]);
+        }
     };
+
+    if (chatLoading) {
+        return (
+            <div className="order-page-shell">
+                <div className="order-page-container">
+                    <p className="info-message">Loading order chat...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (!order) {
         return (
             <div className="order-page-shell">
                 <div className="order-page-container">
-                    <p className="error-message">Order not found.</p>
+                    <p className="error-message">
+                        {chatError || "Order not found."}
+                    </p>
                     <Link to="/" className="secondary-btn details-link-btn">
                         Back to homepage
                     </Link>
@@ -286,8 +301,8 @@ function MatchPage() {
                                         <>
                                             <div className="chat-avatar-wrap">
                                                 <img
-                                                    src={matchedBooster.avatar}
-                                                    alt={matchedBooster.name}
+                                                    src={getBoosterAvatar(matchedBooster)}
+                                                    alt={getBoosterDisplayName(matchedBooster)}
                                                     className="chat-header-avatar"
                                                 />
                                                 <span className="chat-avatar-online-dot" />
@@ -296,7 +311,7 @@ function MatchPage() {
                                             <div className="chat-header-info">
                                                 <p className="chat-header-title">Chat</p>
                                                 <p className="chat-header-subtitle">
-                                                    {matchedBooster.name} • {matchedBooster.rank}
+                                                    {getBoosterDisplayName(matchedBooster)} • {matchedBooster.rank || "Provider"}
                                                 </p>
                                             </div>
                                         </>
@@ -327,8 +342,8 @@ function MatchPage() {
                                             {isBooster && matchedBooster && (
                                                 <div className="chat-avatar-wrap">
                                                     <img
-                                                        src={matchedBooster.avatar}
-                                                        alt={matchedBooster.name}
+                                                        src={getBoosterAvatar(matchedBooster)}
+                                                        alt={getBoosterDisplayName(matchedBooster)}
                                                         className="chat-message-avatar"
                                                     />
                                                     <span className="chat-avatar-online-dot" />
@@ -343,7 +358,7 @@ function MatchPage() {
                                                         {isUser
                                                             ? "You"
                                                             : isBooster
-                                                                ? matchedBooster?.name || "Booster"
+                                                                ? getBoosterDisplayName(matchedBooster)
                                                                 : "System"}
                                                     </span>
 
@@ -363,18 +378,19 @@ function MatchPage() {
                                 <input
                                     type="text"
                                     placeholder={
-                                        matchedBooster
+                                        chatEnabled
                                             ? "Type a message to your booster..."
-                                            : "Chat unlocks after a booster is matched"
+                                            : "Chat unlocks after a booster is assigned"
                                     }
                                     value={chatInput}
                                     onChange={(event) => setChatInput(event.target.value)}
-                                    disabled={!matchedBooster}
+                                    disabled={!chatEnabled}
                                 />
+
                                 <button
                                     type="submit"
                                     className="primary-btn"
-                                    disabled={!matchedBooster}
+                                    disabled={!chatEnabled}
                                 >
                                     Send
                                 </button>
@@ -409,7 +425,6 @@ function MatchPage() {
 
                     <aside className="match-sidebar">
                         <div className="match-side-card">
-                            <p className="section-label">Assigned Booster</p>
 
                             {!matchedBooster ? (
                                 <p className="section-description">Searching for booster...</p>
@@ -417,35 +432,43 @@ function MatchPage() {
                                 <div className="booster-profile-card">
                                     <div className="booster-profile-top">
                                         <img
-                                            src={matchedBooster.avatar}
-                                            alt={matchedBooster.name}
+                                            src={getBoosterAvatar(matchedBooster)}
+                                            alt={getBoosterDisplayName(matchedBooster)}
                                             className="booster-avatar"
                                         />
 
                                         <div className="booster-profile-main">
                                             <div className="booster-name-row">
-                                                <h3>{matchedBooster.name}</h3>
+                                                <h3>{getBoosterDisplayName(matchedBooster)}</h3>
                                                 <span className="booster-online-dot">
-                                                    {matchedBooster.status}
+                                                    {matchedBooster.status || "Assigned"}
                                                 </span>
                                             </div>
 
-                                            <p className="booster-rank-role">
-                                                {matchedBooster.rank} • {matchedBooster.role}
-                                            </p>
-
-                                            <div className="booster-rating-row">
-                                                <span className="booster-stars">
-                                                    {renderStars(matchedBooster.rating)}
-                                                </span>
-                                                <span className="booster-rating-text">
-                                                    {matchedBooster.rating} / 5 ({matchedBooster.reviews} reviews)
-                                                </span>
-                                            </div>
+                                            {matchedBooster.rating ? (
+                                                <div className="booster-rating-row">
+                                                    <span className="booster-stars">
+                                                        {renderStars(matchedBooster.rating)}
+                                                    </span>
+                                                    <span className="booster-rating-text">
+                                                        {matchedBooster.rating} / 5 ({matchedBooster.reviews || 0} reviews)
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className="booster-rating-row">
+                                                    <span className="booster-stars">★★★★★</span>
+                                                    <span className="booster-rating-text">
+                                                        4.5 / 5 (657 reviews)
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <p className="booster-bio">{matchedBooster.bio}</p>
+                                    <p className="booster-bio">
+                                        {matchedBooster.bio ||
+                                            "This booster has been assigned to your order and can now chat with you."}
+                                    </p>
                                 </div>
                             )}
                         </div>
@@ -494,25 +517,6 @@ function MatchPage() {
     );
 }
 
-function findDemoBooster(order) {
-    const region = order?.region;
-
-    if (!region) return null;
-
-    const normalizedRegion =
-        region === "North America" ? "North America" : region;
-
-    return (
-        demoBoosters.find((booster) => booster.region === normalizedRegion) || null
-    );
-}
-
-function renderStars(rating) {
-    const fullStars = Math.floor(rating);
-    const emptyStars = 5 - fullStars;
-    return "★".repeat(fullStars) + "☆".repeat(emptyStars);
-}
-
 function getOrderTitle(order) {
     if (!order) return "Service Match";
 
@@ -533,6 +537,73 @@ function getOrderTitle(order) {
     }
 
     return order.boostType || order.service?.title || "Service Match";
+}
+
+function formatChatTime(value) {
+    if (!value) return "";
+
+    return new Date(value).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
+function getBoosterDisplayName(booster) {
+    return booster?.username || booster?.email || booster?.name || "Assigned Booster";
+}
+
+function getBoosterAvatar(booster) {
+    const name = getBoosterDisplayName(booster);
+
+    return (
+        booster?.profileImage ||
+        booster?.avatar ||
+        booster?.profile?.profileImage ||
+        booster?.profile?.avatar ||
+        booster?.profile?.photoUrl ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+    );
+}
+
+function findAssignedBooster(conversation, order) {
+    const participants = conversation?.participants || [];
+
+    const boosterFromParticipants = participants
+        .map((p) => p.user || p.booster || p.participant || p)
+        .find((user) => {
+            const role = String(user?.role || "").toUpperCase();
+            return role === "PROVIDER" || role === "BOOSTER";
+        });
+
+    if (boosterFromParticipants) {
+        return boosterFromParticipants;
+    }
+
+    const assignments = order?.assignments || order?.orderAssignments || [];
+
+    const boosterFromAssignments = assignments
+        .map((a) => a.booster || a.user || a.provider)
+        .find(Boolean);
+
+    if (boosterFromAssignments) {
+        return boosterFromAssignments;
+    }
+
+    return (
+        order?.booster ||
+        order?.provider ||
+        order?.assignedBooster ||
+        order?.assignedProvider ||
+        null
+    );
+}
+
+function renderStars(rating) {
+    const safeRating = Number(rating || 5);
+    const fullStars = Math.max(0, Math.min(5, Math.floor(safeRating)));
+    const emptyStars = 5 - fullStars;
+
+    return "★".repeat(fullStars) + "☆".repeat(emptyStars);
 }
 
 export default MatchPage;
