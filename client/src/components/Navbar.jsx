@@ -154,6 +154,17 @@ function Navbar({
         }
     };
 
+    useEffect(() => {
+        if (!effectiveHasSession) {
+            setNotifications([]);
+            setUnreadNotifications(0);
+            localStorage.setItem("unreadNotifications", "0");
+            return;
+        }
+
+        loadNotifications();
+    }, [effectiveHasSession]);
+
     const openSidePanel = (kind) => {
         setIsPanelClosing(false);
         setOpenPanel(kind);
@@ -221,8 +232,13 @@ function Navbar({
                 <Link to="/">Home</Link>
                 <a href="/#loyalty">Loyalty</a>
                 <a href="/#my-orders">My Order</a>
+
                 {effectiveCurrentUser?.role === "ADMIN" && (
                     <Link to="/admin/orders">Order Manager</Link>
+                )}
+
+                {effectiveCurrentUser?.role === "PROVIDER" && (
+                    <Link to="/provider/orders">Assigned Orders</Link>
                 )}
 
                 {!effectiveHasSession ? (
@@ -284,23 +300,37 @@ function Navbar({
                         {effectiveShowProfileMenu && (
                             <div className="profile-menu" role="menu">
                                 <div className="profile-quick-grid">
-                                    <button className="quick-tile" role="menuitem" aria-label="Notifications" title="Notifications" onClick={() => openSidePanel('notifications')}>
+                                    <button
+                                        className={`quick-tile notification-tile ${unreadNotifications > 0 ? "has-notifications" : ""}`}
+                                        role="menuitem"
+                                        aria-label="Notifications"
+                                        title="Notifications"
+                                        onClick={() => openSidePanel("notifications")}
+                                    >
                                         <span className="quick-icon" aria-hidden>
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 3a6 6 0 0 0-6 6v3.764c0 .536-.214 1.05-.595 1.43L4 15.6V17h16v-1.4l-1.405-1.406A2.02 2.02 0 0 1 18 12.764V9a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                                <path d="M12 3a6 6 0 0 0-6 6v3.764c0 .536-.214 1.05-.595 1.43L4 15.6V17h16v-1.4l-1.405-1.406A2.02 2.02 0 0 1 18 12.764V9a6 6 0 0 0-6-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                                             </svg>
                                         </span>
-                                        <span className="quick-count">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>
+
+                                        {unreadNotifications > 0 && <span className="quick-soft-dot notification" />}
                                     </button>
-                                    <button className="quick-tile" role="menuitem" aria-label="Messages" title="Messages" onClick={() => openSidePanel('messages')}>
+                                    <button
+                                        className={`quick-tile message-tile ${unreadMessages > 0 ? "has-messages" : ""}`}
+                                        role="menuitem"
+                                        aria-label="Messages"
+                                        title="Messages"
+                                        onClick={() => openSidePanel("messages")}
+                                    >
                                         <span className="quick-icon" aria-hidden>
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                                <path d="M7 8h10M7 11h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                                <path d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M7 8h10M7 11h7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                                             </svg>
                                         </span>
-                                        <span className="quick-count">{unreadMessages > 9 ? "9+" : unreadMessages}</span>
+
+                                        {unreadMessages > 0 && <span className="quick-soft-dot message" />}
                                     </button>
                                 </div>
                                 <button className="profile-menu-item" role="menuitem">Account Settings</button>
@@ -356,6 +386,7 @@ function Navbar({
                                     loading={notificationsLoading}
                                     error={notificationsError}
                                     onRefresh={loadNotifications}
+                                    onClosePanel={closeSidePanel}
                                 />
                             ) : (
                                 <div className="panel-empty">
@@ -380,7 +411,7 @@ function Navbar({
     );
 }
 
-function NotificationPanelContent({ notifications, loading, error, onRefresh }) {
+function NotificationPanelContent({ notifications, loading, error, onRefresh, onClosePanel }) {
     if (loading) {
         return (
             <div className="panel-empty">
@@ -424,13 +455,15 @@ function NotificationPanelContent({ notifications, loading, error, onRefresh }) 
                     key={notification.id}
                     notification={notification}
                     onRefresh={onRefresh}
+                    onClosePanel={onClosePanel}
                 />
             ))}
         </div>
     );
 }
 
-function NotificationCard({ notification, onRefresh }) {
+function NotificationCard({ notification, onRefresh, onClosePanel }) {
+    const navigate = useNavigate();
     const [actionLoading, setActionLoading] = useState(false);
 
     const isAssignmentRequest =
@@ -440,8 +473,16 @@ function NotificationCard({ notification, onRefresh }) {
     const handleAccept = async () => {
         try {
             setActionLoading(true);
+
             await acceptAssignmentRequest(notification.data.requestId);
             await onRefresh();
+
+            const orderId = notification.data?.orderId;
+
+            if (orderId) {
+                onClosePanel?.();
+                navigate(`/match/${orderId}`);
+            }
         } catch (error) {
             alert(error.message || "Failed to accept assignment");
         } finally {
@@ -452,6 +493,7 @@ function NotificationCard({ notification, onRefresh }) {
     const handleDecline = async () => {
         try {
             setActionLoading(true);
+
             await declineAssignmentRequest(notification.data.requestId);
             await onRefresh();
         } catch (error) {
@@ -479,7 +521,7 @@ function NotificationCard({ notification, onRefresh }) {
                         disabled={actionLoading}
                         onClick={handleAccept}
                     >
-                        Accept
+                        {actionLoading ? "Working..." : "Accept"}
                     </button>
 
                     <button
@@ -487,7 +529,7 @@ function NotificationCard({ notification, onRefresh }) {
                         disabled={actionLoading}
                         onClick={handleDecline}
                     >
-                        Decline
+                        {actionLoading ? "Working..." : "Decline"}
                     </button>
                 </div>
             )}

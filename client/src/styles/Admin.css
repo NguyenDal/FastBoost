@@ -862,3 +862,10 @@
     width: 0%;
   }
 }
+
+.provider-list-hero {
+  background:
+    radial-gradient(700px 220px at 10% 0%, rgba(59, 130, 246, .16), transparent 55%),
+    radial-gradient(600px 240px at 90% 10%, rgba(168, 85, 247, .14), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025));
+}

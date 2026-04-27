@@ -146,12 +146,58 @@ const getMyOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
     try {
+        const userId = req.user.id || req.user.userId;
+        const userRole = req.user.role;
+
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token: missing user id",
+            });
+        }
+
         const order = await prisma.order.findUnique({
             where: {
                 id: req.params.id,
             },
             include: {
                 service: true,
+                customer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        username: true,
+                        role: true,
+                        profile: {
+                            select: {
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                assignments: {
+                    include: {
+                        booster: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                role: true,
+                                profile: {
+                                    select: {
+                                        displayName: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                conversation: {
+                    select: {
+                        id: true,
+                        lastMessageAt: true,
+                    },
+                },
             },
         });
 
@@ -162,9 +208,13 @@ const getOrderById = async (req, res) => {
             });
         }
 
-        const customerId = req.user.id || req.user.userId;
+        const isCustomer = order.customerId === userId;
+        const isAdmin = userRole === "ADMIN";
+        const isAssignedBooster = order.assignments.some(
+            (assignment) => assignment.boosterId === userId
+        );
 
-        if (order.customerId !== customerId && req.user.role !== "ADMIN") {
+        if (!isCustomer && !isAdmin && !isAssignedBooster) {
             return res.status(403).json({
                 ok: false,
                 message: "Access denied",
@@ -181,6 +231,7 @@ const getOrderById = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "Server error while fetching order",
+            error: error.message,
         });
     }
 };
@@ -383,5 +434,122 @@ module.exports.listAssignments = async (req, res) => {
         return res.json({ ok: true, assignments: items });
     } catch (error) {
         return res.status(500).json({ ok: false, message: "Failed to list assignments" });
+    }
+};
+
+// Provider: list orders assigned to the logged-in booster/provider
+module.exports.listAssignedOrdersForProvider = async (req, res) => {
+    try {
+        const providerId = req.user.id || req.user.userId;
+
+        if (!providerId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token: missing user id",
+            });
+        }
+
+        if (req.user.role !== "PROVIDER" && req.user.role !== "ADMIN") {
+            return res.status(403).json({
+                ok: false,
+                message: "Only providers can view assigned orders",
+            });
+        }
+
+        const page = Math.max(parseInt(req.query.page || "1", 10), 1);
+        const pageSize = Math.min(
+            Math.max(parseInt(req.query.pageSize || "20", 10), 1),
+            100
+        );
+
+        const status = req.query.status || undefined;
+        const q = req.query.q?.trim();
+
+        const where = {
+            assignments: {
+                some: {
+                    boosterId: providerId,
+                },
+            },
+            ...(status ? { status } : {}),
+            ...(q
+                ? {
+                    OR: [
+                        { id: { contains: q, mode: "insensitive" } },
+                        { customer: { email: { contains: q, mode: "insensitive" } } },
+                        { customer: { username: { contains: q, mode: "insensitive" } } },
+                        { service: { title: { contains: q, mode: "insensitive" } } },
+                        { boostType: { contains: q, mode: "insensitive" } },
+                    ],
+                }
+                : {}),
+        };
+
+        const [items, total] = await Promise.all([
+            prisma.order.findMany({
+                where,
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+                include: {
+                    service: true,
+                    customer: {
+                        select: {
+                            id: true,
+                            email: true,
+                            username: true,
+                            role: true,
+                            profile: {
+                                select: {
+                                    displayName: true,
+                                },
+                            },
+                        },
+                    },
+                    assignments: {
+                        include: {
+                            booster: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    username: true,
+                                    role: true,
+                                    profile: {
+                                        select: {
+                                            displayName: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    conversation: {
+                        select: {
+                            id: true,
+                            lastMessageAt: true,
+                        },
+                    },
+                },
+            }),
+            prisma.order.count({ where }),
+        ]);
+
+        return res.json({
+            ok: true,
+            items,
+            total,
+            page,
+            pageSize,
+        });
+    } catch (error) {
+        console.error("listAssignedOrdersForProvider error:", error);
+
+        return res.status(500).json({
+            ok: false,
+            message: "Server error while loading assigned orders",
+            error: error.message,
+        });
     }
 };

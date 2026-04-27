@@ -259,7 +259,14 @@ exports.cancelAssignmentRequest = async (req, res) => {
 exports.acceptAssignmentRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        ok: false,
+        message: "Unauthorized: user id missing from token",
+      });
+    }
 
     const request = await prisma.assignmentRequest.findUnique({
       where: { id: requestId },
@@ -290,6 +297,13 @@ exports.acceptAssignmentRequest = async (req, res) => {
         message: "Assignment request not found",
       });
     }
+
+    console.log("Accept assignment debug:", {
+      tokenUserId: userId,
+      requestBoosterId: request.boosterId,
+      requestId,
+      loggedInUser: req.user,
+    });
 
     if (request.boosterId !== userId) {
       return res.status(403).json({
@@ -382,7 +396,14 @@ exports.acceptAssignmentRequest = async (req, res) => {
 exports.declineAssignmentRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        ok: false,
+        message: "Unauthorized: user id missing from token",
+      });
+    }
 
     const request = await prisma.assignmentRequest.findUnique({
       where: { id: requestId },

@@ -8,6 +8,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MatchPage from "./pages/MatchPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
+import ProviderOrdersPage from "./pages/ProviderOrdersPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="/match/:orderId" element={<MatchPage />} />
       <Route path="/admin/orders" element={<AdminOrdersPage />} />
       <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
+      <Route path="/provider/orders" element={<ProviderOrdersPage />} />
     </Routes>
   );
 }

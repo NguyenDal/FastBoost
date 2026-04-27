@@ -371,6 +371,50 @@ button {
   color: #e5e7eb;
 }
 
+/* Soft state glow for navbar quick tiles */
+.quick-tile.has-notifications {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(248, 113, 113, 0.28), transparent 28%),
+    rgba(255, 255, 255, 0.07);
+  border-color: rgba(248, 113, 113, 0.24);
+  box-shadow: 0 0 18px rgba(248, 113, 113, 0.08);
+}
+
+.quick-tile.has-notifications .quick-icon svg {
+  stroke: #fca5a5;
+}
+
+.quick-tile.has-messages {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(96, 165, 250, 0.28), transparent 28%),
+    rgba(255, 255, 255, 0.07);
+  border-color: rgba(96, 165, 250, 0.24);
+  box-shadow: 0 0 18px rgba(96, 165, 250, 0.08);
+}
+
+.quick-tile.has-messages .quick-icon svg {
+  stroke: #93c5fd;
+}
+
+.quick-soft-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.quick-soft-dot.notification {
+  background: #fca5a5;
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.75);
+}
+
+.quick-soft-dot.message {
+  background: #93c5fd;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.75);
+}
+
 /* Right-side slide panel */
 .slide-panel-backdrop {
   position: fixed;
