@@ -39,6 +39,11 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  */
 export type OrderAssignment = $Result.DefaultSelection<Prisma.$OrderAssignmentPayload>
 /**
+ * Model AssignmentRequest
+ * 
+ */
+export type AssignmentRequest = $Result.DefaultSelection<Prisma.$AssignmentRequestPayload>
+/**
  * Model Conversation
  * Conversation (thread) for chat, optionally tied to an order
  */
@@ -58,12 +63,28 @@ export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
  * 
  */
 export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetTokenPayload>
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 
 /**
  * Enums
  */
 export namespace $Enums {
-  export const UserRole: {
+  export const AssignmentRequestStatus: {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+export type AssignmentRequestStatus = (typeof AssignmentRequestStatus)[keyof typeof AssignmentRequestStatus]
+
+
+export const UserRole: {
   CUSTOMER: 'CUSTOMER',
   PROVIDER: 'PROVIDER',
   ADMIN: 'ADMIN'
@@ -81,7 +102,23 @@ export const OrderStatus: {
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
+
+export const NotificationType: {
+  ASSIGNMENT_REQUEST: 'ASSIGNMENT_REQUEST',
+  ASSIGNMENT_ACCEPTED: 'ASSIGNMENT_ACCEPTED',
+  ASSIGNMENT_DECLINED: 'ASSIGNMENT_DECLINED',
+  ASSIGNMENT_CANCELLED: 'ASSIGNMENT_CANCELLED',
+  ASSIGNMENT_REMOVED: 'ASSIGNMENT_REMOVED',
+  BOOSTER_LEFT_ORDER: 'BOOSTER_LEFT_ORDER'
+};
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
 }
+
+export type AssignmentRequestStatus = $Enums.AssignmentRequestStatus
+
+export const AssignmentRequestStatus: typeof $Enums.AssignmentRequestStatus
 
 export type UserRole = $Enums.UserRole
 
@@ -90,6 +127,10 @@ export const UserRole: typeof $Enums.UserRole
 export type OrderStatus = $Enums.OrderStatus
 
 export const OrderStatus: typeof $Enums.OrderStatus
+
+export type NotificationType = $Enums.NotificationType
+
+export const NotificationType: typeof $Enums.NotificationType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -263,6 +304,16 @@ export class PrismaClient<
   get orderAssignment(): Prisma.OrderAssignmentDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.assignmentRequest`: Exposes CRUD operations for the **AssignmentRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AssignmentRequests
+    * const assignmentRequests = await prisma.assignmentRequest.findMany()
+    * ```
+    */
+  get assignmentRequest(): Prisma.AssignmentRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.conversation`: Exposes CRUD operations for the **Conversation** model.
     * Example usage:
     * ```ts
@@ -301,6 +352,16 @@ export class PrismaClient<
     * ```
     */
   get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -740,10 +801,12 @@ export namespace Prisma {
     Service: 'Service',
     Order: 'Order',
     OrderAssignment: 'OrderAssignment',
+    AssignmentRequest: 'AssignmentRequest',
     Conversation: 'Conversation',
     ConversationParticipant: 'ConversationParticipant',
     Message: 'Message',
-    PasswordResetToken: 'PasswordResetToken'
+    PasswordResetToken: 'PasswordResetToken',
+    Notification: 'Notification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -759,7 +822,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken"
+      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1133,6 +1196,80 @@ export namespace Prisma {
           }
         }
       }
+      AssignmentRequest: {
+        payload: Prisma.$AssignmentRequestPayload<ExtArgs>
+        fields: Prisma.AssignmentRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssignmentRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssignmentRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.AssignmentRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssignmentRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          findMany: {
+            args: Prisma.AssignmentRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>[]
+          }
+          create: {
+            args: Prisma.AssignmentRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          createMany: {
+            args: Prisma.AssignmentRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssignmentRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.AssignmentRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          update: {
+            args: Prisma.AssignmentRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssignmentRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssignmentRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AssignmentRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.AssignmentRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.AssignmentRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAssignmentRequest>
+          }
+          groupBy: {
+            args: Prisma.AssignmentRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssignmentRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentRequestCountAggregateOutputType> | number
+          }
+        }
+      }
       Conversation: {
         payload: Prisma.$ConversationPayload<ExtArgs>
         fields: Prisma.ConversationFieldRefs
@@ -1429,6 +1566,80 @@ export namespace Prisma {
           }
         }
       }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1542,10 +1753,12 @@ export namespace Prisma {
     service?: ServiceOmit
     order?: OrderOmit
     orderAssignment?: OrderAssignmentOmit
+    assignmentRequest?: AssignmentRequestOmit
     conversation?: ConversationOmit
     conversationParticipant?: ConversationParticipantOmit
     message?: MessageOmit
     passwordResetToken?: PasswordResetTokenOmit
+    notification?: NotificationOmit
   }
 
   /* Types for Logging */
@@ -1631,6 +1844,9 @@ export namespace Prisma {
     providedAssignments: number
     conversationMembers: number
     sentMessages: number
+    boosterAssignmentRequests: number
+    adminAssignmentRequests: number
+    notifications: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1639,6 +1855,9 @@ export namespace Prisma {
     providedAssignments?: boolean | UserCountOutputTypeCountProvidedAssignmentsArgs
     conversationMembers?: boolean | UserCountOutputTypeCountConversationMembersArgs
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
+    boosterAssignmentRequests?: boolean | UserCountOutputTypeCountBoosterAssignmentRequestsArgs
+    adminAssignmentRequests?: boolean | UserCountOutputTypeCountAdminAssignmentRequestsArgs
+    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   }
 
   // Custom InputTypes
@@ -1687,6 +1906,27 @@ export namespace Prisma {
     where?: MessageWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBoosterAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
 
   /**
    * Count Type ServiceCountOutputType
@@ -1725,10 +1965,12 @@ export namespace Prisma {
 
   export type OrderCountOutputType = {
     assignments: number
+    assignmentRequests: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assignments?: boolean | OrderCountOutputTypeCountAssignmentsArgs
+    assignmentRequests?: boolean | OrderCountOutputTypeCountAssignmentRequestsArgs
   }
 
   // Custom InputTypes
@@ -1747,6 +1989,13 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderAssignmentWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentRequestWhereInput
   }
 
 
@@ -1980,6 +2229,9 @@ export namespace Prisma {
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
+    boosterAssignmentRequests?: boolean | User$boosterAssignmentRequestsArgs<ExtArgs>
+    adminAssignmentRequests?: boolean | User$adminAssignmentRequestsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2021,6 +2273,9 @@ export namespace Prisma {
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
+    boosterAssignmentRequests?: boolean | User$boosterAssignmentRequestsArgs<ExtArgs>
+    adminAssignmentRequests?: boolean | User$adminAssignmentRequestsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2035,6 +2290,9 @@ export namespace Prisma {
       providedAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
       conversationMembers: Prisma.$ConversationParticipantPayload<ExtArgs>[]
       sentMessages: Prisma.$MessagePayload<ExtArgs>[]
+      boosterAssignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
+      adminAssignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2444,6 +2702,9 @@ export namespace Prisma {
     providedAssignments<T extends User$providedAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$providedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversationMembers<T extends User$conversationMembersArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentMessages<T extends User$sentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    boosterAssignmentRequests<T extends User$boosterAssignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterAssignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    adminAssignmentRequests<T extends User$adminAssignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminAssignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3009,6 +3270,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.boosterAssignmentRequests
+   */
+  export type User$boosterAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    where?: AssignmentRequestWhereInput
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    cursor?: AssignmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminAssignmentRequests
+   */
+  export type User$adminAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    where?: AssignmentRequestWhereInput
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    cursor?: AssignmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.notifications
+   */
+  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
   /**
@@ -5630,6 +5963,7 @@ export namespace Prisma {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
+    assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -5751,6 +6085,7 @@ export namespace Prisma {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
+    assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5769,6 +6104,7 @@ export namespace Prisma {
       customer: Prisma.$UserPayload<ExtArgs>
       service: Prisma.$ServicePayload<ExtArgs>
       assignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
+      assignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       conversation: Prisma.$ConversationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6202,6 +6538,7 @@ export namespace Prisma {
     customer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignments<T extends Order$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assignmentRequests<T extends Order$assignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation<T extends Order$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Order$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6687,6 +7024,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderAssignmentScalarFieldEnum | OrderAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Order.assignmentRequests
+   */
+  export type Order$assignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    where?: AssignmentRequestWhereInput
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    cursor?: AssignmentRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
   }
 
   /**
@@ -7782,6 +8143,1111 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderAssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AssignmentRequest
+   */
+
+  export type AggregateAssignmentRequest = {
+    _count: AssignmentRequestCountAggregateOutputType | null
+    _min: AssignmentRequestMinAggregateOutputType | null
+    _max: AssignmentRequestMaxAggregateOutputType | null
+  }
+
+  export type AssignmentRequestMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    boosterId: string | null
+    requestedBy: string | null
+    status: $Enums.AssignmentRequestStatus | null
+    createdAt: Date | null
+    respondedAt: Date | null
+  }
+
+  export type AssignmentRequestMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    boosterId: string | null
+    requestedBy: string | null
+    status: $Enums.AssignmentRequestStatus | null
+    createdAt: Date | null
+    respondedAt: Date | null
+  }
+
+  export type AssignmentRequestCountAggregateOutputType = {
+    id: number
+    orderId: number
+    boosterId: number
+    requestedBy: number
+    status: number
+    createdAt: number
+    respondedAt: number
+    _all: number
+  }
+
+
+  export type AssignmentRequestMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    boosterId?: true
+    requestedBy?: true
+    status?: true
+    createdAt?: true
+    respondedAt?: true
+  }
+
+  export type AssignmentRequestMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    boosterId?: true
+    requestedBy?: true
+    status?: true
+    createdAt?: true
+    respondedAt?: true
+  }
+
+  export type AssignmentRequestCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    boosterId?: true
+    requestedBy?: true
+    status?: true
+    createdAt?: true
+    respondedAt?: true
+    _all?: true
+  }
+
+  export type AssignmentRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssignmentRequest to aggregate.
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentRequests to fetch.
+     */
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssignmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AssignmentRequests
+    **/
+    _count?: true | AssignmentRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssignmentRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssignmentRequestMaxAggregateInputType
+  }
+
+  export type GetAssignmentRequestAggregateType<T extends AssignmentRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateAssignmentRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAssignmentRequest[P]>
+      : GetScalarType<T[P], AggregateAssignmentRequest[P]>
+  }
+
+
+
+
+  export type AssignmentRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentRequestWhereInput
+    orderBy?: AssignmentRequestOrderByWithAggregationInput | AssignmentRequestOrderByWithAggregationInput[]
+    by: AssignmentRequestScalarFieldEnum[] | AssignmentRequestScalarFieldEnum
+    having?: AssignmentRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssignmentRequestCountAggregateInputType | true
+    _min?: AssignmentRequestMinAggregateInputType
+    _max?: AssignmentRequestMaxAggregateInputType
+  }
+
+  export type AssignmentRequestGroupByOutputType = {
+    id: string
+    orderId: string
+    boosterId: string
+    requestedBy: string
+    status: $Enums.AssignmentRequestStatus
+    createdAt: Date
+    respondedAt: Date | null
+    _count: AssignmentRequestCountAggregateOutputType | null
+    _min: AssignmentRequestMinAggregateOutputType | null
+    _max: AssignmentRequestMaxAggregateOutputType | null
+  }
+
+  type GetAssignmentRequestGroupByPayload<T extends AssignmentRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssignmentRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssignmentRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssignmentRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], AssignmentRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssignmentRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    boosterId?: boolean
+    requestedBy?: boolean
+    status?: boolean
+    createdAt?: boolean
+    respondedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentRequest"]>
+
+  export type AssignmentRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    boosterId?: boolean
+    requestedBy?: boolean
+    status?: boolean
+    createdAt?: boolean
+    respondedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentRequest"]>
+
+  export type AssignmentRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    boosterId?: boolean
+    requestedBy?: boolean
+    status?: boolean
+    createdAt?: boolean
+    respondedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentRequest"]>
+
+  export type AssignmentRequestSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    boosterId?: boolean
+    requestedBy?: boolean
+    status?: boolean
+    createdAt?: boolean
+    respondedAt?: boolean
+  }
+
+  export type AssignmentRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "boosterId" | "requestedBy" | "status" | "createdAt" | "respondedAt", ExtArgs["result"]["assignmentRequest"]>
+  export type AssignmentRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AssignmentRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AssignmentRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    requester?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AssignmentRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AssignmentRequest"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      booster: Prisma.$UserPayload<ExtArgs>
+      requester: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      boosterId: string
+      requestedBy: string
+      status: $Enums.AssignmentRequestStatus
+      createdAt: Date
+      respondedAt: Date | null
+    }, ExtArgs["result"]["assignmentRequest"]>
+    composites: {}
+  }
+
+  type AssignmentRequestGetPayload<S extends boolean | null | undefined | AssignmentRequestDefaultArgs> = $Result.GetResult<Prisma.$AssignmentRequestPayload, S>
+
+  type AssignmentRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AssignmentRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AssignmentRequestCountAggregateInputType | true
+    }
+
+  export interface AssignmentRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AssignmentRequest'], meta: { name: 'AssignmentRequest' } }
+    /**
+     * Find zero or one AssignmentRequest that matches the filter.
+     * @param {AssignmentRequestFindUniqueArgs} args - Arguments to find a AssignmentRequest
+     * @example
+     * // Get one AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssignmentRequestFindUniqueArgs>(args: SelectSubset<T, AssignmentRequestFindUniqueArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AssignmentRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AssignmentRequestFindUniqueOrThrowArgs} args - Arguments to find a AssignmentRequest
+     * @example
+     * // Get one AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssignmentRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, AssignmentRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AssignmentRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestFindFirstArgs} args - Arguments to find a AssignmentRequest
+     * @example
+     * // Get one AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssignmentRequestFindFirstArgs>(args?: SelectSubset<T, AssignmentRequestFindFirstArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AssignmentRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestFindFirstOrThrowArgs} args - Arguments to find a AssignmentRequest
+     * @example
+     * // Get one AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssignmentRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, AssignmentRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AssignmentRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AssignmentRequests
+     * const assignmentRequests = await prisma.assignmentRequest.findMany()
+     * 
+     * // Get first 10 AssignmentRequests
+     * const assignmentRequests = await prisma.assignmentRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assignmentRequestWithIdOnly = await prisma.assignmentRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssignmentRequestFindManyArgs>(args?: SelectSubset<T, AssignmentRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AssignmentRequest.
+     * @param {AssignmentRequestCreateArgs} args - Arguments to create a AssignmentRequest.
+     * @example
+     * // Create one AssignmentRequest
+     * const AssignmentRequest = await prisma.assignmentRequest.create({
+     *   data: {
+     *     // ... data to create a AssignmentRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssignmentRequestCreateArgs>(args: SelectSubset<T, AssignmentRequestCreateArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AssignmentRequests.
+     * @param {AssignmentRequestCreateManyArgs} args - Arguments to create many AssignmentRequests.
+     * @example
+     * // Create many AssignmentRequests
+     * const assignmentRequest = await prisma.assignmentRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssignmentRequestCreateManyArgs>(args?: SelectSubset<T, AssignmentRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AssignmentRequests and returns the data saved in the database.
+     * @param {AssignmentRequestCreateManyAndReturnArgs} args - Arguments to create many AssignmentRequests.
+     * @example
+     * // Create many AssignmentRequests
+     * const assignmentRequest = await prisma.assignmentRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AssignmentRequests and only return the `id`
+     * const assignmentRequestWithIdOnly = await prisma.assignmentRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssignmentRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, AssignmentRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AssignmentRequest.
+     * @param {AssignmentRequestDeleteArgs} args - Arguments to delete one AssignmentRequest.
+     * @example
+     * // Delete one AssignmentRequest
+     * const AssignmentRequest = await prisma.assignmentRequest.delete({
+     *   where: {
+     *     // ... filter to delete one AssignmentRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssignmentRequestDeleteArgs>(args: SelectSubset<T, AssignmentRequestDeleteArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AssignmentRequest.
+     * @param {AssignmentRequestUpdateArgs} args - Arguments to update one AssignmentRequest.
+     * @example
+     * // Update one AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssignmentRequestUpdateArgs>(args: SelectSubset<T, AssignmentRequestUpdateArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AssignmentRequests.
+     * @param {AssignmentRequestDeleteManyArgs} args - Arguments to filter AssignmentRequests to delete.
+     * @example
+     * // Delete a few AssignmentRequests
+     * const { count } = await prisma.assignmentRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssignmentRequestDeleteManyArgs>(args?: SelectSubset<T, AssignmentRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AssignmentRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AssignmentRequests
+     * const assignmentRequest = await prisma.assignmentRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssignmentRequestUpdateManyArgs>(args: SelectSubset<T, AssignmentRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AssignmentRequests and returns the data updated in the database.
+     * @param {AssignmentRequestUpdateManyAndReturnArgs} args - Arguments to update many AssignmentRequests.
+     * @example
+     * // Update many AssignmentRequests
+     * const assignmentRequest = await prisma.assignmentRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AssignmentRequests and only return the `id`
+     * const assignmentRequestWithIdOnly = await prisma.assignmentRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AssignmentRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, AssignmentRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AssignmentRequest.
+     * @param {AssignmentRequestUpsertArgs} args - Arguments to update or create a AssignmentRequest.
+     * @example
+     * // Update or create a AssignmentRequest
+     * const assignmentRequest = await prisma.assignmentRequest.upsert({
+     *   create: {
+     *     // ... data to create a AssignmentRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AssignmentRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssignmentRequestUpsertArgs>(args: SelectSubset<T, AssignmentRequestUpsertArgs<ExtArgs>>): Prisma__AssignmentRequestClient<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AssignmentRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestCountArgs} args - Arguments to filter AssignmentRequests to count.
+     * @example
+     * // Count the number of AssignmentRequests
+     * const count = await prisma.assignmentRequest.count({
+     *   where: {
+     *     // ... the filter for the AssignmentRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssignmentRequestCountArgs>(
+      args?: Subset<T, AssignmentRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssignmentRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AssignmentRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssignmentRequestAggregateArgs>(args: Subset<T, AssignmentRequestAggregateArgs>): Prisma.PrismaPromise<GetAssignmentRequestAggregateType<T>>
+
+    /**
+     * Group by AssignmentRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssignmentRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssignmentRequestGroupByArgs['orderBy'] }
+        : { orderBy?: AssignmentRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssignmentRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssignmentRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AssignmentRequest model
+   */
+  readonly fields: AssignmentRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AssignmentRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssignmentRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requester<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AssignmentRequest model
+   */
+  interface AssignmentRequestFieldRefs {
+    readonly id: FieldRef<"AssignmentRequest", 'String'>
+    readonly orderId: FieldRef<"AssignmentRequest", 'String'>
+    readonly boosterId: FieldRef<"AssignmentRequest", 'String'>
+    readonly requestedBy: FieldRef<"AssignmentRequest", 'String'>
+    readonly status: FieldRef<"AssignmentRequest", 'AssignmentRequestStatus'>
+    readonly createdAt: FieldRef<"AssignmentRequest", 'DateTime'>
+    readonly respondedAt: FieldRef<"AssignmentRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AssignmentRequest findUnique
+   */
+  export type AssignmentRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentRequest to fetch.
+     */
+    where: AssignmentRequestWhereUniqueInput
+  }
+
+  /**
+   * AssignmentRequest findUniqueOrThrow
+   */
+  export type AssignmentRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentRequest to fetch.
+     */
+    where: AssignmentRequestWhereUniqueInput
+  }
+
+  /**
+   * AssignmentRequest findFirst
+   */
+  export type AssignmentRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentRequest to fetch.
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentRequests to fetch.
+     */
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssignmentRequests.
+     */
+    cursor?: AssignmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentRequests.
+     */
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentRequest findFirstOrThrow
+   */
+  export type AssignmentRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentRequest to fetch.
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentRequests to fetch.
+     */
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssignmentRequests.
+     */
+    cursor?: AssignmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentRequests.
+     */
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentRequest findMany
+   */
+  export type AssignmentRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentRequests to fetch.
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentRequests to fetch.
+     */
+    orderBy?: AssignmentRequestOrderByWithRelationInput | AssignmentRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AssignmentRequests.
+     */
+    cursor?: AssignmentRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentRequests.
+     */
+    distinct?: AssignmentRequestScalarFieldEnum | AssignmentRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentRequest create
+   */
+  export type AssignmentRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AssignmentRequest.
+     */
+    data: XOR<AssignmentRequestCreateInput, AssignmentRequestUncheckedCreateInput>
+  }
+
+  /**
+   * AssignmentRequest createMany
+   */
+  export type AssignmentRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AssignmentRequests.
+     */
+    data: AssignmentRequestCreateManyInput | AssignmentRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AssignmentRequest createManyAndReturn
+   */
+  export type AssignmentRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many AssignmentRequests.
+     */
+    data: AssignmentRequestCreateManyInput | AssignmentRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentRequest update
+   */
+  export type AssignmentRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AssignmentRequest.
+     */
+    data: XOR<AssignmentRequestUpdateInput, AssignmentRequestUncheckedUpdateInput>
+    /**
+     * Choose, which AssignmentRequest to update.
+     */
+    where: AssignmentRequestWhereUniqueInput
+  }
+
+  /**
+   * AssignmentRequest updateMany
+   */
+  export type AssignmentRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AssignmentRequests.
+     */
+    data: XOR<AssignmentRequestUpdateManyMutationInput, AssignmentRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which AssignmentRequests to update
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * Limit how many AssignmentRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AssignmentRequest updateManyAndReturn
+   */
+  export type AssignmentRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update AssignmentRequests.
+     */
+    data: XOR<AssignmentRequestUpdateManyMutationInput, AssignmentRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which AssignmentRequests to update
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * Limit how many AssignmentRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentRequest upsert
+   */
+  export type AssignmentRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AssignmentRequest to update in case it exists.
+     */
+    where: AssignmentRequestWhereUniqueInput
+    /**
+     * In case the AssignmentRequest found by the `where` argument doesn't exist, create a new AssignmentRequest with this data.
+     */
+    create: XOR<AssignmentRequestCreateInput, AssignmentRequestUncheckedCreateInput>
+    /**
+     * In case the AssignmentRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssignmentRequestUpdateInput, AssignmentRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * AssignmentRequest delete
+   */
+  export type AssignmentRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
+    /**
+     * Filter which AssignmentRequest to delete.
+     */
+    where: AssignmentRequestWhereUniqueInput
+  }
+
+  /**
+   * AssignmentRequest deleteMany
+   */
+  export type AssignmentRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssignmentRequests to delete
+     */
+    where?: AssignmentRequestWhereInput
+    /**
+     * Limit how many AssignmentRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AssignmentRequest without action
+   */
+  export type AssignmentRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentRequest
+     */
+    select?: AssignmentRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentRequest
+     */
+    omit?: AssignmentRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentRequestInclude<ExtArgs> | null
   }
 
 
@@ -12157,6 +13623,1117 @@ export namespace Prisma {
 
 
   /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.NotificationType | null
+    title: string | null
+    message: string | null
+    read: boolean | null
+    active: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.NotificationType | null
+    title: string | null
+    message: string | null
+    read: boolean | null
+    active: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    title: number
+    message: number
+    data: number
+    read: number
+    active: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    read?: true
+    active?: true
+    createdAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    read?: true
+    active?: true
+    createdAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    data?: true
+    read?: true
+    active?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    userId: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data: JsonValue | null
+    read: boolean
+    active: boolean
+    createdAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    read?: boolean
+    active?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    read?: boolean
+    active?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    read?: boolean
+    active?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    data?: boolean
+    read?: boolean
+    active?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "title" | "message" | "data" | "read" | "active" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: $Enums.NotificationType
+      title: string
+      message: string
+      data: Prisma.JsonValue | null
+      read: boolean
+      active: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notifications and returns the data saved in the database.
+     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications and returns the data updated in the database.
+     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly userId: FieldRef<"Notification", 'String'>
+    readonly type: FieldRef<"Notification", 'NotificationType'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly data: FieldRef<"Notification", 'Json'>
+    readonly read: FieldRef<"Notification", 'Boolean'>
+    readonly active: FieldRef<"Notification", 'Boolean'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification createManyAndReturn
+   */
+  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification updateManyAndReturn
+   */
+  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -12255,6 +14832,19 @@ export namespace Prisma {
   export type OrderAssignmentScalarFieldEnum = (typeof OrderAssignmentScalarFieldEnum)[keyof typeof OrderAssignmentScalarFieldEnum]
 
 
+  export const AssignmentRequestScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    boosterId: 'boosterId',
+    requestedBy: 'requestedBy',
+    status: 'status',
+    createdAt: 'createdAt',
+    respondedAt: 'respondedAt'
+  };
+
+  export type AssignmentRequestScalarFieldEnum = (typeof AssignmentRequestScalarFieldEnum)[keyof typeof AssignmentRequestScalarFieldEnum]
+
+
   export const ConversationScalarFieldEnum: {
     id: 'id',
     orderId: 'orderId',
@@ -12299,6 +14889,21 @@ export namespace Prisma {
   };
 
   export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
+
+
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    title: 'title',
+    message: 'message',
+    data: 'data',
+    read: 'read',
+    active: 'active',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -12450,6 +15055,34 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'AssignmentRequestStatus'
+   */
+  export type EnumAssignmentRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssignmentRequestStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssignmentRequestStatus[]'
+   */
+  export type ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssignmentRequestStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotificationType'
+   */
+  export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotificationType[]'
+   */
+  export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
+    
   /**
    * Deep Input Types
    */
@@ -12472,6 +15105,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
+    boosterAssignmentRequests?: AssignmentRequestListRelationFilter
+    adminAssignmentRequests?: AssignmentRequestListRelationFilter
+    notifications?: NotificationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -12488,6 +15124,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentOrderByRelationAggregateInput
     conversationMembers?: ConversationParticipantOrderByRelationAggregateInput
     sentMessages?: MessageOrderByRelationAggregateInput
+    boosterAssignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
+    adminAssignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -12507,6 +15146,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
+    boosterAssignmentRequests?: AssignmentRequestListRelationFilter
+    adminAssignmentRequests?: AssignmentRequestListRelationFilter
+    notifications?: NotificationListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -12690,6 +15332,7 @@ export namespace Prisma {
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
+    assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
   }
 
@@ -12730,6 +15373,7 @@ export namespace Prisma {
     customer?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
     assignments?: OrderAssignmentOrderByRelationAggregateInput
+    assignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     conversation?: ConversationOrderByWithRelationInput
   }
 
@@ -12773,6 +15417,7 @@ export namespace Prisma {
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
+    assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
   }, "id">
 
@@ -12908,6 +15553,77 @@ export namespace Prisma {
     orderId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     boosterId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"OrderAssignment"> | Date | string
+  }
+
+  export type AssignmentRequestWhereInput = {
+    AND?: AssignmentRequestWhereInput | AssignmentRequestWhereInput[]
+    OR?: AssignmentRequestWhereInput[]
+    NOT?: AssignmentRequestWhereInput | AssignmentRequestWhereInput[]
+    id?: StringFilter<"AssignmentRequest"> | string
+    orderId?: StringFilter<"AssignmentRequest"> | string
+    boosterId?: StringFilter<"AssignmentRequest"> | string
+    requestedBy?: StringFilter<"AssignmentRequest"> | string
+    status?: EnumAssignmentRequestStatusFilter<"AssignmentRequest"> | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFilter<"AssignmentRequest"> | Date | string
+    respondedAt?: DateTimeNullableFilter<"AssignmentRequest"> | Date | string | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AssignmentRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    requestedBy?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    respondedAt?: SortOrderInput | SortOrder
+    order?: OrderOrderByWithRelationInput
+    booster?: UserOrderByWithRelationInput
+    requester?: UserOrderByWithRelationInput
+  }
+
+  export type AssignmentRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssignmentRequestWhereInput | AssignmentRequestWhereInput[]
+    OR?: AssignmentRequestWhereInput[]
+    NOT?: AssignmentRequestWhereInput | AssignmentRequestWhereInput[]
+    orderId?: StringFilter<"AssignmentRequest"> | string
+    boosterId?: StringFilter<"AssignmentRequest"> | string
+    requestedBy?: StringFilter<"AssignmentRequest"> | string
+    status?: EnumAssignmentRequestStatusFilter<"AssignmentRequest"> | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFilter<"AssignmentRequest"> | Date | string
+    respondedAt?: DateTimeNullableFilter<"AssignmentRequest"> | Date | string | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requester?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type AssignmentRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    requestedBy?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    respondedAt?: SortOrderInput | SortOrder
+    _count?: AssignmentRequestCountOrderByAggregateInput
+    _max?: AssignmentRequestMaxOrderByAggregateInput
+    _min?: AssignmentRequestMinOrderByAggregateInput
+  }
+
+  export type AssignmentRequestScalarWhereWithAggregatesInput = {
+    AND?: AssignmentRequestScalarWhereWithAggregatesInput | AssignmentRequestScalarWhereWithAggregatesInput[]
+    OR?: AssignmentRequestScalarWhereWithAggregatesInput[]
+    NOT?: AssignmentRequestScalarWhereWithAggregatesInput | AssignmentRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AssignmentRequest"> | string
+    orderId?: StringWithAggregatesFilter<"AssignmentRequest"> | string
+    boosterId?: StringWithAggregatesFilter<"AssignmentRequest"> | string
+    requestedBy?: StringWithAggregatesFilter<"AssignmentRequest"> | string
+    status?: EnumAssignmentRequestStatusWithAggregatesFilter<"AssignmentRequest"> | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeWithAggregatesFilter<"AssignmentRequest"> | Date | string
+    respondedAt?: DateTimeNullableWithAggregatesFilter<"AssignmentRequest"> | Date | string | null
   }
 
   export type ConversationWhereInput = {
@@ -13153,6 +15869,81 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PasswordResetToken"> | Date | string
   }
 
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    read?: BoolFilter<"Notification"> | boolean
+    active?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrderInput | SortOrder
+    read?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    userId?: StringFilter<"Notification"> | string
+    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    read?: BoolFilter<"Notification"> | boolean
+    active?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrderInput | SortOrder
+    read?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    userId?: StringWithAggregatesFilter<"Notification"> | string
+    type?: EnumNotificationTypeWithAggregatesFilter<"Notification"> | $Enums.NotificationType
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringWithAggregatesFilter<"Notification"> | string
+    data?: JsonNullableWithAggregatesFilter<"Notification">
+    read?: BoolWithAggregatesFilter<"Notification"> | boolean
+    active?: BoolWithAggregatesFilter<"Notification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -13167,6 +15958,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -13183,6 +15977,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -13199,6 +15996,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -13215,6 +16015,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -13404,6 +16207,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
 
@@ -13442,6 +16246,7 @@ export namespace Prisma {
     addonPrice?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -13480,6 +16285,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
 
@@ -13518,6 +16324,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -13672,6 +16479,73 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     boosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssignmentRequestCreateInput = {
+    id?: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+    order: OrderCreateNestedOneWithoutAssignmentRequestsInput
+    booster: UserCreateNestedOneWithoutBoosterAssignmentRequestsInput
+    requester: UserCreateNestedOneWithoutAdminAssignmentRequestsInput
+  }
+
+  export type AssignmentRequestUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    boosterId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: OrderUpdateOneRequiredWithoutAssignmentRequestsNestedInput
+    booster?: UserUpdateOneRequiredWithoutBoosterAssignmentRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutAdminAssignmentRequestsNestedInput
+  }
+
+  export type AssignmentRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestCreateManyInput = {
+    id?: string
+    orderId: string
+    boosterId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ConversationCreateInput = {
@@ -13914,6 +16788,89 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NotificationCreateInput = {
+    id?: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    userId: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -13997,6 +16954,18 @@ export namespace Prisma {
     none?: MessageWhereInput
   }
 
+  export type AssignmentRequestListRelationFilter = {
+    every?: AssignmentRequestWhereInput
+    some?: AssignmentRequestWhereInput
+    none?: AssignmentRequestWhereInput
+  }
+
+  export type NotificationListRelationFilter = {
+    every?: NotificationWhereInput
+    some?: NotificationWhereInput
+    none?: NotificationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -14019,6 +16988,14 @@ export namespace Prisma {
   }
 
   export type MessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssignmentRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14470,6 +17447,13 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumAssignmentRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -14479,6 +17463,60 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type AssignmentRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    requestedBy?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    respondedAt?: SortOrder
+  }
+
+  export type AssignmentRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    requestedBy?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    respondedAt?: SortOrder
+  }
+
+  export type AssignmentRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    requestedBy?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    respondedAt?: SortOrder
+  }
+
+  export type EnumAssignmentRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type OrderNullableScalarRelationFilter = {
@@ -14508,20 +17546,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     lastMessageAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ConversationScalarRelationFilter = {
@@ -14612,6 +17636,57 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumNotificationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
+  }
+
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    data?: SortOrder
+    read?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    read?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    read?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotificationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
+    _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
+  }
+
   export type OrderCreateNestedManyWithoutCustomerInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -14653,6 +17728,27 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type AssignmentRequestCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
+    createMany?: AssignmentRequestCreateManyBoosterInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+  }
+
+  export type AssignmentRequestCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput> | AssignmentRequestCreateWithoutRequesterInput[] | AssignmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutRequesterInput | AssignmentRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: AssignmentRequestCreateManyRequesterInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+  }
+
+  export type NotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
   export type OrderUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -14692,6 +17788,27 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutSenderInput | MessageCreateOrConnectWithoutSenderInput[]
     createMany?: MessageCreateManySenderInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
+    createMany?: AssignmentRequestCreateManyBoosterInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+  }
+
+  export type AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput = {
+    create?: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput> | AssignmentRequestCreateWithoutRequesterInput[] | AssignmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutRequesterInput | AssignmentRequestCreateOrConnectWithoutRequesterInput[]
+    createMany?: AssignmentRequestCreateManyRequesterInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -14790,6 +17907,48 @@ export namespace Prisma {
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
+  export type AssignmentRequestUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput | AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: AssignmentRequestCreateManyBoosterInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutBoosterInput | AssignmentRequestUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutBoosterInput | AssignmentRequestUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+  }
+
+  export type AssignmentRequestUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput> | AssignmentRequestCreateWithoutRequesterInput[] | AssignmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutRequesterInput | AssignmentRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutRequesterInput | AssignmentRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: AssignmentRequestCreateManyRequesterInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutRequesterInput | AssignmentRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutRequesterInput | AssignmentRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+  }
+
+  export type NotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type OrderUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -14870,6 +18029,48 @@ export namespace Prisma {
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
+  export type AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput | AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: AssignmentRequestCreateManyBoosterInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutBoosterInput | AssignmentRequestUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutBoosterInput | AssignmentRequestUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput> | AssignmentRequestCreateWithoutRequesterInput[] | AssignmentRequestUncheckedCreateWithoutRequesterInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutRequesterInput | AssignmentRequestCreateOrConnectWithoutRequesterInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutRequesterInput | AssignmentRequestUpsertWithWhereUniqueWithoutRequesterInput[]
+    createMany?: AssignmentRequestCreateManyRequesterInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutRequesterInput | AssignmentRequestUpdateWithWhereUniqueWithoutRequesterInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutRequesterInput | AssignmentRequestUpdateManyWithWhereWithoutRequesterInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutProfileInput = {
     create?: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutProfileInput
@@ -14945,6 +18146,13 @@ export namespace Prisma {
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
   }
 
+  export type AssignmentRequestCreateNestedManyWithoutOrderInput = {
+    create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
+    createMany?: AssignmentRequestCreateManyOrderInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+  }
+
   export type ConversationCreateNestedOneWithoutOrderInput = {
     create?: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
     connectOrCreate?: ConversationCreateOrConnectWithoutOrderInput
@@ -14956,6 +18164,13 @@ export namespace Prisma {
     connectOrCreate?: OrderAssignmentCreateOrConnectWithoutOrderInput | OrderAssignmentCreateOrConnectWithoutOrderInput[]
     createMany?: OrderAssignmentCreateManyOrderInputEnvelope
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
+  }
+
+  export type AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
+    createMany?: AssignmentRequestCreateManyOrderInputEnvelope
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
   }
 
   export type ConversationUncheckedCreateNestedOneWithoutOrderInput = {
@@ -15018,6 +18233,20 @@ export namespace Prisma {
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
   }
 
+  export type AssignmentRequestUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput | AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: AssignmentRequestCreateManyOrderInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutOrderInput | AssignmentRequestUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutOrderInput | AssignmentRequestUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+  }
+
   export type ConversationUpdateOneWithoutOrderNestedInput = {
     create?: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
     connectOrCreate?: ConversationCreateOrConnectWithoutOrderInput
@@ -15040,6 +18269,20 @@ export namespace Prisma {
     update?: OrderAssignmentUpdateWithWhereUniqueWithoutOrderInput | OrderAssignmentUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderAssignmentUpdateManyWithWhereWithoutOrderInput | OrderAssignmentUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
+    upsert?: AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput | AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: AssignmentRequestCreateManyOrderInputEnvelope
+    set?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    disconnect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    delete?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    connect?: AssignmentRequestWhereUniqueInput | AssignmentRequestWhereUniqueInput[]
+    update?: AssignmentRequestUpdateWithWhereUniqueWithoutOrderInput | AssignmentRequestUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: AssignmentRequestUpdateManyWithWhereWithoutOrderInput | AssignmentRequestUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
   }
 
   export type ConversationUncheckedUpdateOneWithoutOrderNestedInput = {
@@ -15080,6 +18323,56 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProvidedAssignmentsInput, UserUpdateWithoutProvidedAssignmentsInput>, UserUncheckedUpdateWithoutProvidedAssignmentsInput>
   }
 
+  export type OrderCreateNestedOneWithoutAssignmentRequestsInput = {
+    create?: XOR<OrderCreateWithoutAssignmentRequestsInput, OrderUncheckedCreateWithoutAssignmentRequestsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAssignmentRequestsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutBoosterAssignmentRequestsInput = {
+    create?: XOR<UserCreateWithoutBoosterAssignmentRequestsInput, UserUncheckedCreateWithoutBoosterAssignmentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterAssignmentRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAdminAssignmentRequestsInput = {
+    create?: XOR<UserCreateWithoutAdminAssignmentRequestsInput, UserUncheckedCreateWithoutAdminAssignmentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminAssignmentRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumAssignmentRequestStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AssignmentRequestStatus
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type OrderUpdateOneRequiredWithoutAssignmentRequestsNestedInput = {
+    create?: XOR<OrderCreateWithoutAssignmentRequestsInput, OrderUncheckedCreateWithoutAssignmentRequestsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAssignmentRequestsInput
+    upsert?: OrderUpsertWithoutAssignmentRequestsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutAssignmentRequestsInput, OrderUpdateWithoutAssignmentRequestsInput>, OrderUncheckedUpdateWithoutAssignmentRequestsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutBoosterAssignmentRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutBoosterAssignmentRequestsInput, UserUncheckedCreateWithoutBoosterAssignmentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterAssignmentRequestsInput
+    upsert?: UserUpsertWithoutBoosterAssignmentRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBoosterAssignmentRequestsInput, UserUpdateWithoutBoosterAssignmentRequestsInput>, UserUncheckedUpdateWithoutBoosterAssignmentRequestsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutAdminAssignmentRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutAdminAssignmentRequestsInput, UserUncheckedCreateWithoutAdminAssignmentRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminAssignmentRequestsInput
+    upsert?: UserUpsertWithoutAdminAssignmentRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminAssignmentRequestsInput, UserUpdateWithoutAdminAssignmentRequestsInput>, UserUncheckedUpdateWithoutAdminAssignmentRequestsInput>
+  }
+
   export type OrderCreateNestedOneWithoutConversationInput = {
     create?: XOR<OrderCreateWithoutConversationInput, OrderUncheckedCreateWithoutConversationInput>
     connectOrCreate?: OrderCreateOrConnectWithoutConversationInput
@@ -15112,10 +18405,6 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutConversationInput | MessageCreateOrConnectWithoutConversationInput[]
     createMany?: MessageCreateManyConversationInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrderUpdateOneWithoutConversationNestedInput = {
@@ -15252,6 +18541,24 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPasswordResetTokensInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, UserUpdateWithoutPasswordResetTokensInput>, UserUncheckedUpdateWithoutPasswordResetTokensInput>
+  }
+
+  export type UserCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumNotificationTypeFieldUpdateOperationsInput = {
+    set?: $Enums.NotificationType
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    upsert?: UserUpsertWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -15487,6 +18794,13 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedEnumAssignmentRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -15496,6 +18810,16 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedEnumAssignmentRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssignmentRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -15510,6 +18834,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
+  }
+
+  export type NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotificationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
+    _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
   export type OrderCreateWithoutCustomerInput = {
@@ -15546,6 +18887,7 @@ export namespace Prisma {
     totalPrice?: number
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
 
@@ -15583,6 +18925,7 @@ export namespace Prisma {
     addonPrice?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -15712,6 +19055,94 @@ export namespace Prisma {
 
   export type MessageCreateManySenderInputEnvelope = {
     data: MessageCreateManySenderInput | MessageCreateManySenderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AssignmentRequestCreateWithoutBoosterInput = {
+    id?: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+    order: OrderCreateNestedOneWithoutAssignmentRequestsInput
+    requester: UserCreateNestedOneWithoutAdminAssignmentRequestsInput
+  }
+
+  export type AssignmentRequestUncheckedCreateWithoutBoosterInput = {
+    id?: string
+    orderId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestCreateOrConnectWithoutBoosterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    create: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type AssignmentRequestCreateManyBoosterInputEnvelope = {
+    data: AssignmentRequestCreateManyBoosterInput | AssignmentRequestCreateManyBoosterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AssignmentRequestCreateWithoutRequesterInput = {
+    id?: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+    order: OrderCreateNestedOneWithoutAssignmentRequestsInput
+    booster: UserCreateNestedOneWithoutBoosterAssignmentRequestsInput
+  }
+
+  export type AssignmentRequestUncheckedCreateWithoutRequesterInput = {
+    id?: string
+    orderId: string
+    boosterId: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestCreateOrConnectWithoutRequesterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    create: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type AssignmentRequestCreateManyRequesterInputEnvelope = {
+    data: AssignmentRequestCreateManyRequesterInput | AssignmentRequestCreateManyRequesterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateOrConnectWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateManyUserInputEnvelope = {
+    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -15906,6 +19337,82 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Message"> | Date | string
   }
 
+  export type AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    update: XOR<AssignmentRequestUpdateWithoutBoosterInput, AssignmentRequestUncheckedUpdateWithoutBoosterInput>
+    create: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type AssignmentRequestUpdateWithWhereUniqueWithoutBoosterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    data: XOR<AssignmentRequestUpdateWithoutBoosterInput, AssignmentRequestUncheckedUpdateWithoutBoosterInput>
+  }
+
+  export type AssignmentRequestUpdateManyWithWhereWithoutBoosterInput = {
+    where: AssignmentRequestScalarWhereInput
+    data: XOR<AssignmentRequestUpdateManyMutationInput, AssignmentRequestUncheckedUpdateManyWithoutBoosterInput>
+  }
+
+  export type AssignmentRequestScalarWhereInput = {
+    AND?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+    OR?: AssignmentRequestScalarWhereInput[]
+    NOT?: AssignmentRequestScalarWhereInput | AssignmentRequestScalarWhereInput[]
+    id?: StringFilter<"AssignmentRequest"> | string
+    orderId?: StringFilter<"AssignmentRequest"> | string
+    boosterId?: StringFilter<"AssignmentRequest"> | string
+    requestedBy?: StringFilter<"AssignmentRequest"> | string
+    status?: EnumAssignmentRequestStatusFilter<"AssignmentRequest"> | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFilter<"AssignmentRequest"> | Date | string
+    respondedAt?: DateTimeNullableFilter<"AssignmentRequest"> | Date | string | null
+  }
+
+  export type AssignmentRequestUpsertWithWhereUniqueWithoutRequesterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    update: XOR<AssignmentRequestUpdateWithoutRequesterInput, AssignmentRequestUncheckedUpdateWithoutRequesterInput>
+    create: XOR<AssignmentRequestCreateWithoutRequesterInput, AssignmentRequestUncheckedCreateWithoutRequesterInput>
+  }
+
+  export type AssignmentRequestUpdateWithWhereUniqueWithoutRequesterInput = {
+    where: AssignmentRequestWhereUniqueInput
+    data: XOR<AssignmentRequestUpdateWithoutRequesterInput, AssignmentRequestUncheckedUpdateWithoutRequesterInput>
+  }
+
+  export type AssignmentRequestUpdateManyWithWhereWithoutRequesterInput = {
+    where: AssignmentRequestScalarWhereInput
+    data: XOR<AssignmentRequestUpdateManyMutationInput, AssignmentRequestUncheckedUpdateManyWithoutRequesterInput>
+  }
+
+  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationScalarWhereInput = {
+    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    OR?: NotificationScalarWhereInput[]
+    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    data?: JsonNullableFilter<"Notification">
+    read?: BoolFilter<"Notification"> | boolean
+    active?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+  }
+
   export type UserCreateWithoutProfileInput = {
     id?: string
     email: string
@@ -15919,6 +19426,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -15934,6 +19444,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -15965,6 +19478,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -15980,6 +19496,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderCreateWithoutServiceInput = {
@@ -16016,6 +19535,7 @@ export namespace Prisma {
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
 
@@ -16053,6 +19573,7 @@ export namespace Prisma {
     addonPrice?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -16095,6 +19616,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -16110,6 +19634,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -16160,6 +19687,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssignmentRequestCreateWithoutOrderInput = {
+    id?: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+    booster: UserCreateNestedOneWithoutBoosterAssignmentRequestsInput
+    requester: UserCreateNestedOneWithoutAdminAssignmentRequestsInput
+  }
+
+  export type AssignmentRequestUncheckedCreateWithoutOrderInput = {
+    id?: string
+    boosterId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestCreateOrConnectWithoutOrderInput = {
+    where: AssignmentRequestWhereUniqueInput
+    create: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput>
+  }
+
+  export type AssignmentRequestCreateManyOrderInputEnvelope = {
+    data: AssignmentRequestCreateManyOrderInput | AssignmentRequestCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ConversationCreateWithoutOrderInput = {
     id?: string
     createdAt?: Date | string
@@ -16207,6 +19762,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -16222,6 +19780,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ServiceUpsertWithoutOrdersInput = {
@@ -16265,6 +19826,22 @@ export namespace Prisma {
   export type OrderAssignmentUpdateManyWithWhereWithoutOrderInput = {
     where: OrderAssignmentScalarWhereInput
     data: XOR<OrderAssignmentUpdateManyMutationInput, OrderAssignmentUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput = {
+    where: AssignmentRequestWhereUniqueInput
+    update: XOR<AssignmentRequestUpdateWithoutOrderInput, AssignmentRequestUncheckedUpdateWithoutOrderInput>
+    create: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput>
+  }
+
+  export type AssignmentRequestUpdateWithWhereUniqueWithoutOrderInput = {
+    where: AssignmentRequestWhereUniqueInput
+    data: XOR<AssignmentRequestUpdateWithoutOrderInput, AssignmentRequestUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type AssignmentRequestUpdateManyWithWhereWithoutOrderInput = {
+    where: AssignmentRequestScalarWhereInput
+    data: XOR<AssignmentRequestUpdateManyMutationInput, AssignmentRequestUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type ConversationUpsertWithoutOrderInput = {
@@ -16330,6 +19907,7 @@ export namespace Prisma {
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
 
@@ -16367,6 +19945,7 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -16388,6 +19967,9 @@ export namespace Prisma {
     profile?: ProfileCreateNestedOneWithoutUserInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProvidedAssignmentsInput = {
@@ -16403,6 +19985,9 @@ export namespace Prisma {
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProvidedAssignmentsInput = {
@@ -16455,6 +20040,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
 
@@ -16492,6 +20078,7 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -16519,6 +20106,9 @@ export namespace Prisma {
     profile?: ProfileUpdateOneWithoutUserNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProvidedAssignmentsInput = {
@@ -16534,6 +20124,353 @@ export namespace Prisma {
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderCreateWithoutAssignmentRequestsInput = {
+    id?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    basePrice?: number
+    addonPrice?: number
+    totalPrice?: number
+    customer: UserCreateNestedOneWithoutOrdersInput
+    service: ServiceCreateNestedOneWithoutOrdersInput
+    assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    conversation?: ConversationCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutAssignmentRequestsInput = {
+    id?: string
+    customerId: string
+    serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    basePrice?: number
+    addonPrice?: number
+    totalPrice?: number
+    assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutAssignmentRequestsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutAssignmentRequestsInput, OrderUncheckedCreateWithoutAssignmentRequestsInput>
+  }
+
+  export type UserCreateWithoutBoosterAssignmentRequestsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBoosterAssignmentRequestsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBoosterAssignmentRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBoosterAssignmentRequestsInput, UserUncheckedCreateWithoutBoosterAssignmentRequestsInput>
+  }
+
+  export type UserCreateWithoutAdminAssignmentRequestsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminAssignmentRequestsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminAssignmentRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminAssignmentRequestsInput, UserUncheckedCreateWithoutAdminAssignmentRequestsInput>
+  }
+
+  export type OrderUpsertWithoutAssignmentRequestsInput = {
+    update: XOR<OrderUpdateWithoutAssignmentRequestsInput, OrderUncheckedUpdateWithoutAssignmentRequestsInput>
+    create: XOR<OrderCreateWithoutAssignmentRequestsInput, OrderUncheckedCreateWithoutAssignmentRequestsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutAssignmentRequestsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutAssignmentRequestsInput, OrderUncheckedUpdateWithoutAssignmentRequestsInput>
+  }
+
+  export type OrderUpdateWithoutAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutBoosterAssignmentRequestsInput = {
+    update: XOR<UserUpdateWithoutBoosterAssignmentRequestsInput, UserUncheckedUpdateWithoutBoosterAssignmentRequestsInput>
+    create: XOR<UserCreateWithoutBoosterAssignmentRequestsInput, UserUncheckedCreateWithoutBoosterAssignmentRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBoosterAssignmentRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBoosterAssignmentRequestsInput, UserUncheckedUpdateWithoutBoosterAssignmentRequestsInput>
+  }
+
+  export type UserUpdateWithoutBoosterAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBoosterAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutAdminAssignmentRequestsInput = {
+    update: XOR<UserUpdateWithoutAdminAssignmentRequestsInput, UserUncheckedUpdateWithoutAdminAssignmentRequestsInput>
+    create: XOR<UserCreateWithoutAdminAssignmentRequestsInput, UserUncheckedCreateWithoutAdminAssignmentRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminAssignmentRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminAssignmentRequestsInput, UserUncheckedUpdateWithoutAdminAssignmentRequestsInput>
+  }
+
+  export type UserUpdateWithoutAdminAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminAssignmentRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderCreateWithoutConversationInput = {
@@ -16571,6 +20508,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutConversationInput = {
@@ -16608,6 +20546,7 @@ export namespace Prisma {
     addonPrice?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutConversationInput = {
@@ -16711,6 +20650,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutConversationInput = {
@@ -16748,6 +20688,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type ConversationParticipantUpsertWithWhereUniqueWithoutConversationInput = {
@@ -16818,6 +20759,9 @@ export namespace Prisma {
     profile?: ProfileCreateNestedOneWithoutUserInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationMembersInput = {
@@ -16833,6 +20777,9 @@ export namespace Prisma {
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationMembersInput = {
@@ -16893,6 +20840,9 @@ export namespace Prisma {
     profile?: ProfileUpdateOneWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationMembersInput = {
@@ -16908,6 +20858,9 @@ export namespace Prisma {
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationCreateWithoutMessagesInput = {
@@ -16946,6 +20899,9 @@ export namespace Prisma {
     profile?: ProfileCreateNestedOneWithoutUserInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -16961,6 +20917,9 @@ export namespace Prisma {
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -17021,6 +20980,9 @@ export namespace Prisma {
     profile?: ProfileUpdateOneWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -17036,6 +20998,9 @@ export namespace Prisma {
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPasswordResetTokensInput = {
@@ -17051,6 +21016,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
@@ -17066,6 +21034,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
@@ -17097,6 +21068,9 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
@@ -17112,6 +21086,97 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type UserUpsertWithoutNotificationsInput = {
+    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
   }
 
   export type OrderCreateManyCustomerInput = {
@@ -17178,6 +21243,35 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AssignmentRequestCreateManyBoosterInput = {
+    id?: string
+    orderId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type AssignmentRequestCreateManyRequesterInput = {
+    id?: string
+    orderId: string
+    boosterId: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
+  export type NotificationCreateManyUserInput = {
+    id?: string
+    type: $Enums.NotificationType
+    title: string
+    message: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: boolean
+    active?: boolean
+    createdAt?: Date | string
+  }
+
   export type OrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -17212,6 +21306,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
 
@@ -17249,6 +21344,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -17374,6 +21470,93 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AssignmentRequestUpdateWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: OrderUpdateOneRequiredWithoutAssignmentRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutAdminAssignmentRequestsNestedInput
+  }
+
+  export type AssignmentRequestUncheckedUpdateWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestUpdateWithoutRequesterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    order?: OrderUpdateOneRequiredWithoutAssignmentRequestsNestedInput
+    booster?: UserUpdateOneRequiredWithoutBoosterAssignmentRequestsNestedInput
+  }
+
+  export type AssignmentRequestUncheckedUpdateWithoutRequesterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyWithoutRequesterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NotificationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    read?: BoolFieldUpdateOperationsInput | boolean
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderCreateManyServiceInput = {
     id?: string
     customerId: string
@@ -17443,6 +21626,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
 
@@ -17480,6 +21664,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -17524,6 +21709,15 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AssignmentRequestCreateManyOrderInput = {
+    id?: string
+    boosterId: string
+    requestedBy: string
+    status?: $Enums.AssignmentRequestStatus
+    createdAt?: Date | string
+    respondedAt?: Date | string | null
+  }
+
   export type OrderAssignmentUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17540,6 +21734,33 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     boosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssignmentRequestUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    booster?: UserUpdateOneRequiredWithoutBoosterAssignmentRequestsNestedInput
+    requester?: UserUpdateOneRequiredWithoutAdminAssignmentRequestsNestedInput
+  }
+
+  export type AssignmentRequestUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AssignmentRequestUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ConversationParticipantCreateManyConversationInput = {

@@ -190,6 +190,16 @@ exports.Prisma.OrderAssignmentScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AssignmentRequestScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  boosterId: 'boosterId',
+  requestedBy: 'requestedBy',
+  status: 'status',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt'
+};
+
 exports.Prisma.ConversationScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -221,6 +231,18 @@ exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   userId: 'userId',
   expiresAt: 'expiresAt',
   usedAt: 'usedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  data: 'data',
+  read: 'read',
+  active: 'active',
   createdAt: 'createdAt'
 };
 
@@ -262,16 +284,35 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.NotificationType = exports.$Enums.NotificationType = {
+  ASSIGNMENT_REQUEST: 'ASSIGNMENT_REQUEST',
+  ASSIGNMENT_ACCEPTED: 'ASSIGNMENT_ACCEPTED',
+  ASSIGNMENT_DECLINED: 'ASSIGNMENT_DECLINED',
+  ASSIGNMENT_CANCELLED: 'ASSIGNMENT_CANCELLED',
+  ASSIGNMENT_REMOVED: 'ASSIGNMENT_REMOVED',
+  BOOSTER_LEFT_ORDER: 'BOOSTER_LEFT_ORDER'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Profile: 'Profile',
   Service: 'Service',
   Order: 'Order',
   OrderAssignment: 'OrderAssignment',
+  AssignmentRequest: 'AssignmentRequest',
   Conversation: 'Conversation',
   ConversationParticipant: 'ConversationParticipant',
   Message: 'Message',
-  PasswordResetToken: 'PasswordResetToken'
+  PasswordResetToken: 'PasswordResetToken',
+  Notification: 'Notification'
 };
 
 /**

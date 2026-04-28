@@ -68,6 +68,42 @@ exports.getOrCreateOrderConversation = async (req, res) => {
       });
     }
 
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            role: true,
+            profile: true,
+          },
+        },
+        assignments: {
+          include: {
+            booster: {
+              select: {
+                id: true,
+                email: true,
+                username: true,
+                role: true,
+                createdAt: true,
+                profile: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        ok: false,
+        message: "Order not found",
+      });
+    }
+
     let conversation = await prisma.conversation.findUnique({
       where: { orderId },
     });
@@ -78,16 +114,64 @@ exports.getOrCreateOrderConversation = async (req, res) => {
       });
     }
 
+    // Add current user as participant
     await ensureParticipant(conversation.id, req);
 
-    const participants = await prisma.conversationParticipant.findMany({
-      where: { conversationId: conversation.id },
+    // Always add customer as participant
+    if (order.customerId) {
+      await prisma.conversationParticipant.upsert({
+        where: {
+          conversationId_userId: {
+            conversationId: conversation.id,
+            userId: order.customerId,
+          },
+        },
+        update: {},
+        create: {
+          conversationId: conversation.id,
+          userId: order.customerId,
+          roleAtJoin: "CUSTOMER",
+        },
+      });
+    }
+
+    // Add all assigned boosters as participants
+    const assignedBoosters = order.assignments
+      .map((assignment) => assignment.booster)
+      .filter(Boolean);
+
+    for (const booster of assignedBoosters) {
+      await prisma.conversationParticipant.upsert({
+        where: {
+          conversationId_userId: {
+            conversationId: conversation.id,
+            userId: booster.id,
+          },
+        },
+        update: {},
+        create: {
+          conversationId: conversation.id,
+          userId: booster.id,
+          roleAtJoin: booster.role || "PROVIDER",
+        },
+      });
+    }
+
+    const refreshedConversation = await prisma.conversation.findUnique({
+      where: { id: conversation.id },
       include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            role: true,
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                username: true,
+                role: true,
+                createdAt: true,
+                profile: true,
+              },
+            },
           },
         },
       },
@@ -95,8 +179,7 @@ exports.getOrCreateOrderConversation = async (req, res) => {
 
     return res.json({
       ok: true,
-      conversation,
-      participants,
+      conversation: refreshedConversation,
     });
   } catch (error) {
     console.error("getOrCreateOrderConversation error:", error);
@@ -146,7 +229,9 @@ exports.getMessages = async (req, res) => {
           select: {
             id: true,
             email: true,
+            username: true,
             role: true,
+            profile: true,
           },
         },
       },
@@ -170,7 +255,7 @@ exports.getMessages = async (req, res) => {
 exports.postMessage = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const { content } = req.body;
+    const content = req.body.content || req.body.text;
 
     const senderId = getUserId(req);
 
@@ -217,7 +302,9 @@ exports.postMessage = async (req, res) => {
           select: {
             id: true,
             email: true,
+            username: true,
             role: true,
+            profile: true,
           },
         },
       },
