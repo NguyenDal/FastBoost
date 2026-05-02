@@ -43,8 +43,25 @@ function MatchPage() {
     ]);
 
     const [chatInput, setChatInput] = useState("");
-    const chatEnabled = Boolean(conversation && matchedBooster);
 
+    const fallbackUser = getStoredUser();
+    const effectiveUser = currentUser || fallbackUser;
+
+    const currentUserId = getCurrentUserId(effectiveUser);
+    const currentUserRole = String(effectiveUser?.role || "").toUpperCase();
+
+    const isCustomerOwner =
+        order?.customerId === currentUserId ||
+        order?.customer?.id === currentUserId;
+
+    const isAdminUser = currentUserRole === "ADMIN";
+
+    const isAssignedProvider =
+        currentUserRole === "PROVIDER" &&
+        isUserAssignedToOrder(order, conversation, currentUserId);
+
+    const chatEnabled =
+        Boolean(conversation) && (isCustomerOwner || isAdminUser || isAssignedProvider);
     useEffect(() => {
         const token = localStorage.getItem("token");
         const savedUser = localStorage.getItem("user");
@@ -193,11 +210,11 @@ function MatchPage() {
                 id: `temp-${Date.now()}`,
                 sender: "mine",
                 isMine: true,
-                senderId: getCurrentUserId(currentUser),
-                senderRole: currentUser?.role,
-                senderUser: currentUser,
+                senderId: getCurrentUserId(effectiveUser),
+                senderRole: effectiveUser?.role,
+                senderUser: effectiveUser,
+                senderAvatar: getSenderAvatar(effectiveUser),
                 senderName: "You",
-                senderAvatar: getSenderAvatar(currentUser),
                 text,
                 timestamp: formatChatTime(new Date()),
             };
@@ -216,9 +233,9 @@ function MatchPage() {
                             isMine: true,
                             senderId: savedMessage.senderId,
                             senderRole: savedMessage.sender?.role,
-                            senderUser: savedMessage.sender || currentUser,
+                            senderUser: savedMessage.sender || effectiveUser,
                             senderName: "You",
-                            senderAvatar: getSenderAvatar(savedMessage.sender || currentUser),
+                            senderAvatar: getSenderAvatar(savedMessage.sender || effectiveUser),
                             text: savedMessage.content || savedMessage.text || savedMessage.body || savedMessage.message || text,
                             timestamp: formatChatTime(savedMessage.createdAt),
                         }
@@ -337,7 +354,7 @@ function MatchPage() {
                                 </div>
 
                                 <span className="chat-status-pill">
-                                    {matchedBooster ? "Live chat enabled" : "Searching"}
+                                    {chatEnabled ? "Live chat enabled" : "Chat unavailable"}
                                 </span>
                             </div>
 
@@ -388,8 +405,8 @@ function MatchPage() {
                                     type="text"
                                     placeholder={
                                         chatEnabled
-                                            ? "Type a message to your booster..."
-                                            : "Chat unlocks after a booster is assigned"
+                                            ? "Type a message..."
+                                            : "Only the customer, admin, or assigned booster can chat"
                                     }
                                     value={chatInput}
                                     onChange={(event) => setChatInput(event.target.value)}
@@ -617,6 +634,58 @@ function renderStars(rating) {
 
 function getCurrentUserId(currentUser) {
     return currentUser?.id || currentUser?.userId;
+}
+
+function getStoredUser() {
+    try {
+        return JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+        return null;
+    }
+}
+
+function isUserAssignedToOrder(order, conversation, currentUserId) {
+    if (!currentUserId) return false;
+
+    const assignments = order?.assignments || order?.orderAssignments || [];
+
+    const assignedFromOrder = assignments.some((assignment) => {
+        const boosterId =
+            assignment?.boosterId ||
+            assignment?.providerId ||
+            assignment?.userId ||
+            assignment?.booster?.id ||
+            assignment?.provider?.id ||
+            assignment?.user?.id;
+
+        return boosterId === currentUserId;
+    });
+
+    if (assignedFromOrder) return true;
+
+    const participants = conversation?.participants || [];
+
+    const assignedFromConversation = participants.some((participant) => {
+        const participantUser = participant?.user || participant?.booster || participant;
+
+        const participantUserId =
+            participant?.userId ||
+            participantUser?.id ||
+            participantUser?.userId;
+
+        const participantRole = String(
+            participant?.roleAtJoin ||
+            participantUser?.role ||
+            ""
+        ).toUpperCase();
+
+        return (
+            participantUserId === currentUserId &&
+            (participantRole === "PROVIDER" || participantRole === "BOOSTER")
+        );
+    });
+
+    return assignedFromConversation;
 }
 
 function getMessageSenderName(message, matchedBooster) {
