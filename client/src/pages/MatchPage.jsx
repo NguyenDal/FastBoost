@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/MatchPage.css";
@@ -44,6 +44,14 @@ function MatchPage() {
 
     const [chatInput, setChatInput] = useState("");
 
+    const chatMessagesRef = useRef(null);
+
+    const [scrollThumb, setScrollThumb] = useState({
+        height: 0,
+        top: 0,
+        visible: false,
+    });
+
     const fallbackUser = getStoredUser();
     const effectiveUser = currentUser || fallbackUser;
 
@@ -62,6 +70,50 @@ function MatchPage() {
 
     const chatEnabled =
         Boolean(conversation) && (isCustomerOwner || isAdminUser || isAssignedProvider);
+
+    const updateChatScrollbar = useCallback(() => {
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = el;
+        const canScroll = scrollHeight > clientHeight + 4;
+
+        if (!canScroll) {
+            setScrollThumb({
+                height: 0,
+                top: 0,
+                visible: false,
+            });
+            return;
+        }
+
+        const minThumbHeight = 48;
+        const height = Math.max((clientHeight / scrollHeight) * clientHeight, minThumbHeight);
+        const maxTop = clientHeight - height;
+        const top = (scrollTop / (scrollHeight - clientHeight)) * maxTop;
+
+        setScrollThumb({
+            height,
+            top,
+            visible: true,
+        });
+    }, []);
+
+    useEffect(() => {
+        updateChatScrollbar();
+
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        el.addEventListener("scroll", updateChatScrollbar);
+        window.addEventListener("resize", updateChatScrollbar);
+
+        return () => {
+            el.removeEventListener("scroll", updateChatScrollbar);
+            window.removeEventListener("resize", updateChatScrollbar);
+        };
+    }, [messages, updateChatScrollbar]);
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         const savedUser = localStorage.getItem("user");
@@ -364,58 +416,72 @@ function MatchPage() {
                                 </span>
                             </div>
 
-                            <div className="chat-messages">
-                                {messages.map((message, index) => {
-                                    const previousMessage = index > 0 ? messages[index - 1] : null;
-                                    const shouldShowDateDivider = shouldRenderDateDivider(previousMessage, message);
+                            <div className="chat-messages-shell">
+                                <div className="chat-messages" ref={chatMessagesRef}>
+                                    {messages.map((message, index) => {
+                                        const previousMessage = index > 0 ? messages[index - 1] : null;
+                                        const shouldShowDateDivider = shouldRenderDateDivider(previousMessage, message);
 
-                                    const isMine = message.isMine || message.sender === "mine";
-                                    const isSystem = message.sender === "system";
-                                    const showAvatar = !isMine && !isSystem;
+                                        const isMine = message.isMine || message.sender === "mine";
+                                        const isSystem = message.sender === "system";
+                                        const showAvatar = !isMine && !isSystem;
 
-                                    return (
-                                        <div key={message.id}>
-                                            {shouldShowDateDivider && (
-                                                <div className="chat-date-divider">
-                                                    <span>{formatChatDateDivider(message.createdAt)}</span>
-                                                </div>
-                                            )}
-
-                                            <div
-                                                className={`chat-row ${isMine ? "chat-row-mine" : isSystem ? "chat-row-system" : "chat-row-other"}`}
-                                            >
-                                                {showAvatar && (
-                                                    <div className="chat-avatar-wrap">
-                                                        <img
-                                                            src={message.senderAvatar || getSenderAvatar(message.senderUser)}
-                                                            alt={message.senderName || "Sender"}
-                                                            className="chat-message-avatar"
-                                                        />
-                                                        <span className="chat-avatar-online-dot" />
+                                        return (
+                                            <div key={message.id}>
+                                                {shouldShowDateDivider && (
+                                                    <div className="chat-date-divider">
+                                                        <span>{formatChatDateDivider(message.createdAt)}</span>
                                                     </div>
                                                 )}
 
                                                 <div
-                                                    className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
+                                                    className={`chat-row ${isMine ? "chat-row-mine" : isSystem ? "chat-row-system" : "chat-row-other"}`}
                                                 >
-                                                    <div className="chat-message-top">
-                                                        <span className="chat-sender">
-                                                            {getMessageSenderName(message, matchedBooster)}
-                                                        </span>
+                                                    {showAvatar && (
+                                                        <div className="chat-avatar-wrap">
+                                                            <img
+                                                                src={message.senderAvatar || getSenderAvatar(message.senderUser)}
+                                                                alt={message.senderName || "Sender"}
+                                                                className="chat-message-avatar"
+                                                            />
+                                                            <span className="chat-avatar-online-dot" />
+                                                        </div>
+                                                    )}
 
-                                                        <span className="chat-timestamp">
-                                                            {message.timestamp || "3:37 PM"}
-                                                        </span>
+                                                    <div
+                                                        className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
+                                                    >
+                                                        <div className="chat-message-top">
+                                                            <span className="chat-sender">
+                                                                {getMessageSenderName(message, matchedBooster)}
+                                                            </span>
+
+                                                            <span className="chat-timestamp">
+                                                                {message.timestamp || "3:37 PM"}
+                                                            </span>
+                                                        </div>
+
+                                                        <p>{message.text}</p>
                                                     </div>
-
-                                                    <p>{message.text}</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                        );
+                                    })}
+                                </div>
 
+                                {scrollThumb.visible && (
+                                    <div className="custom-chat-scrollbar" aria-hidden="true">
+                                        <div
+                                            className="custom-chat-scrollbar-thumb"
+                                            style={{
+                                                height: `${scrollThumb.height}px`,
+                                                transform: `translateY(${scrollThumb.top}px)`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            
                             <form
                                 className={`chat-composer ${!chatEnabled ? "chat-composer-disabled" : ""}`}
                                 onSubmit={handleSendMessage}
