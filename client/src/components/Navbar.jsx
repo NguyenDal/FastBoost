@@ -299,10 +299,9 @@ function Navbar({
             <nav className="nav">
                 <Link to="/">Home</Link>
                 <a href="/#loyalty">Loyalty</a>
-                {effectiveCurrentUser?.role === "CUSTOMER" && (
-                    <Link to="/account/orders">My Orders</Link>
-                )}
-
+                
+                <Link to="/account/orders">My Orders</Link>
+                
                 {effectiveCurrentUser?.role === "ADMIN" && (
                     <Link to="/admin/orders">Order Manager</Link>
                 )}

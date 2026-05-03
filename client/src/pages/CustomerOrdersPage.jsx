@@ -26,11 +26,6 @@ function useCustomerGuard() {
                 return;
             }
 
-            if (user.role !== "CUSTOMER" && user.role !== "ADMIN") {
-                navigate("/", { replace: true });
-                return;
-            }
-
             setAllowed(true);
         };
 
