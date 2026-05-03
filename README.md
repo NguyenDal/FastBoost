@@ -8,6 +8,59 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### Latest session update — Admin/Provider/Customer order management + real MatchPage chat
+- Built and polished the **Admin Order Management** flow:
+  - `AdminOrdersPage` for listing and filtering all orders.
+  - `AdminOrderDetailsPage` for viewing order details, status, price summary, assignments, add-ons, champion selections, and conversation access.
+  - Admin can invite boosters, assign/unassign boosters, cancel orders, and mark orders completed.
+  - Admin status field was refined so status is mostly automatic instead of manually changing everything.
+- Built the **assignment request / invite flow**:
+  - Admin clicking Assign creates a pending assignment request instead of instantly assigning.
+  - Button changes to a waiting state, with a short revoke/cancel interaction.
+  - Booster receives an assignment notification with Accept / Decline actions.
+  - Accepting the request assigns the booster, moves the order to `IN_PROGRESS`, and enables chat access.
+  - Declining/revoking/cancelling updates or clears the request flow and sends notifications where needed.
+- Improved the **notification drawer** in the shared navbar:
+  - unread notifications light the bell with a soft red highlight/dot.
+  - read notifications no longer keep the glowing unread border.
+  - notification count reflects unread items only.
+  - notifications are marked read after the user closes the notification panel, not immediately when opened.
+  - assignment removal notifications include the order number.
+- Built the **Provider/Booster Order Management** flow:
+  - `ProviderOrdersPage` shows assigned orders for the logged-in booster.
+  - Provider can open assigned orders, chat, mark completed, and leave/unassign themselves from an order.
+  - If a booster leaves an order, the order can return to a pending/searching state and admin receives a notification.
+- Added the **Customer Orders** direction:
+  - Customers can view their own orders from the navbar (`My Orders`).
+  - Customer can open an order and continue into the match/chat page.
+  - Customer must always be able to chat on their own order.
+- Wired the **MatchPage chat** into the real backend:
+  - Replaced fake/local chat behavior with backend conversation/messages.
+  - Messages display with correct sender ownership even after leaving/rejoining the page.
+  - Admin messages show admin identity instead of `System`.
+  - Chat supports customer, admin, and assigned booster access.
+  - Added date separators when messages cross calendar days.
+  - Improved chat message styling, scroll behavior, input bar, and sender/receiver colors.
+- Improved **MatchPage UI polish**:
+  - Assigned booster card simplified by removing unnecessary role labels.
+  - Chat card, order options card, overview card, login info card, and order summary card were restyled for a consistent dark/purple FastBoost theme.
+  - Order options now show only enabled add-ons, displayed as compact cards in a two-column layout.
+  - Overview card now shows quick order metadata like queue and region instead of duplicating service/total.
+  - Login info card now uses a compact layout inspired by the reference card, while keeping the FastBoost theme.
+- Added **order login info editing direction** on MatchPage:
+  - MatchPage is the place where the customer enters/updates in-game name and game account password.
+  - Backend route direction: `PATCH /api/orders/:id/login-info`.
+  - Current security decision: do not hash game account passwords because boosters need to view them; for real business, implement AWS KMS envelope encryption before storing any customer game password.
+- Added auth/session cleanup direction:
+  - If token is expired or invalid, protected pages should clear local logged-in state and redirect to home instead of showing a broken logged-in page.
+- Fixed several backend/frontend integration issues:
+  - Route ordering for `/api/orders/provider/assigned` before `/:id`.
+  - Prisma select issue caused by selecting non-existing `profileImage` directly on `User`.
+  - `updateOrderLoginInfo` export issue caused by `module.exports` overwriting earlier exports.
+  - Assignment accept 403 debugging caused by token user id / request booster id checks.
+  - Notification type enum mismatch for assignment removal.
+
+
 ### Frontend (Homepage/Auth UI)
 - Built a premium, dark gaming-style homepage (“FastBoost”) with sections:
   - Navbar (anchors: Home / Services / Latest Patch / Status)
@@ -327,22 +380,45 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `POST /api/auth/forgot-password`
 - `POST /api/auth/reset-password`
 
-### Protected
-- `GET /api/user/me` (Bearer token)
-- `POST /api/services` (Bearer token + ADMIN role)
-- `POST /api/orders` (Bearer token)
-- `GET /api/orders` (Bearer token)
-- `GET /api/orders/:id` (Bearer token)
+### User / profile
+- `GET /api/user/me` — current authenticated user
+- `GET /api/user/providers` — admin-only provider list for assignment
 
-### Admin (booster assignment)
-- `GET /api/orders/:id/assignments` (ADMIN) — list assigned boosters
-- `POST /api/orders/:id/assign/:boosterId` (ADMIN) — assign a booster
-- `DELETE /api/orders/:id/assign/:boosterId` (ADMIN) — unassign a booster
+### Orders
+- `POST /api/orders` — create order
+- `GET /api/orders/my` — customer order list
+- `GET /api/orders/:id` — order detail with access control
+- `PATCH /api/orders/:id/login-info` — customer updates in-game name/password from MatchPage
+
+### Admin orders
+- `GET /api/orders/admin` — list all orders with filters
+- `GET /api/orders/admin/:id` — admin order detail
+- `PATCH /api/orders/admin/:id/status` — admin status update/override
+- `GET /api/orders/:id/assignments` — list assigned boosters
+- `POST /api/orders/:id/assign/:boosterId` — manual assign fallback
+- `DELETE /api/orders/:id/assign/:boosterId` — admin unassign booster
+
+### Provider / booster orders
+- `GET /api/orders/provider/assigned` — provider assigned order list
+- `PATCH /api/orders/:id/provider-complete` — provider marks assigned order completed
+- `DELETE /api/orders/:id/provider-leave` — provider leaves/unassigns self from order
+
+### Assignment requests
+- `POST /api/assignment-requests/orders/:orderId/boosters/:boosterId` — admin creates booster invite/request
+- `GET /api/assignment-requests/orders/:orderId` — admin lists requests for an order
+- `PATCH /api/assignment-requests/:requestId/cancel` — admin cancels/revokes pending invite
+- `PATCH /api/assignment-requests/:requestId/accept` — booster accepts invite
+- `PATCH /api/assignment-requests/:requestId/decline` — booster declines invite
+
+### Notifications
+- `GET /api/notifications` — list active notifications for current user
+- `PUT /api/notifications/:id/read` — mark a notification as read
+- Current frontend behavior: unread notifications glow; notifications are marked read after closing the drawer.
 
 ### Chat
 - `GET /api/chats/orders/:orderId` — ensure/get conversation for an order; returns participants
-- `GET /api/chats/conversations/:conversationId/messages?limit=20&cursor=<id>` — paginated history (newest→older)
-- `POST /api/chats/conversations/:conversationId/messages` — post a message (REST fallback)
+- `GET /api/chats/conversations/:conversationId/messages?limit=20&cursor=<id>` — paginated history
+- `POST /api/chats/conversations/:conversationId/messages` — post a message through REST fallback
 
 ---
 
@@ -401,10 +477,10 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
-- homepage UI structure
+- homepage UI structure and FastBoost branding
 - hover-based featured services
 - service ordering
-- S3-hosted service images
+- S3-hosted service images and rank icons
 - register/login auth
 - JWT auth
 - protected user route
@@ -424,28 +500,56 @@ npx prisma studio
 - real backend demo order creation flow
 - expanded order schema direction
 - first role / second role direction
-- shared navbar/auth direction started across pages
-- demo match/chat page flow
+- real-time chat backend with Socket.IO and REST fallback
+- MatchPage connected to real chat/history
+- admin order list and admin order detail pages
+- provider assigned orders page
+- customer orders direction/page entry
+- assignment request invite flow with accept/decline/revoke behavior
+- navbar notifications with unread/read behavior
+- notification highlight rules for unread notifications/messages
+- admin/provider/customer chat access rules
+- provider complete/leave order actions
+- login info card UI direction on MatchPage
 
 ### In progress
-- shared auth modal consistency across all pages
-- real pricing logic cleanup and verification
-- duo-specific addon field cleanup (including `untrackableDuo`)
+- secure storage for customer game login password
+- AWS KMS envelope encryption design for production-grade credential storage
+- login info edit/save flow final backend encryption pass
+- final status automation cleanup across admin/provider/customer flows
+- unread message count/blue indicator polishing
+- shared navbar consistency across all protected pages
+- pricing logic cleanup and verification
+- duo-specific addon field cleanup, including `untrackableDuo`
 - patch section real endpoint
-- additional profile dropdown/navbar polish on later pages
-- match/chat UI polish
+- profile/account settings
 
 ---
 
 ## Next steps (recommended)
 
-1. Build Admin Management UI to assign/unassign boosters to orders (uses the new admin endpoints)
-2. Wire frontend chat to the backend: join by `orderId`, render history (cursor), send messages, typing state
-3. Finish shared navbar/auth modal consistency on all key pages
-4. Continue cleaning pricing logic and verify all duo/solo addon rules
-5. Finalize the real `Order` schema + payload parity across frontend/backend
-6. Connect the patch section to a real backend endpoint
-7. Later add profile/account settings
+1. Implement production-grade game password protection before treating login info as real business data:
+   - use AWS KMS customer-managed key
+   - use envelope encryption
+   - store encrypted password fields only
+   - never store plaintext game passwords in PostgreSQL
+2. Update Prisma order fields for encrypted login info:
+   - `inGameName`
+   - `accountPasswordCiphertext`
+   - `accountPasswordEncryptedKey`
+   - `accountPasswordIv`
+   - `accountPasswordAuthTag`
+   - `accountPasswordUpdatedAt`
+3. Update `orderController.js` so `PATCH /api/orders/:id/login-info` encrypts before saving and only authorized users can decrypt/view.
+4. Add reveal logging later:
+   - who revealed credentials
+   - when
+   - order id
+   - user role
+5. Finish unread message tracking and blue message indicator in the navbar.
+6. Continue pricing logic cleanup and verify all solo/duo/add-on rules.
+7. Finish shared navbar/profile/account settings polish.
+8. Connect the patch section to a real backend endpoint later.
 
 ---
 

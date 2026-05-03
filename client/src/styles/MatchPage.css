@@ -727,9 +727,9 @@
 .login-info-copy strong {
   display: block;
   color: #ffffff;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.25;
   word-break: break-word;
 }
 
