@@ -95,21 +95,6 @@ function MatchPage() {
         }
     }, [getChatStorageKey, messages, isChatNearBottom]);
 
-    const scrollToMessageById = useCallback((messageId, behavior = "smooth") => {
-        if (!messageId) return;
-
-        requestAnimationFrame(() => {
-            const target = document.querySelector(`[data-message-id="${messageId}"]`);
-
-            if (target) {
-                target.scrollIntoView({
-                    behavior,
-                    block: "start",
-                });
-            }
-        });
-    }, []);
-
     const [scrollThumb, setScrollThumb] = useState({
         height: 0,
         top: 0,
@@ -123,8 +108,13 @@ function MatchPage() {
     const currentUserRole = String(effectiveUser?.role || "").toUpperCase();
 
     const isCustomerOwner =
-        order?.customerId === currentUserId ||
-        order?.customer?.id === currentUserId;
+        Boolean(currentUserId) &&
+        (
+            String(order?.customerId || "") === String(currentUserId) ||
+            String(order?.customer?.id || "") === String(currentUserId) ||
+            String(order?.customer?.userId || "") === String(currentUserId) ||
+            String(order?.userId || "") === String(currentUserId)
+        );
 
     const isAdminUser = currentUserRole === "ADMIN";
 
@@ -132,8 +122,13 @@ function MatchPage() {
         currentUserRole === "PROVIDER" &&
         isUserAssignedToOrder(order, conversation, currentUserId);
 
+    const isConversationParticipant = isUserInConversation(
+        conversation,
+        currentUserId
+    );
+
     const chatEnabled =
-        Boolean(conversation) && (isCustomerOwner || isAdminUser || isAssignedProvider);
+    Boolean(conversation) && Boolean(currentUserId);
 
     const updateChatScrollbar = useCallback(() => {
         const el = chatMessagesRef.current;
@@ -162,6 +157,30 @@ function MatchPage() {
             visible: true,
         });
     }, []);
+
+    const scrollToMessageById = useCallback((messageId, behavior = "smooth") => {
+        if (!messageId) return;
+
+        requestAnimationFrame(() => {
+            const el = chatMessagesRef.current;
+            const target = document.querySelector(`[data-message-id="${messageId}"]`);
+
+            if (!el || !target) return;
+
+            const containerTop = el.getBoundingClientRect().top;
+            const targetTop = target.getBoundingClientRect().top;
+            const offset = targetTop - containerTop;
+
+            el.scrollTo({
+                top: el.scrollTop + offset,
+                behavior,
+            });
+
+            requestAnimationFrame(() => {
+                updateChatScrollbar();
+            });
+        });
+    }, [updateChatScrollbar]);
 
     useEffect(() => {
         updateChatScrollbar();
@@ -229,13 +248,25 @@ function MatchPage() {
 
         if (hasNewMessage) {
             const newMessages = messages.slice(previousMessages.length);
+
             const hasMyNewMessage = newMessages.some(
                 (message) => message.isMine || message.sender === "mine"
             );
 
-            if (shouldScrollAfterSendRef.current || hasMyNewMessage || isChatNearBottom()) {
+            const firstNewOtherMessage = newMessages.find(
+                (message) =>
+                    !message.isMine &&
+                    message.sender !== "mine" &&
+                    message.sender !== "system"
+            );
+
+            if (shouldScrollAfterSendRef.current || hasMyNewMessage) {
                 scrollChatToBottom("smooth");
                 shouldScrollAfterSendRef.current = false;
+            } else if (isChatNearBottom()) {
+                scrollChatToBottom("smooth");
+            } else if (firstNewOtherMessage) {
+                scrollToMessageById(firstNewOtherMessage.id, "smooth");
             }
         }
 
@@ -352,7 +383,7 @@ function MatchPage() {
 
                     setMessages(
                         savedMessages.map((msg) => {
-                            const isMine = msg.senderId === loggedInUserId;
+                            const isMine = String(msg.senderId || "") === String(loggedInUserId || "");
                             const senderRole = String(msg.sender?.role || "").toUpperCase();
 
                             return {
@@ -723,7 +754,7 @@ function MatchPage() {
                                     placeholder={
                                         chatEnabled
                                             ? "Write a message..."
-                                            : "Only the customer, admin, or assigned booster can chat"
+                                            : "Chat is unavailable until this order conversation loads"
                                     }
                                     value={chatInput}
                                     onChange={(event) => setChatInput(event.target.value)}
@@ -1114,7 +1145,13 @@ function renderStars(rating) {
 }
 
 function getCurrentUserId(currentUser) {
-    return currentUser?.id || currentUser?.userId;
+    return (
+        currentUser?.id ||
+        currentUser?.userId ||
+        currentUser?._id ||
+        currentUser?.sub ||
+        null
+    );
 }
 
 function getStoredUser() {
@@ -1123,6 +1160,25 @@ function getStoredUser() {
     } catch {
         return null;
     }
+}
+
+function isUserInConversation(conversation, currentUserId) {
+    if (!conversation || !currentUserId) return false;
+
+    const participants = conversation.participants || [];
+
+    return participants.some((participant) => {
+        const participantUser = participant?.user || participant?.booster || participant;
+
+        const participantUserId =
+            participant?.userId ||
+            participantUser?.id ||
+            participantUser?.userId ||
+            participantUser?._id ||
+            participantUser?.sub;
+
+        return String(participantUserId || "") === String(currentUserId || "");
+    });
 }
 
 function isUserAssignedToOrder(order, conversation, currentUserId) {
@@ -1139,7 +1195,7 @@ function isUserAssignedToOrder(order, conversation, currentUserId) {
             assignment?.provider?.id ||
             assignment?.user?.id;
 
-        return boosterId === currentUserId;
+        return String(boosterId || "") === String(currentUserId || "");
     });
 
     if (assignedFromOrder) return true;
@@ -1161,7 +1217,7 @@ function isUserAssignedToOrder(order, conversation, currentUserId) {
         ).toUpperCase();
 
         return (
-            participantUserId === currentUserId &&
+            String(participantUserId || "") === String(currentUserId || "") &&
             (participantRole === "PROVIDER" || participantRole === "BOOSTER")
         );
     });

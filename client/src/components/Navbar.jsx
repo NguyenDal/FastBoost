@@ -596,43 +596,68 @@ function MessagePanelContent({ messages, onClosePanel }) {
 
     return (
         <div className="notification-list">
-            {messages.map((item) => (
-                <button
-                    key={item.id}
-                    type="button"
-                    className={`notification-card message-card ${item.read ? "" : "unread"}`}
-                    onClick={() => {
-                        const targetPath =
-                            item.data?.targetPath ||
-                            (item.data?.orderId ? `/match/${item.data.orderId}` : null);
+            {messages.map((item) => {
+                const senderName =
+                    item.data?.senderName ||
+                    item.title ||
+                    "Someone";
 
-                        onClosePanel?.();
+                const senderInitial =
+                    item.data?.senderInitial ||
+                    senderName.charAt(0).toUpperCase();
 
-                        if (targetPath) {
-                            navigate(targetPath);
-                        }
-                    }}
-                >
-                    <div className="notification-card-top">
-                        <div>
-                            <h4>{item.title}</h4>
-                            <p>{item.message}</p>
+                const boostTitle =
+                    item.data?.boostType ||
+                    "Order chat";
 
-                            {item.data?.orderNumber && (
-                                <small className="notification-time">
-                                    Order #{item.data.orderNumber}
-                                </small>
-                            )}
+                const targetPath =
+                    item.data?.targetPath ||
+                    (item.data?.orderId ? `/match/${item.data.orderId}` : null);
+
+                return (
+                    <button
+                        key={item.id}
+                        type="button"
+                        className={`notification-card message-card chat-preview-card ${item.read ? "" : "unread"}`}
+                        onClick={() => {
+                            onClosePanel?.();
+
+                            if (targetPath) {
+                                navigate(targetPath);
+                            }
+                        }}
+                    >
+                        <div className="chat-preview-layout">
+                            <div className="chat-preview-avatar" aria-hidden>
+                                {senderInitial}
+                            </div>
+
+                            <div className="chat-preview-main">
+                                <div className="chat-preview-header">
+                                    <h4>{senderName}</h4>
+
+                                    {!item.read && <span className="notification-dot" />}
+                                </div>
+
+                                <p className="chat-preview-meta">
+                                    {boostTitle}
+                                    {item.data?.orderNumber
+                                        ? ` · Order #${item.data.orderNumber}`
+                                        : ""}
+                                </p>
+
+                                <p className="chat-preview-message">
+                                    {item.message}
+                                </p>
+
+                                <span className="notification-time">
+                                    {new Date(item.createdAt).toLocaleString()}
+                                </span>
+                            </div>
                         </div>
-
-                        {!item.read && <span className="notification-dot" />}
-                    </div>
-
-                    <span className="notification-time">
-                        {new Date(item.createdAt).toLocaleString()}
-                    </span>
-                </button>
-            ))}
+                    </button>
+                );
+            })}
         </div>
     );
 }

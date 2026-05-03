@@ -47,6 +47,8 @@ async function createChatMessageNotifications({
     sender?.email?.split("@")[0] ||
     "Someone";
 
+  const boostTitle = conversation.order?.boostType || "Order chat";
+
   const receivers = conversation.participants.filter(
     (participant) => String(participant.userId) !== String(senderId)
   );
@@ -58,28 +60,51 @@ async function createChatMessageNotifications({
       ? `${message.content.slice(0, 90)}...`
       : message.content || "New message";
 
-  await prisma.notification.createMany({
-    data: receivers.map((receiver) => ({
-      userId: receiver.userId,
-      type: "CHAT_MESSAGE",
-      title: `New message from ${senderName}`,
-      message: shortMessage,
-      data: {
-        conversationId,
-        messageId: message.id,
-        orderId: conversation.order?.id || null,
-        orderNumber: conversation.order?.id
-          ? conversation.order.id.slice(0, 8)
-          : null,
-        boostType: conversation.order?.boostType || null,
-        senderId,
-        senderName,
-        targetPath: conversation.order?.id
-          ? `/match/${conversation.order.id}`
-          : null,
+  for (const receiver of receivers) {
+    const existingUnreadChatNotification = await prisma.notification.findFirst({
+      where: {
+        userId: receiver.userId,
+        type: "CHAT_MESSAGE",
+        active: true,
+        read: false,
+        data: {
+          path: ["conversationId"],
+          equals: conversationId,
+        },
       },
-    })),
-  });
+    });
+
+    // Important:
+    // If there is already an unread chat notification for this same conversation,
+    // do not create another one. Keep the first sender + first message preview.
+    if (existingUnreadChatNotification) {
+      continue;
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId: receiver.userId,
+        type: "CHAT_MESSAGE",
+        title: senderName,
+        message: shortMessage,
+        data: {
+          conversationId,
+          messageId: message.id,
+          orderId: conversation.order?.id || null,
+          orderNumber: conversation.order?.id
+            ? conversation.order.id.slice(0, 8)
+            : null,
+          boostType: boostTitle,
+          senderId,
+          senderName,
+          senderInitial: senderName.charAt(0).toUpperCase(),
+          targetPath: conversation.order?.id
+            ? `/match/${conversation.order.id}`
+            : null,
+        },
+      },
+    });
+  }
 }
 
 module.exports = {
