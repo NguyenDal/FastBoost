@@ -128,7 +128,7 @@ function MatchPage() {
     );
 
     const chatEnabled =
-    Boolean(conversation) && Boolean(currentUserId);
+        Boolean(conversation) && Boolean(currentUserId);
 
     const updateChatScrollbar = useCallback(() => {
         const el = chatMessagesRef.current;
@@ -806,37 +806,6 @@ function MatchPage() {
                                 </p>
                             )}
                         </div>
-
-                        <div className="match-options-card order-overview-card">
-                            <div className="match-card-header premium-card-header">
-                                <div className="match-card-icon">◉</div>
-
-                                <div>
-                                    <h3>Overview</h3>
-                                    <p>Quick details about your order</p>
-                                </div>
-                            </div>
-
-                            <div className="order-overview-grid">
-                                <div className="overview-pill">
-                                    <span className="overview-icon">≡</span>
-                                    <div>
-                                        <small>Queue</small>
-                                        <strong>{order.queueType || "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="overview-pill">
-                                    <span className="overview-icon region-icon">
-                                        <GlobeIcon />
-                                    </span>
-                                    <div>
-                                        <small>Region</small>
-                                        <strong>{order.region || "-"}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </section>
 
                     <aside className="match-sidebar">
@@ -956,23 +925,35 @@ function MatchPage() {
                             </div>
                         </div>
 
-                        <div className="match-side-card">
-                            <p className="section-label">Order Summary</p>
+                        <div className="match-options-card order-overview-card">
+                            <div className="match-card-header premium-card-header">
+                                <div className="match-card-icon">◉</div>
 
-                            <div className="info-list">
-                                <div className="info-row">
-                                    <span>Total</span>
-                                    <strong>${order.totalPrice}</strong>
-                                </div>
-                                <div className="info-row">
-                                    <span>Status</span>
-                                    <strong>{matchedBooster ? "Matched" : "Searching"}</strong>
+                                <div>
+                                    <h3>Overview</h3>
+                                    <p>Quick details about your order</p>
                                 </div>
                             </div>
 
-                            <Link to="/" className="order-back-link">
-                                Back to homepage
-                            </Link>
+                            <div className="order-overview-grid sidebar-overview-grid">
+                                <div className="overview-pill">
+                                    <span className="overview-icon">≡</span>
+                                    <div>
+                                        <small>Queue</small>
+                                        <strong>{order.queueType || "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="overview-pill">
+                                    <span className="overview-icon region-icon">
+                                        <GlobeIcon />
+                                    </span>
+                                    <div>
+                                        <small>Region</small>
+                                        <strong>{order.region || "-"}</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </aside>
                 </div>
