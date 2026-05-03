@@ -5,6 +5,8 @@ const createOrder = async (req, res) => {
         const {
             serviceId,
             boostType,
+            inGameName,
+            accountPassword,
             currentRank,
             desiredRank,
             currentLP,
@@ -144,6 +146,104 @@ const getMyOrders = async (req, res) => {
     }
 };
 
+const updateOrderLoginInfo = async (req, res) => {
+    try {
+        const userId = req.user.id || req.user.userId;
+        const { id: orderId } = req.params;
+        const { inGameName, accountPassword } = req.body || {};
+
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token: missing user id",
+            });
+        }
+
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            select: {
+                id: true,
+                customerId: true,
+            },
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                ok: false,
+                message: "Order not found",
+            });
+        }
+
+        if (order.customerId !== userId) {
+            return res.status(403).json({
+                ok: false,
+                message: "Only the customer who owns this order can update login info",
+            });
+        }
+
+        const updated = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                inGameName: inGameName?.trim() || null,
+                accountPassword: accountPassword?.trim() || null,
+            },
+            include: {
+                service: true,
+                customer: {
+                    select: {
+                        id: true,
+                        email: true,
+                        username: true,
+                        role: true,
+                        profile: {
+                            select: {
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                assignments: {
+                    include: {
+                        booster: {
+                            select: {
+                                id: true,
+                                email: true,
+                                username: true,
+                                role: true,
+                                profile: {
+                                    select: {
+                                        displayName: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                conversation: {
+                    select: {
+                        id: true,
+                        lastMessageAt: true,
+                    },
+                },
+            },
+        });
+
+        return res.json({
+            ok: true,
+            message: "Login info updated",
+            order: updated,
+        });
+    } catch (error) {
+        console.error("updateOrderLoginInfo error:", error);
+
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to update login info",
+            error: error.message,
+        });
+    }
+};
+
 const getOrderById = async (req, res) => {
     try {
         const userId = req.user.id || req.user.userId;
@@ -240,6 +340,7 @@ module.exports = {
     createOrder,
     getMyOrders,
     getOrderById,
+    updateOrderLoginInfo,
 };
 
 // Admin: list all orders with filters/pagination

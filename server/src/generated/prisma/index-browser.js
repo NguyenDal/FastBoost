@@ -158,6 +158,8 @@ exports.Prisma.OrderScalarFieldEnum = {
   playMode: 'playMode',
   region: 'region',
   queueType: 'queueType',
+  inGameName: 'inGameName',
+  accountPassword: 'accountPassword',
   currentRank: 'currentRank',
   currentLP: 'currentLP',
   currentMasterLp: 'currentMasterLp',

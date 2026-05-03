@@ -62,6 +62,9 @@ model Order {
   region            String?
   queueType         String?
 
+  inGameName        String?
+  accountPassword   String?
+
   currentRank       String?
   currentLP         String?
   currentMasterLp   Int?

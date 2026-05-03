@@ -7,6 +7,7 @@ import {
     getConversationMessages,
     sendConversationMessage,
 } from "../api/chats";
+import { updateOrderLoginInfo } from "../api/orders";
 
 function MatchPage() {
     const { orderId } = useParams();
@@ -28,7 +29,14 @@ function MatchPage() {
     const [registerErrors, setRegisterErrors] = useState({ email: false, password: false });
     const [forgotError, setForgotError] = useState(false);
     const [forgotEmail, setForgotEmail] = useState("");
-
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [showLoginInfoModal, setShowLoginInfoModal] = useState(false);
+    const [loginInfoForm, setLoginInfoForm] = useState({
+        inGameName: "",
+        accountPassword: "",
+    });
+    const [loginInfoSaving, setLoginInfoSaving] = useState(false);
+    const [loginInfoError, setLoginInfoError] = useState("");
 
     const [order, setOrder] = useState(null);
     const [matchStatus, setMatchStatus] = useState("searching");
@@ -251,6 +259,59 @@ function MatchPage() {
 
         loadChatPage();
     }, [orderId]);
+
+    const isCustomerView = effectiveUser?.role === "CUSTOMER";
+    const isProviderView = effectiveUser?.role === "PROVIDER";
+    const canEditLoginInfo = isCustomerOwner;
+
+    const inGameName =
+        order?.inGameName ||
+        order?.gameUsername ||
+        order?.loginUsername ||
+        order?.summonerName ||
+        "-";
+
+    const loginPassword =
+        order?.accountPassword ||
+        order?.gamePassword ||
+        order?.loginPassword ||
+        "";
+
+    const needsAccountPassword = requiresAccountPassword(order);
+
+    const displayedPassword =
+        showLoginPassword ? loginPassword || "-" : maskSecret(loginPassword);
+
+    const openLoginInfoModal = () => {
+        setLoginInfoForm({
+            inGameName: order?.inGameName || "",
+            accountPassword: order?.accountPassword || "",
+        });
+        setLoginInfoError("");
+        setShowLoginInfoModal(true);
+    };
+
+    const handleSaveLoginInfo = async (event) => {
+        event.preventDefault();
+
+        try {
+            setLoginInfoSaving(true);
+            setLoginInfoError("");
+
+            const updatedOrder = await updateOrderLoginInfo(order.id, {
+                inGameName: loginInfoForm.inGameName,
+                accountPassword: loginInfoForm.accountPassword,
+            });
+
+            setOrder(updatedOrder);
+            setShowLoginInfoModal(false);
+            setShowLoginPassword(false);
+        } catch (error) {
+            setLoginInfoError(error.message || "Failed to save login info");
+        } finally {
+            setLoginInfoSaving(false);
+        }
+    };
 
     const handleSendMessage = async (event) => {
         event.preventDefault();
@@ -481,7 +542,7 @@ function MatchPage() {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <form
                                 className={`chat-composer ${!chatEnabled ? "chat-composer-disabled" : ""}`}
                                 onSubmit={handleSendMessage}
@@ -637,19 +698,70 @@ function MatchPage() {
                             )}
                         </div>
 
-                        <div className="match-side-card">
-                            <p className="section-label">Login Info</p>
-
-                            <div className="info-list">
-                                <div className="info-row">
-                                    <span>Region</span>
-                                    <strong>{order.region || "-"}</strong>
+                        <div className="match-side-card login-info-card">
+                            <div className="login-card-header">
+                                <div className="match-card-icon login-card-icon">
+                                    <KeyIcon />
                                 </div>
 
-                                <div className="info-row">
-                                    <span>Service</span>
-                                    <strong>{order.boostType || order.service?.title || "-"}</strong>
+                                <div className="login-card-title-wrap">
+                                    <h3>Login Info</h3>
+                                    <p>
+                                        {canEditLoginInfo
+                                            ? "Update your in-game access details"
+                                            : "Secure order access details"}
+                                    </p>
                                 </div>
+
+                                {canEditLoginInfo && (
+                                    <button
+                                        type="button"
+                                        className="login-edit-btn"
+                                        onClick={openLoginInfoModal}
+                                    >
+                                        Edit
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="login-info-list">
+                                <div className="login-info-item">
+                                    <div className="login-info-left">
+                                        <span className="login-field-icon">
+                                            <UserFieldIcon />
+                                        </span>
+
+                                        <div className="login-info-copy">
+                                            <small>In-game name</small>
+                                            <strong>{inGameName}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {needsAccountPassword && (
+                                    <div className="login-info-item">
+                                        <div className="login-info-left">
+                                            <span className="login-field-icon">
+                                                <LockFieldIcon />
+                                            </span>
+
+                                            <div className="login-info-copy">
+                                                <small>Password</small>
+                                                <strong>{displayedPassword}</strong>
+                                            </div>
+                                        </div>
+
+                                        {loginPassword && (
+                                            <button
+                                                type="button"
+                                                className="login-reveal-btn"
+                                                onClick={() => setShowLoginPassword((prev) => !prev)}
+                                            >
+                                                {showLoginPassword ? "Hide" : "Reveal"}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -674,6 +786,80 @@ function MatchPage() {
                     </aside>
                 </div>
             </div>
+            {showLoginInfoModal && (
+                <div className="login-info-modal-backdrop">
+                    <form className="login-info-modal" onSubmit={handleSaveLoginInfo}>
+                        <div className="login-info-modal-header">
+                            <div>
+                                <h3>Edit Login Info</h3>
+                                <p>Only you, admin, and the assigned booster can view this.</p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="login-info-modal-close"
+                                onClick={() => setShowLoginInfoModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {loginInfoError && (
+                            <p className="login-info-error">{loginInfoError}</p>
+                        )}
+
+                        <label className="login-info-form-field">
+                            <span>In-game name</span>
+                            <input
+                                type="text"
+                                value={loginInfoForm.inGameName}
+                                onChange={(event) =>
+                                    setLoginInfoForm((prev) => ({
+                                        ...prev,
+                                        inGameName: event.target.value,
+                                    }))
+                                }
+                                placeholder="Example: Starlight#AURA"
+                            />
+                        </label>
+
+                        {needsAccountPassword && (
+                            <label className="login-info-form-field">
+                                <span>Password</span>
+                                <input
+                                    type="password"
+                                    value={loginInfoForm.accountPassword}
+                                    onChange={(event) =>
+                                        setLoginInfoForm((prev) => ({
+                                            ...prev,
+                                            accountPassword: event.target.value,
+                                        }))
+                                    }
+                                    placeholder="Enter account password"
+                                />
+                            </label>
+                        )}
+
+                        <div className="login-info-modal-actions">
+                            <button
+                                type="button"
+                                className="login-info-cancel-btn"
+                                onClick={() => setShowLoginInfoModal(false)}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                className="login-info-save-btn"
+                                disabled={loginInfoSaving}
+                            >
+                                {loginInfoSaving ? "Saving..." : "Save"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
         </div>
     );
 }
@@ -1031,6 +1217,83 @@ function SendIcon() {
             aria-hidden="true"
         >
             <path d="M3.7 20.3 21 12 3.7 3.7 3 10.2l10 1.8-10 1.8.7 6.5Z" />
+        </svg>
+    );
+}
+
+function requiresAccountPassword(order) {
+    if (!order) return false;
+
+    // Best version: backend gives you a clear boolean
+    if (typeof order.requiresAccountCredentials === "boolean") {
+        return order.requiresAccountCredentials;
+    }
+
+    // Frontend fallback logic
+    if (order.boostType === "Pro Duo") return false;
+    if (order.duoWithBooster) return false;
+
+    return true;
+}
+
+function maskSecret(value) {
+    if (!value) return "-";
+    return "•".repeat(Math.max(8, value.length));
+}
+
+function KeyIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="option-svg-icon"
+            aria-hidden="true"
+        >
+            <circle cx="7.5" cy="15.5" r="3.5" />
+            <path d="M10.5 13l8-8" />
+            <path d="M15 5l4 4" />
+            <path d="M17 7l-2 2" />
+            <path d="M19 9l-2 2" />
+        </svg>
+    );
+}
+
+function UserFieldIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="option-svg-icon"
+            aria-hidden="true"
+        >
+            <path d="M20 21a8 8 0 0 0-16 0" />
+            <circle cx="12" cy="8" r="4" />
+        </svg>
+    );
+}
+
+function LockFieldIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="option-svg-icon"
+            aria-hidden="true"
+        >
+            <rect x="5" y="11" width="14" height="10" rx="2" />
+            <path d="M8 11V8a4 4 0 1 1 8 0v3" />
         </svg>
     );
 }
