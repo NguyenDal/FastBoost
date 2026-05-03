@@ -280,12 +280,16 @@ function MatchPage() {
     const needsAccountPassword = requiresAccountPassword(order);
 
     const displayedPassword =
-        showLoginPassword ? loginPassword || "-" : maskSecret(loginPassword);
+        showLoginPassword
+            ? loginPassword || "Password saved securely. Reload this order to reveal."
+            : order?.hasAccountPassword
+                ? "••••••••"
+                : "-";
 
     const openLoginInfoModal = () => {
         setLoginInfoForm({
             inGameName: order?.inGameName || "",
-            accountPassword: order?.accountPassword || "",
+            accountPassword: "",
         });
         setLoginInfoError("");
         setShowLoginInfoModal(true);
@@ -298,12 +302,33 @@ function MatchPage() {
             setLoginInfoSaving(true);
             setLoginInfoError("");
 
-            const updatedOrder = await updateOrderLoginInfo(order.id, {
+            const payload = {
                 inGameName: loginInfoForm.inGameName,
-                accountPassword: loginInfoForm.accountPassword,
+            };
+
+            if (loginInfoForm.accountPassword.trim()) {
+                payload.accountPassword = loginInfoForm.accountPassword;
+            }
+
+            const updatedOrder = await updateOrderLoginInfo(order.id, payload);
+
+            setOrder((prev) => ({
+                ...prev,
+                ...updatedOrder,
+                accountPassword: loginInfoForm.accountPassword.trim()
+                    ? loginInfoForm.accountPassword.trim()
+                    : prev?.accountPassword,
+                hasAccountPassword:
+                    updatedOrder.hasAccountPassword ??
+                    Boolean(loginInfoForm.accountPassword.trim()) ??
+                    prev?.hasAccountPassword,
+            }));
+
+            setLoginInfoForm({
+                inGameName: "",
+                accountPassword: "",
             });
 
-            setOrder(updatedOrder);
             setShowLoginInfoModal(false);
             setShowLoginPassword(false);
         } catch (error) {
@@ -835,7 +860,7 @@ function MatchPage() {
                                             accountPassword: event.target.value,
                                         }))
                                     }
-                                    placeholder="Enter account password"
+                                    placeholder={order?.hasAccountPassword ? "Leave blank to keep current password" : "Enter account password"}
                                 />
                             </label>
                         )}

@@ -1,12 +1,60 @@
 const prisma = require("../prisma");
 
+const {
+    encryptOrderPassword,
+    decryptOrderPassword,
+    hasEncryptedPasswordFields,
+    stripEncryptedPasswordFields,
+} = require("../utils/orderPasswordCrypto");
+
+function getUserId(req) {
+    return req.user?.id || req.user?.userId;
+}
+
+function isAdminUser(req) {
+    return req.user?.role === "ADMIN";
+}
+
+function isAssignedProvider(order, userId) {
+    return order.assignments?.some(
+        (assignment) => String(assignment.boosterId) === String(userId)
+    );
+}
+
+function canViewOrderLoginInfo(order, req) {
+    const userId = getUserId(req);
+
+    const isCustomer = String(order.customerId) === String(userId);
+    const assignedProvider = isAssignedProvider(order, userId);
+
+    return isCustomer || isAdminUser(req) || assignedProvider;
+}
+
+async function formatOrderForDetailResponse(order, req, options = {}) {
+    const { includeDecryptedLoginPassword = false } = options;
+
+    const safeOrder = stripEncryptedPasswordFields(order);
+
+    safeOrder.hasAccountPassword = hasEncryptedPasswordFields(order);
+
+    if (includeDecryptedLoginPassword && canViewOrderLoginInfo(order, req)) {
+        safeOrder.accountPassword = await decryptOrderPassword(order);
+    }
+
+    return safeOrder;
+}
+
+function formatOrderForListResponse(order) {
+    const safeOrder = stripEncryptedPasswordFields(order);
+    safeOrder.hasAccountPassword = hasEncryptedPasswordFields(order);
+    return safeOrder;
+}
+
 const createOrder = async (req, res) => {
     try {
         const {
             serviceId,
             boostType,
-            inGameName,
-            accountPassword,
             currentRank,
             desiredRank,
             currentLP,
@@ -106,7 +154,7 @@ const createOrder = async (req, res) => {
         return res.status(201).json({
             ok: true,
             message: "Order created successfully",
-            order,
+            order: formatOrderForListResponse(order),
         });
     } catch (error) {
         console.error("createOrder error:", error);
@@ -132,9 +180,11 @@ const getMyOrders = async (req, res) => {
             },
         });
 
+        const safeOrders = orders.map(formatOrderForListResponse);
+
         return res.json({
             ok: true,
-            orders,
+            orders: safeOrders,
         });
     } catch (error) {
         console.error("getMyOrders error:", error);
@@ -148,53 +198,56 @@ const getMyOrders = async (req, res) => {
 
 const updateOrderLoginInfo = async (req, res) => {
     try {
-        const userId = req.user.id || req.user.userId;
-        const { id: orderId } = req.params;
-        const { inGameName, accountPassword } = req.body || {};
-
-        if (!userId) {
-            return res.status(401).json({
-                ok: false,
-                message: "Invalid user token: missing user id",
-            });
-        }
+        const userId = getUserId(req);
+        const { id } = req.params;
+        const { inGameName, accountPassword, clearPassword } = req.body;
 
         const order = await prisma.order.findUnique({
-            where: { id: orderId },
-            select: {
-                id: true,
-                customerId: true,
+            where: { id },
+            include: {
+                assignments: true,
             },
         });
 
         if (!order) {
-            return res.status(404).json({
-                ok: false,
-                message: "Order not found",
-            });
+            return res.status(404).json({ message: "Order not found" });
         }
 
-        if (order.customerId !== userId) {
+        const isCustomer = String(order.customerId) === String(userId);
+
+        if (!isCustomer) {
             return res.status(403).json({
-                ok: false,
-                message: "Only the customer who owns this order can update login info",
+                message: "Only the customer can update login information for this order.",
             });
         }
 
-        const updated = await prisma.order.update({
-            where: { id: orderId },
-            data: {
-                inGameName: inGameName?.trim() || null,
-                accountPassword: accountPassword?.trim() || null,
-            },
+        const updateData = {
+            inGameName: typeof inGameName === "string" ? inGameName.trim() || null : order.inGameName,
+        };
+
+        if (clearPassword === true) {
+            Object.assign(updateData, {
+                accountPasswordCiphertext: null,
+                accountPasswordEncryptedKey: null,
+                accountPasswordIv: null,
+                accountPasswordAuthTag: null,
+                accountPasswordUpdatedAt: null,
+            });
+        } else if (typeof accountPassword === "string" && accountPassword.trim()) {
+            const encryptedPasswordFields = await encryptOrderPassword(accountPassword);
+
+            Object.assign(updateData, encryptedPasswordFields);
+        }
+
+        const updatedOrder = await prisma.order.update({
+            where: { id },
+            data: updateData,
             include: {
-                service: true,
                 customer: {
                     select: {
                         id: true,
                         email: true,
                         username: true,
-                        role: true,
                         profile: {
                             select: {
                                 displayName: true,
@@ -202,6 +255,7 @@ const updateOrderLoginInfo = async (req, res) => {
                         },
                     },
                 },
+                service: true,
                 assignments: {
                     include: {
                         booster: {
@@ -209,7 +263,6 @@ const updateOrderLoginInfo = async (req, res) => {
                                 id: true,
                                 email: true,
                                 username: true,
-                                role: true,
                                 profile: {
                                     select: {
                                         displayName: true,
@@ -219,27 +272,21 @@ const updateOrderLoginInfo = async (req, res) => {
                         },
                     },
                 },
-                conversation: {
-                    select: {
-                        id: true,
-                        lastMessageAt: true,
-                    },
-                },
             },
         });
 
+        const safeOrder = await formatOrderForDetailResponse(updatedOrder, req, {
+            includeDecryptedLoginPassword: false,
+        });
+
         return res.json({
-            ok: true,
-            message: "Login info updated",
-            order: updated,
+            message: "Login information updated securely.",
+            order: safeOrder,
         });
     } catch (error) {
-        console.error("updateOrderLoginInfo error:", error);
-
+        console.error("Update order login info error:", error);
         return res.status(500).json({
-            ok: false,
-            message: "Failed to update login info",
-            error: error.message,
+            message: "Failed to update order login information.",
         });
     }
 };
@@ -321,9 +368,13 @@ const getOrderById = async (req, res) => {
             });
         }
 
+        const safeOrder = await formatOrderForDetailResponse(order, req, {
+            includeDecryptedLoginPassword: true,
+        });
+
         return res.json({
             ok: true,
-            order,
+            order: safeOrder,
         });
     } catch (error) {
         console.error("getOrderById error:", error);
@@ -380,12 +431,14 @@ module.exports.listAllOrders = async (req, res) => {
             }),
         ]);
 
+        const safeItems = items.map(formatOrderForListResponse);
+
         return res.json({
             ok: true,
             page,
             pageSize,
             total,
-            items,
+            items: safeItems,
         });
     } catch (error) {
         console.error("listAllOrders error:", error);
@@ -418,7 +471,14 @@ module.exports.getOrderAdminById = async (req, res) => {
 
         if (!order) return res.status(404).json({ ok: false, message: "Order not found" });
 
-        return res.json({ ok: true, order });
+        const safeOrder = await formatOrderForDetailResponse(order, req, {
+            includeDecryptedLoginPassword: true,
+        });
+
+        return res.json({
+            ok: true,
+            order: safeOrder,
+        });
     } catch (error) {
         console.error("getOrderAdminById error:", error);
         return res.status(500).json({ ok: false, message: "Failed to get order" });
@@ -483,7 +543,7 @@ module.exports.updateOrderStatus = async (req, res) => {
 
         return res.json({
             ok: true,
-            order: updated,
+            order: formatOrderForListResponse(updated),
         });
     } catch (error) {
         console.error("updateOrderStatus error:", error);
@@ -671,7 +731,7 @@ module.exports.unassignBooster = async (req, res) => {
         return res.json({
             ok: true,
             message: "Booster unassigned",
-            order: updatedOrder,
+            order: updatedOrder ? formatOrderForListResponse(updatedOrder) : null,
             remainingAssignments,
         });
     } catch (error) {
@@ -798,9 +858,11 @@ module.exports.listAssignedOrdersForProvider = async (req, res) => {
             prisma.order.count({ where }),
         ]);
 
+        const safeItems = items.map(formatOrderForListResponse);
+
         return res.json({
             ok: true,
-            items,
+            items: safeItems,
             total,
             page,
             pageSize,
@@ -889,7 +951,7 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
         return res.json({
             ok: true,
             message: "Order marked as completed",
-            order: updated,
+            order: formatOrderForListResponse(updated),
         });
     } catch (error) {
         console.error("providerCompleteAssignedOrder error:", error);

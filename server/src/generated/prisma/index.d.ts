@@ -5560,7 +5560,11 @@ export namespace Prisma {
     region: string | null
     queueType: string | null
     inGameName: string | null
-    accountPassword: string | null
+    accountPasswordCiphertext: string | null
+    accountPasswordEncryptedKey: string | null
+    accountPasswordIv: string | null
+    accountPasswordAuthTag: string | null
+    accountPasswordUpdatedAt: Date | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5597,7 +5601,11 @@ export namespace Prisma {
     region: string | null
     queueType: string | null
     inGameName: string | null
-    accountPassword: string | null
+    accountPasswordCiphertext: string | null
+    accountPasswordEncryptedKey: string | null
+    accountPasswordIv: string | null
+    accountPasswordAuthTag: string | null
+    accountPasswordUpdatedAt: Date | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5634,7 +5642,11 @@ export namespace Prisma {
     region: number
     queueType: number
     inGameName: number
-    accountPassword: number
+    accountPasswordCiphertext: number
+    accountPasswordEncryptedKey: number
+    accountPasswordIv: number
+    accountPasswordAuthTag: number
+    accountPasswordUpdatedAt: number
     currentRank: number
     currentLP: number
     currentMasterLp: number
@@ -5696,7 +5708,11 @@ export namespace Prisma {
     region?: true
     queueType?: true
     inGameName?: true
-    accountPassword?: true
+    accountPasswordCiphertext?: true
+    accountPasswordEncryptedKey?: true
+    accountPasswordIv?: true
+    accountPasswordAuthTag?: true
+    accountPasswordUpdatedAt?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5733,7 +5749,11 @@ export namespace Prisma {
     region?: true
     queueType?: true
     inGameName?: true
-    accountPassword?: true
+    accountPasswordCiphertext?: true
+    accountPasswordEncryptedKey?: true
+    accountPasswordIv?: true
+    accountPasswordAuthTag?: true
+    accountPasswordUpdatedAt?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5770,7 +5790,11 @@ export namespace Prisma {
     region?: true
     queueType?: true
     inGameName?: true
-    accountPassword?: true
+    accountPasswordCiphertext?: true
+    accountPasswordEncryptedKey?: true
+    accountPasswordIv?: true
+    accountPasswordAuthTag?: true
+    accountPasswordUpdatedAt?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5895,7 +5919,11 @@ export namespace Prisma {
     region: string | null
     queueType: string | null
     inGameName: string | null
-    accountPassword: string | null
+    accountPasswordCiphertext: string | null
+    accountPasswordEncryptedKey: string | null
+    accountPasswordIv: string | null
+    accountPasswordAuthTag: string | null
+    accountPasswordUpdatedAt: Date | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5952,7 +5980,11 @@ export namespace Prisma {
     region?: boolean
     queueType?: boolean
     inGameName?: boolean
-    accountPassword?: boolean
+    accountPasswordCiphertext?: boolean
+    accountPasswordEncryptedKey?: boolean
+    accountPasswordIv?: boolean
+    accountPasswordAuthTag?: boolean
+    accountPasswordUpdatedAt?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -5996,7 +6028,11 @@ export namespace Prisma {
     region?: boolean
     queueType?: boolean
     inGameName?: boolean
-    accountPassword?: boolean
+    accountPasswordCiphertext?: boolean
+    accountPasswordEncryptedKey?: boolean
+    accountPasswordIv?: boolean
+    accountPasswordAuthTag?: boolean
+    accountPasswordUpdatedAt?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6036,7 +6072,11 @@ export namespace Prisma {
     region?: boolean
     queueType?: boolean
     inGameName?: boolean
-    accountPassword?: boolean
+    accountPasswordCiphertext?: boolean
+    accountPasswordEncryptedKey?: boolean
+    accountPasswordIv?: boolean
+    accountPasswordAuthTag?: boolean
+    accountPasswordUpdatedAt?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6076,7 +6116,11 @@ export namespace Prisma {
     region?: boolean
     queueType?: boolean
     inGameName?: boolean
-    accountPassword?: boolean
+    accountPasswordCiphertext?: boolean
+    accountPasswordEncryptedKey?: boolean
+    accountPasswordIv?: boolean
+    accountPasswordAuthTag?: boolean
+    accountPasswordUpdatedAt?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6102,7 +6146,7 @@ export namespace Prisma {
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPassword" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -6141,7 +6185,11 @@ export namespace Prisma {
       region: string | null
       queueType: string | null
       inGameName: string | null
-      accountPassword: string | null
+      accountPasswordCiphertext: string | null
+      accountPasswordEncryptedKey: string | null
+      accountPasswordIv: string | null
+      accountPasswordAuthTag: string | null
+      accountPasswordUpdatedAt: Date | null
       currentRank: string | null
       currentLP: string | null
       currentMasterLp: number | null
@@ -6604,7 +6652,11 @@ export namespace Prisma {
     readonly region: FieldRef<"Order", 'String'>
     readonly queueType: FieldRef<"Order", 'String'>
     readonly inGameName: FieldRef<"Order", 'String'>
-    readonly accountPassword: FieldRef<"Order", 'String'>
+    readonly accountPasswordCiphertext: FieldRef<"Order", 'String'>
+    readonly accountPasswordEncryptedKey: FieldRef<"Order", 'String'>
+    readonly accountPasswordIv: FieldRef<"Order", 'String'>
+    readonly accountPasswordAuthTag: FieldRef<"Order", 'String'>
+    readonly accountPasswordUpdatedAt: FieldRef<"Order", 'DateTime'>
     readonly currentRank: FieldRef<"Order", 'String'>
     readonly currentLP: FieldRef<"Order", 'String'>
     readonly currentMasterLp: FieldRef<"Order", 'Int'>
@@ -14821,7 +14873,11 @@ export namespace Prisma {
     region: 'region',
     queueType: 'queueType',
     inGameName: 'inGameName',
-    accountPassword: 'accountPassword',
+    accountPasswordCiphertext: 'accountPasswordCiphertext',
+    accountPasswordEncryptedKey: 'accountPasswordEncryptedKey',
+    accountPasswordIv: 'accountPasswordIv',
+    accountPasswordAuthTag: 'accountPasswordAuthTag',
+    accountPasswordUpdatedAt: 'accountPasswordUpdatedAt',
     currentRank: 'currentRank',
     currentLP: 'currentLP',
     currentMasterLp: 'currentMasterLp',
@@ -15335,7 +15391,11 @@ export namespace Prisma {
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
     inGameName?: StringNullableFilter<"Order"> | string | null
-    accountPassword?: StringNullableFilter<"Order"> | string | null
+    accountPasswordCiphertext?: StringNullableFilter<"Order"> | string | null
+    accountPasswordEncryptedKey?: StringNullableFilter<"Order"> | string | null
+    accountPasswordIv?: StringNullableFilter<"Order"> | string | null
+    accountPasswordAuthTag?: StringNullableFilter<"Order"> | string | null
+    accountPasswordUpdatedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -15378,7 +15438,11 @@ export namespace Prisma {
     region?: SortOrderInput | SortOrder
     queueType?: SortOrderInput | SortOrder
     inGameName?: SortOrderInput | SortOrder
-    accountPassword?: SortOrderInput | SortOrder
+    accountPasswordCiphertext?: SortOrderInput | SortOrder
+    accountPasswordEncryptedKey?: SortOrderInput | SortOrder
+    accountPasswordIv?: SortOrderInput | SortOrder
+    accountPasswordAuthTag?: SortOrderInput | SortOrder
+    accountPasswordUpdatedAt?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
     currentMasterLp?: SortOrderInput | SortOrder
@@ -15424,7 +15488,11 @@ export namespace Prisma {
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
     inGameName?: StringNullableFilter<"Order"> | string | null
-    accountPassword?: StringNullableFilter<"Order"> | string | null
+    accountPasswordCiphertext?: StringNullableFilter<"Order"> | string | null
+    accountPasswordEncryptedKey?: StringNullableFilter<"Order"> | string | null
+    accountPasswordIv?: StringNullableFilter<"Order"> | string | null
+    accountPasswordAuthTag?: StringNullableFilter<"Order"> | string | null
+    accountPasswordUpdatedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -15467,7 +15535,11 @@ export namespace Prisma {
     region?: SortOrderInput | SortOrder
     queueType?: SortOrderInput | SortOrder
     inGameName?: SortOrderInput | SortOrder
-    accountPassword?: SortOrderInput | SortOrder
+    accountPasswordCiphertext?: SortOrderInput | SortOrder
+    accountPasswordEncryptedKey?: SortOrderInput | SortOrder
+    accountPasswordIv?: SortOrderInput | SortOrder
+    accountPasswordAuthTag?: SortOrderInput | SortOrder
+    accountPasswordUpdatedAt?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
     currentMasterLp?: SortOrderInput | SortOrder
@@ -15513,7 +15585,11 @@ export namespace Prisma {
     region?: StringNullableWithAggregatesFilter<"Order"> | string | null
     queueType?: StringNullableWithAggregatesFilter<"Order"> | string | null
     inGameName?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    accountPassword?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPasswordCiphertext?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPasswordEncryptedKey?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPasswordIv?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPasswordAuthTag?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPasswordUpdatedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     currentRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentLP?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentMasterLp?: IntNullableWithAggregatesFilter<"Order"> | number | null
@@ -16220,7 +16296,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16263,7 +16343,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16302,7 +16386,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16345,7 +16433,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16386,7 +16478,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16422,7 +16518,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16460,7 +16560,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -17204,6 +17308,17 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -17276,7 +17391,11 @@ export namespace Prisma {
     region?: SortOrder
     queueType?: SortOrder
     inGameName?: SortOrder
-    accountPassword?: SortOrder
+    accountPasswordCiphertext?: SortOrder
+    accountPasswordEncryptedKey?: SortOrder
+    accountPasswordIv?: SortOrder
+    accountPasswordAuthTag?: SortOrder
+    accountPasswordUpdatedAt?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -17325,7 +17444,11 @@ export namespace Prisma {
     region?: SortOrder
     queueType?: SortOrder
     inGameName?: SortOrder
-    accountPassword?: SortOrder
+    accountPasswordCiphertext?: SortOrder
+    accountPasswordEncryptedKey?: SortOrder
+    accountPasswordIv?: SortOrder
+    accountPasswordAuthTag?: SortOrder
+    accountPasswordUpdatedAt?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -17362,7 +17485,11 @@ export namespace Prisma {
     region?: SortOrder
     queueType?: SortOrder
     inGameName?: SortOrder
-    accountPassword?: SortOrder
+    accountPasswordCiphertext?: SortOrder
+    accountPasswordEncryptedKey?: SortOrder
+    accountPasswordIv?: SortOrder
+    accountPasswordAuthTag?: SortOrder
+    accountPasswordUpdatedAt?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -17406,6 +17533,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -17512,17 +17653,6 @@ export namespace Prisma {
     not?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type AssignmentRequestCountOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
@@ -17561,20 +17691,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
     _max?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type OrderNullableScalarRelationFilter = {
@@ -18241,6 +18357,10 @@ export namespace Prisma {
     set?: $Enums.OrderStatus
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -18401,10 +18521,6 @@ export namespace Prisma {
 
   export type EnumAssignmentRequestStatusFieldUpdateOperationsInput = {
     set?: $Enums.AssignmentRequestStatus
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrderUpdateOneRequiredWithoutAssignmentRequestsNestedInput = {
@@ -18752,6 +18868,17 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -18776,6 +18903,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -18859,17 +19000,6 @@ export namespace Prisma {
     not?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel> | $Enums.AssignmentRequestStatus
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedEnumAssignmentRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
@@ -18878,20 +19008,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
     _max?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
@@ -18921,7 +19037,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -18962,7 +19082,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19239,7 +19363,11 @@ export namespace Prisma {
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
     inGameName?: StringNullableFilter<"Order"> | string | null
-    accountPassword?: StringNullableFilter<"Order"> | string | null
+    accountPasswordCiphertext?: StringNullableFilter<"Order"> | string | null
+    accountPasswordEncryptedKey?: StringNullableFilter<"Order"> | string | null
+    accountPasswordIv?: StringNullableFilter<"Order"> | string | null
+    accountPasswordAuthTag?: StringNullableFilter<"Order"> | string | null
+    accountPasswordUpdatedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -19575,7 +19703,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19616,7 +19748,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19951,7 +20087,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19993,7 +20133,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20088,7 +20232,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20130,7 +20278,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20215,7 +20367,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20257,7 +20413,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20393,7 +20553,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20435,7 +20599,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20567,7 +20735,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20609,7 +20781,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20713,7 +20889,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20755,7 +20935,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21282,7 +21466,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -21376,7 +21564,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21417,7 +21609,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21457,7 +21653,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21668,7 +21868,11 @@ export namespace Prisma {
     region?: string | null
     queueType?: string | null
     inGameName?: string | null
-    accountPassword?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -21704,7 +21908,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21745,7 +21953,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21785,7 +21997,11 @@ export namespace Prisma {
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
     inGameName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null

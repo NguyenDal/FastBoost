@@ -63,7 +63,11 @@ model Order {
   queueType         String?
 
   inGameName        String?
-  accountPassword   String?
+  accountPasswordCiphertext   String?
+  accountPasswordEncryptedKey String?
+  accountPasswordIv           String?
+  accountPasswordAuthTag      String?
+  accountPasswordUpdatedAt    DateTime?
 
   currentRank       String?
   currentLP         String?
