@@ -53,6 +53,62 @@ function MatchPage() {
     const [chatInput, setChatInput] = useState("");
 
     const chatMessagesRef = useRef(null);
+    const previousMessagesRef = useRef([]);
+    const isInitialChatPositionAppliedRef = useRef(false);
+    const shouldScrollAfterSendRef = useRef(false);
+
+    const scrollChatToBottom = useCallback((behavior = "smooth") => {
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        requestAnimationFrame(() => {
+            el.scrollTo({
+                top: el.scrollHeight,
+                behavior,
+            });
+        });
+    }, []);
+
+    const getChatStorageKey = useCallback(
+        (suffix) => `fastboost:match:${orderId}:chat:${suffix}`,
+        [orderId]
+    );
+
+    const isChatNearBottom = useCallback(() => {
+        const el = chatMessagesRef.current;
+        if (!el) return true;
+
+        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+        return distanceFromBottom < 80;
+    }, []);
+
+    const saveChatScrollState = useCallback(() => {
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        sessionStorage.setItem(getChatStorageKey("scrollTop"), String(el.scrollTop));
+
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage?.createdAt && isChatNearBottom()) {
+            sessionStorage.setItem(getChatStorageKey("lastSeenAt"), lastMessage.createdAt);
+        }
+    }, [getChatStorageKey, messages, isChatNearBottom]);
+
+    const scrollToMessageById = useCallback((messageId, behavior = "smooth") => {
+        if (!messageId) return;
+
+        requestAnimationFrame(() => {
+            const target = document.querySelector(`[data-message-id="${messageId}"]`);
+
+            if (target) {
+                target.scrollIntoView({
+                    behavior,
+                    block: "start",
+                });
+            }
+        });
+    }, []);
 
     const [scrollThumb, setScrollThumb] = useState({
         height: 0,
@@ -113,14 +169,92 @@ function MatchPage() {
         const el = chatMessagesRef.current;
         if (!el) return;
 
-        el.addEventListener("scroll", updateChatScrollbar);
+        const handleScroll = () => {
+            updateChatScrollbar();
+            saveChatScrollState();
+        };
+
+        el.addEventListener("scroll", handleScroll);
         window.addEventListener("resize", updateChatScrollbar);
 
         return () => {
-            el.removeEventListener("scroll", updateChatScrollbar);
+            el.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", updateChatScrollbar);
         };
-    }, [messages, updateChatScrollbar]);
+    }, [messages, updateChatScrollbar, saveChatScrollState]);
+
+    useEffect(() => {
+        if (!messages.length) return;
+
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        if (!isInitialChatPositionAppliedRef.current) {
+            isInitialChatPositionAppliedRef.current = true;
+
+            const lastSeenAt = sessionStorage.getItem(getChatStorageKey("lastSeenAt"));
+            const savedScrollTop = sessionStorage.getItem(getChatStorageKey("scrollTop"));
+
+            const firstNewOtherMessage = lastSeenAt
+                ? messages.find(
+                    (message) =>
+                        !message.isMine &&
+                        message.sender !== "system" &&
+                        message.createdAt &&
+                        new Date(message.createdAt).getTime() > new Date(lastSeenAt).getTime()
+                )
+                : null;
+
+            if (firstNewOtherMessage) {
+                scrollToMessageById(firstNewOtherMessage.id, "auto");
+            } else if (savedScrollTop !== null) {
+                requestAnimationFrame(() => {
+                    el.scrollTop = Number(savedScrollTop);
+                    updateChatScrollbar();
+                });
+            } else {
+                scrollChatToBottom("auto");
+            }
+
+            previousMessagesRef.current = messages;
+            return;
+        }
+
+        const previousMessages = previousMessagesRef.current;
+        const previousLastMessage = previousMessages[previousMessages.length - 1];
+        const currentLastMessage = messages[messages.length - 1];
+
+        const hasNewMessage =
+            currentLastMessage && currentLastMessage.id !== previousLastMessage?.id;
+
+        if (hasNewMessage) {
+            const newMessages = messages.slice(previousMessages.length);
+            const hasMyNewMessage = newMessages.some(
+                (message) => message.isMine || message.sender === "mine"
+            );
+
+            if (shouldScrollAfterSendRef.current || hasMyNewMessage || isChatNearBottom()) {
+                scrollChatToBottom("smooth");
+                shouldScrollAfterSendRef.current = false;
+            }
+        }
+
+        previousMessagesRef.current = messages;
+        updateChatScrollbar();
+    }, [
+        messages,
+        getChatStorageKey,
+        isChatNearBottom,
+        scrollChatToBottom,
+        scrollToMessageById,
+        updateChatScrollbar,
+    ]);
+
+    useEffect(() => {
+        isInitialChatPositionAppliedRef.current = false;
+        previousMessagesRef.current = [];
+        shouldScrollAfterSendRef.current = false;
+    }, [orderId]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -362,6 +496,7 @@ function MatchPage() {
                 timestamp: formatChatTime(now),
             };
 
+            shouldScrollAfterSendRef.current = true;
             setMessages((prev) => [...prev, tempMessage]);
             setChatInput("");
 
@@ -513,7 +648,7 @@ function MatchPage() {
                                         const showAvatar = !isMine && !isSystem;
 
                                         return (
-                                            <div key={message.id}>
+                                            <div key={message.id} data-message-id={message.id}>
                                                 {shouldShowDateDivider && (
                                                     <div className="chat-date-divider">
                                                         <span>{formatChatDateDivider(message.createdAt)}</span>
