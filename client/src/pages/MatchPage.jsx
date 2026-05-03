@@ -169,6 +169,7 @@ function MatchPage() {
                                 senderRole,
                                 senderUser: msg.sender,
                                 text: msg.content || msg.text || msg.body || msg.message || "",
+                                createdAt: msg.createdAt,
                                 timestamp: formatChatTime(msg.createdAt),
                                 senderName: getSenderDisplayName(msg.sender),
                                 senderAvatar: getSenderAvatar(msg.sender),
@@ -183,6 +184,7 @@ function MatchPage() {
                             text: realBooster
                                 ? `${getBoosterDisplayName(realBooster)} has been assigned to your order.`
                                 : "Your order has been placed. Waiting for an admin to assign a booster.",
+                            createdAt: new Date().toISOString(),
                             timestamp: formatChatTime(new Date()),
                         },
                     ]);
@@ -206,6 +208,8 @@ function MatchPage() {
         if (!text || !chatEnabled) return;
 
         try {
+            const now = new Date();
+
             const tempMessage = {
                 id: `temp-${Date.now()}`,
                 sender: "mine",
@@ -216,7 +220,8 @@ function MatchPage() {
                 senderAvatar: getSenderAvatar(effectiveUser),
                 senderName: "You",
                 text,
-                timestamp: formatChatTime(new Date()),
+                createdAt: now.toISOString(),
+                timestamp: formatChatTime(now),
             };
 
             setMessages((prev) => [...prev, tempMessage]);
@@ -237,7 +242,8 @@ function MatchPage() {
                             senderName: "You",
                             senderAvatar: getSenderAvatar(savedMessage.sender || effectiveUser),
                             text: savedMessage.content || savedMessage.text || savedMessage.body || savedMessage.message || text,
-                            timestamp: formatChatTime(savedMessage.createdAt),
+                            createdAt: savedMessage.createdAt || now.toISOString(),
+                            timestamp: formatChatTime(savedMessage.createdAt || now),
                         }
                         : msg
                 )
@@ -359,53 +365,77 @@ function MatchPage() {
                             </div>
 
                             <div className="chat-messages">
-                                {messages.map((message) => {
+                                {messages.map((message, index) => {
+                                    const previousMessage = index > 0 ? messages[index - 1] : null;
+                                    const shouldShowDateDivider = shouldRenderDateDivider(previousMessage, message);
+
                                     const isMine = message.isMine || message.sender === "mine";
                                     const isSystem = message.sender === "system";
                                     const showAvatar = !isMine && !isSystem;
 
                                     return (
-                                        <div
-                                            key={message.id}
-                                            className={`chat-row ${isMine ? "chat-row-mine" : isSystem ? "chat-row-system" : "chat-row-other"}`}
-                                        >
-                                            {showAvatar && (
-                                                <div className="chat-avatar-wrap">
-                                                    <img
-                                                        src={message.senderAvatar || getSenderAvatar(message.senderUser)}
-                                                        alt={message.senderName || "Sender"}
-                                                        className="chat-message-avatar"
-                                                    />
-                                                    <span className="chat-avatar-online-dot" />
+                                        <div key={message.id}>
+                                            {shouldShowDateDivider && (
+                                                <div className="chat-date-divider">
+                                                    <span>{formatChatDateDivider(message.createdAt)}</span>
                                                 </div>
                                             )}
 
                                             <div
-                                                className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
+                                                className={`chat-row ${isMine ? "chat-row-mine" : isSystem ? "chat-row-system" : "chat-row-other"}`}
                                             >
-                                                <div className="chat-message-top">
-                                                    <span className="chat-sender">
-                                                        {getMessageSenderName(message, matchedBooster)}
-                                                    </span>
+                                                {showAvatar && (
+                                                    <div className="chat-avatar-wrap">
+                                                        <img
+                                                            src={message.senderAvatar || getSenderAvatar(message.senderUser)}
+                                                            alt={message.senderName || "Sender"}
+                                                            className="chat-message-avatar"
+                                                        />
+                                                        <span className="chat-avatar-online-dot" />
+                                                    </div>
+                                                )}
 
-                                                    <span className="chat-timestamp">
-                                                        {message.timestamp || "3:37 PM"}
-                                                    </span>
+                                                <div
+                                                    className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
+                                                >
+                                                    <div className="chat-message-top">
+                                                        <span className="chat-sender">
+                                                            {getMessageSenderName(message, matchedBooster)}
+                                                        </span>
+
+                                                        <span className="chat-timestamp">
+                                                            {message.timestamp || "3:37 PM"}
+                                                        </span>
+                                                    </div>
+
+                                                    <p>{message.text}</p>
                                                 </div>
-
-                                                <p>{message.text}</p>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            <form className="chat-input-row" onSubmit={handleSendMessage}>
+                            <form
+                                className={`chat-composer ${!chatEnabled ? "chat-composer-disabled" : ""}`}
+                                onSubmit={handleSendMessage}
+                            >
+                                <button
+                                    type="button"
+                                    className="chat-attach-btn"
+                                    aria-label="Attach file"
+                                    title="Attachment coming soon"
+                                    disabled={!chatEnabled}
+                                >
+                                    <AttachIcon />
+                                </button>
+
                                 <input
                                     type="text"
+                                    className="chat-composer-input"
                                     placeholder={
                                         chatEnabled
-                                            ? "Type a message..."
+                                            ? "Write a message..."
                                             : "Only the customer, admin, or assigned booster can chat"
                                     }
                                     value={chatInput}
@@ -415,35 +445,77 @@ function MatchPage() {
 
                                 <button
                                     type="submit"
-                                    className="primary-btn"
-                                    disabled={!chatEnabled}
+                                    className="chat-send-btn"
+                                    disabled={!chatEnabled || !chatInput.trim()}
+                                    aria-label="Send message"
+                                    title="Send"
                                 >
-                                    Send
+                                    <SendIcon />
                                 </button>
                             </form>
                         </div>
 
-                        <div className="match-options-card">
-                            <div className="match-card-header">
-                                <h3>Options</h3>
+                        <div className="match-options-card order-extras-card">
+                            <div className="match-card-header premium-card-header">
+                                <div className="match-card-icon">⚙</div>
+
+                                <div>
+                                    <h3>Order Options</h3>
+                                    <p>Active extras on your boost</p>
+                                </div>
                             </div>
 
-                            <div className="option-list">
-                                <div className="option-row">
-                                    <span>Play with Booster</span>
-                                    <strong>{order.duoWithBooster ? "Active" : "Off"}</strong>
+                            {getEnabledOrderOptions(order).length > 0 ? (
+                                <div className="order-options-grid">
+                                    {getEnabledOrderOptions(order).map((option) => (
+                                        <div className="order-option-pill" key={option.label}>
+                                            <span className={`order-option-icon ${option.iconClass || ""}`}>
+                                                {option.icon}
+                                            </span>
+
+                                            <div className="order-option-text">
+                                                <strong>{option.label}</strong>
+                                                <small>{option.description}</small>
+                                            </div>
+
+                                            <span className="option-active-badge">ACTIVE</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="option-row">
-                                    <span>Priority Order</span>
-                                    <strong>{order.priorityOrder ? "Active" : "Off"}</strong>
+                            ) : (
+                                <p className="empty-option-text">
+                                    No extra options selected for this order.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="match-options-card order-overview-card">
+                            <div className="match-card-header premium-card-header">
+                                <div className="match-card-icon">◉</div>
+
+                                <div>
+                                    <h3>Overview</h3>
+                                    <p>Quick details about your order</p>
                                 </div>
-                                <div className="option-row">
-                                    <span>Live Stream</span>
-                                    <strong>{order.liveStream ? "Active" : "Off"}</strong>
+                            </div>
+
+                            <div className="order-overview-grid">
+                                <div className="overview-pill">
+                                    <span className="overview-icon">≡</span>
+                                    <div>
+                                        <small>Queue</small>
+                                        <strong>{order.queueType || "-"}</strong>
+                                    </div>
                                 </div>
-                                <div className="option-row">
-                                    <span>Appear Offline</span>
-                                    <strong>{order.appearOffline ? "Active" : "Off"}</strong>
+
+                                <div className="overview-pill">
+                                    <span className="overview-icon region-icon">
+                                        <GlobeIcon />
+                                    </span>
+                                    <div>
+                                        <small>Region</small>
+                                        <strong>{order.region || "-"}</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -507,10 +579,7 @@ function MatchPage() {
                                     <span>Region</span>
                                     <strong>{order.region || "-"}</strong>
                                 </div>
-                                <div className="info-row">
-                                    <span>Queue</span>
-                                    <strong>{order.queueType || "-"}</strong>
-                                </div>
+
                                 <div className="info-row">
                                     <span>Service</span>
                                     <strong>{order.boostType || order.service?.title || "-"}</strong>
@@ -723,6 +792,180 @@ function getSenderAvatar(sender) {
         sender?.profile?.avatar ||
         sender?.profile?.photoUrl ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
+    );
+}
+
+function getEnabledOrderOptions(order) {
+    if (!order) return [];
+
+    const options = [];
+
+    if (order.duoWithBooster) {
+        options.push({
+            label: "Play with booster",
+            description: "Duo session with assigned provider",
+            icon: "👥",
+            iconClass: "option-icon-duo",
+        });
+    }
+
+    if (order.priorityOrder) {
+        options.push({
+            label: "Priority order",
+            description: "Higher priority in the queue",
+            icon: "⚡",
+            iconClass: "option-icon-priority",
+        });
+    }
+
+    if (order.liveStream) {
+        options.push({
+            label: "Live stream",
+            description: "Watch progress live when available",
+            icon: "●",
+            iconClass: "option-icon-live",
+        });
+    }
+
+    if (order.appearOffline) {
+        options.push({
+            label: "Appear offline",
+            description: "Provider keeps offline mode enabled",
+            icon: <EyeOffIcon />,
+            iconClass: "option-icon-offline",
+        });
+    }
+
+    if (order.bonusWin) {
+        options.push({
+            label: "Bonus win",
+            description: "Extra win added to the order",
+            icon: "+",
+            iconClass: "option-icon-bonus",
+        });
+    }
+
+    if (order.soloOnly) {
+        options.push({
+            label: "Solo only",
+            description: "No duo queue during the boost",
+            icon: "♟",
+            iconClass: "option-icon-solo",
+        });
+    }
+
+    if (order.highMMRDuo) {
+        options.push({
+            label: "High MMR Duo",
+            description: "High MMR duo handling enabled",
+            icon: "▲",
+            iconClass: "option-icon-highmmr",
+        });
+    }
+
+    return options;
+}
+
+function EyeOffIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="option-svg-icon"
+            aria-hidden="true"
+        >
+            <path d="M3 3l18 18" />
+            <path d="M10.7 10.7a2 2 0 002.6 2.6" />
+            <path d="M9.6 5.2A8.7 8.7 0 0112 4.9c4.8 0 8 4.6 8.9 6.1a1.6 1.6 0 010 1.9 15.2 15.2 0 01-3 3.5" />
+            <path d="M6.5 6.6A15.5 15.5 0 003.1 11a1.6 1.6 0 000 1.9c.9 1.5 4.1 6.1 8.9 6.1 1.2 0 2.4-.3 3.5-.8" />
+        </svg>
+    );
+}
+
+function GlobeIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="option-svg-icon"
+            aria-hidden="true"
+        >
+            <circle cx="12" cy="12" r="8.5" />
+            <path d="M3.8 12h16.4" />
+            <path d="M12 3.5c2.4 2.2 3.8 5.3 3.8 8.5s-1.4 6.3-3.8 8.5c-2.4-2.2-3.8-5.3-3.8-8.5s1.4-6.3 3.8-8.5z" />
+        </svg>
+    );
+}
+
+function shouldRenderDateDivider(previousMessage, currentMessage) {
+    if (!currentMessage?.createdAt) return false;
+    if (!previousMessage?.createdAt) return true;
+
+    const previousDate = new Date(previousMessage.createdAt);
+    const currentDate = new Date(currentMessage.createdAt);
+
+    return previousDate.toDateString() !== currentDate.toDateString();
+}
+
+function formatChatDateDivider(value) {
+    if (!value) return "";
+
+    const messageDate = new Date(value);
+    const today = new Date();
+
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (messageDate.toDateString() === today.toDateString()) {
+        return "Today";
+    }
+
+    if (messageDate.toDateString() === yesterday.toDateString()) {
+        return "Yesterday";
+    }
+
+    return messageDate.toLocaleDateString([], {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+    });
+}
+
+function AttachIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="composer-svg-icon"
+            aria-hidden="true"
+        >
+            <path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+        </svg>
+    );
+}
+
+function SendIcon() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="composer-svg-icon composer-send-icon"
+            aria-hidden="true"
+        >
+            <path d="M3.7 20.3 21 12 3.7 3.7 3 10.2l10 1.8-10 1.8.7 6.5Z" />
+        </svg>
     );
 }
 
