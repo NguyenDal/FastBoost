@@ -645,6 +645,104 @@ button {
   font-size: 12px;
 }
 
+/* Chat notification preview cards */
+.chat-preview-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+
+  /* Imitate normal notification-card shape */
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025)),
+    rgba(10, 15, 24, .95);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
+}
+
+.chat-preview-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(96, 165, 250, 0.26);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+.message-card.unread {
+  /* Softer unread state, closer to notification card but blue for messages */
+  border-color: rgba(96, 165, 250, 0.28);
+  background:
+    radial-gradient(500px 140px at 0% 0%, rgba(96, 165, 250, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025)),
+    rgba(10, 15, 24, .95);
+  box-shadow: 0 0 16px rgba(96, 165, 250, .10);
+}
+
+.chat-preview-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Fallback avatar: imitate MatchPage blue profile icon, not purple */
+.chat-preview-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.18), rgba(12, 18, 40, 0.96)),
+    rgba(12, 18, 40, 0.96);
+  color: #7dd3fc;
+  border: 2px solid rgba(91, 201, 255, 0.38);
+  box-shadow: 0 0 0 4px rgba(91, 201, 255, 0.08);
+
+  font-weight: 900;
+}
+
+.chat-preview-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chat-preview-header h4 {
+  margin: 0;
+  max-width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chat-preview-meta {
+  margin: 4px 0 6px;
+  color: #aab3c2;
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.chat-preview-message {
+  margin: 0;
+  color: #aab3c2;
+  line-height: 1.45;
+}
+
+/* Make message unread dot blue instead of purple */
+.message-card .notification-dot {
+  background: #93c5fd;
+  box-shadow: 0 0 14px rgba(96, 165, 250, .72);
+}
+
 /* Auth Modal (shared component) */
 .modal-backdrop {
   position: fixed;

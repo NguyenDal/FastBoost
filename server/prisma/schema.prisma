@@ -63,7 +63,11 @@ model Order {
   queueType         String?
 
   inGameName        String?
-  accountPassword   String?
+  accountPasswordCiphertext   String?
+  accountPasswordEncryptedKey String?
+  accountPasswordIv           String?
+  accountPasswordAuthTag      String?
+  accountPasswordUpdatedAt    DateTime?
 
   currentRank       String?
   currentLP         String?
@@ -221,5 +225,6 @@ enum NotificationType {
   ASSIGNMENT_CANCELLED
   ASSIGNMENT_REMOVED
   BOOSTER_LEFT_ORDER
+  CHAT_MESSAGE
 }
 

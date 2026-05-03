@@ -53,6 +53,47 @@ function MatchPage() {
     const [chatInput, setChatInput] = useState("");
 
     const chatMessagesRef = useRef(null);
+    const previousMessagesRef = useRef([]);
+    const isInitialChatPositionAppliedRef = useRef(false);
+    const shouldScrollAfterSendRef = useRef(false);
+
+    const scrollChatToBottom = useCallback((behavior = "smooth") => {
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        requestAnimationFrame(() => {
+            el.scrollTo({
+                top: el.scrollHeight,
+                behavior,
+            });
+        });
+    }, []);
+
+    const getChatStorageKey = useCallback(
+        (suffix) => `fastboost:match:${orderId}:chat:${suffix}`,
+        [orderId]
+    );
+
+    const isChatNearBottom = useCallback(() => {
+        const el = chatMessagesRef.current;
+        if (!el) return true;
+
+        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+        return distanceFromBottom < 80;
+    }, []);
+
+    const saveChatScrollState = useCallback(() => {
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        sessionStorage.setItem(getChatStorageKey("scrollTop"), String(el.scrollTop));
+
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage?.createdAt && isChatNearBottom()) {
+            sessionStorage.setItem(getChatStorageKey("lastSeenAt"), lastMessage.createdAt);
+        }
+    }, [getChatStorageKey, messages, isChatNearBottom]);
 
     const [scrollThumb, setScrollThumb] = useState({
         height: 0,
@@ -67,8 +108,13 @@ function MatchPage() {
     const currentUserRole = String(effectiveUser?.role || "").toUpperCase();
 
     const isCustomerOwner =
-        order?.customerId === currentUserId ||
-        order?.customer?.id === currentUserId;
+        Boolean(currentUserId) &&
+        (
+            String(order?.customerId || "") === String(currentUserId) ||
+            String(order?.customer?.id || "") === String(currentUserId) ||
+            String(order?.customer?.userId || "") === String(currentUserId) ||
+            String(order?.userId || "") === String(currentUserId)
+        );
 
     const isAdminUser = currentUserRole === "ADMIN";
 
@@ -76,8 +122,13 @@ function MatchPage() {
         currentUserRole === "PROVIDER" &&
         isUserAssignedToOrder(order, conversation, currentUserId);
 
+    const isConversationParticipant = isUserInConversation(
+        conversation,
+        currentUserId
+    );
+
     const chatEnabled =
-        Boolean(conversation) && (isCustomerOwner || isAdminUser || isAssignedProvider);
+        Boolean(conversation) && Boolean(currentUserId);
 
     const updateChatScrollbar = useCallback(() => {
         const el = chatMessagesRef.current;
@@ -107,20 +158,134 @@ function MatchPage() {
         });
     }, []);
 
+    const scrollToMessageById = useCallback((messageId, behavior = "smooth") => {
+        if (!messageId) return;
+
+        requestAnimationFrame(() => {
+            const el = chatMessagesRef.current;
+            const target = document.querySelector(`[data-message-id="${messageId}"]`);
+
+            if (!el || !target) return;
+
+            const containerTop = el.getBoundingClientRect().top;
+            const targetTop = target.getBoundingClientRect().top;
+            const offset = targetTop - containerTop;
+
+            el.scrollTo({
+                top: el.scrollTop + offset,
+                behavior,
+            });
+
+            requestAnimationFrame(() => {
+                updateChatScrollbar();
+            });
+        });
+    }, [updateChatScrollbar]);
+
     useEffect(() => {
         updateChatScrollbar();
 
         const el = chatMessagesRef.current;
         if (!el) return;
 
-        el.addEventListener("scroll", updateChatScrollbar);
+        const handleScroll = () => {
+            updateChatScrollbar();
+            saveChatScrollState();
+        };
+
+        el.addEventListener("scroll", handleScroll);
         window.addEventListener("resize", updateChatScrollbar);
 
         return () => {
-            el.removeEventListener("scroll", updateChatScrollbar);
+            el.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", updateChatScrollbar);
         };
-    }, [messages, updateChatScrollbar]);
+    }, [messages, updateChatScrollbar, saveChatScrollState]);
+
+    useEffect(() => {
+        if (!messages.length) return;
+
+        const el = chatMessagesRef.current;
+        if (!el) return;
+
+        if (!isInitialChatPositionAppliedRef.current) {
+            isInitialChatPositionAppliedRef.current = true;
+
+            const lastSeenAt = sessionStorage.getItem(getChatStorageKey("lastSeenAt"));
+            const savedScrollTop = sessionStorage.getItem(getChatStorageKey("scrollTop"));
+
+            const firstNewOtherMessage = lastSeenAt
+                ? messages.find(
+                    (message) =>
+                        !message.isMine &&
+                        message.sender !== "system" &&
+                        message.createdAt &&
+                        new Date(message.createdAt).getTime() > new Date(lastSeenAt).getTime()
+                )
+                : null;
+
+            if (firstNewOtherMessage) {
+                scrollToMessageById(firstNewOtherMessage.id, "auto");
+            } else if (savedScrollTop !== null) {
+                requestAnimationFrame(() => {
+                    el.scrollTop = Number(savedScrollTop);
+                    updateChatScrollbar();
+                });
+            } else {
+                scrollChatToBottom("auto");
+            }
+
+            previousMessagesRef.current = messages;
+            return;
+        }
+
+        const previousMessages = previousMessagesRef.current;
+        const previousLastMessage = previousMessages[previousMessages.length - 1];
+        const currentLastMessage = messages[messages.length - 1];
+
+        const hasNewMessage =
+            currentLastMessage && currentLastMessage.id !== previousLastMessage?.id;
+
+        if (hasNewMessage) {
+            const newMessages = messages.slice(previousMessages.length);
+
+            const hasMyNewMessage = newMessages.some(
+                (message) => message.isMine || message.sender === "mine"
+            );
+
+            const firstNewOtherMessage = newMessages.find(
+                (message) =>
+                    !message.isMine &&
+                    message.sender !== "mine" &&
+                    message.sender !== "system"
+            );
+
+            if (shouldScrollAfterSendRef.current || hasMyNewMessage) {
+                scrollChatToBottom("smooth");
+                shouldScrollAfterSendRef.current = false;
+            } else if (isChatNearBottom()) {
+                scrollChatToBottom("smooth");
+            } else if (firstNewOtherMessage) {
+                scrollToMessageById(firstNewOtherMessage.id, "smooth");
+            }
+        }
+
+        previousMessagesRef.current = messages;
+        updateChatScrollbar();
+    }, [
+        messages,
+        getChatStorageKey,
+        isChatNearBottom,
+        scrollChatToBottom,
+        scrollToMessageById,
+        updateChatScrollbar,
+    ]);
+
+    useEffect(() => {
+        isInitialChatPositionAppliedRef.current = false;
+        previousMessagesRef.current = [];
+        shouldScrollAfterSendRef.current = false;
+    }, [orderId]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -218,7 +383,7 @@ function MatchPage() {
 
                     setMessages(
                         savedMessages.map((msg) => {
-                            const isMine = msg.senderId === loggedInUserId;
+                            const isMine = String(msg.senderId || "") === String(loggedInUserId || "");
                             const senderRole = String(msg.sender?.role || "").toUpperCase();
 
                             return {
@@ -280,12 +445,16 @@ function MatchPage() {
     const needsAccountPassword = requiresAccountPassword(order);
 
     const displayedPassword =
-        showLoginPassword ? loginPassword || "-" : maskSecret(loginPassword);
+        showLoginPassword
+            ? loginPassword || "Password saved securely. Reload this order to reveal."
+            : order?.hasAccountPassword
+                ? "••••••••"
+                : "-";
 
     const openLoginInfoModal = () => {
         setLoginInfoForm({
             inGameName: order?.inGameName || "",
-            accountPassword: order?.accountPassword || "",
+            accountPassword: "",
         });
         setLoginInfoError("");
         setShowLoginInfoModal(true);
@@ -298,12 +467,33 @@ function MatchPage() {
             setLoginInfoSaving(true);
             setLoginInfoError("");
 
-            const updatedOrder = await updateOrderLoginInfo(order.id, {
+            const payload = {
                 inGameName: loginInfoForm.inGameName,
-                accountPassword: loginInfoForm.accountPassword,
+            };
+
+            if (loginInfoForm.accountPassword.trim()) {
+                payload.accountPassword = loginInfoForm.accountPassword;
+            }
+
+            const updatedOrder = await updateOrderLoginInfo(order.id, payload);
+
+            setOrder((prev) => ({
+                ...prev,
+                ...updatedOrder,
+                accountPassword: loginInfoForm.accountPassword.trim()
+                    ? loginInfoForm.accountPassword.trim()
+                    : prev?.accountPassword,
+                hasAccountPassword:
+                    updatedOrder.hasAccountPassword ??
+                    Boolean(loginInfoForm.accountPassword.trim()) ??
+                    prev?.hasAccountPassword,
+            }));
+
+            setLoginInfoForm({
+                inGameName: "",
+                accountPassword: "",
             });
 
-            setOrder(updatedOrder);
             setShowLoginInfoModal(false);
             setShowLoginPassword(false);
         } catch (error) {
@@ -337,6 +527,7 @@ function MatchPage() {
                 timestamp: formatChatTime(now),
             };
 
+            shouldScrollAfterSendRef.current = true;
             setMessages((prev) => [...prev, tempMessage]);
             setChatInput("");
 
@@ -488,7 +679,7 @@ function MatchPage() {
                                         const showAvatar = !isMine && !isSystem;
 
                                         return (
-                                            <div key={message.id}>
+                                            <div key={message.id} data-message-id={message.id}>
                                                 {shouldShowDateDivider && (
                                                     <div className="chat-date-divider">
                                                         <span>{formatChatDateDivider(message.createdAt)}</span>
@@ -563,7 +754,7 @@ function MatchPage() {
                                     placeholder={
                                         chatEnabled
                                             ? "Write a message..."
-                                            : "Only the customer, admin, or assigned booster can chat"
+                                            : "Chat is unavailable until this order conversation loads"
                                     }
                                     value={chatInput}
                                     onChange={(event) => setChatInput(event.target.value)}
@@ -614,37 +805,6 @@ function MatchPage() {
                                     No extra options selected for this order.
                                 </p>
                             )}
-                        </div>
-
-                        <div className="match-options-card order-overview-card">
-                            <div className="match-card-header premium-card-header">
-                                <div className="match-card-icon">◉</div>
-
-                                <div>
-                                    <h3>Overview</h3>
-                                    <p>Quick details about your order</p>
-                                </div>
-                            </div>
-
-                            <div className="order-overview-grid">
-                                <div className="overview-pill">
-                                    <span className="overview-icon">≡</span>
-                                    <div>
-                                        <small>Queue</small>
-                                        <strong>{order.queueType || "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="overview-pill">
-                                    <span className="overview-icon region-icon">
-                                        <GlobeIcon />
-                                    </span>
-                                    <div>
-                                        <small>Region</small>
-                                        <strong>{order.region || "-"}</strong>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
@@ -765,23 +925,35 @@ function MatchPage() {
                             </div>
                         </div>
 
-                        <div className="match-side-card">
-                            <p className="section-label">Order Summary</p>
+                        <div className="match-options-card order-overview-card">
+                            <div className="match-card-header premium-card-header">
+                                <div className="match-card-icon">◉</div>
 
-                            <div className="info-list">
-                                <div className="info-row">
-                                    <span>Total</span>
-                                    <strong>${order.totalPrice}</strong>
-                                </div>
-                                <div className="info-row">
-                                    <span>Status</span>
-                                    <strong>{matchedBooster ? "Matched" : "Searching"}</strong>
+                                <div>
+                                    <h3>Overview</h3>
+                                    <p>Quick details about your order</p>
                                 </div>
                             </div>
 
-                            <Link to="/" className="order-back-link">
-                                Back to homepage
-                            </Link>
+                            <div className="order-overview-grid sidebar-overview-grid">
+                                <div className="overview-pill">
+                                    <span className="overview-icon">≡</span>
+                                    <div>
+                                        <small>Queue</small>
+                                        <strong>{order.queueType || "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="overview-pill">
+                                    <span className="overview-icon region-icon">
+                                        <GlobeIcon />
+                                    </span>
+                                    <div>
+                                        <small>Region</small>
+                                        <strong>{order.region || "-"}</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </aside>
                 </div>
@@ -835,7 +1007,7 @@ function MatchPage() {
                                             accountPassword: event.target.value,
                                         }))
                                     }
-                                    placeholder="Enter account password"
+                                    placeholder={order?.hasAccountPassword ? "Leave blank to keep current password" : "Enter account password"}
                                 />
                             </label>
                         )}
@@ -954,7 +1126,13 @@ function renderStars(rating) {
 }
 
 function getCurrentUserId(currentUser) {
-    return currentUser?.id || currentUser?.userId;
+    return (
+        currentUser?.id ||
+        currentUser?.userId ||
+        currentUser?._id ||
+        currentUser?.sub ||
+        null
+    );
 }
 
 function getStoredUser() {
@@ -963,6 +1141,25 @@ function getStoredUser() {
     } catch {
         return null;
     }
+}
+
+function isUserInConversation(conversation, currentUserId) {
+    if (!conversation || !currentUserId) return false;
+
+    const participants = conversation.participants || [];
+
+    return participants.some((participant) => {
+        const participantUser = participant?.user || participant?.booster || participant;
+
+        const participantUserId =
+            participant?.userId ||
+            participantUser?.id ||
+            participantUser?.userId ||
+            participantUser?._id ||
+            participantUser?.sub;
+
+        return String(participantUserId || "") === String(currentUserId || "");
+    });
 }
 
 function isUserAssignedToOrder(order, conversation, currentUserId) {
@@ -979,7 +1176,7 @@ function isUserAssignedToOrder(order, conversation, currentUserId) {
             assignment?.provider?.id ||
             assignment?.user?.id;
 
-        return boosterId === currentUserId;
+        return String(boosterId || "") === String(currentUserId || "");
     });
 
     if (assignedFromOrder) return true;
@@ -1001,7 +1198,7 @@ function isUserAssignedToOrder(order, conversation, currentUserId) {
         ).toUpperCase();
 
         return (
-            participantUserId === currentUserId &&
+            String(participantUserId || "") === String(currentUserId || "") &&
             (participantRole === "PROVIDER" || participantRole === "BOOSTER")
         );
     });

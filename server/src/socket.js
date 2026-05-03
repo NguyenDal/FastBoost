@@ -1,6 +1,9 @@
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const prisma = require("./prisma");
+const {
+    createChatMessageNotifications,
+} = require("./utils/chatNotifications");
 
 function getSocketUserId(socket) {
     return socket.user?.id || socket.user?.userId;
@@ -163,6 +166,13 @@ function initSocket(httpServer) {
                 await prisma.conversation.update({
                     where: { id: conversationId },
                     data: { lastMessageAt: msg.createdAt },
+                });
+
+                await createChatMessageNotifications({
+                    prisma,
+                    conversationId,
+                    senderId: userId,
+                    message: msg,
                 });
 
                 const room = `conv:${conversationId}`;

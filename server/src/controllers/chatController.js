@@ -1,4 +1,7 @@
 const prisma = require("../prisma");
+const {
+  createChatMessageNotifications,
+} = require("../utils/chatNotifications");
 
 function getUserId(req) {
   return req.user?.id || req.user?.userId;
@@ -315,6 +318,13 @@ exports.postMessage = async (req, res) => {
       data: {
         lastMessageAt: message.createdAt,
       },
+    });
+
+    await createChatMessageNotifications({
+      prisma,
+      conversationId,
+      senderId,
+      message,
     });
 
     return res.status(201).json({

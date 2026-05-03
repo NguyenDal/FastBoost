@@ -159,7 +159,11 @@ exports.Prisma.OrderScalarFieldEnum = {
   region: 'region',
   queueType: 'queueType',
   inGameName: 'inGameName',
-  accountPassword: 'accountPassword',
+  accountPasswordCiphertext: 'accountPasswordCiphertext',
+  accountPasswordEncryptedKey: 'accountPasswordEncryptedKey',
+  accountPasswordIv: 'accountPasswordIv',
+  accountPasswordAuthTag: 'accountPasswordAuthTag',
+  accountPasswordUpdatedAt: 'accountPasswordUpdatedAt',
   currentRank: 'currentRank',
   currentLP: 'currentLP',
   currentMasterLp: 'currentMasterLp',
@@ -300,7 +304,8 @@ exports.NotificationType = exports.$Enums.NotificationType = {
   ASSIGNMENT_DECLINED: 'ASSIGNMENT_DECLINED',
   ASSIGNMENT_CANCELLED: 'ASSIGNMENT_CANCELLED',
   ASSIGNMENT_REMOVED: 'ASSIGNMENT_REMOVED',
-  BOOSTER_LEFT_ORDER: 'BOOSTER_LEFT_ORDER'
+  BOOSTER_LEFT_ORDER: 'BOOSTER_LEFT_ORDER',
+  CHAT_MESSAGE: 'CHAT_MESSAGE'
 };
 
 exports.Prisma.ModelName = {

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     listMyNotifications,
     markAllNotificationsRead,
+    markAllChatNotificationsRead,
 } from "../api/notifications";
 import {
     acceptAssignmentRequest,
@@ -39,6 +40,7 @@ function Navbar({
 
     const [localShowProfileMenu, setLocalShowProfileMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [messageNotifications, setMessageNotifications] = useState([]);
     const [notificationsLoading, setNotificationsLoading] = useState(false);
     const [notificationsError, setNotificationsError] = useState("");
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -56,6 +58,12 @@ function Navbar({
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
                 setLocalShowProfileMenu(false);
+                setNotifications([]);
+                setMessageNotifications([]);
+                setUnreadNotifications(0);
+                setUnreadMessages(0);
+                localStorage.setItem("unreadNotifications", "0");
+                localStorage.setItem("unreadMessages", "0");
                 setOpenPanel(null);
                 return;
             }
@@ -149,10 +157,13 @@ function Navbar({
         if (!hasValidSession()) {
             clearExpiredSession();
             setNotifications([]);
+            setMessageNotifications([]);
             setUnreadNotifications(0);
+            setUnreadMessages(0);
             setLocalHasSession(false);
             setLocalCurrentUser(null);
             localStorage.setItem("unreadNotifications", "0");
+            localStorage.setItem("unreadMessages", "0");
             return [];
         }
 
@@ -167,11 +178,29 @@ function Navbar({
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
 
-            const unreadCount = sortedItems.filter((item) => !item.read).length;
+            const normalNotifications = sortedItems.filter(
+                (item) => item.type !== "CHAT_MESSAGE"
+            );
 
-            setNotifications(sortedItems);
-            setUnreadNotifications(unreadCount);
-            localStorage.setItem("unreadNotifications", String(unreadCount));
+            const chatNotifications = sortedItems.filter(
+                (item) => item.type === "CHAT_MESSAGE"
+            );
+
+            const unreadNormalCount = normalNotifications.filter((item) => !item.read).length;
+            const unreadChatCount = chatNotifications.filter((item) => !item.read).length;
+
+            setNotifications(normalNotifications);
+            setMessageNotifications(chatNotifications);
+
+            setUnreadNotifications(unreadNormalCount);
+            setUnreadMessages(unreadChatCount);
+
+            localStorage.setItem("unreadNotifications", String(unreadNormalCount));
+            localStorage.setItem("unreadMessages", String(unreadChatCount));
+
+            try {
+                window.dispatchEvent(new Event("unread:update"));
+            } catch { }
 
             return sortedItems;
         } catch (error) {
@@ -197,8 +226,11 @@ function Navbar({
     useEffect(() => {
         if (!effectiveHasSession) {
             setNotifications([]);
+            setMessageNotifications([]);
             setUnreadNotifications(0);
+            setUnreadMessages(0);
             localStorage.setItem("unreadNotifications", "0");
+            localStorage.setItem("unreadMessages", "0");
             return;
         }
 
@@ -257,6 +289,23 @@ function Navbar({
                 await markNotificationsReadOnClose();
             }
 
+            if (closingPanel === "messages") {
+                try {
+                    await markAllChatNotificationsRead();
+
+                    setMessageNotifications((prev) =>
+                        prev.map((item) => ({ ...item, read: true }))
+                    );
+
+                    setUnreadMessages(0);
+                    localStorage.setItem("unreadMessages", "0");
+
+                    window.dispatchEvent(new Event("unread:update"));
+                } catch (error) {
+                    console.error("Failed to mark chat notifications read:", error);
+                }
+            }
+
             setOpenPanel(null);
             setIsPanelClosing(false);
 
@@ -274,7 +323,7 @@ function Navbar({
     }, [openPanel]);
 
     useEffect(() => {
-        if (openPanel !== "notifications") return;
+        if (openPanel !== "notifications" && openPanel !== "messages") return;
 
         loadNotifications();
     }, [openPanel]);
@@ -299,9 +348,8 @@ function Navbar({
             <nav className="nav">
                 <Link to="/">Home</Link>
                 <a href="/#loyalty">Loyalty</a>
-                {effectiveCurrentUser?.role === "CUSTOMER" && (
-                    <Link to="/account/orders">My Orders</Link>
-                )}
+
+                <Link to="/account/orders">My Orders</Link>
 
                 {effectiveCurrentUser?.role === "ADMIN" && (
                     <Link to="/admin/orders">Order Manager</Link>
@@ -443,7 +491,9 @@ function Navbar({
                                         ? unreadNotifications > 0
                                             ? `${unreadNotifications} new notification${unreadNotifications === 1 ? "" : "s"}`
                                             : "No new notifications"
-                                        : "All caught up"}
+                                        : unreadMessages > 0
+                                            ? `${unreadMessages} new message${unreadMessages === 1 ? "" : "s"}`
+                                            : "No new messages"}
                                 </p>
                             </div>
                             <button className="panel-close" aria-label="Close" onClick={closeSidePanel}>×</button>
@@ -459,19 +509,10 @@ function Navbar({
                                     onClosePanel={closeSidePanel}
                                 />
                             ) : (
-                                <div className="panel-empty">
-                                    <div className="panel-illustration" aria-hidden>
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="12" cy="12" r="10.5" fill="rgba(255,255,255,0.08)" />
-                                            <g transform="translate(12 12) translate(1.0,1.0) scale(0.74) translate(-12 -12)">
-                                                <path d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M7 8h10M7 11h7" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
-                                            </g>
-                                        </svg>
-                                    </div>
-                                    <h4 className="panel-empty-title">No messages</h4>
-                                    <p className="panel-empty-sub">You're all caught up</p>
-                                </div>
+                                <MessagePanelContent
+                                    messages={messageNotifications}
+                                    onClosePanel={closeSidePanel}
+                                />
                             )}
                         </div>
                     </aside>
@@ -528,6 +569,95 @@ function NotificationPanelContent({ notifications, loading, error, onRefresh, on
                     onClosePanel={onClosePanel}
                 />
             ))}
+        </div>
+    );
+}
+
+function MessagePanelContent({ messages, onClosePanel }) {
+    const navigate = useNavigate();
+
+    if (!messages.length) {
+        return (
+            <div className="panel-empty">
+                <div className="panel-illustration" aria-hidden>
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10.5" fill="rgba(255,255,255,0.08)" />
+                        <g transform="translate(12 12) translate(1.0,1.0) scale(0.74) translate(-12 -12)">
+                            <path d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M7 8h10M7 11h7" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+                        </g>
+                    </svg>
+                </div>
+                <h4 className="panel-empty-title">No messages</h4>
+                <p className="panel-empty-sub">You're all caught up</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="notification-list">
+            {messages.map((item) => {
+                const senderName =
+                    item.data?.senderName ||
+                    item.title ||
+                    "Someone";
+
+                const senderInitial =
+                    item.data?.senderInitial ||
+                    senderName.charAt(0).toUpperCase();
+
+                const boostTitle =
+                    item.data?.boostType ||
+                    "Order chat";
+
+                const targetPath =
+                    item.data?.targetPath ||
+                    (item.data?.orderId ? `/match/${item.data.orderId}` : null);
+
+                return (
+                    <button
+                        key={item.id}
+                        type="button"
+                        className={`notification-card message-card chat-preview-card ${item.read ? "" : "unread"}`}
+                        onClick={() => {
+                            onClosePanel?.();
+
+                            if (targetPath) {
+                                navigate(targetPath);
+                            }
+                        }}
+                    >
+                        <div className="chat-preview-layout">
+                            <div className="chat-preview-avatar" aria-hidden>
+                                {senderInitial}
+                            </div>
+
+                            <div className="chat-preview-main">
+                                <div className="chat-preview-header">
+                                    <h4>{senderName}</h4>
+
+                                    {!item.read && <span className="notification-dot" />}
+                                </div>
+
+                                <p className="chat-preview-meta">
+                                    {boostTitle}
+                                    {item.data?.orderNumber
+                                        ? ` · Order #${item.data.orderNumber}`
+                                        : ""}
+                                </p>
+
+                                <p className="chat-preview-message">
+                                    {item.message}
+                                </p>
+
+                                <span className="notification-time">
+                                    {new Date(item.createdAt).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                    </button>
+                );
+            })}
         </div>
     );
 }

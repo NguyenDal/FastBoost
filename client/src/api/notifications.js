@@ -47,3 +47,11 @@ export async function markAllNotificationsRead() {
 
   return data.notifications || [];
 }
+
+export async function markAllChatNotificationsRead() {
+  const data = await request("/notifications/messages/read-all", {
+    method: "PATCH",
+  });
+
+  return data.notifications || [];
+}
