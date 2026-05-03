@@ -158,6 +158,49 @@ Socket events:
 - `chat:message { conversationId, content }` → validates membership, saves + broadcasts message.
 - `chat:typing { conversationId, isTyping }` → ephemeral typing indicator to room participants.
 
+### Notifications system
+- Added backend notification routes:
+  - `GET /api/notifications` — list user's active notifications
+  - `PUT /api/notifications/:id/read` — mark notification as read
+- Added `Notification` database table using Prisma with fields for userId, title, message, type, active status, and timestamps.
+- Implemented notification creation for key events like order status changes and assignment requests.
+- Added frontend notification display in the navbar with unread count indicator.
+
+### Assignment requests system
+- Added backend assignment request routes:
+  - `POST /api/assignment-requests` — create a request to be assigned to an order
+  - `GET /api/assignment-requests` — list assignment requests (admin view)
+  - `PUT /api/assignment-requests/:id/approve` — approve assignment request (admin)
+  - `PUT /api/assignment-requests/:id/reject` — reject assignment request (admin)
+- Added `AssignmentRequest` database table linking boosters to orders with status (pending/approved/rejected).
+- Implemented logic for providers to request assignments to available orders.
+- Added admin endpoints to manage assignment requests and assign boosters to orders.
+
+### Admin dashboard
+- Added admin-specific pages:
+  - AdminOrdersPage — view and manage all orders
+  - AdminOrderDetailsPage — detailed view of individual orders with assignment management
+- Implemented role-based access control with ADMIN role.
+- Added admin routes for order management and assignment handling.
+- Enhanced order status tracking and management capabilities.
+
+### User profiles
+- Added `Profile` database table for user profiles with displayName, bio, and timestamps.
+- Implemented profile creation and management.
+- Added profile-related routes and controllers.
+
+### Provider and customer order management
+- Added separate order pages:
+  - CustomerOrdersPage — customers can view their orders
+  - ProviderOrdersPage — providers can view assigned orders
+- Implemented role-based order filtering and access control.
+- Added order status updates and management for providers.
+
+### Socket.IO integration
+- Integrated Socket.IO for real-time features across the application.
+- Added real-time updates for chat, notifications, and order status changes.
+- Implemented JWT authentication for socket connections.
+
 ---
 
 ## Project concept
