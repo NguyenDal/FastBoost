@@ -8,6 +8,7 @@ import {
     acceptAssignmentRequest,
     declineAssignmentRequest,
 } from "../api/assignmentRequests";
+import { clearExpiredSession, getStoredUser, hasValidSession } from "../utils/authSession";
 
 function Navbar({
     hasSession,
@@ -29,16 +30,11 @@ function Navbar({
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [localHasSession, setLocalHasSession] = useState(
-        Boolean(localStorage.getItem("token"))
-    );
+    const [localHasSession, setLocalHasSession] = useState(() => hasValidSession());
 
     const [localCurrentUser, setLocalCurrentUser] = useState(() => {
-        try {
-            return JSON.parse(localStorage.getItem("user") || "null");
-        } catch {
-            return null;
-        }
+        if (!hasValidSession()) return null;
+        return getStoredUser();
     });
 
     const [localShowProfileMenu, setLocalShowProfileMenu] = useState(false);
@@ -53,21 +49,39 @@ function Navbar({
 
     useEffect(() => {
         const syncNavbarSession = async () => {
-            setLocalHasSession(Boolean(localStorage.getItem("token")));
+            const tokenIsValid = hasValidSession();
 
-            try {
-                setLocalCurrentUser(JSON.parse(localStorage.getItem("user") || "null"));
-            } catch {
+            if (!tokenIsValid) {
+                clearExpiredSession();
+                setLocalHasSession(false);
                 setLocalCurrentUser(null);
+                setLocalShowProfileMenu(false);
+                setOpenPanel(null);
+                return;
             }
 
-            // If logged in but missing username, try to refresh from /user/me
+            setLocalHasSession(true);
+            setLocalCurrentUser(getStoredUser());
+
             const token = localStorage.getItem("token");
-            const cached = (() => { try { return JSON.parse(localStorage.getItem("user") || "null"); } catch { return null; } })();
+            const cached = getStoredUser();
+
             if (token && cached && !cached?.username) {
                 try {
-                    const res = await fetch("http://localhost:5000/api/user/me", { headers: { Authorization: `Bearer ${token}` } });
+                    const res = await fetch("http://localhost:5000/api/user/me", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    if (res.status === 401 || res.status === 403) {
+                        clearExpiredSession();
+                        setLocalHasSession(false);
+                        setLocalCurrentUser(null);
+                        navigate("/", { replace: true });
+                        return;
+                    }
+
                     const data = await res.json();
+
                     if (res.ok && data?.user) {
                         localStorage.setItem("user", JSON.stringify(data.user));
                         setLocalCurrentUser(data.user);
@@ -132,9 +146,12 @@ function Navbar({
     };
 
     const loadNotifications = async () => {
-        if (!localStorage.getItem("token")) {
+        if (!hasValidSession()) {
+            clearExpiredSession();
             setNotifications([]);
             setUnreadNotifications(0);
+            setLocalHasSession(false);
+            setLocalCurrentUser(null);
             localStorage.setItem("unreadNotifications", "0");
             return [];
         }
@@ -158,6 +175,18 @@ function Navbar({
 
             return sortedItems;
         } catch (error) {
+            if (
+                error.message?.toLowerCase().includes("unauthorized") ||
+                error.message?.toLowerCase().includes("jwt") ||
+                error.message?.toLowerCase().includes("token")
+            ) {
+                clearExpiredSession();
+                setLocalHasSession(false);
+                setLocalCurrentUser(null);
+                navigate("/", { replace: true });
+                return [];
+            }
+
             setNotificationsError(error.message || "Failed to load notifications");
             return [];
         } finally {
@@ -270,7 +299,9 @@ function Navbar({
             <nav className="nav">
                 <Link to="/">Home</Link>
                 <a href="/#loyalty">Loyalty</a>
-                <a href="/#my-orders">My Order</a>
+                {effectiveCurrentUser?.role === "CUSTOMER" && (
+                    <Link to="/account/orders">My Orders</Link>
+                )}
 
                 {effectiveCurrentUser?.role === "ADMIN" && (
                     <Link to="/admin/orders">Order Manager</Link>

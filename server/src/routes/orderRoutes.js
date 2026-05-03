@@ -12,6 +12,7 @@ const {
   listAssignedOrdersForProvider,
   providerCompleteAssignedOrder,
   providerLeaveAssignedOrder,
+  updateOrderLoginInfo,
 } = require("../controllers/orderController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -39,6 +40,9 @@ router.get("/my", protect, getMyOrders);
 // Provider order actions
 router.patch("/:id/provider-complete", protect, providerCompleteAssignedOrder);
 router.delete("/:id/provider-leave", protect, providerLeaveAssignedOrder);
+
+// Customer: update login info from MatchPage
+router.patch("/:id/login-info", protect, updateOrderLoginInfo);
 
 router.get("/:id", protect, getOrderById);
 

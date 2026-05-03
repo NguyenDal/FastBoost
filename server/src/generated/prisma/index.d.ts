@@ -5559,6 +5559,8 @@ export namespace Prisma {
     playMode: string | null
     region: string | null
     queueType: string | null
+    inGameName: string | null
+    accountPassword: string | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5594,6 +5596,8 @@ export namespace Prisma {
     playMode: string | null
     region: string | null
     queueType: string | null
+    inGameName: string | null
+    accountPassword: string | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5629,6 +5633,8 @@ export namespace Prisma {
     playMode: number
     region: number
     queueType: number
+    inGameName: number
+    accountPassword: number
     currentRank: number
     currentLP: number
     currentMasterLp: number
@@ -5689,6 +5695,8 @@ export namespace Prisma {
     playMode?: true
     region?: true
     queueType?: true
+    inGameName?: true
+    accountPassword?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5724,6 +5732,8 @@ export namespace Prisma {
     playMode?: true
     region?: true
     queueType?: true
+    inGameName?: true
+    accountPassword?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5759,6 +5769,8 @@ export namespace Prisma {
     playMode?: true
     region?: true
     queueType?: true
+    inGameName?: true
+    accountPassword?: true
     currentRank?: true
     currentLP?: true
     currentMasterLp?: true
@@ -5882,6 +5894,8 @@ export namespace Prisma {
     playMode: string | null
     region: string | null
     queueType: string | null
+    inGameName: string | null
+    accountPassword: string | null
     currentRank: string | null
     currentLP: string | null
     currentMasterLp: number | null
@@ -5937,6 +5951,8 @@ export namespace Prisma {
     playMode?: boolean
     region?: boolean
     queueType?: boolean
+    inGameName?: boolean
+    accountPassword?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -5979,6 +5995,8 @@ export namespace Prisma {
     playMode?: boolean
     region?: boolean
     queueType?: boolean
+    inGameName?: boolean
+    accountPassword?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6017,6 +6035,8 @@ export namespace Prisma {
     playMode?: boolean
     region?: boolean
     queueType?: boolean
+    inGameName?: boolean
+    accountPassword?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6055,6 +6075,8 @@ export namespace Prisma {
     playMode?: boolean
     region?: boolean
     queueType?: boolean
+    inGameName?: boolean
+    accountPassword?: boolean
     currentRank?: boolean
     currentLP?: boolean
     currentMasterLp?: boolean
@@ -6080,7 +6102,7 @@ export namespace Prisma {
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "boostType" | "playMode" | "region" | "queueType" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPassword" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -6118,6 +6140,8 @@ export namespace Prisma {
       playMode: string | null
       region: string | null
       queueType: string | null
+      inGameName: string | null
+      accountPassword: string | null
       currentRank: string | null
       currentLP: string | null
       currentMasterLp: number | null
@@ -6579,6 +6603,8 @@ export namespace Prisma {
     readonly playMode: FieldRef<"Order", 'String'>
     readonly region: FieldRef<"Order", 'String'>
     readonly queueType: FieldRef<"Order", 'String'>
+    readonly inGameName: FieldRef<"Order", 'String'>
+    readonly accountPassword: FieldRef<"Order", 'String'>
     readonly currentRank: FieldRef<"Order", 'String'>
     readonly currentLP: FieldRef<"Order", 'String'>
     readonly currentMasterLp: FieldRef<"Order", 'Int'>
@@ -14794,6 +14820,8 @@ export namespace Prisma {
     playMode: 'playMode',
     region: 'region',
     queueType: 'queueType',
+    inGameName: 'inGameName',
+    accountPassword: 'accountPassword',
     currentRank: 'currentRank',
     currentLP: 'currentLP',
     currentMasterLp: 'currentMasterLp',
@@ -15306,6 +15334,8 @@ export namespace Prisma {
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
+    inGameName?: StringNullableFilter<"Order"> | string | null
+    accountPassword?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -15347,6 +15377,8 @@ export namespace Prisma {
     playMode?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
     queueType?: SortOrderInput | SortOrder
+    inGameName?: SortOrderInput | SortOrder
+    accountPassword?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
     currentMasterLp?: SortOrderInput | SortOrder
@@ -15391,6 +15423,8 @@ export namespace Prisma {
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
+    inGameName?: StringNullableFilter<"Order"> | string | null
+    accountPassword?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -15432,6 +15466,8 @@ export namespace Prisma {
     playMode?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
     queueType?: SortOrderInput | SortOrder
+    inGameName?: SortOrderInput | SortOrder
+    accountPassword?: SortOrderInput | SortOrder
     currentRank?: SortOrderInput | SortOrder
     currentLP?: SortOrderInput | SortOrder
     currentMasterLp?: SortOrderInput | SortOrder
@@ -15476,6 +15512,8 @@ export namespace Prisma {
     playMode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     region?: StringNullableWithAggregatesFilter<"Order"> | string | null
     queueType?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    inGameName?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    accountPassword?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentRank?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentLP?: StringNullableWithAggregatesFilter<"Order"> | string | null
     currentMasterLp?: IntNullableWithAggregatesFilter<"Order"> | number | null
@@ -16181,6 +16219,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16222,6 +16262,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16259,6 +16301,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16300,6 +16344,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16339,6 +16385,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -16373,6 +16421,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -16409,6 +16459,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -17223,6 +17275,8 @@ export namespace Prisma {
     playMode?: SortOrder
     region?: SortOrder
     queueType?: SortOrder
+    inGameName?: SortOrder
+    accountPassword?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -17270,6 +17324,8 @@ export namespace Prisma {
     playMode?: SortOrder
     region?: SortOrder
     queueType?: SortOrder
+    inGameName?: SortOrder
+    accountPassword?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -17305,6 +17361,8 @@ export namespace Prisma {
     playMode?: SortOrder
     region?: SortOrder
     queueType?: SortOrder
+    inGameName?: SortOrder
+    accountPassword?: SortOrder
     currentRank?: SortOrder
     currentLP?: SortOrder
     currentMasterLp?: SortOrder
@@ -18862,6 +18920,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -18901,6 +18961,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19176,6 +19238,8 @@ export namespace Prisma {
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
     queueType?: StringNullableFilter<"Order"> | string | null
+    inGameName?: StringNullableFilter<"Order"> | string | null
+    accountPassword?: StringNullableFilter<"Order"> | string | null
     currentRank?: StringNullableFilter<"Order"> | string | null
     currentLP?: StringNullableFilter<"Order"> | string | null
     currentMasterLp?: IntNullableFilter<"Order"> | number | null
@@ -19510,6 +19574,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19549,6 +19615,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19882,6 +19950,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -19922,6 +19992,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20015,6 +20087,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20055,6 +20129,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20138,6 +20214,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20178,6 +20256,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20312,6 +20392,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20352,6 +20434,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20482,6 +20566,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20522,6 +20608,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -20624,6 +20712,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -20664,6 +20754,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21189,6 +21281,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -21281,6 +21375,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21320,6 +21416,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21358,6 +21456,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21567,6 +21667,8 @@ export namespace Prisma {
     playMode?: string | null
     region?: string | null
     queueType?: string | null
+    inGameName?: string | null
+    accountPassword?: string | null
     currentRank?: string | null
     currentLP?: string | null
     currentMasterLp?: number | null
@@ -21601,6 +21703,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21640,6 +21744,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
@@ -21678,6 +21784,8 @@ export namespace Prisma {
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
     queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPassword?: NullableStringFieldUpdateOperationsInput | string | null
     currentRank?: NullableStringFieldUpdateOperationsInput | string | null
     currentLP?: NullableStringFieldUpdateOperationsInput | string | null
     currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
