@@ -155,9 +155,8 @@ export default function LoyaltyPage() {
                                 {LOYALTY_TIERS.map((tier) => (
                                     <div
                                         key={tier.key}
-                                        className={`loyalty-tier-step ${
-                                            completedMatches >= tier.minMatches ? "active" : ""
-                                        } ${tier.key === tierInfo.key ? "current" : ""}`}
+                                        className={`loyalty-tier-step tier-${tier.key} ${completedMatches >= tier.minMatches ? "active" : ""
+                                            } ${tier.key === tierInfo.key ? "current" : ""}`}
                                     >
                                         <span>{tier.icon}</span>
                                         <strong>{tier.name}</strong>
