@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { getMyLoyaltyOrders } from "../api/loyalty";
+import { getMyLoyalty } from "../api/loyalty";
 import "../styles/Loyalty.css";
 
 function useCustomerGuard() {
@@ -50,7 +50,7 @@ function useCustomerGuard() {
 export default function LoyaltyPage() {
     const hasAccess = useCustomerGuard();
 
-    const [orders, setOrders] = useState([]);
+    const [loyalty, setLoyalty] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -62,8 +62,8 @@ export default function LoyaltyPage() {
                 setLoading(true);
                 setError("");
 
-                const loadedOrders = await getMyLoyaltyOrders();
-                setOrders(Array.isArray(loadedOrders) ? loadedOrders : []);
+                const loadedLoyalty = await getMyLoyalty();
+                setLoyalty(loadedLoyalty);
             } catch (e) {
                 setError(e?.message || "Failed to load loyalty page");
             } finally {
@@ -74,26 +74,20 @@ export default function LoyaltyPage() {
         loadLoyalty();
     }, [hasAccess]);
 
-    const completedOrders = useMemo(() => {
-        return orders.filter((order) => order.status === "COMPLETED");
-    }, [orders]);
+    const completedOrders = loyalty?.completedOrders || [];
+    const completedMatches = loyalty?.completedMatches || 0;
+    const totalGold = loyalty?.totalGold || 0;
+    const totalSpent = loyalty?.totalCompletedSpend || 0;
 
-    const completedMatches = completedOrders.length;
+    const tierInfo = {
+        key: loyalty?.tierKey || "bronze",
+        name: loyalty?.tier || "Bronze",
+        icon: loyalty?.icon || "🥉",
+        nextTier: loyalty?.nextTier || null,
+        matchesToNext: loyalty?.matchesToNext || 0,
+    };
 
-    const totalGold = useMemo(() => {
-        return completedOrders.reduce((sum, order) => {
-            return sum + getGoldFromOrder(order);
-        }, 0);
-    }, [completedOrders]);
-
-    const totalSpent = useMemo(() => {
-        return completedOrders.reduce((sum, order) => {
-            return sum + Number(order.totalPrice || 0);
-        }, 0);
-    }, [completedOrders]);
-
-    const tierInfo = getTierInfo(completedMatches);
-    const progressPercent = getTierProgressPercent(completedMatches, tierInfo);
+    const progressPercent = loyalty?.progressPercent || 0;
 
     if (!hasAccess) return null;
 
@@ -220,7 +214,7 @@ export default function LoyaltyPage() {
                                             </div>
 
                                             <div className="loyalty-match-gold">
-                                                <span>+{getGoldFromOrder(order)}</span>
+                                                <span>+{order.goldEarned}</span>
                                                 <small>gold</small>
                                             </div>
                                         </div>
@@ -279,42 +273,3 @@ const LOYALTY_TIERS = [
         nextTier: null,
     },
 ];
-
-function getTierInfo(completedMatches) {
-    const currentTier =
-        [...LOYALTY_TIERS]
-            .reverse()
-            .find((tier) => completedMatches >= tier.minMatches) || LOYALTY_TIERS[0];
-
-    if (!currentTier.nextTier) {
-        return {
-            ...currentTier,
-            matchesToNext: 0,
-        };
-    }
-
-    const nextTier = LOYALTY_TIERS.find((tier) => tier.name === currentTier.nextTier);
-
-    return {
-        ...currentTier,
-        matchesToNext: Math.max(0, nextTier.minMatches - completedMatches),
-    };
-}
-
-function getTierProgressPercent(completedMatches, tierInfo) {
-    if (tierInfo.key === "platinum") return 100;
-
-    const currentMin = tierInfo.minMatches;
-    const nextTier = LOYALTY_TIERS.find((tier) => tier.name === tierInfo.nextTier);
-
-    if (!nextTier) return 100;
-
-    const range = nextTier.minMatches - currentMin;
-    const currentProgress = completedMatches - currentMin;
-
-    return Math.min(100, Math.max(0, (currentProgress / range) * 100));
-}
-
-function getGoldFromOrder(order) {
-    return Math.floor(Number(order.totalPrice || 0));
-}

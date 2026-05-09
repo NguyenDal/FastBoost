@@ -9,8 +9,8 @@ function authHeaders() {
     };
 }
 
-export async function getMyLoyaltyOrders() {
-    const res = await fetch(`${API_BASE_URL}/orders/my`, {
+export async function getMyLoyalty() {
+    const res = await fetch(`${API_BASE_URL}/loyalty/me`, {
         headers: authHeaders(),
     });
 
@@ -20,5 +20,5 @@ export async function getMyLoyaltyOrders() {
         throw new Error(data.message || "Failed to load loyalty data");
     }
 
-    return data.orders || data.items || data;
+    return data.loyalty;
 }
