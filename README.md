@@ -8,7 +8,114 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Secure order credentials, chat notifications, smart chat UX, and MatchPage layout polish
+### Latest session update — Provider order details, loyalty rewards, current-order filters, and username display
+
+#### Provider/booster order detail flow
+- Added a dedicated provider order detail route:
+  - `client/src/pages/ProviderOrderDetailsPage.jsx`
+  - `/provider/orders/:id`
+- Changed provider assigned order flow:
+  - `ProviderOrdersPage` no longer sends boosters directly to `/match/:orderId`.
+  - Clicking **Open** now routes to `/provider/orders/:id` first.
+  - From the provider detail page, boosters can open the conversation through **Go to Conversation**.
+- Provider detail page reuses the premium admin order detail styling from `Admin.css` while keeping provider-only permissions.
+- Provider detail page allows boosters to:
+  - view assigned order details
+  - view customer username/email
+  - view order configuration and add-ons
+  - view price summary
+  - go to the MatchPage conversation
+  - mark assigned orders completed
+  - leave/unassign themselves from an order
+- Provider detail page intentionally does **not** allow boosters to:
+  - cancel orders
+  - assign other boosters
+  - unassign other boosters
+
+#### Loyalty rewards page
+- Added a protected customer/admin loyalty page:
+  - `client/src/pages/LoyaltyPage.jsx`
+  - `client/src/styles/Loyalty.css`
+  - `client/src/api/loyalty.js`
+  - route: `/account/loyalty`
+- Navbar now routes **Loyalty** to `/account/loyalty` and only shows it when a user is logged in.
+- Loyalty page displays:
+  - current loyalty tier/account type
+  - progress tracking bar
+  - Bronze / Silver / Gold / Platinum tier milestones
+  - completed matches count
+  - total gold earned
+  - completed spend
+  - completed match reward history
+- Loyalty tier thresholds:
+  - Bronze: 0+ completed matches
+  - Silver: 5+ completed matches
+  - Gold: 15+ completed matches
+  - Platinum: 30+ completed matches
+- Gold conversion display added:
+  - `10 gold = $1`
+  - Total Gold card can show values like `18 = $1.80`.
+- Loyalty hero/card glow now follows the actual account tier color instead of always using a gold theme:
+  - bronze/copper for Bronze
+  - silver/gray for Silver
+  - gold/yellow for Gold
+  - platinum/blue-cyan for Platinum
+
+#### Loyalty backend endpoint
+- Added backend loyalty route/controller:
+  - `server/src/controllers/loyaltyController.js`
+  - `server/src/routes/loyaltyRoutes.js`
+  - mounted in `server/src/app.js` at `/api/loyalty`
+- Added endpoint:
+  - `GET /api/loyalty/me`
+- Backend now calculates loyalty from completed customer orders where:
+  - `customerId` is the logged-in user
+  - `status` is `COMPLETED`
+- Backend response includes:
+  - `tier`
+  - `tierKey`
+  - `icon`
+  - `completedMatches`
+  - `totalGold`
+  - `totalCompletedSpend`
+  - `nextTier`
+  - `matchesToNext`
+  - `progressPercent`
+  - `tiers`
+  - `completedOrders`
+- Gold earned per completed order is calculated as:
+  - `Math.floor(order.totalPrice)`
+- Frontend Loyalty page now consumes the backend loyalty object instead of guessing from raw order data.
+
+#### Current-order filtering cleanup
+- Improved order list filters so active orders are shown by default instead of all orders.
+- Default dropdown value is now:
+  - `Current Orders`
+- `Current Orders` means:
+  - `PENDING`
+  - `IN_PROGRESS`
+- Removed the **All Orders** option from the dropdown.
+- Available status filters are now:
+  - Current Orders
+  - Pending
+  - In Progress
+  - Completed
+  - Cancelled
+- Updated frontend pages:
+  - `AdminOrdersPage.jsx`
+  - `ProviderOrdersPage.jsx`
+  - `CustomerOrdersPage.jsx`
+- Updated backend order list logic so Prisma understands `status=CURRENT`:
+  - `listAllOrders`
+  - `listAssignedOrdersForProvider`
+
+#### Customer username display
+- Confirmed backend order responses include `customer.username` in relevant order queries.
+- Confirmed frontend order list pages display customer username first, then fall back to profile display name/email when needed.
+- Pages involved:
+  - `AdminOrdersPage.jsx`
+  - `ProviderOrdersPage.jsx`
+  - order detail pages using `order.customer?.username`
 
 #### Secure game account login info with AWS KMS
 - Finished the production-grade direction for storing customer game account passwords.
@@ -460,6 +567,9 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `PATCH /api/orders/:id/provider-complete` — provider marks assigned order completed
 - `DELETE /api/orders/:id/provider-leave` — provider leaves/unassigns self from order
 
+### Loyalty
+- `GET /api/loyalty/me` — current user loyalty summary calculated from completed orders
+
 ### Assignment requests
 - `POST /api/assignment-requests/orders/:orderId/boosters/:boosterId` — admin creates booster invite/request
 - `GET /api/assignment-requests/orders/:orderId` — admin lists requests for an order
@@ -594,6 +704,19 @@ npx prisma studio
 - MatchPage overview moved into sidebar while preserving overview styling
 - redundant order summary sidebar card removed
 
+- provider order detail route/page for assigned boosters
+- provider order flow now opens detail page before MatchPage conversation
+- provider can complete assigned order or leave/unassign self from provider detail page
+- protected loyalty page with Bronze/Silver/Gold/Platinum progress tracking
+- backend loyalty endpoint `GET /api/loyalty/me` calculated from completed orders
+- total gold and gold-to-dollar display where 10 gold = $1
+- tier-specific loyalty glow/border themes
+- loyalty navbar visibility limited to logged-in users
+- default Current Orders filtering for admin/provider/customer order lists
+- removed All Orders dropdown option from order list filters
+- backend `CURRENT` status filtering for admin and provider order lists
+- customer username display on admin/provider order list and detail views
+
 ### In progress
 - final duplicate chat notification verification after clearing old unread records
 - profile image support for notification sender avatars
@@ -608,6 +731,21 @@ npx prisma studio
 ---
 
 ## Next steps (recommended)
+
+1. Test the new provider detail flow end-to-end:
+   - booster opens Assigned Orders
+   - clicks Open
+   - lands on `/provider/orders/:id`
+   - can go to conversation
+   - can mark completed
+   - can leave order
+2. Test loyalty after changing an order to `COMPLETED`:
+   - confirm completed match count increases
+   - confirm gold increases by `Math.floor(totalPrice)`
+   - confirm tier progress updates
+   - confirm `10 gold = $1` display is correct
+3. Decide later whether loyalty gold will be redeemable for discounts, store credit, or only a portfolio/demo reward counter.
+4. Consider adding a backend redemption/audit table later if loyalty gold becomes spendable.
 
 1. Verify chat notification duplicate behavior with clean notification rows:
    - clear old unread duplicate `CHAT_MESSAGE` records
