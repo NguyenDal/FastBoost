@@ -181,13 +181,8 @@ export default function ProviderOrdersPage() {
 
                                         <td>
                                             <div className="customer-cell">
-                                                <span>
-                                                    {o.customer?.username ||
-                                                        o.customer?.profile?.displayName ||
-                                                        o.customer?.email?.split("@")[0] ||
-                                                        "Customer"}
-                                                </span>
-                                                <small>{o.customer?.email}</small>
+                                                <span>{o.customer?.username || "No username"}</span>
+                                                <small>{o.customer?.email || o.customer?.profile?.displayName || "Customer"}</small>
                                             </div>
                                         </td>
 

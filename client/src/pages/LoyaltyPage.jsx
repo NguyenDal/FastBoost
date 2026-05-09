@@ -78,6 +78,7 @@ export default function LoyaltyPage() {
     const completedMatches = loyalty?.completedMatches || 0;
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = loyalty?.totalCompletedSpend || 0;
+    const goldDollarValue = (totalGold / 10).toFixed(2);
 
     const tierInfo = {
         key: loyalty?.tierKey || "bronze",
@@ -163,7 +164,9 @@ export default function LoyaltyPage() {
                         <section className="loyalty-stats-grid">
                             <div className="loyalty-stat-card">
                                 <span>Total Gold</span>
-                                <strong>{totalGold}</strong>
+                                <strong>
+                                    {totalGold} = ${goldDollarValue}
+                                </strong>
                                 <p>Earned from completed matches</p>
                             </div>
 
