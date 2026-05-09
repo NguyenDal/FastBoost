@@ -539,6 +539,11 @@ npx prisma generate --schema=prisma/schema.prisma
 
 Note: For production/remote DBs with existing data, prefer planned migrations. Use `db push` only if you understand the implications and have backups.
 
+### View database
+```bash
+npx prisma studio
+```
+
 ---
 
 ## Current progress summary

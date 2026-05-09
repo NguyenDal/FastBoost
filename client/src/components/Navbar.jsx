@@ -347,7 +347,7 @@ function Navbar({
 
             <nav className="nav">
                 <Link to="/">Home</Link>
-                <a href="/#loyalty">Loyalty</a>
+                <Link to="/account/loyalty">Loyalty</Link>
 
                 <Link to="/account/orders">My Orders</Link>
 

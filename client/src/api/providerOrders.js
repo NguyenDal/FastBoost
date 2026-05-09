@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api";
+import { API_BASE_URL } from './config.js';
 
 function authHeaders() {
     const token = localStorage.getItem("token");
@@ -37,6 +37,20 @@ export async function providerListAssignedOrders({
     }
 
     return data;
+}
+
+export async function providerGetOrder(orderId) {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+        headers: authHeaders(),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to load order");
+    }
+
+    return data.order || data;
 }
 
 export async function providerCompleteOrder(orderId) {

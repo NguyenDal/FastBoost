@@ -9,18 +9,16 @@ function authHeaders() {
     };
 }
 
-export async function updateOrderLoginInfo(orderId, payload) {
-    const res = await fetch(`${API_BASE_URL}/orders/${orderId}/login-info`, {
-        method: "PATCH",
+export async function getMyLoyaltyOrders() {
+    const res = await fetch(`${API_BASE_URL}/orders/my`, {
         headers: authHeaders(),
-        body: JSON.stringify(payload),
     });
 
     const data = await res.json();
 
     if (!res.ok || data.ok === false) {
-        throw new Error(data.message || "Failed to update login info");
+        throw new Error(data.message || "Failed to load loyalty data");
     }
 
-    return data.order;
+    return data.orders || data.items || data;
 }

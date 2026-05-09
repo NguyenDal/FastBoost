@@ -205,7 +205,7 @@ export default function ProviderOrdersPage() {
                                         </td>
 
                                         <td className="right">
-                                            <Link className="secondary-btn" to={`/match/${o.id}`}>
+                                            <Link className="secondary-btn" to={`/provider/orders/${o.id}`}>
                                                 Open
                                             </Link>
                                         </td>
