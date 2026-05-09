@@ -1979,14 +1979,14 @@ function OrderPage() {
 
               <div className="summary-coins-main">
                 <span className="summary-coins-icon">🪙</span>
-                <strong>{coinCount} coins</strong>
+                <strong>{coinCount} gold</strong>
               </div>
 
               <p className="summary-coins-value">= ${coinValue} value</p>
             </div>
 
             <p className="summary-coins-footnote">
-              🪙 10 coins = $1.00 | Earn coins with every order
+              🪙 10 gold = $1.00 | Earn gold with every order
             </p>
 
             {isInvalidRankPath ? (

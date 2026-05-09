@@ -51,7 +51,7 @@ export default function ProviderOrdersPage() {
     const isProvider = useProviderGuard();
 
     const [query, setQuery] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("CURRENT");
     const [page, setPage] = useState(1);
     const [pageSize] = useState(20);
 
@@ -144,11 +144,11 @@ export default function ProviderOrdersPage() {
                         }}
                         className="admin-select"
                     >
-                        <option value="">All statuses</option>
-                        <option value="PENDING">PENDING</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="CURRENT">Current Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
 

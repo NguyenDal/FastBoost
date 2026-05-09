@@ -404,7 +404,13 @@ module.exports.listAllOrders = async (req, res) => {
         const q = (req.query.q || "").toString().trim();
 
         const where = {};
-        if (status) where.status = status;
+        if (status === "CURRENT") {
+            where.status = {
+                in: ["PENDING", "IN_PROGRESS"],
+            };
+        } else if (status) {
+            where.status = status;
+        }
         if (serviceId) where.serviceId = serviceId;
         if (q) {
             where.OR = [
@@ -793,7 +799,11 @@ module.exports.listAssignedOrdersForProvider = async (req, res) => {
                     boosterId: providerId,
                 },
             },
-            ...(status ? { status } : {}),
+            ...(status === "CURRENT"
+                ? { status: { in: ["PENDING", "IN_PROGRESS"] } }
+                : status
+                    ? { status }
+                    : {}),
             ...(q
                 ? {
                     OR: [
