@@ -347,9 +347,13 @@ function Navbar({
 
             <nav className="nav">
                 <Link to="/">Home</Link>
-                <a href="/#loyalty">Loyalty</a>
+                {effectiveHasSession && (
+                    <Link to="/account/loyalty">Loyalty</Link>
+                )}
 
-                <Link to="/account/orders">My Orders</Link>
+                {effectiveHasSession && (
+                    <Link to="/account/orders">My Orders</Link>
+                )}
 
                 {effectiveCurrentUser?.role === "ADMIN" && (
                     <Link to="/admin/orders">Order Manager</Link>

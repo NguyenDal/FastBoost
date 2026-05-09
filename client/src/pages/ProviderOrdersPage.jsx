@@ -51,7 +51,7 @@ export default function ProviderOrdersPage() {
     const isProvider = useProviderGuard();
 
     const [query, setQuery] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("CURRENT");
     const [page, setPage] = useState(1);
     const [pageSize] = useState(20);
 
@@ -144,11 +144,11 @@ export default function ProviderOrdersPage() {
                         }}
                         className="admin-select"
                     >
-                        <option value="">All statuses</option>
-                        <option value="PENDING">PENDING</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="CURRENT">Current Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
 
@@ -181,13 +181,8 @@ export default function ProviderOrdersPage() {
 
                                         <td>
                                             <div className="customer-cell">
-                                                <span>
-                                                    {o.customer?.username ||
-                                                        o.customer?.profile?.displayName ||
-                                                        o.customer?.email?.split("@")[0] ||
-                                                        "Customer"}
-                                                </span>
-                                                <small>{o.customer?.email}</small>
+                                                <span>{o.customer?.username || "No username"}</span>
+                                                <small>{o.customer?.email || o.customer?.profile?.displayName || "Customer"}</small>
                                             </div>
                                         </td>
 
@@ -205,7 +200,7 @@ export default function ProviderOrdersPage() {
                                         </td>
 
                                         <td className="right">
-                                            <Link className="secondary-btn" to={`/match/${o.id}`}>
+                                            <Link className="secondary-btn" to={`/provider/orders/${o.id}`}>
                                                 Open
                                             </Link>
                                         </td>

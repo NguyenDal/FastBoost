@@ -48,7 +48,7 @@ export default function CustomerOrdersPage() {
 
     const [orders, setOrders] = useState([]);
     const [query, setQuery] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("CURRENT");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -83,7 +83,10 @@ export default function CustomerOrdersPage() {
                 order.boostType?.toLowerCase().includes(q) ||
                 order.region?.toLowerCase().includes(q);
 
-            const matchesStatus = !status || order.status === status;
+            const matchesStatus =
+                status === "CURRENT"
+                    ? ["PENDING", "IN_PROGRESS"].includes(order.status)
+                    : order.status === status;
 
             return matchesSearch && matchesStatus;
         });
@@ -132,11 +135,11 @@ export default function CustomerOrdersPage() {
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                     >
-                        <option value="">All statuses</option>
-                        <option value="PENDING">PENDING</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="CURRENT">Current Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
 

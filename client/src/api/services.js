@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api";
+import { API_BASE_URL } from './config.js';
 
 export const getServices = async () => {
   const response = await fetch(`${API_BASE_URL}/services`);

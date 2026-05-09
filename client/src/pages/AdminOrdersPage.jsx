@@ -47,7 +47,7 @@ function useAdminGuard() {
 export default function AdminOrdersPage() {
     const isAdmin = useAdminGuard();
     const [query, setQuery] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("CURRENT");
     const [page, setPage] = useState(1);
     const [pageSize] = useState(20);
     const [loading, setLoading] = useState(false);
@@ -110,12 +110,19 @@ export default function AdminOrdersPage() {
                         className="admin-input"
                         style={{ minWidth: 280 }}
                     />
-                    <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="admin-select">
-                        <option value="">All statuses</option>
-                        <option value="PENDING">PENDING</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
+                    <select
+                        value={status}
+                        onChange={(e) => {
+                            setStatus(e.target.value);
+                            setPage(1);
+                        }}
+                        className="admin-select"
+                    >
+                        <option value="CURRENT">Current Orders</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
 
@@ -146,8 +153,8 @@ export default function AdminOrdersPage() {
                                         <td><StatusBadge status={o.status} /></td>
                                         <td>
                                             <div className="customer-cell">
-                                                <span>{o.customer?.username || o.customer?.profile?.displayName || (o.customer?.email ? o.customer.email.split("@")[0] : "Customer")}</span>
-                                                <small>{o.customer?.email}</small>
+                                                <span>{o.customer?.username || "No username"}</span>
+                                                <small>{o.customer?.email || o.customer?.profile?.displayName || "Customer"}</small>
                                             </div>
                                         </td>
                                         <td>

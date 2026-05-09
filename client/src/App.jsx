@@ -12,6 +12,8 @@ import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
 import ProviderOrdersPage from "./pages/ProviderOrdersPage";
 import CustomerOrdersPage from "./pages/CustomerOrdersPage";
+import ProviderOrderDetailsPage from "./pages/ProviderOrderDetailsPage";
+import LoyaltyPage from "./pages/LoyaltyPage";
 
 import { clearExpiredSession, getStoredUser, hasValidSession } from "./utils/authSession";
 
@@ -115,7 +117,27 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/provider/orders/:id"
+        element={
+          <ProtectedRoute allowedRoles={["PROVIDER", "ADMIN"]}>
+            <ProviderOrderDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/loyalty"
+        element={
+          <ProtectedRoute>
+            <LoyaltyPage />
+          </ProtectedRoute>
+        }
+      />
+
     </Routes>
+    
   );
 }
 
