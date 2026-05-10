@@ -279,14 +279,68 @@ button {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   padding: 0;
+}
+
+.profile-avatar-btn {
+  position: relative;
+}
+
+.profile-avatar-btn.avatar-loading {
+  pointer-events: none;
+}
+
+.profile-avatar-btn.avatar-loading::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(147, 197, 253, 0.15),
+    rgba(147, 197, 253, 0.95),
+    rgba(168, 85, 247, 0.85),
+    rgba(147, 197, 253, 0.15)
+  );
+  animation: avatarSpinGlow 1.1s linear infinite;
+  z-index: 0;
+}
+
+.profile-avatar-btn.avatar-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.2) 45%,
+      rgba(255, 255, 255, 0.04) 90%
+    ),
+    rgba(2, 6, 23, 0.42);
+  background-size: 220% 100%;
+  animation: avatarShimmer 1.25s ease-in-out infinite;
+  z-index: 2;
+}
+
+.profile-avatar-btn.avatar-loading img,
+.profile-avatar-btn.avatar-loading .default-avatar-icon {
+  opacity: 0.45;
+}
+
+.profile-avatar-btn .profile-avatar-image,
+.profile-avatar-btn .default-avatar-icon {
+  position: relative;
+  z-index: 1;
 }
 
 .profile-avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .default-avatar-icon {
@@ -988,5 +1042,25 @@ button {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes avatarSpinGlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes avatarShimmer {
+  0% {
+    background-position: 180% 0;
+  }
+
+  100% {
+    background-position: -180% 0;
   }
 }

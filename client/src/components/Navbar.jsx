@@ -41,6 +41,7 @@ function Navbar({
     const [localShowProfileMenu, setLocalShowProfileMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [messageNotifications, setMessageNotifications] = useState([]);
+    const [profileImageLoading, setProfileImageLoading] = useState(false);
     const [notificationsLoading, setNotificationsLoading] = useState(false);
     const [notificationsError, setNotificationsError] = useState("");
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -126,10 +127,17 @@ function Navbar({
         window.addEventListener("focus", syncNavbarSession);
         window.addEventListener("auth:changed", handleAuthChanged);
 
+        const handleProfileImageUploading = (event) => {
+            setProfileImageLoading(Boolean(event.detail?.uploading));
+        };
+
+        window.addEventListener("profile-image:uploading", handleProfileImageUploading);
+
         return () => {
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
             window.removeEventListener("auth:changed", handleAuthChanged);
+            window.removeEventListener("profile-image:uploading", handleProfileImageUploading);
             window.removeEventListener("storage", syncCounts);
             window.removeEventListener("unread:update", syncCounts);
         };
@@ -420,10 +428,11 @@ function Navbar({
                         <div className="profile-identity" title={displayName || effectiveCurrentUser?.email || "Profile"}>
                             <span className="profile-username-ellipsis">{displayName}</span>
                             <button
-                                className="profile-avatar-btn"
+                                className={`profile-avatar-btn ${profileImageLoading ? "avatar-loading" : ""}`}
                                 onClick={() => effectiveSetShowProfileMenu((prev) => !prev)}
                                 aria-haspopup="menu"
                                 aria-expanded={effectiveShowProfileMenu}
+                                disabled={profileImageLoading}
                             >
                                 {effectiveProfileImage ? (
                                     <img

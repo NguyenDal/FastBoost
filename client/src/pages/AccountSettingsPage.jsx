@@ -186,6 +186,16 @@ export default function AccountSettingsPage() {
         try {
             setUploadingImage(true);
 
+            try {
+                window.dispatchEvent(
+                    new CustomEvent("profile-image:uploading", {
+                        detail: {
+                            uploading: true,
+                        },
+                    })
+                );
+            } catch { }
+
             const data = await uploadProfilePicture(file);
 
             setAccountForm((prev) => ({
@@ -211,6 +221,17 @@ export default function AccountSettingsPage() {
             setImageUploadError(error.message || "Failed to upload profile picture.");
         } finally {
             setUploadingImage(false);
+
+            try {
+                window.dispatchEvent(
+                    new CustomEvent("profile-image:uploading", {
+                        detail: {
+                            uploading: false,
+                        },
+                    })
+                );
+            } catch { }
+
             event.target.value = "";
         }
     };
@@ -351,17 +372,19 @@ export default function AccountSettingsPage() {
                     <div className="account-preview-card">
                         <button
                             type="button"
-                            className={`account-preview-avatar avatar-upload-trigger ${uploadingImage ? "is-uploading" : ""
+                            className={`account-preview-avatar avatar-upload-trigger ${uploadingImage ? "is-uploading avatar-loading" : ""
                                 }`}
                             onClick={() => profileImageInputRef.current?.click()}
                             disabled={uploadingImage}
                             aria-label="Change profile picture"
                         >
-                            {previewImage ? (
-                                <img src={previewImage} alt="Profile preview" />
-                            ) : (
-                                <span>👤</span>
-                            )}
+                            <span className="avatar-image-frame">
+                                {previewImage ? (
+                                    <img src={previewImage} alt="Profile preview" />
+                                ) : (
+                                    <span className="avatar-fallback-icon">👤</span>
+                                )}
+                            </span>
 
                             <span className="avatar-upload-overlay" aria-hidden="true">
                                 <span className="avatar-upload-icon">
