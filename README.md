@@ -8,7 +8,123 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Provider order details, loyalty rewards, current-order filters, and username display
+### Latest session update — Account settings, real S3 profile uploads, avatar loading polish, and spend-based loyalty
+
+#### Account Settings page
+- Added a protected account settings page:
+  - `client/src/pages/AccountSettingsPage.jsx`
+  - `client/src/styles/AccountSettings.css`
+  - `client/src/api/accountSettings.js`
+  - route: `/account/settings`
+- Navbar profile dropdown now routes **Account Settings** to `/account/settings`.
+- Account Settings allows authenticated users to update:
+  - username
+  - email
+  - profile picture
+  - password
+- Account Settings preview card displays:
+  - circular profile image
+  - username
+  - email
+- The profile form now focuses only on username/email because image upload is handled directly from the avatar preview.
+
+#### Backend account/profile endpoints
+- Extended existing user controller/routes with profile/account update actions:
+  - `PATCH /api/user/me` — update username, email, and saved profile image URL
+  - `PATCH /api/user/me/password` — change current password after validating old password
+  - `POST /api/user/me/profile-picture` — upload profile image to S3 and save URL on profile
+- `GET /api/user/me` now returns profile data needed by the frontend, including `profile.profileImageUrl`.
+- Account update validates:
+  - username required
+  - username minimum length
+  - case-insensitive username uniqueness
+  - valid email format
+  - case-insensitive email uniqueness
+- Password update validates:
+  - current password required
+  - current password must match bcrypt hash
+  - new password and confirm password must match
+  - new password must be different from current password
+  - new password must pass the same strength rules used by reset password
+
+#### Real S3 profile picture uploads
+- Added true profile picture upload flow instead of manually pasting image URLs.
+- Correct upload flow:
+  ```text
+  React file picker -> protected backend route -> backend uploads to S3 -> backend saves S3 URL -> frontend updates localStorage/navbar
+  ```
+- Added backend S3 upload utility:
+  - `server/src/utils/s3Upload.js`
+- Added backend dependencies:
+  - `multer`
+  - `@aws-sdk/client-s3`
+- Profile pictures upload to the public FastBoost asset bucket:
+  - bucket: `fastboost-assets`
+  - prefix: `profiles/<userId>/...`
+  - public base URL: `https://fastboost-assets.s3.amazonaws.com/`
+- Added local/backend environment variable:
+  - `AWS_S3_ASSETS_BUCKET="fastboost-assets"`
+- AWS permissions updated:
+  - existing S3 bucket policy keeps public `s3:GetObject` for viewing images
+  - IAM user `fastboost-local-kms-user` now has inline policy `FastBoostUploadProfileImages`
+  - upload permission is restricted to `arn:aws:s3:::fastboost-assets/profiles/*`
+
+#### Avatar upload UX polish
+- Removed the visible file upload field from the Profile Details form.
+- Users now change profile picture by hovering/clicking the avatar inside the Account Settings preview card.
+- Hovering the account preview avatar shows:
+  - dark transparent full-circle overlay
+  - large centered upload icon
+  - current profile image still barely visible underneath
+- The upload trigger uses a hidden file input with `useRef`, so the UI stays clean.
+- Profile picture is now clipped correctly inside a circular image frame while still allowing the outside glow ring to show.
+- Fixed circular fit issues by separating:
+  - outer avatar button/glow layer
+  - inner circular image clipping frame
+  - upload overlay layer
+- Images use `object-fit: cover` and `object-position: center` so uploaded photos fit the circle cleanly.
+
+#### Immediate navbar avatar updates
+- Navbar now updates immediately after profile image upload instead of waiting for refresh/focus.
+- Added/used custom browser events:
+  - `auth:changed` — sends updated user data to Navbar
+  - `profile-image:uploading` — tells Navbar when avatar upload starts/ends
+- Navbar avatar now reads the latest image from:
+  - `effectiveCurrentUser.profile.profileImageUrl`
+  - `effectiveCurrentUser.profileImage`
+  - cached local user fallback
+- After S3 upload finishes, the frontend updates localStorage, dispatches `auth:changed`, and the navbar avatar changes immediately.
+
+#### Facebook-style avatar loading effect
+- Added loading/shimmer/glow effect for profile images while a new image is uploading.
+- Loading applies to:
+  - Account Settings profile preview avatar
+  - Navbar avatar
+- Loading effect includes:
+  - rotating conic glow ring
+  - shimmer/fading overlay
+  - dimmed current avatar while waiting
+- Shared animation keyframes added:
+  - `avatarSpinGlow`
+  - `avatarShimmer`
+- Account Settings and Navbar both show the loading state during S3 upload and remove it once upload completes.
+
+#### Spend-based loyalty upgrade
+- Loyalty tier logic was changed from completed-match count to completed-spend thresholds.
+- Account progress line now says:
+  ```text
+  Spend $X more to reach Silver/Gold/Platinum tier.
+  ```
+- Removed the duplicate completed-spend number from the right side of the Account Progress header because the page already has a Total Completed Spend stat card below.
+- New loyalty tier checkpoints:
+  - Bronze: `$0+` completed spend
+  - Silver: `$200+` completed spend
+  - Gold: `$500+` completed spend
+  - Platinum: `$1000+` completed spend
+- These thresholds feel reasonable for a demo/portfolio marketplace because they are aspirational but not impossible. They also make loyalty feel more business-like than using number of completed matches only.
+- Loyalty still tracks completed order count and gold, but tier/progress is now based on total completed spend.
+
+### Previous session update — Provider order details, loyalty rewards, current-order filters, and username display
 
 #### Provider/booster order detail flow
 - Added a dedicated provider order detail route:
@@ -19,18 +135,8 @@ This project is a **game services marketplace demo** where users can register, l
   - Clicking **Open** now routes to `/provider/orders/:id` first.
   - From the provider detail page, boosters can open the conversation through **Go to Conversation**.
 - Provider detail page reuses the premium admin order detail styling from `Admin.css` while keeping provider-only permissions.
-- Provider detail page allows boosters to:
-  - view assigned order details
-  - view customer username/email
-  - view order configuration and add-ons
-  - view price summary
-  - go to the MatchPage conversation
-  - mark assigned orders completed
-  - leave/unassign themselves from an order
-- Provider detail page intentionally does **not** allow boosters to:
-  - cancel orders
-  - assign other boosters
-  - unassign other boosters
+- Provider detail page allows boosters to view assigned order details, customer username/email, order configuration, add-ons, price summary, open the conversation, mark orders completed, and leave/unassign themselves from an order.
+- Provider detail page intentionally does **not** allow boosters to cancel orders, assign other boosters, or unassign other boosters.
 
 #### Loyalty rewards page
 - Added a protected customer/admin loyalty page:
@@ -39,27 +145,11 @@ This project is a **game services marketplace demo** where users can register, l
   - `client/src/api/loyalty.js`
   - route: `/account/loyalty`
 - Navbar now routes **Loyalty** to `/account/loyalty` and only shows it when a user is logged in.
-- Loyalty page displays:
-  - current loyalty tier/account type
-  - progress tracking bar
-  - Bronze / Silver / Gold / Platinum tier milestones
-  - completed matches count
-  - total gold earned
-  - completed spend
-  - completed match reward history
-- Loyalty tier thresholds:
-  - Bronze: 0+ completed matches
-  - Silver: 5+ completed matches
-  - Gold: 15+ completed matches
-  - Platinum: 30+ completed matches
+- Loyalty page displays current loyalty tier/account type, progress tracking, Bronze/Silver/Gold/Platinum milestones, completed matches count, total gold earned, completed spend, and completed match reward history.
 - Gold conversion display added:
   - `10 gold = $1`
   - Total Gold card can show values like `18 = $1.80`.
-- Loyalty hero/card glow now follows the actual account tier color instead of always using a gold theme:
-  - bronze/copper for Bronze
-  - silver/gray for Silver
-  - gold/yellow for Gold
-  - platinum/blue-cyan for Platinum
+- Loyalty hero/card glow now follows the actual account tier color instead of always using a gold theme.
 
 #### Loyalty backend endpoint
 - Added backend loyalty route/controller:
@@ -68,194 +158,26 @@ This project is a **game services marketplace demo** where users can register, l
   - mounted in `server/src/app.js` at `/api/loyalty`
 - Added endpoint:
   - `GET /api/loyalty/me`
-- Backend now calculates loyalty from completed customer orders where:
+- Backend calculates loyalty from completed customer orders where:
   - `customerId` is the logged-in user
   - `status` is `COMPLETED`
-- Backend response includes:
-  - `tier`
-  - `tierKey`
-  - `icon`
-  - `completedMatches`
-  - `totalGold`
-  - `totalCompletedSpend`
-  - `nextTier`
-  - `matchesToNext`
-  - `progressPercent`
-  - `tiers`
-  - `completedOrders`
 - Gold earned per completed order is calculated as:
   - `Math.floor(order.totalPrice)`
-- Frontend Loyalty page now consumes the backend loyalty object instead of guessing from raw order data.
+- Frontend Loyalty page consumes the backend loyalty object instead of guessing from raw order data.
 
 #### Current-order filtering cleanup
 - Improved order list filters so active orders are shown by default instead of all orders.
-- Default dropdown value is now:
-  - `Current Orders`
-- `Current Orders` means:
-  - `PENDING`
-  - `IN_PROGRESS`
+- Default dropdown value is now `Current Orders`, meaning `PENDING` and `IN_PROGRESS`.
 - Removed the **All Orders** option from the dropdown.
-- Available status filters are now:
-  - Current Orders
-  - Pending
-  - In Progress
-  - Completed
-  - Cancelled
 - Updated frontend pages:
   - `AdminOrdersPage.jsx`
   - `ProviderOrdersPage.jsx`
   - `CustomerOrdersPage.jsx`
-- Updated backend order list logic so Prisma understands `status=CURRENT`:
-  - `listAllOrders`
-  - `listAssignedOrdersForProvider`
+- Updated backend order list logic so Prisma understands `status=CURRENT` in `listAllOrders` and `listAssignedOrdersForProvider`.
 
 #### Customer username display
 - Confirmed backend order responses include `customer.username` in relevant order queries.
 - Confirmed frontend order list pages display customer username first, then fall back to profile display name/email when needed.
-- Pages involved:
-  - `AdminOrdersPage.jsx`
-  - `ProviderOrdersPage.jsx`
-  - order detail pages using `order.customer?.username`
-
-#### Secure game account login info with AWS KMS
-- Finished the production-grade direction for storing customer game account passwords.
-- Confirmed the correct security decision:
-  - **User account passwords** are hashed with bcrypt.
-  - **Customer game account passwords** cannot be hashed because assigned boosters/admins need to view them.
-  - Game account passwords are protected using **AWS KMS envelope encryption** with local **AES-256-GCM** encryption.
-- Added/verified encrypted order password utility:
-  - `server/src/utils/orderPasswordCrypto.js`
-  - Uses AWS KMS `GenerateDataKeyCommand`.
-  - Uses local `aes-256-gcm` encryption.
-  - Stores only encrypted password fields:
-    - `accountPasswordCiphertext`
-    - `accountPasswordEncryptedKey`
-    - `accountPasswordIv`
-    - `accountPasswordAuthTag`
-    - `accountPasswordUpdatedAt`
-  - Decrypts through KMS only when authorized order detail access needs to reveal the password.
-  - Strips encrypted password fields from normal/list responses.
-- Added/verified secure environment config:
-  - `server/src/config/env.js`
-  - Requires:
-    - `DATABASE_URL`
-    - `JWT_SECRET`
-    - `AWS_REGION`
-    - `ORDER_PASSWORD_KMS_KEY_ID`
-- Created and configured AWS resources for local development:
-  - KMS customer-managed symmetric key:
-    - `alias/fastboost-order-passwords`
-  - Dedicated IAM user:
-    - `fastboost-local-kms-user`
-  - Access key/secret key for local development only.
-  - KMS permissions for local testing:
-    - `kms:GenerateDataKey`
-    - `kms:Decrypt`
-    - `kms:DescribeKey`
-- Confirmed local KMS credential setup works:
-  - `AWS_REGION=ca-central-1`
-  - `ORDER_PASSWORD_KMS_KEY_ID=alias/fastboost-order-passwords`
-  - valid `AKIA...` access key
-  - valid 40-character secret key
-- Clarified deployment-ready direction:
-  - Local development can use IAM access keys.
-  - Real production should use an IAM role attached to the deployed backend whenever possible.
-  - Production KMS policy should restrict `Resource` to the exact KMS key ARN instead of `*`.
-  - `.env` must never be committed.
-
-#### Login info frontend/backend safety
-- Confirmed `PATCH /api/orders/:id/login-info` is the correct route for customers to update in-game name/password from MatchPage.
-- Confirmed the frontend API helper does not store game passwords in `localStorage`.
-- Updated MatchPage login info behavior:
-  - Password field should not be prefilled with decrypted password.
-  - Blank password input keeps the current encrypted password.
-  - Only sends `accountPassword` when the user types a new value.
-  - Placeholder explains “Leave blank to keep current password.”
-  - Backend responses avoid returning raw AWS/KMS errors to the frontend.
-
-#### Chat notification system
-- Added chat notification type direction:
-  - `NotificationType.CHAT_MESSAGE`
-- Added/reworked chat notification helper:
-  - `server/src/utils/chatNotifications.js`
-  - Creates chat notifications for conversation participants **except the sender**.
-  - Notification data includes:
-    - `conversationId`
-    - `messageId`
-    - `orderId`
-    - `orderNumber`
-    - `boostType`
-    - `senderId`
-    - `senderName`
-    - `senderInitial`
-    - `targetPath: /match/:orderId`
-- Ensured chat notifications are generated after messages are created through:
-  - REST fallback chat controller
-  - Socket.IO chat message handler
-- Added separation between normal notifications and chat/message notifications in the navbar:
-  - Bell notification count excludes `CHAT_MESSAGE`.
-  - Message icon/count tracks only `CHAT_MESSAGE`.
-  - Closing the bell panel marks only normal notifications read.
-  - Closing the message panel marks only chat notifications read.
-- Added route/controller support:
-  - `PATCH /api/notifications/messages/read-all`
-- Improved notification click behavior:
-  - Clicking a chat notification navigates to the related MatchPage:
-    - `/match/:orderId`
-  - Added fallback navigation using `orderId` if `targetPath` is missing.
-- Started duplicate notification cleanup logic:
-  - For the same unread conversation, only one chat notification should remain visible.
-  - If many messages arrive from the same person in the same chat before the receiver opens the message panel, only the first unread notification should be created.
-  - After the user opens/closes the message panel and marks it read, a later message can create a new notification.
-
-#### Message notification card UI
-- Reworked message notification card design to imitate the existing notification card shape rather than using a separate strong style.
-- Kept content different from the normal notification card:
-  - sender initial/avatar area
-  - sender name
-  - boost/order title
-  - order number
-  - first message preview
-  - timestamp
-- Changed fallback avatar styling:
-  - Removed strong purple/red fallback avatar.
-  - Used a softer blue MatchPage-style profile icon when the sender has no picture.
-- Kept the visual theme consistent with FastBoost’s dark UI.
-
-#### MatchPage chat access and UX fixes
-- Fixed chat input over-restriction:
-  - Customer/booster/admin chat should not be blocked by fragile frontend role/assignment checks.
-  - Final frontend rule: if the logged-in user can load the order conversation, the chat input can be enabled.
-  - Backend remains the real security layer.
-- Fixed message ownership comparison:
-  - Uses string-safe ID comparison so customer/booster messages display on the correct side.
-- Added smart chat scrolling:
-  - Sending your own message scrolls to the bottom.
-  - If you are already near the bottom and someone replies, it stays near the bottom.
-  - If you are reading older messages and many new messages arrive, the chat message container scrolls to the **first new message from the other person**, not all the way to the bottom.
-  - The custom chat scrollbar/slider follows the chat message container position.
-  - Scroll position is saved in `sessionStorage` per order and restored when returning.
-- Fixed compile issues caused by:
-  - referencing `updateChatScrollbar` before initialization
-  - duplicate `updateChatScrollbar` declarations
-
-#### MatchPage layout polish
-- Removed the redundant **Order Summary** sidebar card.
-- Moved the existing **Overview** card into the sidebar area while keeping the same Overview styling.
-- Compressed the Overview card in the sidebar using the existing classes:
-  - `order-overview-card`
-  - `order-overview-grid`
-  - `overview-pill`
-  - `overview-icon`
-- Final MatchPage layout direction:
-  - Left/main panel:
-    - Chat
-    - Order Options
-  - Right/sidebar:
-    - Booster/Profile card
-    - Login Info card
-    - Overview card
-- Total price/status remain available in stronger top/banner areas instead of being duplicated in a small Order Summary block.
 
 ### Previous session update — Admin/Provider/Customer order management + real MatchPage chat
 - Built and polished the **Admin Order Management** flow:
@@ -476,7 +398,7 @@ Password/security decisions:
 - Gmail SMTP App Password
 
 ### Assets and security services
-- AWS S3 for public website/rank assets
+- AWS S3 for public website/rank assets and uploaded profile pictures
 - AWS KMS for encrypted order login credentials
 - AWS IAM for local development KMS access
 
@@ -545,7 +467,10 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `POST /api/auth/reset-password`
 
 ### User / profile
-- `GET /api/user/me` — current authenticated user
+- `GET /api/user/me` — current authenticated user with profile data
+- `PATCH /api/user/me` — update username, email, and saved profile image URL
+- `PATCH /api/user/me/password` — change authenticated user's password
+- `POST /api/user/me/profile-picture` — upload profile picture to S3 and save `Profile.profileImageUrl`
 - `GET /api/user/providers` — admin-only provider list for assignment
 
 ### Orders
@@ -609,6 +534,7 @@ SMTP_FROM="FastBoost <your_email_here>"
 
 AWS_REGION="ca-central-1"
 ORDER_PASSWORD_KMS_KEY_ID="alias/fastboost-order-passwords"
+AWS_S3_ASSETS_BUCKET="fastboost-assets"
 
 # Local development only.
 # In deployment, prefer IAM role instead of long-lived keys.
@@ -717,64 +643,71 @@ npx prisma studio
 - backend `CURRENT` status filtering for admin and provider order lists
 - customer username display on admin/provider order list and detail views
 
+- protected account settings page for username/email/password/profile picture management
+- backend account update and password change endpoints
+- real S3 profile picture upload through protected backend route
+- IAM inline policy allowing backend profile uploads to `fastboost-assets/profiles/*`
+- hover-to-upload avatar UX in Account Settings
+- immediate Navbar avatar updates through `auth:changed` event
+- avatar upload loading/shimmer/glow effect for Account Settings and Navbar
+- corrected circular avatar image fit with inner clipping frame
+- spend-based loyalty tier thresholds using completed spend: $0 / $200 / $500 / $1000
+- Account Progress copy changed to “Spend $X more to reach Y tier”
+
 ### In progress
 - final duplicate chat notification verification after clearing old unread records
-- profile image support for notification sender avatars
+- notification sender avatars using saved profile images
 - final status automation cleanup across admin/provider/customer flows
-- shared navbar consistency across all protected pages
+- remaining shared navbar consistency polish across all protected pages
 - pricing logic cleanup and verification
 - duo-specific addon field cleanup, including `untrackableDuo`
 - patch section real endpoint
-- profile/account settings
 - reveal/audit logging for viewed game credentials
 
 ---
 
 ## Next steps (recommended)
 
-1. Test the new provider detail flow end-to-end:
-   - booster opens Assigned Orders
-   - clicks Open
-   - lands on `/provider/orders/:id`
-   - can go to conversation
-   - can mark completed
-   - can leave order
-2. Test loyalty after changing an order to `COMPLETED`:
-   - confirm completed match count increases
-   - confirm gold increases by `Math.floor(totalPrice)`
-   - confirm tier progress updates
-   - confirm `10 gold = $1` display is correct
-3. Decide later whether loyalty gold will be redeemable for discounts, store credit, or only a portfolio/demo reward counter.
-4. Consider adding a backend redemption/audit table later if loyalty gold becomes spendable.
-
-1. Verify chat notification duplicate behavior with clean notification rows:
-   - clear old unread duplicate `CHAT_MESSAGE` records
-   - send multiple messages from booster/customer
-   - confirm only one unread chat notification appears per conversation
-2. Add profile image support later:
-   - store profile image URL in `Profile`
-   - include it safely in chat notification data
-   - render image if present, fallback to blue initial avatar
-3. Add credential reveal audit logging:
+1. Test account settings end-to-end:
+   - update username
+   - update email
+   - upload profile picture
+   - confirm S3 object appears under `fastboost-assets/profiles/<userId>/`
+   - confirm Account Settings preview updates
+   - confirm Navbar avatar updates immediately
+   - confirm refresh still shows the uploaded image
+2. Test password change:
+   - weak password should fail checklist
+   - wrong current password should show an error
+   - valid new password should save
+   - logout and login with the new password
+3. Test spend-based loyalty:
+   - mark completed orders with different total prices
+   - confirm completed spend controls Bronze/Silver/Gold/Platinum tier
+   - confirm progress says “Spend $X more to reach Y tier”
+   - confirm duplicate completed-spend text is removed from the Account Progress header
+4. Add notification/chat sender avatars using saved `profile.profileImageUrl`.
+5. Add credential reveal audit logging:
    - user id
    - role
    - order id
    - timestamp
    - action type
-4. Restrict KMS permissions before real deployment:
+6. Restrict AWS permissions before real deployment:
    - exact KMS key ARN instead of `Resource: "*"`
    - backend IAM role instead of long-lived production keys
-5. Finish pricing logic cleanup:
+   - least-privilege S3 upload path permissions
+7. Finish pricing logic cleanup:
    - solo/duo add-on pricing
    - bonus win pricing by rank
    - `untrackableDuo`
-6. Finish shared navbar/profile/account settings polish.
-7. Connect the patch section to a real backend endpoint later.
-
----
+8. Connect the patch section to a real backend endpoint later.
 
 ## Resume-ready highlights
 
+- Built a protected account settings workflow with secure password changes, profile updates, and real AWS S3 profile image uploads through an Express backend.
+- Implemented immediate cross-component avatar synchronization and loading/shimmer UI states in React using localStorage updates and custom browser events.
+- Refactored loyalty rewards from match-count thresholds to spend-based tier progression using completed-order spend calculations from Prisma/PostgreSQL.
 - Implemented AWS KMS envelope encryption with AES-256-GCM to protect customer order credentials, storing only ciphertext, encrypted data keys, IVs, and auth tags in PostgreSQL.
 - Built role-aware real-time order chat using Socket.IO, Express, Prisma, and PostgreSQL.
 - Added chat notification workflow that excludes the sender, separates message alerts from system notifications, and routes users directly to the related MatchPage conversation.
