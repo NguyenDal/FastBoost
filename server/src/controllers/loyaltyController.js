@@ -9,28 +9,28 @@ const LOYALTY_TIERS = [
         key: "bronze",
         name: "Bronze",
         icon: "🥉",
-        minMatches: 0,
+        minSpend: 0,
         nextTier: "Silver",
     },
     {
         key: "silver",
         name: "Silver",
         icon: "🥈",
-        minMatches: 5,
+        minSpend: 200,
         nextTier: "Gold",
     },
     {
         key: "gold",
         name: "Gold",
         icon: "🥇",
-        minMatches: 15,
+        minSpend: 500,
         nextTier: "Platinum",
     },
     {
         key: "platinum",
         name: "Platinum",
         icon: "💎",
-        minMatches: 30,
+        minSpend: 1000,
         nextTier: null,
     },
 ];
@@ -39,16 +39,17 @@ function getGoldFromOrder(order) {
     return Math.floor(Number(order.totalPrice || 0));
 }
 
-function getTierInfo(completedMatches) {
+function getTierInfo(totalCompletedSpend) {
     const currentTier =
         [...LOYALTY_TIERS]
             .reverse()
-            .find((tier) => completedMatches >= tier.minMatches) || LOYALTY_TIERS[0];
+            .find((tier) => totalCompletedSpend >= tier.minSpend) ||
+        LOYALTY_TIERS[0];
 
     if (!currentTier.nextTier) {
         return {
             ...currentTier,
-            matchesToNext: 0,
+            spendToNext: 0,
         };
     }
 
@@ -58,22 +59,23 @@ function getTierInfo(completedMatches) {
 
     return {
         ...currentTier,
-        matchesToNext: Math.max(0, nextTier.minMatches - completedMatches),
+        spendToNext: Math.max(0, nextTier.minSpend - totalCompletedSpend),
     };
 }
 
-function getTierProgressPercent(completedMatches, tierInfo) {
+function getTierProgressPercent(totalCompletedSpend, tierInfo) {
     if (tierInfo.key === "platinum") return 100;
 
-    const currentMin = tierInfo.minMatches;
+    const currentMin = tierInfo.minSpend;
+
     const nextTier = LOYALTY_TIERS.find(
         (tier) => tier.name === tierInfo.nextTier
     );
 
     if (!nextTier) return 100;
 
-    const range = nextTier.minMatches - currentMin;
-    const currentProgress = completedMatches - currentMin;
+    const range = nextTier.minSpend - currentMin;
+    const currentProgress = totalCompletedSpend - currentMin;
 
     return Math.min(100, Math.max(0, (currentProgress / range) * 100));
 }
@@ -117,8 +119,11 @@ exports.getMyLoyalty = async (req, res) => {
             return sum + getGoldFromOrder(order);
         }, 0);
 
-        const tierInfo = getTierInfo(completedMatches);
-        const progressPercent = getTierProgressPercent(completedMatches, tierInfo);
+        const tierInfo = getTierInfo(totalCompletedSpend);
+        const progressPercent = getTierProgressPercent(
+            totalCompletedSpend,
+            tierInfo
+        );
 
         const rewardHistory = completedOrders.map((order) => ({
             id: order.id,
@@ -138,12 +143,17 @@ exports.getMyLoyalty = async (req, res) => {
                 tier: tierInfo.name,
                 tierKey: tierInfo.key,
                 icon: tierInfo.icon,
+
+                // Keep this for stats only, not tier calculation.
                 completedMatches,
+
                 totalGold,
                 totalCompletedSpend,
+
                 nextTier: tierInfo.nextTier,
-                matchesToNext: tierInfo.matchesToNext,
+                spendToNext: tierInfo.spendToNext,
                 progressPercent,
+
                 tiers: LOYALTY_TIERS,
                 completedOrders: rewardHistory,
             },

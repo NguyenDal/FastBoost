@@ -77,7 +77,7 @@ export default function LoyaltyPage() {
     const completedOrders = loyalty?.completedOrders || [];
     const completedMatches = loyalty?.completedMatches || 0;
     const totalGold = loyalty?.totalGold || 0;
-    const totalSpent = loyalty?.totalCompletedSpend || 0;
+    const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
     const goldDollarValue = (totalGold / 10).toFixed(2);
 
     const tierInfo = {
@@ -85,10 +85,11 @@ export default function LoyaltyPage() {
         name: loyalty?.tier || "Bronze",
         icon: loyalty?.icon || "🥉",
         nextTier: loyalty?.nextTier || null,
-        matchesToNext: loyalty?.matchesToNext || 0,
+        spendToNext: Number(loyalty?.spendToNext || 0),
     };
 
     const progressPercent = loyalty?.progressPercent || 0;
+    const loyaltyTiers = loyalty?.tiers || LOYALTY_TIERS;
 
     if (!hasAccess) return null;
 
@@ -112,7 +113,7 @@ export default function LoyaltyPage() {
                                 </h1>
 
                                 <p className="loyalty-subtitle">
-                                    Complete more matches to unlock higher loyalty status and track your earned gold.
+                                    Spend more on completed orders to unlock higher loyalty status and track your earned gold.
                                 </p>
                             </div>
 
@@ -128,14 +129,9 @@ export default function LoyaltyPage() {
                                     <h2>Account Progress</h2>
                                     <p>
                                         {tierInfo.nextTier
-                                            ? `${tierInfo.matchesToNext} completed match${tierInfo.matchesToNext === 1 ? "" : "es"} until ${tierInfo.nextTier}`
+                                            ? `Spend $${tierInfo.spendToNext.toFixed(2)} more to reach ${tierInfo.nextTier} tier.`
                                             : "You reached the highest loyalty tier."}
                                     </p>
-                                </div>
-
-                                <div className="loyalty-progress-number">
-                                    <strong>{completedMatches}</strong>
-                                    <span>completed matches</span>
                                 </div>
                             </div>
 
@@ -147,15 +143,15 @@ export default function LoyaltyPage() {
                             </div>
 
                             <div className="loyalty-tier-row">
-                                {LOYALTY_TIERS.map((tier) => (
+                                {loyaltyTiers.map((tier) => (
                                     <div
                                         key={tier.key}
-                                        className={`loyalty-tier-step tier-${tier.key} ${completedMatches >= tier.minMatches ? "active" : ""
+                                        className={`loyalty-tier-step tier-${tier.key} ${totalSpent >= tier.minSpend ? "active" : ""
                                             } ${tier.key === tierInfo.key ? "current" : ""}`}
                                     >
                                         <span>{tier.icon}</span>
                                         <strong>{tier.name}</strong>
-                                        <small>{tier.minMatches}+ matches</small>
+                                        <small>${tier.minSpend}+ spend</small>
                                     </div>
                                 ))}
                             </div>
@@ -167,19 +163,16 @@ export default function LoyaltyPage() {
                                 <strong>
                                     {totalGold} = ${goldDollarValue}
                                 </strong>
-                                <p>Earned from completed matches</p>
                             </div>
 
                             <div className="loyalty-stat-card">
                                 <span>Completed Matches</span>
                                 <strong>{completedMatches}</strong>
-                                <p>Only completed orders count</p>
                             </div>
 
                             <div className="loyalty-stat-card">
                                 <span>Total Completed Spend</span>
                                 <strong>${totalSpent.toFixed(2)}</strong>
-                                <p>Used to estimate loyalty gold</p>
                             </div>
                         </section>
 

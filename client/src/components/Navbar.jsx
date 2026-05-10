@@ -41,6 +41,7 @@ function Navbar({
     const [localShowProfileMenu, setLocalShowProfileMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [messageNotifications, setMessageNotifications] = useState([]);
+    const [profileImageLoading, setProfileImageLoading] = useState(false);
     const [notificationsLoading, setNotificationsLoading] = useState(false);
     const [notificationsError, setNotificationsError] = useState("");
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -74,7 +75,7 @@ function Navbar({
             const token = localStorage.getItem("token");
             const cached = getStoredUser();
 
-            if (token && cached && !cached?.username) {
+            if (token) {
                 try {
                     const res = await fetch("http://localhost:5000/api/user/me", {
                         headers: { Authorization: `Bearer ${token}` },
@@ -111,12 +112,32 @@ function Navbar({
         window.addEventListener("storage", syncCounts);
         window.addEventListener("unread:update", syncCounts);
 
+        const handleAuthChanged = (event) => {
+            const updatedUser = event.detail?.user || getStoredUser();
+
+            if (updatedUser) {
+                setLocalHasSession(true);
+                setLocalCurrentUser(updatedUser);
+            }
+
+            syncNavbarSession();
+        };
+
         window.addEventListener("storage", syncNavbarSession);
         window.addEventListener("focus", syncNavbarSession);
+        window.addEventListener("auth:changed", handleAuthChanged);
+
+        const handleProfileImageUploading = (event) => {
+            setProfileImageLoading(Boolean(event.detail?.uploading));
+        };
+
+        window.addEventListener("profile-image:uploading", handleProfileImageUploading);
 
         return () => {
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
+            window.removeEventListener("auth:changed", handleAuthChanged);
+            window.removeEventListener("profile-image:uploading", handleProfileImageUploading);
             window.removeEventListener("storage", syncCounts);
             window.removeEventListener("unread:update", syncCounts);
         };
@@ -128,7 +149,12 @@ function Navbar({
     const effectiveCurrentUser = currentUser ?? localCurrentUser;
 
     const effectiveProfileImage =
-        profileImage || localCurrentUser?.profileImage || "";
+        profileImage ||
+        effectiveCurrentUser?.profile?.profileImageUrl ||
+        effectiveCurrentUser?.profileImage ||
+        localCurrentUser?.profile?.profileImageUrl ||
+        localCurrentUser?.profileImage ||
+        "";
 
     const effectiveShowProfileMenu =
         typeof showProfileMenu === "boolean"
@@ -402,10 +428,11 @@ function Navbar({
                         <div className="profile-identity" title={displayName || effectiveCurrentUser?.email || "Profile"}>
                             <span className="profile-username-ellipsis">{displayName}</span>
                             <button
-                                className="profile-avatar-btn"
+                                className={`profile-avatar-btn ${profileImageLoading ? "avatar-loading" : ""}`}
                                 onClick={() => effectiveSetShowProfileMenu((prev) => !prev)}
                                 aria-haspopup="menu"
                                 aria-expanded={effectiveShowProfileMenu}
+                                disabled={profileImageLoading}
                             >
                                 {effectiveProfileImage ? (
                                     <img
@@ -455,7 +482,16 @@ function Navbar({
                                         {unreadMessages > 0 && <span className="quick-soft-dot message" />}
                                     </button>
                                 </div>
-                                <button className="profile-menu-item" role="menuitem">Account Settings</button>
+                                <button
+                                    className="profile-menu-item"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        effectiveSetShowProfileMenu(false);
+                                        navigate("/account/settings");
+                                    }}
+                                >
+                                    Account Settings
+                                </button>
                                 <button className="profile-menu-item" onClick={onLogout} role="menuitem">
                                     Logout
                                 </button>

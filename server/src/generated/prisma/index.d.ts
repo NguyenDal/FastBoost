@@ -3379,6 +3379,7 @@ export namespace Prisma {
     userId: string | null
     displayName: string | null
     bio: string | null
+    profileImageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3388,6 +3389,7 @@ export namespace Prisma {
     userId: string | null
     displayName: string | null
     bio: string | null
+    profileImageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3397,6 +3399,7 @@ export namespace Prisma {
     userId: number
     displayName: number
     bio: number
+    profileImageUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3408,6 +3411,7 @@ export namespace Prisma {
     userId?: true
     displayName?: true
     bio?: true
+    profileImageUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3417,6 +3421,7 @@ export namespace Prisma {
     userId?: true
     displayName?: true
     bio?: true
+    profileImageUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3426,6 +3431,7 @@ export namespace Prisma {
     userId?: true
     displayName?: true
     bio?: true
+    profileImageUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3508,6 +3514,7 @@ export namespace Prisma {
     userId: string
     displayName: string | null
     bio: string | null
+    profileImageUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: ProfileCountAggregateOutputType | null
@@ -3534,6 +3541,7 @@ export namespace Prisma {
     userId?: boolean
     displayName?: boolean
     bio?: boolean
+    profileImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3544,6 +3552,7 @@ export namespace Prisma {
     userId?: boolean
     displayName?: boolean
     bio?: boolean
+    profileImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3554,6 +3563,7 @@ export namespace Prisma {
     userId?: boolean
     displayName?: boolean
     bio?: boolean
+    profileImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3564,11 +3574,12 @@ export namespace Prisma {
     userId?: boolean
     displayName?: boolean
     bio?: boolean
+    profileImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "displayName" | "bio" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "displayName" | "bio" | "profileImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3589,6 +3600,7 @@ export namespace Prisma {
       userId: string
       displayName: string | null
       bio: string | null
+      profileImageUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["profile"]>
@@ -4019,6 +4031,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"Profile", 'String'>
     readonly displayName: FieldRef<"Profile", 'String'>
     readonly bio: FieldRef<"Profile", 'String'>
+    readonly profileImageUrl: FieldRef<"Profile", 'String'>
     readonly createdAt: FieldRef<"Profile", 'DateTime'>
     readonly updatedAt: FieldRef<"Profile", 'DateTime'>
   }
@@ -14844,6 +14857,7 @@ export namespace Prisma {
     userId: 'userId',
     displayName: 'displayName',
     bio: 'bio',
+    profileImageUrl: 'profileImageUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -15270,6 +15284,7 @@ export namespace Prisma {
     userId?: StringFilter<"Profile"> | string
     displayName?: StringNullableFilter<"Profile"> | string | null
     bio?: StringNullableFilter<"Profile"> | string | null
+    profileImageUrl?: StringNullableFilter<"Profile"> | string | null
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -15280,6 +15295,7 @@ export namespace Prisma {
     userId?: SortOrder
     displayName?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    profileImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -15293,6 +15309,7 @@ export namespace Prisma {
     NOT?: ProfileWhereInput | ProfileWhereInput[]
     displayName?: StringNullableFilter<"Profile"> | string | null
     bio?: StringNullableFilter<"Profile"> | string | null
+    profileImageUrl?: StringNullableFilter<"Profile"> | string | null
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -15303,6 +15320,7 @@ export namespace Prisma {
     userId?: SortOrder
     displayName?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    profileImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
@@ -15318,6 +15336,7 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Profile"> | string
     displayName?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     bio?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    profileImageUrl?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
   }
@@ -16169,6 +16188,7 @@ export namespace Prisma {
     id?: string
     displayName?: string | null
     bio?: string | null
+    profileImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProfileInput
@@ -16179,6 +16199,7 @@ export namespace Prisma {
     userId: string
     displayName?: string | null
     bio?: string | null
+    profileImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16187,6 +16208,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProfileNestedInput
@@ -16197,6 +16219,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16206,6 +16229,7 @@ export namespace Prisma {
     userId: string
     displayName?: string | null
     bio?: string | null
+    profileImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16214,6 +16238,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16223,6 +16248,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17256,6 +17282,7 @@ export namespace Prisma {
     userId?: SortOrder
     displayName?: SortOrder
     bio?: SortOrder
+    profileImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17265,6 +17292,7 @@ export namespace Prisma {
     userId?: SortOrder
     displayName?: SortOrder
     bio?: SortOrder
+    profileImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17274,6 +17302,7 @@ export namespace Prisma {
     userId?: SortOrder
     displayName?: SortOrder
     bio?: SortOrder
+    profileImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19156,6 +19185,7 @@ export namespace Prisma {
     id?: string
     displayName?: string | null
     bio?: string | null
+    profileImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19164,6 +19194,7 @@ export namespace Prisma {
     id?: string
     displayName?: string | null
     bio?: string | null
+    profileImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19437,6 +19468,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19445,6 +19477,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

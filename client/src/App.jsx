@@ -14,6 +14,7 @@ import ProviderOrdersPage from "./pages/ProviderOrdersPage";
 import CustomerOrdersPage from "./pages/CustomerOrdersPage";
 import ProviderOrderDetailsPage from "./pages/ProviderOrderDetailsPage";
 import LoyaltyPage from "./pages/LoyaltyPage";
+import AccountSettingsPage from "./pages/AccountSettingsPage";
 
 import { clearExpiredSession, getStoredUser, hasValidSession } from "./utils/authSession";
 
@@ -132,6 +133,15 @@ function App() {
         element={
           <ProtectedRoute>
             <LoyaltyPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account/settings"
+        element={
+          <ProtectedRoute>
+            <AccountSettingsPage />
           </ProtectedRoute>
         }
       />
