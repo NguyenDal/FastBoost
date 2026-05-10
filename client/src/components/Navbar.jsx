@@ -74,7 +74,7 @@ function Navbar({
             const token = localStorage.getItem("token");
             const cached = getStoredUser();
 
-            if (token && cached && !cached?.username) {
+            if (token) {
                 try {
                     const res = await fetch("http://localhost:5000/api/user/me", {
                         headers: { Authorization: `Bearer ${token}` },
@@ -111,12 +111,25 @@ function Navbar({
         window.addEventListener("storage", syncCounts);
         window.addEventListener("unread:update", syncCounts);
 
+        const handleAuthChanged = (event) => {
+            const updatedUser = event.detail?.user || getStoredUser();
+
+            if (updatedUser) {
+                setLocalHasSession(true);
+                setLocalCurrentUser(updatedUser);
+            }
+
+            syncNavbarSession();
+        };
+
         window.addEventListener("storage", syncNavbarSession);
         window.addEventListener("focus", syncNavbarSession);
+        window.addEventListener("auth:changed", handleAuthChanged);
 
         return () => {
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
+            window.removeEventListener("auth:changed", handleAuthChanged);
             window.removeEventListener("storage", syncCounts);
             window.removeEventListener("unread:update", syncCounts);
         };
@@ -128,7 +141,12 @@ function Navbar({
     const effectiveCurrentUser = currentUser ?? localCurrentUser;
 
     const effectiveProfileImage =
-        profileImage || localCurrentUser?.profileImage || "";
+        profileImage ||
+        effectiveCurrentUser?.profile?.profileImageUrl ||
+        effectiveCurrentUser?.profileImage ||
+        localCurrentUser?.profile?.profileImageUrl ||
+        localCurrentUser?.profileImage ||
+        "";
 
     const effectiveShowProfileMenu =
         typeof showProfileMenu === "boolean"
@@ -455,7 +473,16 @@ function Navbar({
                                         {unreadMessages > 0 && <span className="quick-soft-dot message" />}
                                     </button>
                                 </div>
-                                <button className="profile-menu-item" role="menuitem">Account Settings</button>
+                                <button
+                                    className="profile-menu-item"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        effectiveSetShowProfileMenu(false);
+                                        navigate("/account/settings");
+                                    }}
+                                >
+                                    Account Settings
+                                </button>
                                 <button className="profile-menu-item" onClick={onLogout} role="menuitem">
                                     Logout
                                 </button>
