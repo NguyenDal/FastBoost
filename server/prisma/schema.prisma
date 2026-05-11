@@ -19,6 +19,12 @@ model User {
   passwordResetTokens PasswordResetToken[]
   profile             Profile?
 
+  referralCode String? @unique
+  referredById String?
+
+  referredBy User?  @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals  User[] @relation("UserReferrals")
+
   // Chat relations
   providedAssignments  OrderAssignment[]
   conversationMembers  ConversationParticipant[]

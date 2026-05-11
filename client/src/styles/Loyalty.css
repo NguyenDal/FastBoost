@@ -366,7 +366,113 @@
     color: #f87171;
 }
 
+.loyalty-referral-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.loyalty-referral-card::before {
+    content: "";
+    position: absolute;
+    inset: -120px auto auto -120px;
+    width: 260px;
+    height: 260px;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.16);
+    filter: blur(18px);
+    pointer-events: none;
+}
+
+.loyalty-referral-count {
+    min-width: 128px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.66);
+}
+
+.loyalty-referral-count span {
+    display: block;
+    font-size: 30px;
+    font-weight: 950;
+    color: #facc15;
+}
+
+.loyalty-referral-count small {
+    display: block;
+    margin-top: 4px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.loyalty-referral-code-box {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 204, 21, 0.16);
+    background:
+        radial-gradient(420px 160px at 0% 0%, rgba(250, 204, 21, 0.08), transparent 65%),
+        rgba(255, 255, 255, 0.035);
+}
+
+.loyalty-referral-code-box span {
+    display: block;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.loyalty-referral-code-box strong {
+    display: block;
+    margin-top: 8px;
+    color: #ffffff;
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 950;
+    letter-spacing: 0.08em;
+}
+
+.loyalty-referral-link-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.loyalty-referral-link-box span {
+    flex: 1;
+    min-width: 0;
+    color: #e5e7eb;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loyalty-referral-link-box button {
+    border: none;
+    border-radius: 12px;
+    padding: 9px 14px;
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+}
+
+.loyalty-referral-link-box button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
+
     .loyalty-hero,
     .loyalty-progress-header,
     .loyalty-section-header,
@@ -386,6 +492,15 @@
 
     .loyalty-progress-number,
     .loyalty-match-gold {
+        text-align: left;
+    }
+
+    .loyalty-referral-link-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .loyalty-referral-count {
         text-align: left;
     }
 }

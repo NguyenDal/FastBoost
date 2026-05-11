@@ -53,6 +53,7 @@ export default function LoyaltyPage() {
     const [loyalty, setLoyalty] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [copiedReferral, setCopiedReferral] = useState(false);
 
     useEffect(() => {
         if (!hasAccess) return;
@@ -79,6 +80,23 @@ export default function LoyaltyPage() {
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
     const goldDollarValue = (totalGold / 10).toFixed(2);
+    const referralLink = loyalty?.referralLink || "";
+    const referralCount = loyalty?.referralCount || 0;
+
+    const handleCopyReferralLink = async () => {
+        if (!referralLink) return;
+
+        try {
+            await navigator.clipboard.writeText(referralLink);
+            setCopiedReferral(true);
+
+            setTimeout(() => {
+                setCopiedReferral(false);
+            }, 1600);
+        } catch {
+            setCopiedReferral(false);
+        }
+    };
 
     const tierInfo = {
         key: loyalty?.tierKey || "bronze",
@@ -176,6 +194,35 @@ export default function LoyaltyPage() {
                             </div>
                         </section>
 
+                        <section className="loyalty-card loyalty-referral-card">
+                            <div className="loyalty-section-header">
+                                <div>
+                                    <p className="loyalty-eyebrow">Private Invite</p>
+                                    <h2>Share Your Referral Link</h2>
+                                    <p>
+                                        Send this private link to friends. Later, FastBoost can reward you when invited users register or complete orders.
+                                    </p>
+                                </div>
+
+                                <div className="loyalty-referral-count">
+                                    <span>{referralCount}</span>
+                                    <small>Invited Users</small>
+                                </div>
+                            </div>
+
+                            <div className="loyalty-referral-link-box">
+                                <span>{referralLink || "Referral link loading..."}</span>
+
+                                <button
+                                    type="button"
+                                    onClick={handleCopyReferralLink}
+                                    disabled={!referralLink}
+                                >
+                                    {copiedReferral ? "Copied!" : "Copy"}
+                                </button>
+                            </div>
+                        </section>
+
                         <section className="loyalty-card">
                             <div className="loyalty-section-header">
                                 <div>
@@ -240,32 +287,28 @@ const LOYALTY_TIERS = [
         key: "bronze",
         name: "Bronze",
         icon: "🥉",
-        minMatches: 0,
-        maxMatches: 4,
+        minSpend: 0,
         nextTier: "Silver",
     },
     {
         key: "silver",
         name: "Silver",
         icon: "🥈",
-        minMatches: 5,
-        maxMatches: 14,
+        minSpend: 200,
         nextTier: "Gold",
     },
     {
         key: "gold",
         name: "Gold",
         icon: "🥇",
-        minMatches: 15,
-        maxMatches: 29,
+        minSpend: 500,
         nextTier: "Platinum",
     },
     {
         key: "platinum",
         name: "Platinum",
         icon: "💎",
-        minMatches: 30,
-        maxMatches: Infinity,
+        minSpend: 1000,
         nextTier: null,
     },
 ];

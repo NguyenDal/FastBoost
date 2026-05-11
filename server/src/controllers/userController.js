@@ -14,6 +14,8 @@ function sanitizeUser(user) {
     email: user.email,
     username: user.username,
     role: user.role,
+    referralCode: user.referralCode || null,
+    referralCount: user._count?.referrals || 0,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     profile: user.profile || null,
@@ -43,6 +45,11 @@ module.exports.me = async (req, res) => {
             profileImageUrl: true,
           },
         },
+        _count: {
+          select: {
+            referrals: true,
+          },
+        },
       },
     });
 
@@ -53,9 +60,14 @@ module.exports.me = async (req, res) => {
       });
     }
 
+    const safeUser = sanitizeUser(user);
+
     return res.json({
       ok: true,
-      user: sanitizeUser(user),
+      user: safeUser,
+      referralLink: safeUser.referralCode
+        ? `${process.env.APP_BASE_URL}/r/${safeUser.referralCode}`
+        : null,
     });
   } catch (error) {
     console.error("me error:", error);
@@ -187,6 +199,11 @@ module.exports.updateMyAccount = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+          },
+        },
+        _count: {
+          select: {
+            referrals: true,
           },
         },
       },
@@ -379,6 +396,11 @@ module.exports.uploadMyProfilePicture = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+          },
+        },
+        _count: {
+          select: {
+            referrals: true,
           },
         },
       },

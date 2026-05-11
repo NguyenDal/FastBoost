@@ -127,7 +127,9 @@ exports.Prisma.UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  referralCode: 'referralCode',
+  referredById: 'referredById'
 };
 
 exports.Prisma.ProfileScalarFieldEnum = {
