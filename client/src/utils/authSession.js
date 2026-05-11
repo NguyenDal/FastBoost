@@ -32,9 +32,20 @@ export function clearExpiredSession() {
   localStorage.removeItem("user");
   localStorage.removeItem("unreadMessages");
   localStorage.removeItem("unreadNotifications");
+}
 
+export function notifyAuthChanged(detail = {}) {
   try {
-    window.dispatchEvent(new Event("auth:changed"));
+    window.dispatchEvent(
+      new CustomEvent("auth:changed", {
+        detail,
+      })
+    );
+  } catch {}
+}
+
+export function notifyUnreadChanged() {
+  try {
     window.dispatchEvent(new Event("unread:update"));
   } catch {}
 }
