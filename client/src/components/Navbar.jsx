@@ -9,7 +9,13 @@ import {
     acceptAssignmentRequest,
     declineAssignmentRequest,
 } from "../api/assignmentRequests";
-import { clearExpiredSession, getStoredUser, hasValidSession } from "../utils/authSession";
+import {
+    clearExpiredSession,
+    getStoredUser,
+    hasValidSession,
+    notifyAuthChanged,
+    notifyUnreadChanged,
+} from "../utils/authSession";
 
 function Navbar({
     hasSession,
@@ -113,11 +119,24 @@ function Navbar({
         window.addEventListener("unread:update", syncCounts);
 
         const handleAuthChanged = (event) => {
+            if (event.detail?.loggedOut) {
+                setLocalHasSession(false);
+                setLocalCurrentUser(null);
+                setLocalShowProfileMenu(false);
+                setNotifications([]);
+                setMessageNotifications([]);
+                setUnreadNotifications(0);
+                setUnreadMessages(0);
+                setOpenPanel(null);
+                return;
+            }
+
             const updatedUser = event.detail?.user || getStoredUser();
 
             if (updatedUser) {
                 setLocalHasSession(true);
                 setLocalCurrentUser(updatedUser);
+                return;
             }
 
             syncNavbarSession();
@@ -175,7 +194,8 @@ function Navbar({
         setLocalCurrentUser(null);
         setLocalShowProfileMenu(false);
         // Notify other parts of the app and redirect away from protected pages
-        try { window.dispatchEvent(new Event("auth:changed")); } catch { }
+        notifyAuthChanged({ loggedOut: true });
+        notifyUnreadChanged();
         navigate("/", { replace: true });
     };
 
@@ -225,7 +245,7 @@ function Navbar({
             localStorage.setItem("unreadMessages", String(unreadChatCount));
 
             try {
-                window.dispatchEvent(new Event("unread:update"));
+                notifyUnreadChanged();
             } catch { }
 
             return sortedItems;
@@ -281,7 +301,7 @@ function Navbar({
             localStorage.setItem("unreadNotifications", "0");
 
             try {
-                window.dispatchEvent(new Event("unread:update"));
+                notifyUnreadChanged();
             } catch { }
         } catch (error) {
             console.error("Failed to mark notifications read on close:", error);
@@ -326,7 +346,7 @@ function Navbar({
                     setUnreadMessages(0);
                     localStorage.setItem("unreadMessages", "0");
 
-                    window.dispatchEvent(new Event("unread:update"));
+                    notifyUnreadChanged();
                 } catch (error) {
                     console.error("Failed to mark chat notifications read:", error);
                 }
