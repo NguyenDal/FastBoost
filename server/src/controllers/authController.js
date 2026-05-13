@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const prisma = require("../prisma");
+const { generateReferralCode } = require("../utils/referralCode");
 
 const PASSWORD_RULES = {
   minLength: 8,
@@ -98,7 +99,7 @@ const sendPasswordResetEmail = async ({ to, resetUrl }) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, role, username } = req.body;
+    const { email, password, role, username, referralCode } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -128,16 +129,51 @@ const registerUser = async (req, res) => {
       });
     }
 
+    let referredByUser = null;
+
+    if (referralCode) {
+      referredByUser = await prisma.user.findUnique({
+        where: {
+          referralCode: String(referralCode).trim().toUpperCase(),
+        },
+        select: {
+          id: true,
+        },
+      });
+    }
+
+    const cleanUsername = username ? String(username).trim() : "";
+
+    let newReferralCode = generateReferralCode(cleanUsername);
+
+    let existingReferralCode = await prisma.user.findUnique({
+      where: {
+        referralCode: newReferralCode,
+      },
+    });
+
+    while (existingReferralCode) {
+      newReferralCode = generateReferralCode(cleanUsername);
+
+      existingReferralCode = await prisma.user.findUnique({
+        where: {
+          referralCode: newReferralCode,
+        },
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
-        username: username ? String(username).trim() || null : null,
+        username: cleanUsername || null,
         passwordHash: hashedPassword,
         role: role || "CUSTOMER",
-        profile: username
-          ? { create: { displayName: String(username).trim() || null } }
+        referralCode: newReferralCode,
+        referredById: referredByUser?.id || null,
+        profile: cleanUsername
+          ? { create: { displayName: cleanUsername } }
           : undefined,
       },
       include: {
@@ -153,6 +189,7 @@ const registerUser = async (req, res) => {
         email: user.email,
         role: user.role,
         username: user.username || null,
+        referralCode: user.referralCode,
         profile: user.profile ? { displayName: user.profile.displayName } : null,
       },
     });
@@ -210,6 +247,7 @@ const loginUser = async (req, res) => {
         email: user.email,
         role: user.role,
         username: user.username || null,
+        referralCode: user.referralCode || null,
         profile: user.profile ? { displayName: user.profile.displayName } : null,
       },
     });

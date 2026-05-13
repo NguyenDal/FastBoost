@@ -64,6 +64,11 @@ export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
  */
 export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetTokenPayload>
 /**
+ * Model VerificationCode
+ * 
+ */
+export type VerificationCode = $Result.DefaultSelection<Prisma.$VerificationCodePayload>
+/**
  * Model Notification
  * 
  */
@@ -82,6 +87,13 @@ export namespace $Enums {
 };
 
 export type AssignmentRequestStatus = (typeof AssignmentRequestStatus)[keyof typeof AssignmentRequestStatus]
+
+
+export const VerificationCodeType: {
+  EMAIL: 'EMAIL'
+};
+
+export type VerificationCodeType = (typeof VerificationCodeType)[keyof typeof VerificationCodeType]
 
 
 export const UserRole: {
@@ -120,6 +132,10 @@ export type NotificationType = (typeof NotificationType)[keyof typeof Notificati
 export type AssignmentRequestStatus = $Enums.AssignmentRequestStatus
 
 export const AssignmentRequestStatus: typeof $Enums.AssignmentRequestStatus
+
+export type VerificationCodeType = $Enums.VerificationCodeType
+
+export const VerificationCodeType: typeof $Enums.VerificationCodeType
 
 export type UserRole = $Enums.UserRole
 
@@ -353,6 +369,16 @@ export class PrismaClient<
     * ```
     */
   get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.verificationCode`: Exposes CRUD operations for the **VerificationCode** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VerificationCodes
+    * const verificationCodes = await prisma.verificationCode.findMany()
+    * ```
+    */
+  get verificationCode(): Prisma.VerificationCodeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
@@ -807,6 +833,7 @@ export namespace Prisma {
     ConversationParticipant: 'ConversationParticipant',
     Message: 'Message',
     PasswordResetToken: 'PasswordResetToken',
+    VerificationCode: 'VerificationCode',
     Notification: 'Notification'
   };
 
@@ -823,7 +850,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "notification"
+      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1567,6 +1594,80 @@ export namespace Prisma {
           }
         }
       }
+      VerificationCode: {
+        payload: Prisma.$VerificationCodePayload<ExtArgs>
+        fields: Prisma.VerificationCodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VerificationCodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VerificationCodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          findFirst: {
+            args: Prisma.VerificationCodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VerificationCodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          findMany: {
+            args: Prisma.VerificationCodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>[]
+          }
+          create: {
+            args: Prisma.VerificationCodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          createMany: {
+            args: Prisma.VerificationCodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VerificationCodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>[]
+          }
+          delete: {
+            args: Prisma.VerificationCodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          update: {
+            args: Prisma.VerificationCodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          deleteMany: {
+            args: Prisma.VerificationCodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VerificationCodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.VerificationCodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>[]
+          }
+          upsert: {
+            args: Prisma.VerificationCodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationCodePayload>
+          }
+          aggregate: {
+            args: Prisma.VerificationCodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVerificationCode>
+          }
+          groupBy: {
+            args: Prisma.VerificationCodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VerificationCodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VerificationCodeCountArgs<ExtArgs>
+            result: $Utils.Optional<VerificationCodeCountAggregateOutputType> | number
+          }
+        }
+      }
       Notification: {
         payload: Prisma.$NotificationPayload<ExtArgs>
         fields: Prisma.NotificationFieldRefs
@@ -1759,6 +1860,7 @@ export namespace Prisma {
     conversationParticipant?: ConversationParticipantOmit
     message?: MessageOmit
     passwordResetToken?: PasswordResetTokenOmit
+    verificationCode?: VerificationCodeOmit
     notification?: NotificationOmit
   }
 
@@ -1841,7 +1943,9 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     orders: number
+    verificationCodes: number
     passwordResetTokens: number
+    referrals: number
     providedAssignments: number
     conversationMembers: number
     sentMessages: number
@@ -1852,7 +1956,9 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
+    verificationCodes?: boolean | UserCountOutputTypeCountVerificationCodesArgs
     passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
+    referrals?: boolean | UserCountOutputTypeCountReferralsArgs
     providedAssignments?: boolean | UserCountOutputTypeCountProvidedAssignmentsArgs
     conversationMembers?: boolean | UserCountOutputTypeCountConversationMembersArgs
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
@@ -1882,8 +1988,22 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountVerificationCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VerificationCodeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PasswordResetTokenWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReferralsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
   /**
@@ -2058,30 +2178,39 @@ export namespace Prisma {
     id: string | null
     email: string | null
     username: string | null
+    emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
     createdAt: Date | null
     updatedAt: Date | null
+    referralCode: string | null
+    referredById: string | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: string | null
     email: string | null
     username: string | null
+    emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
     createdAt: Date | null
     updatedAt: Date | null
+    referralCode: string | null
+    referredById: string | null
   }
 
   export type UserCountAggregateOutputType = {
     id: number
     email: number
     username: number
+    emailVerifiedAt: number
     passwordHash: number
     role: number
     createdAt: number
     updatedAt: number
+    referralCode: number
+    referredById: number
     _all: number
   }
 
@@ -2090,30 +2219,39 @@ export namespace Prisma {
     id?: true
     email?: true
     username?: true
+    emailVerifiedAt?: true
     passwordHash?: true
     role?: true
     createdAt?: true
     updatedAt?: true
+    referralCode?: true
+    referredById?: true
   }
 
   export type UserMaxAggregateInputType = {
     id?: true
     email?: true
     username?: true
+    emailVerifiedAt?: true
     passwordHash?: true
     role?: true
     createdAt?: true
     updatedAt?: true
+    referralCode?: true
+    referredById?: true
   }
 
   export type UserCountAggregateInputType = {
     id?: true
     email?: true
     username?: true
+    emailVerifiedAt?: true
     passwordHash?: true
     role?: true
     createdAt?: true
     updatedAt?: true
+    referralCode?: true
+    referredById?: true
     _all?: true
   }
 
@@ -2193,10 +2331,13 @@ export namespace Prisma {
     id: string
     email: string
     username: string | null
+    emailVerifiedAt: Date | null
     passwordHash: string
     role: $Enums.UserRole
     createdAt: Date
     updatedAt: Date
+    referralCode: string | null
+    referredById: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -2220,13 +2361,19 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     username?: boolean
+    emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    referralCode?: boolean
+    referredById?: boolean
     orders?: boolean | User$ordersArgs<ExtArgs>
+    verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
+    referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
@@ -2240,37 +2387,51 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     username?: boolean
+    emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    referralCode?: boolean
+    referredById?: boolean
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
     username?: boolean
+    emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    referralCode?: boolean
+    referredById?: boolean
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
     id?: boolean
     email?: boolean
     username?: boolean
+    emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    referralCode?: boolean
+    referredById?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "passwordHash" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | User$ordersArgs<ExtArgs>
+    verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
+    referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
@@ -2279,15 +2440,22 @@ export namespace Prisma {
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
+  }
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    referredBy?: boolean | User$referredByArgs<ExtArgs>
+  }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      verificationCodes: Prisma.$VerificationCodePayload<ExtArgs>[]
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
       profile: Prisma.$ProfilePayload<ExtArgs> | null
+      referredBy: Prisma.$UserPayload<ExtArgs> | null
+      referrals: Prisma.$UserPayload<ExtArgs>[]
       providedAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
       conversationMembers: Prisma.$ConversationParticipantPayload<ExtArgs>[]
       sentMessages: Prisma.$MessagePayload<ExtArgs>[]
@@ -2299,10 +2467,13 @@ export namespace Prisma {
       id: string
       email: string
       username: string | null
+      emailVerifiedAt: Date | null
       passwordHash: string
       role: $Enums.UserRole
       createdAt: Date
       updatedAt: Date
+      referralCode: string | null
+      referredById: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2698,8 +2869,11 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    verificationCodes<T extends User$verificationCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     profile<T extends User$profileArgs<ExtArgs> = {}>(args?: Subset<T, User$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    referredBy<T extends User$referredByArgs<ExtArgs> = {}>(args?: Subset<T, User$referredByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    referrals<T extends User$referralsArgs<ExtArgs> = {}>(args?: Subset<T, User$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     providedAssignments<T extends User$providedAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$providedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversationMembers<T extends User$conversationMembersArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentMessages<T extends User$sentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2738,10 +2912,13 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly username: FieldRef<"User", 'String'>
+    readonly emailVerifiedAt: FieldRef<"User", 'DateTime'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly referralCode: FieldRef<"User", 'String'>
+    readonly referredById: FieldRef<"User", 'String'>
   }
     
 
@@ -2996,6 +3173,10 @@ export namespace Prisma {
      */
     data: UserCreateManyInput | UserCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3066,6 +3247,10 @@ export namespace Prisma {
      * Limit how many Users to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3159,6 +3344,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.verificationCodes
+   */
+  export type User$verificationCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    where?: VerificationCodeWhereInput
+    orderBy?: VerificationCodeOrderByWithRelationInput | VerificationCodeOrderByWithRelationInput[]
+    cursor?: VerificationCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VerificationCodeScalarFieldEnum | VerificationCodeScalarFieldEnum[]
+  }
+
+  /**
    * User.passwordResetTokens
    */
   export type User$passwordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3199,6 +3408,49 @@ export namespace Prisma {
      */
     include?: ProfileInclude<ExtArgs> | null
     where?: ProfileWhereInput
+  }
+
+  /**
+   * User.referredBy
+   */
+  export type User$referredByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * User.referrals
+   */
+  export type User$referralsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -13715,6 +13967,1108 @@ export namespace Prisma {
 
 
   /**
+   * Model VerificationCode
+   */
+
+  export type AggregateVerificationCode = {
+    _count: VerificationCodeCountAggregateOutputType | null
+    _min: VerificationCodeMinAggregateOutputType | null
+    _max: VerificationCodeMaxAggregateOutputType | null
+  }
+
+  export type VerificationCodeMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.VerificationCodeType | null
+    target: string | null
+    codeHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type VerificationCodeMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.VerificationCodeType | null
+    target: string | null
+    codeHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type VerificationCodeCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    target: number
+    codeHash: number
+    expiresAt: number
+    usedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type VerificationCodeMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    target?: true
+    codeHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type VerificationCodeMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    target?: true
+    codeHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type VerificationCodeCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    target?: true
+    codeHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type VerificationCodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VerificationCode to aggregate.
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerificationCodes to fetch.
+     */
+    orderBy?: VerificationCodeOrderByWithRelationInput | VerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VerificationCodes
+    **/
+    _count?: true | VerificationCodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VerificationCodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VerificationCodeMaxAggregateInputType
+  }
+
+  export type GetVerificationCodeAggregateType<T extends VerificationCodeAggregateArgs> = {
+        [P in keyof T & keyof AggregateVerificationCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVerificationCode[P]>
+      : GetScalarType<T[P], AggregateVerificationCode[P]>
+  }
+
+
+
+
+  export type VerificationCodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VerificationCodeWhereInput
+    orderBy?: VerificationCodeOrderByWithAggregationInput | VerificationCodeOrderByWithAggregationInput[]
+    by: VerificationCodeScalarFieldEnum[] | VerificationCodeScalarFieldEnum
+    having?: VerificationCodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VerificationCodeCountAggregateInputType | true
+    _min?: VerificationCodeMinAggregateInputType
+    _max?: VerificationCodeMaxAggregateInputType
+  }
+
+  export type VerificationCodeGroupByOutputType = {
+    id: string
+    userId: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date
+    usedAt: Date | null
+    createdAt: Date
+    _count: VerificationCodeCountAggregateOutputType | null
+    _min: VerificationCodeMinAggregateOutputType | null
+    _max: VerificationCodeMaxAggregateOutputType | null
+  }
+
+  type GetVerificationCodeGroupByPayload<T extends VerificationCodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VerificationCodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VerificationCodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VerificationCodeGroupByOutputType[P]>
+            : GetScalarType<T[P], VerificationCodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VerificationCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    target?: boolean
+    codeHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["verificationCode"]>
+
+  export type VerificationCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    target?: boolean
+    codeHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["verificationCode"]>
+
+  export type VerificationCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    target?: boolean
+    codeHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["verificationCode"]>
+
+  export type VerificationCodeSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    target?: boolean
+    codeHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type VerificationCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "target" | "codeHash" | "expiresAt" | "usedAt" | "createdAt", ExtArgs["result"]["verificationCode"]>
+  export type VerificationCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type VerificationCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type VerificationCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $VerificationCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "VerificationCode"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: $Enums.VerificationCodeType
+      target: string
+      codeHash: string
+      expiresAt: Date
+      usedAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["verificationCode"]>
+    composites: {}
+  }
+
+  type VerificationCodeGetPayload<S extends boolean | null | undefined | VerificationCodeDefaultArgs> = $Result.GetResult<Prisma.$VerificationCodePayload, S>
+
+  type VerificationCodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<VerificationCodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: VerificationCodeCountAggregateInputType | true
+    }
+
+  export interface VerificationCodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VerificationCode'], meta: { name: 'VerificationCode' } }
+    /**
+     * Find zero or one VerificationCode that matches the filter.
+     * @param {VerificationCodeFindUniqueArgs} args - Arguments to find a VerificationCode
+     * @example
+     * // Get one VerificationCode
+     * const verificationCode = await prisma.verificationCode.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VerificationCodeFindUniqueArgs>(args: SelectSubset<T, VerificationCodeFindUniqueArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one VerificationCode that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {VerificationCodeFindUniqueOrThrowArgs} args - Arguments to find a VerificationCode
+     * @example
+     * // Get one VerificationCode
+     * const verificationCode = await prisma.verificationCode.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VerificationCodeFindUniqueOrThrowArgs>(args: SelectSubset<T, VerificationCodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VerificationCode that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeFindFirstArgs} args - Arguments to find a VerificationCode
+     * @example
+     * // Get one VerificationCode
+     * const verificationCode = await prisma.verificationCode.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VerificationCodeFindFirstArgs>(args?: SelectSubset<T, VerificationCodeFindFirstArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VerificationCode that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeFindFirstOrThrowArgs} args - Arguments to find a VerificationCode
+     * @example
+     * // Get one VerificationCode
+     * const verificationCode = await prisma.verificationCode.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VerificationCodeFindFirstOrThrowArgs>(args?: SelectSubset<T, VerificationCodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more VerificationCodes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VerificationCodes
+     * const verificationCodes = await prisma.verificationCode.findMany()
+     * 
+     * // Get first 10 VerificationCodes
+     * const verificationCodes = await prisma.verificationCode.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const verificationCodeWithIdOnly = await prisma.verificationCode.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VerificationCodeFindManyArgs>(args?: SelectSubset<T, VerificationCodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a VerificationCode.
+     * @param {VerificationCodeCreateArgs} args - Arguments to create a VerificationCode.
+     * @example
+     * // Create one VerificationCode
+     * const VerificationCode = await prisma.verificationCode.create({
+     *   data: {
+     *     // ... data to create a VerificationCode
+     *   }
+     * })
+     * 
+     */
+    create<T extends VerificationCodeCreateArgs>(args: SelectSubset<T, VerificationCodeCreateArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many VerificationCodes.
+     * @param {VerificationCodeCreateManyArgs} args - Arguments to create many VerificationCodes.
+     * @example
+     * // Create many VerificationCodes
+     * const verificationCode = await prisma.verificationCode.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VerificationCodeCreateManyArgs>(args?: SelectSubset<T, VerificationCodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many VerificationCodes and returns the data saved in the database.
+     * @param {VerificationCodeCreateManyAndReturnArgs} args - Arguments to create many VerificationCodes.
+     * @example
+     * // Create many VerificationCodes
+     * const verificationCode = await prisma.verificationCode.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VerificationCodes and only return the `id`
+     * const verificationCodeWithIdOnly = await prisma.verificationCode.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VerificationCodeCreateManyAndReturnArgs>(args?: SelectSubset<T, VerificationCodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a VerificationCode.
+     * @param {VerificationCodeDeleteArgs} args - Arguments to delete one VerificationCode.
+     * @example
+     * // Delete one VerificationCode
+     * const VerificationCode = await prisma.verificationCode.delete({
+     *   where: {
+     *     // ... filter to delete one VerificationCode
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VerificationCodeDeleteArgs>(args: SelectSubset<T, VerificationCodeDeleteArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one VerificationCode.
+     * @param {VerificationCodeUpdateArgs} args - Arguments to update one VerificationCode.
+     * @example
+     * // Update one VerificationCode
+     * const verificationCode = await prisma.verificationCode.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VerificationCodeUpdateArgs>(args: SelectSubset<T, VerificationCodeUpdateArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more VerificationCodes.
+     * @param {VerificationCodeDeleteManyArgs} args - Arguments to filter VerificationCodes to delete.
+     * @example
+     * // Delete a few VerificationCodes
+     * const { count } = await prisma.verificationCode.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VerificationCodeDeleteManyArgs>(args?: SelectSubset<T, VerificationCodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VerificationCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VerificationCodes
+     * const verificationCode = await prisma.verificationCode.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VerificationCodeUpdateManyArgs>(args: SelectSubset<T, VerificationCodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VerificationCodes and returns the data updated in the database.
+     * @param {VerificationCodeUpdateManyAndReturnArgs} args - Arguments to update many VerificationCodes.
+     * @example
+     * // Update many VerificationCodes
+     * const verificationCode = await prisma.verificationCode.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more VerificationCodes and only return the `id`
+     * const verificationCodeWithIdOnly = await prisma.verificationCode.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends VerificationCodeUpdateManyAndReturnArgs>(args: SelectSubset<T, VerificationCodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one VerificationCode.
+     * @param {VerificationCodeUpsertArgs} args - Arguments to update or create a VerificationCode.
+     * @example
+     * // Update or create a VerificationCode
+     * const verificationCode = await prisma.verificationCode.upsert({
+     *   create: {
+     *     // ... data to create a VerificationCode
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VerificationCode we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VerificationCodeUpsertArgs>(args: SelectSubset<T, VerificationCodeUpsertArgs<ExtArgs>>): Prisma__VerificationCodeClient<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of VerificationCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeCountArgs} args - Arguments to filter VerificationCodes to count.
+     * @example
+     * // Count the number of VerificationCodes
+     * const count = await prisma.verificationCode.count({
+     *   where: {
+     *     // ... the filter for the VerificationCodes we want to count
+     *   }
+     * })
+    **/
+    count<T extends VerificationCodeCountArgs>(
+      args?: Subset<T, VerificationCodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VerificationCodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VerificationCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VerificationCodeAggregateArgs>(args: Subset<T, VerificationCodeAggregateArgs>): Prisma.PrismaPromise<GetVerificationCodeAggregateType<T>>
+
+    /**
+     * Group by VerificationCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerificationCodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VerificationCodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VerificationCodeGroupByArgs['orderBy'] }
+        : { orderBy?: VerificationCodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VerificationCodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVerificationCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the VerificationCode model
+   */
+  readonly fields: VerificationCodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VerificationCode.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VerificationCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the VerificationCode model
+   */
+  interface VerificationCodeFieldRefs {
+    readonly id: FieldRef<"VerificationCode", 'String'>
+    readonly userId: FieldRef<"VerificationCode", 'String'>
+    readonly type: FieldRef<"VerificationCode", 'VerificationCodeType'>
+    readonly target: FieldRef<"VerificationCode", 'String'>
+    readonly codeHash: FieldRef<"VerificationCode", 'String'>
+    readonly expiresAt: FieldRef<"VerificationCode", 'DateTime'>
+    readonly usedAt: FieldRef<"VerificationCode", 'DateTime'>
+    readonly createdAt: FieldRef<"VerificationCode", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * VerificationCode findUnique
+   */
+  export type VerificationCodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which VerificationCode to fetch.
+     */
+    where: VerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * VerificationCode findUniqueOrThrow
+   */
+  export type VerificationCodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which VerificationCode to fetch.
+     */
+    where: VerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * VerificationCode findFirst
+   */
+  export type VerificationCodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which VerificationCode to fetch.
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerificationCodes to fetch.
+     */
+    orderBy?: VerificationCodeOrderByWithRelationInput | VerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VerificationCodes.
+     */
+    cursor?: VerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VerificationCodes.
+     */
+    distinct?: VerificationCodeScalarFieldEnum | VerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * VerificationCode findFirstOrThrow
+   */
+  export type VerificationCodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which VerificationCode to fetch.
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerificationCodes to fetch.
+     */
+    orderBy?: VerificationCodeOrderByWithRelationInput | VerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VerificationCodes.
+     */
+    cursor?: VerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VerificationCodes.
+     */
+    distinct?: VerificationCodeScalarFieldEnum | VerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * VerificationCode findMany
+   */
+  export type VerificationCodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which VerificationCodes to fetch.
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerificationCodes to fetch.
+     */
+    orderBy?: VerificationCodeOrderByWithRelationInput | VerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VerificationCodes.
+     */
+    cursor?: VerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VerificationCodes.
+     */
+    distinct?: VerificationCodeScalarFieldEnum | VerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * VerificationCode create
+   */
+  export type VerificationCodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a VerificationCode.
+     */
+    data: XOR<VerificationCodeCreateInput, VerificationCodeUncheckedCreateInput>
+  }
+
+  /**
+   * VerificationCode createMany
+   */
+  export type VerificationCodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many VerificationCodes.
+     */
+    data: VerificationCodeCreateManyInput | VerificationCodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * VerificationCode createManyAndReturn
+   */
+  export type VerificationCodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many VerificationCodes.
+     */
+    data: VerificationCodeCreateManyInput | VerificationCodeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VerificationCode update
+   */
+  export type VerificationCodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a VerificationCode.
+     */
+    data: XOR<VerificationCodeUpdateInput, VerificationCodeUncheckedUpdateInput>
+    /**
+     * Choose, which VerificationCode to update.
+     */
+    where: VerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * VerificationCode updateMany
+   */
+  export type VerificationCodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VerificationCodes.
+     */
+    data: XOR<VerificationCodeUpdateManyMutationInput, VerificationCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which VerificationCodes to update
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * Limit how many VerificationCodes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * VerificationCode updateManyAndReturn
+   */
+  export type VerificationCodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * The data used to update VerificationCodes.
+     */
+    data: XOR<VerificationCodeUpdateManyMutationInput, VerificationCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which VerificationCodes to update
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * Limit how many VerificationCodes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VerificationCode upsert
+   */
+  export type VerificationCodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the VerificationCode to update in case it exists.
+     */
+    where: VerificationCodeWhereUniqueInput
+    /**
+     * In case the VerificationCode found by the `where` argument doesn't exist, create a new VerificationCode with this data.
+     */
+    create: XOR<VerificationCodeCreateInput, VerificationCodeUncheckedCreateInput>
+    /**
+     * In case the VerificationCode was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VerificationCodeUpdateInput, VerificationCodeUncheckedUpdateInput>
+  }
+
+  /**
+   * VerificationCode delete
+   */
+  export type VerificationCodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter which VerificationCode to delete.
+     */
+    where: VerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * VerificationCode deleteMany
+   */
+  export type VerificationCodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VerificationCodes to delete
+     */
+    where?: VerificationCodeWhereInput
+    /**
+     * Limit how many VerificationCodes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * VerificationCode without action
+   */
+  export type VerificationCodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationCode
+     */
+    select?: VerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationCode
+     */
+    omit?: VerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VerificationCodeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Notification
    */
 
@@ -14843,10 +16197,13 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     username: 'username',
+    emailVerifiedAt: 'emailVerifiedAt',
     passwordHash: 'passwordHash',
     role: 'role',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    referralCode: 'referralCode',
+    referredById: 'referredById'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -14990,6 +16347,20 @@ export namespace Prisma {
   export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
 
 
+  export const VerificationCodeScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    target: 'target',
+    codeHash: 'codeHash',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type VerificationCodeScalarFieldEnum = (typeof VerificationCodeScalarFieldEnum)[keyof typeof VerificationCodeScalarFieldEnum]
+
+
   export const NotificationScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -15066,20 +16437,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'UserRole'
-   */
-  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
-    
-
-
-  /**
-   * Reference to a field of type 'UserRole[]'
-   */
-  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
-    
-
-
-  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -15090,6 +16447,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole[]'
+   */
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
@@ -15171,6 +16542,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'VerificationCodeType'
+   */
+  export type EnumVerificationCodeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationCodeType'>
+    
+
+
+  /**
+   * Reference to a field of type 'VerificationCodeType[]'
+   */
+  export type ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationCodeType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'NotificationType'
    */
   export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
@@ -15194,13 +16579,19 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     username?: StringNullableFilter<"User"> | string | null
+    emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    referralCode?: StringNullableFilter<"User"> | string | null
+    referredById?: StringNullableFilter<"User"> | string | null
     orders?: OrderListRelationFilter
+    verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
@@ -15213,13 +16604,19 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     username?: SortOrderInput | SortOrder
+    emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    referralCode?: SortOrderInput | SortOrder
+    referredById?: SortOrderInput | SortOrder
     orders?: OrderOrderByRelationAggregateInput
+    verificationCodes?: VerificationCodeOrderByRelationAggregateInput
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
     profile?: ProfileOrderByWithRelationInput
+    referredBy?: UserOrderByWithRelationInput
+    referrals?: UserOrderByRelationAggregateInput
     providedAssignments?: OrderAssignmentOrderByRelationAggregateInput
     conversationMembers?: ConversationParticipantOrderByRelationAggregateInput
     sentMessages?: MessageOrderByRelationAggregateInput
@@ -15232,32 +16629,41 @@ export namespace Prisma {
     id?: string
     email?: string
     username?: string
+    referralCode?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
+    emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    referredById?: StringNullableFilter<"User"> | string | null
     orders?: OrderListRelationFilter
+    verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
     boosterAssignmentRequests?: AssignmentRequestListRelationFilter
     adminAssignmentRequests?: AssignmentRequestListRelationFilter
     notifications?: NotificationListRelationFilter
-  }, "id" | "email" | "username">
+  }, "id" | "email" | "username" | "referralCode">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     email?: SortOrder
     username?: SortOrderInput | SortOrder
+    emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    referralCode?: SortOrderInput | SortOrder
+    referredById?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -15270,10 +16676,13 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     username?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailVerifiedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     passwordHash?: StringWithAggregatesFilter<"User"> | string
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    referralCode?: StringNullableWithAggregatesFilter<"User"> | string | null
+    referredById?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type ProfileWhereInput = {
@@ -16003,6 +17412,76 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PasswordResetToken"> | Date | string
   }
 
+  export type VerificationCodeWhereInput = {
+    AND?: VerificationCodeWhereInput | VerificationCodeWhereInput[]
+    OR?: VerificationCodeWhereInput[]
+    NOT?: VerificationCodeWhereInput | VerificationCodeWhereInput[]
+    id?: StringFilter<"VerificationCode"> | string
+    userId?: StringFilter<"VerificationCode"> | string
+    type?: EnumVerificationCodeTypeFilter<"VerificationCode"> | $Enums.VerificationCodeType
+    target?: StringFilter<"VerificationCode"> | string
+    codeHash?: StringFilter<"VerificationCode"> | string
+    expiresAt?: DateTimeFilter<"VerificationCode"> | Date | string
+    usedAt?: DateTimeNullableFilter<"VerificationCode"> | Date | string | null
+    createdAt?: DateTimeFilter<"VerificationCode"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type VerificationCodeOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    target?: SortOrder
+    codeHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type VerificationCodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VerificationCodeWhereInput | VerificationCodeWhereInput[]
+    OR?: VerificationCodeWhereInput[]
+    NOT?: VerificationCodeWhereInput | VerificationCodeWhereInput[]
+    userId?: StringFilter<"VerificationCode"> | string
+    type?: EnumVerificationCodeTypeFilter<"VerificationCode"> | $Enums.VerificationCodeType
+    target?: StringFilter<"VerificationCode"> | string
+    codeHash?: StringFilter<"VerificationCode"> | string
+    expiresAt?: DateTimeFilter<"VerificationCode"> | Date | string
+    usedAt?: DateTimeNullableFilter<"VerificationCode"> | Date | string | null
+    createdAt?: DateTimeFilter<"VerificationCode"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type VerificationCodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    target?: SortOrder
+    codeHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: VerificationCodeCountOrderByAggregateInput
+    _max?: VerificationCodeMaxOrderByAggregateInput
+    _min?: VerificationCodeMinOrderByAggregateInput
+  }
+
+  export type VerificationCodeScalarWhereWithAggregatesInput = {
+    AND?: VerificationCodeScalarWhereWithAggregatesInput | VerificationCodeScalarWhereWithAggregatesInput[]
+    OR?: VerificationCodeScalarWhereWithAggregatesInput[]
+    NOT?: VerificationCodeScalarWhereWithAggregatesInput | VerificationCodeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"VerificationCode"> | string
+    userId?: StringWithAggregatesFilter<"VerificationCode"> | string
+    type?: EnumVerificationCodeTypeWithAggregatesFilter<"VerificationCode"> | $Enums.VerificationCodeType
+    target?: StringWithAggregatesFilter<"VerificationCode"> | string
+    codeHash?: StringWithAggregatesFilter<"VerificationCode"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"VerificationCode"> | Date | string
+    usedAt?: DateTimeNullableWithAggregatesFilter<"VerificationCode"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"VerificationCode"> | Date | string
+  }
+
   export type NotificationWhereInput = {
     AND?: NotificationWhereInput | NotificationWhereInput[]
     OR?: NotificationWhereInput[]
@@ -16082,13 +17561,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -16101,13 +17585,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -16120,13 +17609,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -16139,13 +17633,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -16158,30 +17657,38 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileCreateInput = {
@@ -16971,6 +18478,82 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type VerificationCodeCreateInput = {
+    id?: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutVerificationCodesInput
+  }
+
+  export type VerificationCodeUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type VerificationCodeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutVerificationCodesNestedInput
+  }
+
+  export type VerificationCodeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerificationCodeCreateManyInput = {
+    id?: string
+    userId: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type VerificationCodeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerificationCodeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NotificationCreateInput = {
     id?: string
     type: $Enums.NotificationType
@@ -17084,6 +18667,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type EnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -17108,6 +18702,12 @@ export namespace Prisma {
     none?: OrderWhereInput
   }
 
+  export type VerificationCodeListRelationFilter = {
+    every?: VerificationCodeWhereInput
+    some?: VerificationCodeWhereInput
+    none?: VerificationCodeWhereInput
+  }
+
   export type PasswordResetTokenListRelationFilter = {
     every?: PasswordResetTokenWhereInput
     some?: PasswordResetTokenWhereInput
@@ -17117,6 +18717,17 @@ export namespace Prisma {
   export type ProfileNullableScalarRelationFilter = {
     is?: ProfileWhereInput | null
     isNot?: ProfileWhereInput | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
   }
 
   export type OrderAssignmentListRelationFilter = {
@@ -17158,7 +18769,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type VerificationCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type PasswordResetTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -17186,30 +18805,39 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     username?: SortOrder
+    emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    referralCode?: SortOrder
+    referredById?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
     username?: SortOrder
+    emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    referralCode?: SortOrder
+    referredById?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
     username?: SortOrder
+    emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    referralCode?: SortOrder
+    referredById?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -17246,6 +18874,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -17336,17 +18978,6 @@ export namespace Prisma {
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -17563,20 +19194,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -17840,6 +19457,56 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumVerificationCodeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.VerificationCodeType | EnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumVerificationCodeTypeFilter<$PrismaModel> | $Enums.VerificationCodeType
+  }
+
+  export type VerificationCodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    target?: SortOrder
+    codeHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type VerificationCodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    target?: SortOrder
+    codeHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type VerificationCodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    target?: SortOrder
+    codeHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumVerificationCodeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.VerificationCodeType | EnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumVerificationCodeTypeWithAggregatesFilter<$PrismaModel> | $Enums.VerificationCodeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVerificationCodeTypeFilter<$PrismaModel>
+    _max?: NestedEnumVerificationCodeTypeFilter<$PrismaModel>
+  }
+
   export type EnumNotificationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -17898,6 +19565,13 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type VerificationCodeCreateNestedManyWithoutUserInput = {
+    create?: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput> | VerificationCodeCreateWithoutUserInput[] | VerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VerificationCodeCreateOrConnectWithoutUserInput | VerificationCodeCreateOrConnectWithoutUserInput[]
+    createMany?: VerificationCodeCreateManyUserInputEnvelope
+    connect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+  }
+
   export type PasswordResetTokenCreateNestedManyWithoutUserInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
@@ -17909,6 +19583,19 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
     connect?: ProfileWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReferralsInput = {
+    create?: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferralsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedManyWithoutReferredByInput = {
+    create?: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput> | UserCreateWithoutReferredByInput[] | UserUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutReferredByInput | UserCreateOrConnectWithoutReferredByInput[]
+    createMany?: UserCreateManyReferredByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type OrderAssignmentCreateNestedManyWithoutBoosterInput = {
@@ -17960,6 +19647,13 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type VerificationCodeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput> | VerificationCodeCreateWithoutUserInput[] | VerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VerificationCodeCreateOrConnectWithoutUserInput | VerificationCodeCreateOrConnectWithoutUserInput[]
+    createMany?: VerificationCodeCreateManyUserInputEnvelope
+    connect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+  }
+
   export type PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
@@ -17971,6 +19665,13 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
     connect?: ProfileWhereUniqueInput
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutReferredByInput = {
+    create?: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput> | UserCreateWithoutReferredByInput[] | UserUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutReferredByInput | UserCreateOrConnectWithoutReferredByInput[]
+    createMany?: UserCreateManyReferredByInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput = {
@@ -18023,6 +19724,10 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
   }
@@ -18043,6 +19748,20 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutCustomerInput | OrderUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutCustomerInput | OrderUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type VerificationCodeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput> | VerificationCodeCreateWithoutUserInput[] | VerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VerificationCodeCreateOrConnectWithoutUserInput | VerificationCodeCreateOrConnectWithoutUserInput[]
+    upsert?: VerificationCodeUpsertWithWhereUniqueWithoutUserInput | VerificationCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: VerificationCodeCreateManyUserInputEnvelope
+    set?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    disconnect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    delete?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    connect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    update?: VerificationCodeUpdateWithWhereUniqueWithoutUserInput | VerificationCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: VerificationCodeUpdateManyWithWhereWithoutUserInput | VerificationCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: VerificationCodeScalarWhereInput | VerificationCodeScalarWhereInput[]
   }
 
   export type PasswordResetTokenUpdateManyWithoutUserNestedInput = {
@@ -18067,6 +19786,30 @@ export namespace Prisma {
     delete?: ProfileWhereInput | boolean
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserUpdateOneWithoutReferralsNestedInput = {
+    create?: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferralsInput
+    upsert?: UserUpsertWithoutReferralsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReferralsInput, UserUpdateWithoutReferralsInput>, UserUncheckedUpdateWithoutReferralsInput>
+  }
+
+  export type UserUpdateManyWithoutReferredByNestedInput = {
+    create?: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput> | UserCreateWithoutReferredByInput[] | UserUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutReferredByInput | UserCreateOrConnectWithoutReferredByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutReferredByInput | UserUpsertWithWhereUniqueWithoutReferredByInput[]
+    createMany?: UserCreateManyReferredByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutReferredByInput | UserUpdateWithWhereUniqueWithoutReferredByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutReferredByInput | UserUpdateManyWithWhereWithoutReferredByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type OrderAssignmentUpdateManyWithoutBoosterNestedInput = {
@@ -18167,6 +19910,20 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type VerificationCodeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput> | VerificationCodeCreateWithoutUserInput[] | VerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VerificationCodeCreateOrConnectWithoutUserInput | VerificationCodeCreateOrConnectWithoutUserInput[]
+    upsert?: VerificationCodeUpsertWithWhereUniqueWithoutUserInput | VerificationCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: VerificationCodeCreateManyUserInputEnvelope
+    set?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    disconnect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    delete?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    connect?: VerificationCodeWhereUniqueInput | VerificationCodeWhereUniqueInput[]
+    update?: VerificationCodeUpdateWithWhereUniqueWithoutUserInput | VerificationCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: VerificationCodeUpdateManyWithWhereWithoutUserInput | VerificationCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: VerificationCodeScalarWhereInput | VerificationCodeScalarWhereInput[]
+  }
+
   export type PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<PasswordResetTokenCreateWithoutUserInput, PasswordResetTokenUncheckedCreateWithoutUserInput> | PasswordResetTokenCreateWithoutUserInput[] | PasswordResetTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PasswordResetTokenCreateOrConnectWithoutUserInput | PasswordResetTokenCreateOrConnectWithoutUserInput[]
@@ -18189,6 +19946,20 @@ export namespace Prisma {
     delete?: ProfileWhereInput | boolean
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserUncheckedUpdateManyWithoutReferredByNestedInput = {
+    create?: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput> | UserCreateWithoutReferredByInput[] | UserUncheckedCreateWithoutReferredByInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutReferredByInput | UserCreateOrConnectWithoutReferredByInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutReferredByInput | UserUpsertWithWhereUniqueWithoutReferredByInput[]
+    createMany?: UserCreateManyReferredByInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutReferredByInput | UserUpdateWithWhereUniqueWithoutReferredByInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutReferredByInput | UserUpdateManyWithWhereWithoutReferredByInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput = {
@@ -18385,10 +20156,6 @@ export namespace Prisma {
 
   export type EnumOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.OrderStatus
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -18747,6 +20514,24 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, UserUpdateWithoutPasswordResetTokensInput>, UserUncheckedUpdateWithoutPasswordResetTokensInput>
   }
 
+  export type UserCreateNestedOneWithoutVerificationCodesInput = {
+    create?: XOR<UserCreateWithoutVerificationCodesInput, UserUncheckedCreateWithoutVerificationCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutVerificationCodesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumVerificationCodeTypeFieldUpdateOperationsInput = {
+    set?: $Enums.VerificationCodeType
+  }
+
+  export type UserUpdateOneRequiredWithoutVerificationCodesNestedInput = {
+    create?: XOR<UserCreateWithoutVerificationCodesInput, UserUncheckedCreateWithoutVerificationCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutVerificationCodesInput
+    upsert?: UserUpsertWithoutVerificationCodesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutVerificationCodesInput, UserUpdateWithoutVerificationCodesInput>, UserUncheckedUpdateWithoutVerificationCodesInput>
+  }
+
   export type UserCreateNestedOneWithoutNotificationsInput = {
     create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
@@ -18791,6 +20576,17 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
@@ -18867,6 +20663,20 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -18898,17 +20708,6 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -18933,20 +20732,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -19038,6 +20823,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
     _max?: NestedEnumAssignmentRequestStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumVerificationCodeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.VerificationCodeType | EnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumVerificationCodeTypeFilter<$PrismaModel> | $Enums.VerificationCodeType
+  }
+
+  export type NestedEnumVerificationCodeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.VerificationCodeType | EnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VerificationCodeType[] | ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumVerificationCodeTypeWithAggregatesFilter<$PrismaModel> | $Enums.VerificationCodeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVerificationCodeTypeFilter<$PrismaModel>
+    _max?: NestedEnumVerificationCodeTypeFilter<$PrismaModel>
   }
 
   export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
@@ -19155,6 +20957,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type VerificationCodeCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type VerificationCodeUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type VerificationCodeCreateOrConnectWithoutUserInput = {
+    where: VerificationCodeWhereUniqueInput
+    create: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type VerificationCodeCreateManyUserInputEnvelope = {
+    data: VerificationCodeCreateManyUserInput | VerificationCodeCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PasswordResetTokenCreateWithoutUserInput = {
     id?: string
     tokenHash: string
@@ -19202,6 +21034,113 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutUserInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserCreateWithoutReferralsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReferralsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReferralsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
+  }
+
+  export type UserCreateWithoutReferredByInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReferredByInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReferredByInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput>
+  }
+
+  export type UserCreateManyReferredByInputEnvelope = {
+    data: UserCreateManyReferredByInput | UserCreateManyReferredByInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrderAssignmentCreateWithoutBoosterInput = {
@@ -19425,6 +21364,36 @@ export namespace Prisma {
     totalPrice?: FloatFilter<"Order"> | number
   }
 
+  export type VerificationCodeUpsertWithWhereUniqueWithoutUserInput = {
+    where: VerificationCodeWhereUniqueInput
+    update: XOR<VerificationCodeUpdateWithoutUserInput, VerificationCodeUncheckedUpdateWithoutUserInput>
+    create: XOR<VerificationCodeCreateWithoutUserInput, VerificationCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type VerificationCodeUpdateWithWhereUniqueWithoutUserInput = {
+    where: VerificationCodeWhereUniqueInput
+    data: XOR<VerificationCodeUpdateWithoutUserInput, VerificationCodeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type VerificationCodeUpdateManyWithWhereWithoutUserInput = {
+    where: VerificationCodeScalarWhereInput
+    data: XOR<VerificationCodeUpdateManyMutationInput, VerificationCodeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type VerificationCodeScalarWhereInput = {
+    AND?: VerificationCodeScalarWhereInput | VerificationCodeScalarWhereInput[]
+    OR?: VerificationCodeScalarWhereInput[]
+    NOT?: VerificationCodeScalarWhereInput | VerificationCodeScalarWhereInput[]
+    id?: StringFilter<"VerificationCode"> | string
+    userId?: StringFilter<"VerificationCode"> | string
+    type?: EnumVerificationCodeTypeFilter<"VerificationCode"> | $Enums.VerificationCodeType
+    target?: StringFilter<"VerificationCode"> | string
+    codeHash?: StringFilter<"VerificationCode"> | string
+    expiresAt?: DateTimeFilter<"VerificationCode"> | Date | string
+    usedAt?: DateTimeNullableFilter<"VerificationCode"> | Date | string | null
+    createdAt?: DateTimeFilter<"VerificationCode"> | Date | string
+  }
+
   export type PasswordResetTokenUpsertWithWhereUniqueWithoutUserInput = {
     where: PasswordResetTokenWhereUniqueInput
     update: XOR<PasswordResetTokenUpdateWithoutUserInput, PasswordResetTokenUncheckedUpdateWithoutUserInput>
@@ -19480,6 +21449,95 @@ export namespace Prisma {
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutReferralsInput = {
+    update: XOR<UserUpdateWithoutReferralsInput, UserUncheckedUpdateWithoutReferralsInput>
+    create: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReferralsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReferralsInput, UserUncheckedUpdateWithoutReferralsInput>
+  }
+
+  export type UserUpdateWithoutReferralsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReferralsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutReferredByInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutReferredByInput, UserUncheckedUpdateWithoutReferredByInput>
+    create: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutReferredByInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutReferredByInput, UserUncheckedUpdateWithoutReferredByInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutReferredByInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutReferredByInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    username?: StringNullableFilter<"User"> | string | null
+    emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    passwordHash?: StringFilter<"User"> | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    referralCode?: StringNullableFilter<"User"> | string | null
+    referredById?: StringNullableFilter<"User"> | string | null
   }
 
   export type OrderAssignmentUpsertWithWhereUniqueWithoutBoosterInput = {
@@ -19643,12 +21701,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -19661,12 +21724,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -19695,12 +21763,17 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -19713,12 +21786,17 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -19845,12 +21923,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -19863,12 +21946,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -19991,12 +22079,17 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -20009,12 +22102,17 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -20208,13 +22306,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
@@ -20226,13 +22329,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
@@ -20359,13 +22467,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
@@ -20377,13 +22490,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
@@ -20488,13 +22606,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -20506,13 +22629,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -20529,13 +22657,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -20547,13 +22680,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -20680,13 +22818,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -20698,13 +22841,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -20727,13 +22875,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -20745,13 +22898,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -21060,13 +23218,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
@@ -21078,13 +23241,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
@@ -21141,13 +23309,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
@@ -21159,13 +23332,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
@@ -21200,13 +23378,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
@@ -21218,13 +23401,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
@@ -21281,13 +23469,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
@@ -21299,13 +23492,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
@@ -21317,12 +23515,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -21335,12 +23538,17 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -21369,12 +23577,17 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -21387,12 +23600,125 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutVerificationCodesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutVerificationCodesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutVerificationCodesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutVerificationCodesInput, UserUncheckedCreateWithoutVerificationCodesInput>
+  }
+
+  export type UserUpsertWithoutVerificationCodesInput = {
+    update: XOR<UserUpdateWithoutVerificationCodesInput, UserUncheckedUpdateWithoutVerificationCodesInput>
+    create: XOR<UserCreateWithoutVerificationCodesInput, UserUncheckedCreateWithoutVerificationCodesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutVerificationCodesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutVerificationCodesInput, UserUncheckedUpdateWithoutVerificationCodesInput>
+  }
+
+  export type UserUpdateWithoutVerificationCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutVerificationCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -21405,13 +23731,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
     orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
@@ -21423,13 +23754,18 @@ export namespace Prisma {
     id?: string
     email: string
     username?: string | null
+    emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
     createdAt?: Date | string
     updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -21457,13 +23793,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
@@ -21475,13 +23816,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -21530,12 +23876,34 @@ export namespace Prisma {
     totalPrice?: number
   }
 
+  export type VerificationCodeCreateManyUserInput = {
+    id?: string
+    type: $Enums.VerificationCodeType
+    target: string
+    codeHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
   export type PasswordResetTokenCreateManyUserInput = {
     id?: string
     tokenHash: string
     expiresAt: Date | string
     usedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type UserCreateManyReferredByInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
   }
 
   export type OrderAssignmentCreateManyBoosterInput = {
@@ -21717,6 +24085,36 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
   }
 
+  export type VerificationCodeUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerificationCodeUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerificationCodeUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumVerificationCodeTypeFieldUpdateOperationsInput | $Enums.VerificationCodeType
+    target?: StringFieldUpdateOperationsInput | string
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PasswordResetTokenUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
@@ -21739,6 +24137,64 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpdateWithoutReferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutReferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderAssignmentUpdateWithoutBoosterInput = {

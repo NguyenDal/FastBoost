@@ -1,7 +1,75 @@
 const prisma = require("../prisma");
+const { generateReferralCode } = require("../utils/referralCode");
 
 function getUserId(req) {
     return req.user?.id || req.user?.userId;
+}
+
+async function ensureReferralCode(userId, username = "") {
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            username: true,
+            referralCode: true,
+            _count: {
+                select: {
+                    referrals: true,
+                },
+            },
+        },
+    });
+
+    if (!existingUser) return null;
+
+    if (existingUser.referralCode) {
+        return existingUser;
+    }
+
+    let newReferralCode = generateReferralCode(username || existingUser.username || "");
+
+    let existingCode = await prisma.user.findUnique({
+        where: {
+            referralCode: newReferralCode,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    while (existingCode) {
+        newReferralCode = generateReferralCode(username || existingUser.username || "");
+
+        existingCode = await prisma.user.findUnique({
+            where: {
+                referralCode: newReferralCode,
+            },
+            select: {
+                id: true,
+            },
+        });
+    }
+
+    return prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            referralCode: newReferralCode,
+        },
+        select: {
+            id: true,
+            username: true,
+            referralCode: true,
+            _count: {
+                select: {
+                    referrals: true,
+                },
+            },
+        },
+    });
 }
 
 const LOYALTY_TIERS = [
@@ -91,6 +159,8 @@ exports.getMyLoyalty = async (req, res) => {
             });
         }
 
+        const user = await ensureReferralCode(userId);
+
         const completedOrders = await prisma.order.findMany({
             where: {
                 customerId: userId,
@@ -156,6 +226,12 @@ exports.getMyLoyalty = async (req, res) => {
 
                 tiers: LOYALTY_TIERS,
                 completedOrders: rewardHistory,
+
+                referralCode: user?.referralCode || null,
+                referralLink: user?.referralCode
+                    ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
+                    : null,
+                referralCount: user?._count?.referrals || 0,
             },
         });
     } catch (error) {

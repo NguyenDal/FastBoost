@@ -9,6 +9,8 @@ const {
   updateMyAccount,
   changeMyPassword,
   uploadMyProfilePicture,
+  sendEmailVerificationCode,
+  confirmEmailVerificationCode,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -32,6 +34,9 @@ const upload = multer({
 router.get("/me", protect, me);
 router.patch("/me", protect, updateMyAccount);
 router.patch("/me/password", protect, changeMyPassword);
+
+router.post("/me/email-verification/send", protect, sendEmailVerificationCode);
+router.post("/me/email-verification/confirm", protect, confirmEmailVerificationCode);
 
 router.post(
   "/me/profile-picture",

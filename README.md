@@ -8,121 +8,67 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Account settings, real S3 profile uploads, avatar loading polish, and spend-based loyalty
+### Latest session update — Referral links, email verification, phone cleanup, and verification animations
 
-#### Account Settings page
-- Added a protected account settings page:
-  - `client/src/pages/AccountSettingsPage.jsx`
-  - `client/src/styles/AccountSettings.css`
+#### Private referral link / invite direction
+- Started the private invite/referral feature so users can share a personal FastBoost referral link from the Loyalty page.
+- Added/continued referral-code support on the user/account side so the Loyalty page can display a private referral link instead of only loyalty stats.
+- Important implementation direction:
+  - existing users may not have a referral code, so the backend should auto-generate one when loading loyalty data if `user.referralCode` is missing.
+  - the Loyalty page should show the referral link field only; the raw referral code does not need to be displayed separately.
+  - after a referred visitor registers, the saved referral code in localStorage should be sent with the register request and then cleared after successful registration.
+
+#### Email verification added under Account Settings
+- Added email verification flow under the Profile Details card.
+- Added backend email verification routes under `/api/user`:
+  - `POST /api/user/me/email-verification/send`
+  - `POST /api/user/me/email-verification/confirm`
+- Added frontend API helpers in `client/src/api/accountSettings.js`:
+  - `sendEmailVerificationCode()`
+  - `confirmEmailVerificationCode(code)`
+- Added `VerificationCode` model direction in Prisma for one-time verification codes.
+- Email verification uses a 6-digit code and the existing SMTP/Nodemailer setup.
+- Email verification state is returned to the frontend as:
+  - `emailVerifiedAt`
+  - `emailVerified`
+- If a verified user changes their email and saves Profile Details, the account becomes unverified again until they verify the new email.
+
+#### Modern 6-digit verification code UI
+- Replaced the normal single text input + Verify button with six individual digit boxes.
+- Verification code UX now supports:
+  - auto-focus to the next digit after typing
+  - backspace movement to the previous box
+  - pasting a full 6-digit code
+  - auto-submit once all 6 boxes are filled
+- Added a resend cooldown timer after clicking **Send Email Code**:
+  - button changes to `Resend in 60s`
+  - button is disabled until the countdown finishes
+
+#### Verification animation polish
+- Improved verification panel behavior so it does not suddenly appear/disappear.
+- When a verified user changes email and clicks **Save Profile**, the email verification panel slides downward into view.
+- When a verification code is wrong:
+  - no text error is shown below the field
+  - all six digit boxes highlight red and shake
+  - boxes reset for another attempt
+- When verification succeeds:
+  - all six digit boxes highlight green
+  - the verification panel slides upward
+  - the panel disappears smoothly
+  - the email badge changes to Verified after the animation
+
+#### Phone verification removed
+- Phone verification was tested as a dev/demo flow, but it did not send real SMS without a paid SMS provider.
+- Decision: remove everything related to phone number/phone verification for now.
+- Removed/cleaned phone verification direction from:
+  - Account Settings UI
   - `client/src/api/accountSettings.js`
-  - route: `/account/settings`
-- Navbar profile dropdown now routes **Account Settings** to `/account/settings`.
-- Account Settings allows authenticated users to update:
-  - username
-  - email
-  - profile picture
-  - password
-- Account Settings preview card displays:
-  - circular profile image
-  - username
-  - email
-- The profile form now focuses only on username/email because image upload is handled directly from the avatar preview.
-
-#### Backend account/profile endpoints
-- Extended existing user controller/routes with profile/account update actions:
-  - `PATCH /api/user/me` — update username, email, and saved profile image URL
-  - `PATCH /api/user/me/password` — change current password after validating old password
-  - `POST /api/user/me/profile-picture` — upload profile image to S3 and save URL on profile
-- `GET /api/user/me` now returns profile data needed by the frontend, including `profile.profileImageUrl`.
-- Account update validates:
-  - username required
-  - username minimum length
-  - case-insensitive username uniqueness
-  - valid email format
-  - case-insensitive email uniqueness
-- Password update validates:
-  - current password required
-  - current password must match bcrypt hash
-  - new password and confirm password must match
-  - new password must be different from current password
-  - new password must pass the same strength rules used by reset password
-
-#### Real S3 profile picture uploads
-- Added true profile picture upload flow instead of manually pasting image URLs.
-- Correct upload flow:
-  ```text
-  React file picker -> protected backend route -> backend uploads to S3 -> backend saves S3 URL -> frontend updates localStorage/navbar
-  ```
-- Added backend S3 upload utility:
-  - `server/src/utils/s3Upload.js`
-- Added backend dependencies:
-  - `multer`
-  - `@aws-sdk/client-s3`
-- Profile pictures upload to the public FastBoost asset bucket:
-  - bucket: `fastboost-assets`
-  - prefix: `profiles/<userId>/...`
-  - public base URL: `https://fastboost-assets.s3.amazonaws.com/`
-- Added local/backend environment variable:
-  - `AWS_S3_ASSETS_BUCKET="fastboost-assets"`
-- AWS permissions updated:
-  - existing S3 bucket policy keeps public `s3:GetObject` for viewing images
-  - IAM user `fastboost-local-kms-user` now has inline policy `FastBoostUploadProfileImages`
-  - upload permission is restricted to `arn:aws:s3:::fastboost-assets/profiles/*`
-
-#### Avatar upload UX polish
-- Removed the visible file upload field from the Profile Details form.
-- Users now change profile picture by hovering/clicking the avatar inside the Account Settings preview card.
-- Hovering the account preview avatar shows:
-  - dark transparent full-circle overlay
-  - large centered upload icon
-  - current profile image still barely visible underneath
-- The upload trigger uses a hidden file input with `useRef`, so the UI stays clean.
-- Profile picture is now clipped correctly inside a circular image frame while still allowing the outside glow ring to show.
-- Fixed circular fit issues by separating:
-  - outer avatar button/glow layer
-  - inner circular image clipping frame
-  - upload overlay layer
-- Images use `object-fit: cover` and `object-position: center` so uploaded photos fit the circle cleanly.
-
-#### Immediate navbar avatar updates
-- Navbar now updates immediately after profile image upload instead of waiting for refresh/focus.
-- Added/used custom browser events:
-  - `auth:changed` — sends updated user data to Navbar
-  - `profile-image:uploading` — tells Navbar when avatar upload starts/ends
-- Navbar avatar now reads the latest image from:
-  - `effectiveCurrentUser.profile.profileImageUrl`
-  - `effectiveCurrentUser.profileImage`
-  - cached local user fallback
-- After S3 upload finishes, the frontend updates localStorage, dispatches `auth:changed`, and the navbar avatar changes immediately.
-
-#### Facebook-style avatar loading effect
-- Added loading/shimmer/glow effect for profile images while a new image is uploading.
-- Loading applies to:
-  - Account Settings profile preview avatar
-  - Navbar avatar
-- Loading effect includes:
-  - rotating conic glow ring
-  - shimmer/fading overlay
-  - dimmed current avatar while waiting
-- Shared animation keyframes added:
-  - `avatarSpinGlow`
-  - `avatarShimmer`
-- Account Settings and Navbar both show the loading state during S3 upload and remove it once upload completes.
-
-#### Spend-based loyalty upgrade
-- Loyalty tier logic was changed from completed-match count to completed-spend thresholds.
-- Account progress line now says:
-  ```text
-  Spend $X more to reach Silver/Gold/Platinum tier.
-  ```
-- Removed the duplicate completed-spend number from the right side of the Account Progress header because the page already has a Total Completed Spend stat card below.
-- New loyalty tier checkpoints:
-  - Bronze: `$0+` completed spend
-  - Silver: `$200+` completed spend
-  - Gold: `$500+` completed spend
-  - Platinum: `$1000+` completed spend
-- These thresholds feel reasonable for a demo/portfolio marketplace because they are aspirational but not impossible. They also make loyalty feel more business-like than using number of completed matches only.
-- Loyalty still tracks completed order count and gold, but tier/progress is now based on total completed spend.
+  - `server/src/routes/userRoutes.js`
+  - `server/src/controllers/userController.js`
+  - Prisma `User.phoneNumber` / `User.phoneVerifiedAt` fields
+  - Prisma `VerificationCodeType.PHONE` enum value
+- Prisma note: before removing the `PHONE` enum value, old `VerificationCode` rows with `type = PHONE` must be deleted or Prisma/PostgreSQL will fail with invalid enum conversion.
+- The phone input package/custom phone CSS is no longer needed after phone removal.
 
 ### Previous session update — Provider order details, loyalty rewards, current-order filters, and username display
 
@@ -470,6 +416,8 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/user/me` — current authenticated user with profile data
 - `PATCH /api/user/me` — update username, email, and saved profile image URL
 - `PATCH /api/user/me/password` — change authenticated user's password
+- `POST /api/user/me/email-verification/send` — send a 6-digit email verification code
+- `POST /api/user/me/email-verification/confirm` — confirm the email verification code and mark email verified
 - `POST /api/user/me/profile-picture` — upload profile picture to S3 and save `Profile.profileImageUrl`
 - `GET /api/user/providers` — admin-only provider list for assignment
 
@@ -653,6 +601,82 @@ npx prisma studio
 - corrected circular avatar image fit with inner clipping frame
 - spend-based loyalty tier thresholds using completed spend: $0 / $200 / $500 / $1000
 - Account Progress copy changed to “Spend $X more to reach Y tier”
+- private referral link field added to Loyalty direction for future benefits/reward features
+- email verification routes and frontend API helpers added for Account Settings
+- Account Settings email verification UI uses 6 digit boxes with auto-focus, paste support, auto-submit, and resend cooldown
+- email verification panel now slides down after email changes and slides up after successful verification
+- wrong email verification code highlights all boxes red instead of showing a text error
+- successful email verification highlights all boxes green before the panel disappears
+- phone number and phone verification flow removed from frontend, backend routes/controllers, and Prisma schema direction
+
+#### Recent completed functions confirmed as done
+- Account Settings route/page completed:
+  - `/account/settings`
+  - `AccountSettingsPage.jsx`
+  - `AccountSettings.css`
+  - `client/src/api/accountSettings.js`
+- Account Settings frontend API helpers completed:
+  - `getMyAccount()`
+  - `updateMyAccount(payload)`
+  - `changeMyPassword(payload)`
+  - `uploadProfilePicture(file)`
+  - `sendEmailVerificationCode()`
+  - `confirmEmailVerificationCode(code)`
+- User/account backend routes completed:
+  - `GET /api/user/me`
+  - `PATCH /api/user/me`
+  - `PATCH /api/user/me/password`
+  - `POST /api/user/me/profile-picture`
+  - `POST /api/user/me/email-verification/send`
+  - `POST /api/user/me/email-verification/confirm`
+- Profile image upload function completed:
+  - hidden avatar file input
+  - protected backend upload endpoint
+  - `multer` memory upload
+  - S3 upload helper
+  - saved `Profile.profileImageUrl`
+  - immediate localStorage/navbar refresh after upload
+- Avatar loading/polish completed:
+  - Account Settings avatar hover upload overlay
+  - Navbar avatar immediate update
+  - upload loading/shimmer/glow effect
+  - circular clipping/frame correction
+- Spend-based Loyalty functions completed:
+  - loyalty tier calculation based on completed spend
+  - Bronze/Silver/Gold/Platinum thresholds
+  - completed matches kept as stat only
+  - total gold display
+  - gold-to-dollar display where `10 gold = $1`
+  - tier-based loyalty theme/glow
+- Referral-link direction completed for the Loyalty page:
+  - backend loyalty response direction includes referral link data
+  - existing users should receive a referral code fallback when loyalty loads
+  - Loyalty page should display the referral link field without separately showing the raw code
+- Email verification functions completed:
+  - send 6-digit email verification code
+  - confirm 6-digit email verification code
+  - mark `emailVerifiedAt`
+  - return `emailVerified`
+  - reset verification status when a verified user changes email
+- Email verification frontend UX completed:
+  - six digit boxes
+  - auto-focus next digit
+  - backspace previous digit
+  - paste full code
+  - auto-submit after 6 digits
+  - resend cooldown timer
+  - red box highlight/shake on wrong code
+  - green box highlight on success
+  - slide-down panel after email change
+  - slide-up panel after successful verification
+- Phone verification cleanup completed:
+  - removed phone UI from Account Settings
+  - removed phone API helpers
+  - removed phone routes
+  - removed phone controller functions
+  - removed phone fields from Prisma schema direction
+  - removed `VerificationCodeType.PHONE`
+  - cleared old `PHONE` verification records before Prisma enum removal
 
 ### In progress
 - final duplicate chat notification verification after clearing old unread records
@@ -668,7 +692,16 @@ npx prisma studio
 
 ## Next steps (recommended)
 
-1. Test account settings end-to-end:
+1. Test email verification end-to-end:
+   - login as an existing verified user
+   - change email in Account Settings
+   - click Save Profile
+   - confirm the verification panel slides downward
+   - click Send Email Code
+   - confirm the resend timer appears
+   - enter a wrong code and confirm red box highlight/shake without text error
+   - enter the correct code and confirm green highlight, slide-up animation, and Verified badge
+2. Test account settings end-to-end:
    - update username
    - update email
    - upload profile picture
@@ -676,35 +709,38 @@ npx prisma studio
    - confirm Account Settings preview updates
    - confirm Navbar avatar updates immediately
    - confirm refresh still shows the uploaded image
-2. Test password change:
+3. Test password change:
    - weak password should fail checklist
    - wrong current password should show an error
    - valid new password should save
    - logout and login with the new password
-3. Test spend-based loyalty:
+4. Test spend-based loyalty:
    - mark completed orders with different total prices
    - confirm completed spend controls Bronze/Silver/Gold/Platinum tier
    - confirm progress says “Spend $X more to reach Y tier”
    - confirm duplicate completed-spend text is removed from the Account Progress header
-4. Add notification/chat sender avatars using saved `profile.profileImageUrl`.
-5. Add credential reveal audit logging:
+5. Add notification/chat sender avatars using saved `profile.profileImageUrl`.
+6. Add credential reveal audit logging:
    - user id
    - role
    - order id
    - timestamp
    - action type
-6. Restrict AWS permissions before real deployment:
+7. Restrict AWS permissions before real deployment:
    - exact KMS key ARN instead of `Resource: "*"`
    - backend IAM role instead of long-lived production keys
    - least-privilege S3 upload path permissions
-7. Finish pricing logic cleanup:
+8. Finish pricing logic cleanup:
    - solo/duo add-on pricing
    - bonus win pricing by rank
    - `untrackableDuo`
-8. Connect the patch section to a real backend endpoint later.
+9. Connect the patch section to a real backend endpoint later.
 
 ## Resume-ready highlights
 
+- Implemented email verification in Account Settings with 6-digit SMTP codes, animated verification UI, auto-submit digit boxes, and unverified-state handling when users change email.
+- Removed demo-only phone verification after evaluating SMS delivery requirements, cleaning the frontend, backend routes/controllers, and Prisma schema to avoid shipping fake phone verification.
+- Added referral-link direction in the Loyalty page to support future invite/reward benefits.
 - Built a protected account settings workflow with secure password changes, profile updates, and real AWS S3 profile image uploads through an Express backend.
 - Implemented immediate cross-component avatar synchronization and loading/shimmer UI states in React using localStorage updates and custom browser events.
 - Refactored loyalty rewards from match-count thresholds to spend-based tier progression using completed-order spend calculations from Prisma/PostgreSQL.
