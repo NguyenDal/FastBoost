@@ -84,6 +84,11 @@ export default function AccountSettingsPage() {
 
     const [verificationMessage, setVerificationMessage] = useState("");
     const [verificationError, setVerificationError] = useState("");
+    const [verificationBoxState, setVerificationBoxState] = useState("idle");
+    // idle | error | success
+    const [showEmailVerificationPanel, setShowEmailVerificationPanel] = useState(false);
+    const [emailPanelClosing, setEmailPanelClosing] = useState(false);
+
     const [sendingEmailCode, setSendingEmailCode] = useState(false);
     const [confirmingEmailCode, setConfirmingEmailCode] = useState(false);
     const profileImageInputRef = useRef(null);
@@ -106,6 +111,9 @@ export default function AccountSettingsPage() {
                         "",
                     emailVerified: Boolean(user?.emailVerified),
                 });
+
+                setShowEmailVerificationPanel(!Boolean(user?.emailVerified));
+
             } catch (error) {
                 setAccountErrors((prev) => ({
                     ...prev,
@@ -289,23 +297,18 @@ export default function AccountSettingsPage() {
                 profileImageUrl: accountForm.profileImageUrl,
             });
 
-            localStorage.setItem("user", JSON.stringify(updatedUser));
+            syncUpdatedUser(updatedUser);
 
-            try {
-                window.dispatchEvent(
-                    new CustomEvent("auth:changed", {
-                        detail: {
-                            user: updatedUser,
-                            profileImageUrl:
-                                updatedUser?.profile?.profileImageUrl ||
-                                updatedUser?.profileImage ||
-                                "",
-                        },
-                    })
-                );
-            } catch { }
+            setVerificationBoxState("idle");
+            setEmailCodeDigits(["", "", "", "", "", ""]);
+            setVerificationError("");
+            setVerificationMessage("");
 
-            setAccountSuccess("Account updated successfully.");
+            if (!updatedUser?.emailVerified) {
+                setEmailPanelClosing(false);
+                setShowEmailVerificationPanel(true);
+            }
+
         } catch (error) {
             setAccountErrors((prev) => ({
                 ...prev,
@@ -401,12 +404,20 @@ export default function AccountSettingsPage() {
                 })
             );
         } catch { }
+
+        if (!updatedUser?.emailVerified) {
+            setShowEmailVerificationPanel(true);
+            setEmailPanelClosing(false);
+        }
     };
 
     const getCodeValue = (digits) => digits.join("");
 
     const handleCodeDigitChange = ({ value, index }) => {
         const digit = value.replace(/\D/g, "").slice(-1);
+
+        setVerificationBoxState("idle");
+        setVerificationError("");
 
         setEmailCodeDigits((prev) => {
             const next = [...prev];
@@ -461,6 +472,9 @@ export default function AccountSettingsPage() {
 
         if (!pasted) return;
 
+        setVerificationBoxState("idle");
+        setVerificationError("");
+
         const digits = pasted.split("");
         const next = ["", "", "", "", "", ""];
 
@@ -481,7 +495,12 @@ export default function AccountSettingsPage() {
 
     const renderCodeBoxes = ({ digits, disabled }) => {
         return (
-            <div className="verification-code-boxes">
+            <div className={`verification-code-boxes ${verificationBoxState === "error"
+                ? "is-error"
+                : verificationBoxState === "success"
+                    ? "is-success"
+                    : ""
+                }`}>
                 {digits.map((digit, index) => (
                     <input
                         key={`email-code-${index}`}
@@ -524,7 +543,6 @@ export default function AccountSettingsPage() {
 
             setEmailCodeDigits(["", "", "", "", "", ""]);
             setEmailCooldown(60);
-            setVerificationMessage(data.message || "Verification code sent to your email.");
 
             setTimeout(() => {
                 emailCodeInputRefs.current[0]?.focus();
@@ -543,17 +561,33 @@ export default function AccountSettingsPage() {
             setConfirmingEmailCode(true);
             setVerificationError("");
             setVerificationMessage("");
+            setVerificationBoxState("idle");
 
             const data = await confirmEmailVerificationCode(submittedCode);
 
-            if (data.user) {
-                syncUpdatedUser(data.user);
-            }
+            setVerificationBoxState("success");
 
-            setEmailCodeDigits(["", "", "", "", "", ""]);
-            setVerificationMessage(data.message || "Email verified successfully.");
+            setTimeout(() => {
+                setEmailPanelClosing(true);
+            }, 450);
+
+            setTimeout(() => {
+                if (data.user) {
+                    syncUpdatedUser(data.user);
+                }
+
+                setEmailCodeDigits(["", "", "", "", "", ""]);
+                setVerificationBoxState("idle");
+                setShowEmailVerificationPanel(false);
+                setEmailPanelClosing(false);
+            }, 950);
         } catch (error) {
-            setVerificationError(error.message || "Failed to verify email.");
+            setVerificationBoxState("error");
+            setEmailCodeDigits(["", "", "", "", "", ""]);
+
+            setTimeout(() => {
+                emailCodeInputRefs.current[0]?.focus();
+            }, 80);
         } finally {
             setConfirmingEmailCode(false);
         }
@@ -694,8 +728,8 @@ export default function AccountSettingsPage() {
                                     <p className="settings-error">{accountErrors.email}</p>
                                 )}
 
-                                {!accountForm.emailVerified && (
-                                    <div className="verification-action-panel">
+                                {showEmailVerificationPanel && (
+                                    <div className={`verification-action-panel ${emailPanelClosing ? "is-closing" : "is-opening"}`}>
                                         <button
                                             type="button"
                                             className="settings-secondary-btn"
@@ -714,10 +748,6 @@ export default function AccountSettingsPage() {
                                             disabled: confirmingEmailCode,
                                         })}
                                     </div>
-                                )}
-
-                                {verificationError && (
-                                    <p className="settings-error">{verificationError}</p>
                                 )}
 
                                 {verificationMessage && (
