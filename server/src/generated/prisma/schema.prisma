@@ -11,11 +11,13 @@ model User {
   id                  String               @id @default(cuid())
   email               String               @unique
   username            String?              @unique
+  emailVerifiedAt     DateTime?
   passwordHash        String
   role                UserRole             @default(CUSTOMER)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   orders              Order[]
+  verificationCodes   VerificationCode[]
   passwordResetTokens PasswordResetToken[]
   profile             Profile?
 
@@ -196,6 +198,26 @@ model PasswordResetToken {
   usedAt    DateTime?
   createdAt DateTime  @default(now())
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationCode {
+  id        String               @id @default(cuid())
+  userId    String
+  type      VerificationCodeType
+  target    String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([target, type])
+}
+
+enum VerificationCodeType {
+  EMAIL
 }
 
 model Notification {

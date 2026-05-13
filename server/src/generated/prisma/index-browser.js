@@ -124,6 +124,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   username: 'username',
+  emailVerifiedAt: 'emailVerifiedAt',
   passwordHash: 'passwordHash',
   role: 'role',
   createdAt: 'createdAt',
@@ -243,6 +244,17 @@ exports.Prisma.PasswordResetTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.VerificationCodeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  target: 'target',
+  codeHash: 'codeHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -301,6 +313,10 @@ exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {
   EXPIRED: 'EXPIRED'
 };
 
+exports.VerificationCodeType = exports.$Enums.VerificationCodeType = {
+  EMAIL: 'EMAIL'
+};
+
 exports.NotificationType = exports.$Enums.NotificationType = {
   ASSIGNMENT_REQUEST: 'ASSIGNMENT_REQUEST',
   ASSIGNMENT_ACCEPTED: 'ASSIGNMENT_ACCEPTED',
@@ -322,6 +338,7 @@ exports.Prisma.ModelName = {
   ConversationParticipant: 'ConversationParticipant',
   Message: 'Message',
   PasswordResetToken: 'PasswordResetToken',
+  VerificationCode: 'VerificationCode',
   Notification: 'Notification'
 };
 

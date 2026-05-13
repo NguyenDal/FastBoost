@@ -81,3 +81,34 @@ export async function uploadProfilePicture(file) {
 
     return data;
 }
+
+export async function sendEmailVerificationCode() {
+    const res = await fetch(`${API_BASE_URL}/user/me/email-verification/send`, {
+        method: "POST",
+        headers: authHeaders(),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to send email verification code");
+    }
+
+    return data;
+}
+
+export async function confirmEmailVerificationCode(code) {
+    const res = await fetch(`${API_BASE_URL}/user/me/email-verification/confirm`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ code }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to verify email");
+    }
+
+    return data;
+}

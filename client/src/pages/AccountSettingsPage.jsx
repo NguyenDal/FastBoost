@@ -6,6 +6,8 @@ import {
     updateMyAccount,
     changeMyPassword,
     uploadProfilePicture,
+    sendEmailVerificationCode,
+    confirmEmailVerificationCode,
 } from "../api/accountSettings";
 import { getStoredUser, hasValidSession } from "../utils/authSession";
 import "../styles/AccountSettings.css";
@@ -47,7 +49,7 @@ export default function AccountSettingsPage() {
     const [accountForm, setAccountForm] = useState({
         username: "",
         email: "",
-        profileImageUrl: "",
+        emailVerified: false,
     });
 
     const [passwordForm, setPasswordForm] = useState({
@@ -76,6 +78,14 @@ export default function AccountSettingsPage() {
     const [savingPassword, setSavingPassword] = useState(false);
     const [accountSuccess, setAccountSuccess] = useState("");
     const [passwordSuccess, setPasswordSuccess] = useState("");
+    const [emailCodeDigits, setEmailCodeDigits] = useState(["", "", "", "", "", ""]);
+    const [emailCooldown, setEmailCooldown] = useState(0);
+    const emailCodeInputRefs = useRef([]);
+
+    const [verificationMessage, setVerificationMessage] = useState("");
+    const [verificationError, setVerificationError] = useState("");
+    const [sendingEmailCode, setSendingEmailCode] = useState(false);
+    const [confirmingEmailCode, setConfirmingEmailCode] = useState(false);
     const profileImageInputRef = useRef(null);
 
     useEffect(() => {
@@ -94,6 +104,7 @@ export default function AccountSettingsPage() {
                         user?.profile?.profileImageUrl ||
                         user?.profileImage ||
                         "",
+                    emailVerified: Boolean(user?.emailVerified),
                 });
             } catch (error) {
                 setAccountErrors((prev) => ({
@@ -107,6 +118,16 @@ export default function AccountSettingsPage() {
 
         loadAccount();
     }, [hasAccess]);
+
+    useEffect(() => {
+        if (emailCooldown <= 0) return;
+
+        const timer = setTimeout(() => {
+            setEmailCooldown((prev) => Math.max(0, prev - 1));
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [emailCooldown]);
 
     const checks = useMemo(() => {
         const password = passwordForm.newPassword;
@@ -351,6 +372,193 @@ export default function AccountSettingsPage() {
         }
     };
 
+    const syncUpdatedUser = (updatedUser) => {
+        if (!updatedUser) return;
+
+        setAccountForm((prev) => ({
+            ...prev,
+            username: updatedUser?.username || "",
+            email: updatedUser?.email || "",
+            profileImageUrl:
+                updatedUser?.profile?.profileImageUrl ||
+                updatedUser?.profileImage ||
+                "",
+            emailVerified: Boolean(updatedUser?.emailVerified),
+        }));
+
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        try {
+            window.dispatchEvent(
+                new CustomEvent("auth:changed", {
+                    detail: {
+                        user: updatedUser,
+                        profileImageUrl:
+                            updatedUser?.profile?.profileImageUrl ||
+                            updatedUser?.profileImage ||
+                            "",
+                    },
+                })
+            );
+        } catch { }
+    };
+
+    const getCodeValue = (digits) => digits.join("");
+
+    const handleCodeDigitChange = ({ value, index }) => {
+        const digit = value.replace(/\D/g, "").slice(-1);
+
+        setEmailCodeDigits((prev) => {
+            const next = [...prev];
+            next[index] = digit;
+
+            const fullCode = next.join("");
+
+            if (digit && index < 5) {
+                setTimeout(() => {
+                    emailCodeInputRefs.current[index + 1]?.focus();
+                }, 0);
+            }
+
+            if (fullCode.length === 6 && next.every(Boolean)) {
+                setTimeout(() => {
+                    handleConfirmEmailCode(fullCode);
+                }, 80);
+            }
+
+            return next;
+        });
+    };
+
+    const handleCodeKeyDown = ({ event, index }) => {
+        if (event.key !== "Backspace") return;
+
+        setEmailCodeDigits((prev) => {
+            const next = [...prev];
+
+            if (next[index]) {
+                next[index] = "";
+                return next;
+            }
+
+            if (index > 0) {
+                setTimeout(() => {
+                    emailCodeInputRefs.current[index - 1]?.focus();
+                }, 0);
+            }
+
+            return next;
+        });
+    };
+
+    const handleCodePaste = (event) => {
+        event.preventDefault();
+
+        const pasted = event.clipboardData
+            .getData("text")
+            .replace(/\D/g, "")
+            .slice(0, 6);
+
+        if (!pasted) return;
+
+        const digits = pasted.split("");
+        const next = ["", "", "", "", "", ""];
+
+        digits.forEach((digit, index) => {
+            next[index] = digit;
+        });
+
+        setEmailCodeDigits(next);
+
+        if (next.every(Boolean)) {
+            setTimeout(() => handleConfirmEmailCode(next.join("")), 80);
+        } else {
+            setTimeout(() => {
+                emailCodeInputRefs.current[digits.length]?.focus();
+            }, 0);
+        }
+    };
+
+    const renderCodeBoxes = ({ digits, disabled }) => {
+        return (
+            <div className="verification-code-boxes">
+                {digits.map((digit, index) => (
+                    <input
+                        key={`email-code-${index}`}
+                        ref={(element) => {
+                            emailCodeInputRefs.current[index] = element;
+                        }}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        maxLength={1}
+                        value={digit}
+                        disabled={disabled}
+                        onChange={(event) =>
+                            handleCodeDigitChange({
+                                value: event.target.value,
+                                index,
+                            })
+                        }
+                        onKeyDown={(event) =>
+                            handleCodeKeyDown({
+                                event,
+                                index,
+                            })
+                        }
+                        onPaste={handleCodePaste}
+                        aria-label={`email verification digit ${index + 1}`}
+                    />
+                ))}
+            </div>
+        );
+    };
+
+    const handleSendEmailCode = async () => {
+        try {
+            setSendingEmailCode(true);
+            setVerificationError("");
+            setVerificationMessage("");
+
+            const data = await sendEmailVerificationCode();
+
+            setEmailCodeDigits(["", "", "", "", "", ""]);
+            setEmailCooldown(60);
+            setVerificationMessage(data.message || "Verification code sent to your email.");
+
+            setTimeout(() => {
+                emailCodeInputRefs.current[0]?.focus();
+            }, 80);
+        } catch (error) {
+            setVerificationError(error.message || "Failed to send email code.");
+        } finally {
+            setSendingEmailCode(false);
+        }
+    };
+
+    const handleConfirmEmailCode = async (submittedCode = getCodeValue(emailCodeDigits)) => {
+        try {
+            if (submittedCode.length !== 6) return;
+
+            setConfirmingEmailCode(true);
+            setVerificationError("");
+            setVerificationMessage("");
+
+            const data = await confirmEmailVerificationCode(submittedCode);
+
+            if (data.user) {
+                syncUpdatedUser(data.user);
+            }
+
+            setEmailCodeDigits(["", "", "", "", "", ""]);
+            setVerificationMessage(data.message || "Email verified successfully.");
+        } catch (error) {
+            setVerificationError(error.message || "Failed to verify email.");
+        } finally {
+            setConfirmingEmailCode(false);
+        }
+    };
+
     const previewImage = accountForm.profileImageUrl?.trim();
 
     if (!hasAccess) return null;
@@ -465,7 +673,13 @@ export default function AccountSettingsPage() {
                                 )}
 
                                 <label>
-                                    Email
+                                    <span className="settings-label-row">
+                                        Email
+                                        <span className={`verification-pill compact ${accountForm.emailVerified ? "is-verified" : "is-unverified"}`}>
+                                            {accountForm.emailVerified ? "Verified" : "Not verified"}
+                                        </span>
+                                    </span>
+
                                     <input
                                         type="email"
                                         name="email"
@@ -478,6 +692,36 @@ export default function AccountSettingsPage() {
 
                                 {accountErrors.email && (
                                     <p className="settings-error">{accountErrors.email}</p>
+                                )}
+
+                                {!accountForm.emailVerified && (
+                                    <div className="verification-action-panel">
+                                        <button
+                                            type="button"
+                                            className="settings-secondary-btn"
+                                            onClick={handleSendEmailCode}
+                                            disabled={sendingEmailCode || emailCooldown > 0}
+                                        >
+                                            {sendingEmailCode
+                                                ? "Sending..."
+                                                : emailCooldown > 0
+                                                    ? `Resend in ${emailCooldown}s`
+                                                    : "Send Email Code"}
+                                        </button>
+
+                                        {renderCodeBoxes({
+                                            digits: emailCodeDigits,
+                                            disabled: confirmingEmailCode,
+                                        })}
+                                    </div>
+                                )}
+
+                                {verificationError && (
+                                    <p className="settings-error">{verificationError}</p>
+                                )}
+
+                                {verificationMessage && (
+                                    <p className="settings-success">{verificationMessage}</p>
                                 )}
 
                                 {accountErrors.general && (

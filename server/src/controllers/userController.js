@@ -1,9 +1,50 @@
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const prisma = require("../prisma");
 const { uploadProfileImageToS3 } = require("../utils/s3Upload");
 
 function getUserId(req) {
   return req.user?.userId || req.user?.id;
+}
+
+function createSixDigitCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function hashVerificationCode(code) {
+  return crypto.createHash("sha256").update(String(code)).digest("hex");
+}
+
+function createTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: String(process.env.SMTP_SECURE) === "true",
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+}
+
+async function sendEmailVerificationCode({ to, code }) {
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to,
+    subject: "Verify your FastBoost email",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2>Verify your email</h2>
+        <p>Your FastBoost verification code is:</p>
+        <p style="font-size: 28px; font-weight: 800; letter-spacing: 6px;">${code}</p>
+        <p>This code expires in 10 minutes.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      </div>
+    `,
+  });
 }
 
 function sanitizeUser(user) {
@@ -14,6 +55,10 @@ function sanitizeUser(user) {
     email: user.email,
     username: user.username,
     role: user.role,
+
+    emailVerifiedAt: user.emailVerifiedAt || null,
+    emailVerified: Boolean(user.emailVerifiedAt),
+
     referralCode: user.referralCode || null,
     referralCount: user._count?.referrals || 0,
     createdAt: user.createdAt,
@@ -175,6 +220,15 @@ module.exports.updateMyAccount = async (req, res) => {
       });
     }
 
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        email: true,
+      },
+    });
+
     const updatedUser = await prisma.user.update({
       where: {
         id: userId,
@@ -182,6 +236,8 @@ module.exports.updateMyAccount = async (req, res) => {
       data: {
         username,
         email,
+        emailVerifiedAt:
+          currentUser?.email?.toLowerCase() === email ? undefined : null,
         profile: {
           upsert: {
             create: {
@@ -471,6 +527,184 @@ module.exports.listProviders = async (req, res) => {
     return res.status(500).json({
       ok: false,
       message: "Failed to list providers",
+    });
+  }
+};
+
+module.exports.sendEmailVerificationCode = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        ok: false,
+        message: "Not authorized",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        emailVerifiedAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: "User not found.",
+      });
+    }
+
+    if (user.emailVerifiedAt) {
+      return res.json({
+        ok: true,
+        message: "Email is already verified.",
+      });
+    }
+
+    const code = createSixDigitCode();
+    const codeHash = hashVerificationCode(code);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.verificationCode.deleteMany({
+      where: {
+        userId,
+        type: "EMAIL",
+        usedAt: null,
+      },
+    });
+
+    await prisma.verificationCode.create({
+      data: {
+        userId,
+        type: "EMAIL",
+        target: user.email,
+        codeHash,
+        expiresAt,
+      },
+    });
+
+    await sendEmailVerificationCode({
+      to: user.email,
+      code,
+    });
+
+    return res.json({
+      ok: true,
+      message: "Verification code sent to your email.",
+    });
+  } catch (error) {
+    console.error("sendEmailVerificationCode error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to send email verification code.",
+    });
+  }
+};
+
+module.exports.confirmEmailVerificationCode = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const code = String(req.body.code || "").trim();
+
+    if (!userId) {
+      return res.status(401).json({
+        ok: false,
+        message: "Not authorized",
+      });
+    }
+
+    if (!code) {
+      return res.status(400).json({
+        ok: false,
+        message: "Verification code is required.",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: "User not found.",
+      });
+    }
+
+    const record = await prisma.verificationCode.findFirst({
+      where: {
+        userId,
+        type: "EMAIL",
+        target: user.email,
+        usedAt: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (
+      !record ||
+      record.expiresAt.getTime() < Date.now() ||
+      record.codeHash !== hashVerificationCode(code)
+    ) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        emailVerifiedAt: new Date(),
+        verificationCodes: {
+          update: {
+            where: {
+              id: record.id,
+            },
+            data: {
+              usedAt: new Date(),
+            },
+          },
+        },
+      },
+      include: {
+        profile: {
+          select: {
+            displayName: true,
+            bio: true,
+            profileImageUrl: true,
+          },
+        },
+        _count: {
+          select: {
+            referrals: true,
+          },
+        },
+      },
+    });
+
+    return res.json({
+      ok: true,
+      message: "Email verified successfully.",
+      user: sanitizeUser(updatedUser),
+    });
+  } catch (error) {
+    console.error("confirmEmailVerificationCode error:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to verify email.",
     });
   }
 };
