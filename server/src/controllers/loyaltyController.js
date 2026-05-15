@@ -13,6 +13,7 @@ async function ensureReferralCode(userId, username = "") {
         select: {
             id: true,
             username: true,
+            emailVerifiedAt: true,
             referralCode: true,
             _count: {
                 select: {
@@ -62,6 +63,7 @@ async function ensureReferralCode(userId, username = "") {
         select: {
             id: true,
             username: true,
+            emailVerifiedAt: true,
             referralCode: true,
             _count: {
                 select: {
@@ -161,33 +163,52 @@ exports.getMyLoyalty = async (req, res) => {
 
         const user = await ensureReferralCode(userId);
 
-        const completedOrders = await prisma.order.findMany({
-            where: {
-                customerId: userId,
-                status: "COMPLETED",
-            },
-            include: {
-                service: {
-                    select: {
-                        id: true,
-                        title: true,
+        const completedOrderWhere = {
+            customerId: userId,
+            status: "COMPLETED",
+        };
+
+        const [completedOrdersStats, recentCompletedOrders] = await Promise.all([
+            prisma.order.aggregate({
+                where: completedOrderWhere,
+                _count: {
+                    _all: true,
+                },
+                _sum: {
+                    totalPrice: true,
+                },
+            }),
+
+            prisma.order.findMany({
+                where: completedOrderWhere,
+                take: 10,
+                include: {
+                    service: {
+                        select: {
+                            id: true,
+                            title: true,
+                        },
                     },
                 },
-            },
-            orderBy: {
-                updatedAt: "desc",
-            },
-        });
+                orderBy: {
+                    updatedAt: "desc",
+                },
+            }),
+        ]);
 
-        const completedMatches = completedOrders.length;
+        const completedMatches = completedOrdersStats._count._all || 0;
 
-        const totalCompletedSpend = completedOrders.reduce((sum, order) => {
-            return sum + Number(order.totalPrice || 0);
-        }, 0);
+        const hasVerifiedEmail = Boolean(user?.emailVerifiedAt);
+        const hasEnoughCompletedOrders = completedMatches >= 3;
+        const hasReferralLink = Boolean(user?.referralCode);
 
-        const totalGold = completedOrders.reduce((sum, order) => {
-            return sum + getGoldFromOrder(order);
-        }, 0);
+        const referralEligible =
+            hasVerifiedEmail && hasEnoughCompletedOrders && hasReferralLink;
+
+        const totalCompletedSpend = Number(completedOrdersStats._sum.totalPrice || 0);
+
+
+        const totalGold = Math.floor(totalCompletedSpend);
 
         const tierInfo = getTierInfo(totalCompletedSpend);
         const progressPercent = getTierProgressPercent(
@@ -195,7 +216,7 @@ exports.getMyLoyalty = async (req, res) => {
             tierInfo
         );
 
-        const rewardHistory = completedOrders.map((order) => ({
+        const rewardHistory = recentCompletedOrders.map((order) => ({
             id: order.id,
             service: order.service,
             boostType: order.boostType,
@@ -228,10 +249,41 @@ exports.getMyLoyalty = async (req, res) => {
                 completedOrders: rewardHistory,
 
                 referralCode: user?.referralCode || null,
-                referralLink: user?.referralCode
-                    ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
-                    : null,
+                referralLink:
+                    referralEligible && user?.referralCode
+                        ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
+                        : null,
                 referralCount: user?._count?.referrals || 0,
+
+                referralEligibility: {
+                    eligible: referralEligible,
+                    discountAmount: 5,
+                    conditions: {
+                        emailVerified: {
+                            passed: hasVerifiedEmail,
+                            label: "Email verified",
+                            helpText: hasVerifiedEmail
+                                ? "Your email is verified."
+                                : "Verify your email in Account Settings first.",
+                        },
+                        completedOrders: {
+                            passed: hasEnoughCompletedOrders,
+                            label: "At least 3 completed orders",
+                            current: Math.min(completedMatches, 3),
+                            required: 3,
+                            helpText: hasEnoughCompletedOrders
+                                ? "You have enough completed orders."
+                                : `Complete ${Math.max(0, 3 - completedMatches)} more order(s) to unlock referrals.`,
+                        },
+                        referralLinkReady: {
+                            passed: hasReferralLink,
+                            label: "Referral link ready",
+                            helpText: hasReferralLink
+                                ? "Your private referral link is ready."
+                                : "Referral link is still being created. Refresh this page.",
+                        },
+                    },
+                },
             },
         });
     } catch (error) {
