@@ -178,6 +178,18 @@ export default function LoyaltyPage() {
                                         <span>{tier.icon}</span>
                                         <strong>{tier.name}</strong>
                                         <small>${tier.minSpend}+ spend</small>
+
+                                        <div className="loyalty-tier-benefits">
+                                            {tier.bonusCoins > 0 ? (
+                                                <em>{tier.bonusCoins} bonus coins</em>
+                                            ) : (
+                                                <em>No bonus</em>
+                                            )}
+
+                                            {tier.topUpBonusPercent > 0 && (
+                                                <em>{tier.topUpBonusPercent}% top-up bonus</em>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -334,6 +346,9 @@ const LOYALTY_TIERS = [
         icon: "🥉",
         minSpend: 0,
         nextTier: "Silver",
+        bonusCoins: 0,
+        topUpBonusPercent: 0,
+        benefits: ["No bonus"],
     },
     {
         key: "silver",
@@ -341,6 +356,9 @@ const LOYALTY_TIERS = [
         icon: "🥈",
         minSpend: 200,
         nextTier: "Gold",
+        bonusCoins: 200,
+        topUpBonusPercent: 3,
+        benefits: ["200 bonus coins", "3% top-up bonus"],
     },
     {
         key: "gold",
@@ -348,12 +366,28 @@ const LOYALTY_TIERS = [
         icon: "🥇",
         minSpend: 500,
         nextTier: "Platinum",
+        bonusCoins: 500,
+        topUpBonusPercent: 5,
+        benefits: ["500 bonus coins", "5% top-up bonus"],
     },
     {
         key: "platinum",
         name: "Platinum",
         icon: "💎",
         minSpend: 1000,
+        nextTier: "Diamond",
+        bonusCoins: 800,
+        topUpBonusPercent: 8,
+        benefits: ["800 bonus coins", "8% top-up bonus"],
+    },
+    {
+        key: "diamond",
+        name: "Diamond",
+        icon: "🔷",
+        minSpend: 1500,
         nextTier: null,
+        bonusCoins: 1500,
+        topUpBonusPercent: 10,
+        benefits: ["1500 bonus coins", "10% top-up bonus"],
     },
 ];

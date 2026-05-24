@@ -81,6 +81,9 @@ const LOYALTY_TIERS = [
         icon: "🥉",
         minSpend: 0,
         nextTier: "Silver",
+        bonusCoins: 0,
+        topUpBonusPercent: 0,
+        benefits: ["No bonus"],
     },
     {
         key: "silver",
@@ -88,6 +91,9 @@ const LOYALTY_TIERS = [
         icon: "🥈",
         minSpend: 200,
         nextTier: "Gold",
+        bonusCoins: 200,
+        topUpBonusPercent: 3,
+        benefits: ["200 bonus coins", "3% top-up bonus"],
     },
     {
         key: "gold",
@@ -95,13 +101,29 @@ const LOYALTY_TIERS = [
         icon: "🥇",
         minSpend: 500,
         nextTier: "Platinum",
+        bonusCoins: 500,
+        topUpBonusPercent: 5,
+        benefits: ["500 bonus coins", "5% top-up bonus"],
     },
     {
         key: "platinum",
         name: "Platinum",
         icon: "💎",
         minSpend: 1000,
+        nextTier: "Diamond",
+        bonusCoins: 800,
+        topUpBonusPercent: 8,
+        benefits: ["800 bonus coins", "8% top-up bonus"],
+    },
+    {
+        key: "diamond",
+        name: "Diamond",
+        icon: "🔷",
+        minSpend: 1500,
         nextTier: null,
+        bonusCoins: 1500,
+        topUpBonusPercent: 10,
+        benefits: ["1500 bonus coins", "10% top-up bonus"],
     },
 ];
 
@@ -134,7 +156,7 @@ function getTierInfo(totalCompletedSpend) {
 }
 
 function getTierProgressPercent(totalCompletedSpend, tierInfo) {
-    if (tierInfo.key === "platinum") return 100;
+    if (tierInfo.key === "diamond") return 100;
 
     const currentMin = tierInfo.minSpend;
 
@@ -234,6 +256,9 @@ exports.getMyLoyalty = async (req, res) => {
                 tier: tierInfo.name,
                 tierKey: tierInfo.key,
                 icon: tierInfo.icon,
+                bonusCoins: tierInfo.bonusCoins,
+                topUpBonusPercent: tierInfo.topUpBonusPercent,
+                benefits: tierInfo.benefits,
 
                 // Keep this for stats only, not tier calculation.
                 completedMatches,

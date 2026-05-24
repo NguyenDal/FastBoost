@@ -73,6 +73,17 @@
         0 0 44px rgba(70, 210, 220, 0.08);
 }
 
+.loyalty-hero-diamond {
+    border-color: rgba(100, 145, 255, 0.40);
+    background:
+        radial-gradient(700px 260px at 8% 0%, rgba(100, 145, 255, 0.16), transparent 62%),
+        radial-gradient(600px 260px at 95% 0%, rgba(70, 210, 220, 0.12), transparent 60%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.32),
+        0 0 44px rgba(100, 145, 255, 0.09);
+}
+
 .loyalty-eyebrow {
     margin: 0 0 10px;
     font-size: 12px;
@@ -181,9 +192,13 @@
     background: linear-gradient(90deg, #38bdf8, #a78bfa);
 }
 
+.loyalty-fill-diamond {
+    background: linear-gradient(90deg, #4f8cff, #93c5fd);
+}
+
 .loyalty-tier-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-top: 18px;
 }
@@ -225,6 +240,11 @@
     box-shadow: 0 0 0 4px rgba(70, 210, 220, 0.10);
 }
 
+.loyalty-tier-step.tier-diamond.current {
+    border-color: rgba(100, 145, 255, 0.55);
+    box-shadow: 0 0 0 4px rgba(100, 145, 255, 0.10);
+}
+
 .loyalty-tier-step span {
     display: block;
     font-size: 24px;
@@ -240,6 +260,20 @@
     display: block;
     margin-top: 4px;
     color: #9ca3af;
+}
+
+.loyalty-tier-benefits {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+}
+
+.loyalty-tier-benefits em {
+    display: block;
+    color: #b8c2d8;
+    font-size: 12px;
+    font-style: normal;
+    line-height: 1.35;
 }
 
 .loyalty-stats-grid {
