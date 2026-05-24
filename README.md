@@ -8,272 +8,83 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Referral links, email verification, phone cleanup, and verification animations
+### Latest session update — Referral rewards, private invite registration popup, Diamond tier, and Reward History pagination
 
-#### Private referral link / invite direction
-- Started the private invite/referral feature so users can share a personal FastBoost referral link from the Loyalty page.
-- Added/continued referral-code support on the user/account side so the Loyalty page can display a private referral link instead of only loyalty stats.
-- Important implementation direction:
-  - existing users may not have a referral code, so the backend should auto-generate one when loading loyalty data if `user.referralCode` is missing.
-  - the Loyalty page should show the referral link field only; the raw referral code does not need to be displayed separately.
-  - after a referred visitor registers, the saved referral code in localStorage should be sent with the register request and then cleared after successful registration.
+#### Referral eligibility and private referral link unlock
+- Implemented referral eligibility rules on the Loyalty page:
+  - user must have a verified email
+  - user must have at least 3 completed orders
+- Loyalty page now clearly displays the referral requirements with green tick / red X status cards.
+- Removed the duplicate “Referral link ready” requirement card because the visible link box already proves the link is available.
+- Referral link UI now stays aligned with the grey/dark Loyalty page theme while keeping:
+  - Unlocked status badge green
+  - Locked status badge red
+  - tick icons green
+  - X icons red
+- Completed-order requirement display is capped at `3/3`, so users with more than 3 completed orders do not show confusing values like `5/3`.
 
-#### Email verification added under Account Settings
-- Added email verification flow under the Profile Details card.
-- Added backend email verification routes under `/api/user`:
-  - `POST /api/user/me/email-verification/send`
-  - `POST /api/user/me/email-verification/confirm`
-- Added frontend API helpers in `client/src/api/accountSettings.js`:
-  - `sendEmailVerificationCode()`
-  - `confirmEmailVerificationCode(code)`
-- Added `VerificationCode` model direction in Prisma for one-time verification codes.
-- Email verification uses a 6-digit code and the existing SMTP/Nodemailer setup.
-- Email verification state is returned to the frontend as:
-  - `emailVerifiedAt`
-  - `emailVerified`
-- If a verified user changes their email and saves Profile Details, the account becomes unverified again until they verify the new email.
+#### Referral reward flow
+- Added referral reward direction where a user can share a private invite link after meeting eligibility requirements.
+- New invited-user flow:
+  - inviter shares `/r/:referralCode`
+  - invited user opens the private link
+  - register modal opens with the referral code attached
+  - invited user registers using the private link
+  - backend saves `referredById` on the invited user
+  - when the invited user verifies their email, the backend checks inviter eligibility
+  - if eligible, both inviter and invited user receive `+50 gold`, equal to `$5` discount credit because `10 gold = $1`
+- Added `RewardHistory` direction so referral rewards can be stored separately from completed-order rewards.
+- Referral reward records are protected from duplicate grants by using unique reward-history records for inviter/invited referral pairs.
 
-#### Modern 6-digit verification code UI
-- Replaced the normal single text input + Verify button with six individual digit boxes.
-- Verification code UX now supports:
-  - auto-focus to the next digit after typing
-  - backspace movement to the previous box
-  - pasting a full 6-digit code
-  - auto-submit once all 6 boxes are filled
-- Added a resend cooldown timer after clicking **Send Email Code**:
-  - button changes to `Resend in 60s`
-  - button is disabled until the countdown finishes
+#### Public referral invite preview
+- Added a public referral lookup direction:
+  - `GET /api/referrals/public/:referralCode`
+- The public referral lookup returns inviter preview data:
+  - inviter username/display name fallback
+  - inviter profile image URL
+  - referral code
+  - inviter eligibility status
+  - reward explanation data
+- Fixed Prisma client initialization in the referral controller by using the shared project Prisma client instead of creating a new `PrismaClient()` directly.
 
-#### Verification animation polish
-- Improved verification panel behavior so it does not suddenly appear/disappear.
-- When a verified user changes email and clicks **Save Profile**, the email verification panel slides downward into view.
-- When a verification code is wrong:
-  - no text error is shown below the field
-  - all six digit boxes highlight red and shake
-  - boxes reset for another attempt
-- When verification succeeds:
-  - all six digit boxes highlight green
-  - the verification panel slides upward
-  - the panel disappears smoothly
-  - the email badge changes to Verified after the animation
+#### Private invite register modal UI
+- Added `/r/:referralCode` route to open the homepage/register flow with a private invite attached.
+- Register modal can now show a wider private-invite layout when opened from a referral link.
+- Private invite popup shows:
+  - inviter username
+  - circular profile image/avatar fallback
+  - reward explanation: both users receive `50 gold = $5 discount`
+  - conditions for receiving the reward
+- Removed unnecessary “Private invite detected” wording from the invite card.
+- Widened and polished the private invite modal so text has more horizontal space.
+- Fixed spacing so the invite card border no longer collides with the username input border.
 
-#### Phone verification removed
-- Phone verification was tested as a dev/demo flow, but it did not send real SMS without a paid SMS provider.
-- Decision: remove everything related to phone number/phone verification for now.
-- Removed/cleaned phone verification direction from:
-  - Account Settings UI
-  - `client/src/api/accountSettings.js`
-  - `server/src/routes/userRoutes.js`
-  - `server/src/controllers/userController.js`
-  - Prisma `User.phoneNumber` / `User.phoneVerifiedAt` fields
-  - Prisma `VerificationCodeType.PHONE` enum value
-- Prisma note: before removing the `PHONE` enum value, old `VerificationCode` rows with `type = PHONE` must be deleted or Prisma/PostgreSQL will fail with invalid enum conversion.
-- The phone input package/custom phone CSS is no longer needed after phone removal.
+#### Loyalty tier update: Diamond added
+- Finalized Loyalty tier benefits:
+  - Bronze: no bonus
+  - Silver: `200` coins added and `3%` top-up bonus direction
+  - Gold: `500` coins added and `5%` top-up bonus direction
+  - Platinum: `800` coins added and `8%` top-up bonus direction
+  - Diamond: `1500` coins added and `10%` top-up bonus direction
+- Added Diamond as the highest tier after Platinum.
+- Updated tier progress logic so Diamond is treated as the final/max tier.
+- Added Diamond styling direction using the same blue diamond color family as the order page.
+- Added tier benefit display on Loyalty tier cards.
+- Note: top-up bonus is currently display/business-direction only unless connected later to a real wallet/top-up/payment system.
 
-### Previous session update — Provider order details, loyalty rewards, current-order filters, and username display
-
-#### Provider/booster order detail flow
-- Added a dedicated provider order detail route:
-  - `client/src/pages/ProviderOrderDetailsPage.jsx`
-  - `/provider/orders/:id`
-- Changed provider assigned order flow:
-  - `ProviderOrdersPage` no longer sends boosters directly to `/match/:orderId`.
-  - Clicking **Open** now routes to `/provider/orders/:id` first.
-  - From the provider detail page, boosters can open the conversation through **Go to Conversation**.
-- Provider detail page reuses the premium admin order detail styling from `Admin.css` while keeping provider-only permissions.
-- Provider detail page allows boosters to view assigned order details, customer username/email, order configuration, add-ons, price summary, open the conversation, mark orders completed, and leave/unassign themselves from an order.
-- Provider detail page intentionally does **not** allow boosters to cancel orders, assign other boosters, or unassign other boosters.
-
-#### Loyalty rewards page
-- Added a protected customer/admin loyalty page:
-  - `client/src/pages/LoyaltyPage.jsx`
-  - `client/src/styles/Loyalty.css`
-  - `client/src/api/loyalty.js`
-  - route: `/account/loyalty`
-- Navbar now routes **Loyalty** to `/account/loyalty` and only shows it when a user is logged in.
-- Loyalty page displays current loyalty tier/account type, progress tracking, Bronze/Silver/Gold/Platinum milestones, completed matches count, total gold earned, completed spend, and completed match reward history.
-- Gold conversion display added:
-  - `10 gold = $1`
-  - Total Gold card can show values like `18 = $1.80`.
-- Loyalty hero/card glow now follows the actual account tier color instead of always using a gold theme.
-
-#### Loyalty backend endpoint
-- Added backend loyalty route/controller:
-  - `server/src/controllers/loyaltyController.js`
-  - `server/src/routes/loyaltyRoutes.js`
-  - mounted in `server/src/app.js` at `/api/loyalty`
-- Added endpoint:
-  - `GET /api/loyalty/me`
-- Backend calculates loyalty from completed customer orders where:
-  - `customerId` is the logged-in user
-  - `status` is `COMPLETED`
-- Gold earned per completed order is calculated as:
-  - `Math.floor(order.totalPrice)`
-- Frontend Loyalty page consumes the backend loyalty object instead of guessing from raw order data.
-
-#### Current-order filtering cleanup
-- Improved order list filters so active orders are shown by default instead of all orders.
-- Default dropdown value is now `Current Orders`, meaning `PENDING` and `IN_PROGRESS`.
-- Removed the **All Orders** option from the dropdown.
-- Updated frontend pages:
-  - `AdminOrdersPage.jsx`
-  - `ProviderOrdersPage.jsx`
-  - `CustomerOrdersPage.jsx`
-- Updated backend order list logic so Prisma understands `status=CURRENT` in `listAllOrders` and `listAssignedOrdersForProvider`.
-
-#### Customer username display
-- Confirmed backend order responses include `customer.username` in relevant order queries.
-- Confirmed frontend order list pages display customer username first, then fall back to profile display name/email when needed.
-
-### Previous session update — Admin/Provider/Customer order management + real MatchPage chat
-- Built and polished the **Admin Order Management** flow:
-  - `AdminOrdersPage` for listing and filtering all orders.
-  - `AdminOrderDetailsPage` for viewing order details, status, price summary, assignments, add-ons, champion selections, and conversation access.
-  - Admin can invite boosters, assign/unassign boosters, cancel orders, and mark orders completed.
-  - Admin status field was refined so status is mostly automatic instead of manually changing everything.
-- Built the **assignment request / invite flow**:
-  - Admin clicking Assign creates a pending assignment request instead of instantly assigning.
-  - Button changes to a waiting state, with a short revoke/cancel interaction.
-  - Booster receives an assignment notification with Accept / Decline actions.
-  - Accepting the request assigns the booster, moves the order to `IN_PROGRESS`, and enables chat access.
-  - Declining/revoking/cancelling updates or clears the request flow and sends notifications where needed.
-- Improved the **notification drawer** in the shared navbar:
-  - unread notifications light the bell with a soft red highlight/dot.
-  - read notifications no longer keep the glowing unread border.
-  - notification count reflects unread items only.
-  - notifications are marked read after the user closes the notification panel, not immediately when opened.
-  - assignment removal notifications include the order number.
-- Built the **Provider/Booster Order Management** flow:
-  - `ProviderOrdersPage` shows assigned orders for the logged-in booster.
-  - Provider can open assigned orders, chat, mark completed, and leave/unassign themselves from an order.
-  - If a booster leaves an order, the order can return to a pending/searching state and admin receives a notification.
-- Added the **Customer Orders** direction:
-  - Customers can view their own orders from the navbar (`My Orders`).
-  - Customer can open an order and continue into the match/chat page.
-  - Customer must always be able to chat on their own order.
-- Wired the **MatchPage chat** into the real backend:
-  - Replaced fake/local chat behavior with backend conversation/messages.
-  - Messages display with correct sender ownership even after leaving/rejoining the page.
-  - Admin messages show admin identity instead of `System`.
-  - Chat supports customer, admin, and assigned booster access.
-  - Added date separators when messages cross calendar days.
-  - Improved chat message styling, scroll behavior, input bar, and sender/receiver colors.
-
-### Frontend (Homepage/Auth UI)
-- Built a premium, dark gaming-style homepage (“FastBoost”) with sections:
-  - Navbar (anchors: Home / Services / Latest Patch / Status)
-  - Hero banner + side feature card
-  - Services section with hover-based service cards
-  - Patch/news placeholder section
-  - Backend status section
-- Added **service ordering** on the homepage:
-  1. Rank Boost
-  2. Placement Boost
-  3. Win Boost
-  4. Pro Duo
-- Improved the services fetch to handle either an array response or `{ services: [...] }`.
-- Reworked auth into a modal flow:
-  - Login modal
-  - Register modal
-  - Forgot password modal entry
-  - Animated success state with green check
-  - Auto-close after success
-- Added auth UX improvements:
-  - red field highlight for invalid login/register
-  - auto-login after account creation
-  - top-right profile avatar circle replaces Login button after login
-  - default gray avatar icon when no profile image exists
-  - logout dropdown menu
-
-### Password reset flow
-- Added backend forgot-password and reset-password routes:
-  - `POST /api/auth/forgot-password`
-  - `POST /api/auth/reset-password`
-- Added `PasswordResetToken` database table using Prisma
-- Implemented:
-  - hashed reset tokens
-  - expiry time
-  - one-time-use reset links
-  - Gmail SMTP / Nodemailer email sending
-- Added frontend forgot-password entry from the auth modal
-- Added dedicated `/reset-password` frontend route/page for:
-  - strong password validation
-  - red → green strength bar
-  - rule checklist
-  - confirm password validation
-  - auto-login after reset
-
-### Image hosting (Deploy-friendly)
-- Created an AWS S3 bucket for **public website assets**:
-  - Bucket: `fastboost-assets`
-  - Folder: `services/`
-  - Uploaded 4 service images:
-    - `rank-boost.webp`
-    - `placement-boost.webp`
-    - `win-boost.png`
-    - `hire-a-teammate.png`
-- Added a second S3 asset folder for order configurator rank images:
-  - Folder: `services/ranks/`
-  - Uploaded rank images:
-    - `iron.png`
-    - `bronze.png`
-    - `silver.png`
-    - `gold.png`
-    - `platinum.png`
-    - `emerald.png`
-    - `diamond.png`
-    - `master.png`
-- Verified S3 image URLs load in a browser.
-- Updated frontend to use S3 image URLs per service title and rank selection.
-
-### Order / configurator UI
-- Replaced placeholder order flow with a real frontend demo flow:
-  - service details page
-  - service order page
-  - demo match/chat page
-- Built a live order configurator direction inspired by real gaming service checkouts.
-- Added top service tabs on the order page:
-  - Division
-  - Placements
-  - Ranked Wins
-  - Pro Duo
-- Removed unnecessary Platform field because this demo is LoL-focused.
-- Added visual current rank / desired rank cards using S3-hosted rank images.
-- Improved layout and alignment for:
-  - Current LP
-  - Queue Type
-  - desired rank queue type
-- Reworked the right checkout summary:
-  - current → target strip
-  - thinner Solo / Duo toggle
-  - thinner Standard / Express toggle
-  - add-ons grouped in the right summary column
-  - different add-on layouts for Solo vs Duo
-  - cleaner inline total price layout
-  - CTA spacing cleanup
-- Removed extra notes/comments box from the summary because the demo chat flow covers follow-up communication.
-
-### Order creation / schema expansion
-- Connected the configurator to a real backend demo order creation flow.
-- Confirmed protected order submission works with authenticated user context.
-- Expanded the `Order` direction beyond a minimal placeholder to include service-specific configuration fields such as:
-  - boost type / play mode / region / queue type
-  - current rank / target rank / LP-related fields
-  - Master LP-related fields
-  - placements / wins / number of games
-  - first role / second role
-  - selected champions
-  - addon booleans
-  - base price / addon price / total price
-- Removed the older `preferredRole` direction in favor of separate `firstRole` and `secondRole` fields.
-
-### Pricing logic progress
-- Added pricing structure for division, placements, wins, and Pro Duo flows.
-- Added LP-related helper logic and Master-specific pricing direction.
-- Split Duo mode and Premium Coaching into separate concepts.
-- Continued refining add-on pricing so duo-related add-ons can use duo-adjusted pricing instead of solo-only base pricing.
-- Clarified that `appearOffline` is for Solo privacy, while Duo privacy should stay separate as `untrackableDuo`.
-- Bonus win pricing is rank-based and still requires clean solo/duo handling in the latest pricing pass.
+#### Reward History page update
+- Renamed the Loyalty page history section from **Completed Match Rewards** to **Reward History**.
+- Reward History can now include:
+  - completed order gold
+  - referral inviter rewards
+  - invited-user welcome rewards
+  - future promo/top-up bonuses
+- Loyalty backend now combines recent completed-order rewards and stored reward-history records.
+- Total Gold now includes completed-order gold plus extra reward-history gold.
+- Reward History displays max 5 items per page.
+- Added pagination below Reward History so users can move between pages.
+- Fixed pagination UX so clicking Next/Previous does not collapse the whole Loyalty page back to the top loading state.
+- Added reward-section scroll preservation so pagination keeps the user near Reward History instead of forcing them to scroll down again.
 
 ---
 
@@ -290,6 +101,7 @@ Core entities:
 - **Service**
 - **Order**
 - **PasswordResetToken**
+- **RewardHistory**
 
 Chat-related entities:
 - **OrderAssignment** (order ←→ provider linkage)
@@ -405,9 +217,10 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/health`
 - `GET /api/services`
 - `GET /api/services/:id`
+- `GET /api/referrals/public/:referralCode` — public inviter preview for private invite registration
 
 ### Auth
-- `POST /api/auth/register`
+- `POST /api/auth/register` — supports optional `referralCode` for private invite registration
 - `POST /api/auth/login`
 - `POST /api/auth/forgot-password`
 - `POST /api/auth/reset-password`
@@ -441,7 +254,7 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `DELETE /api/orders/:id/provider-leave` — provider leaves/unassigns self from order
 
 ### Loyalty
-- `GET /api/loyalty/me` — current user loyalty summary calculated from completed orders
+- `GET /api/loyalty/me?rewardPage=1&rewardLimit=5` — current user loyalty summary, referral eligibility, tier benefits, and paginated Reward History
 
 ### Assignment requests
 - `POST /api/assignment-requests/orders/:orderId/boosters/:boosterId` — admin creates booster invite/request
@@ -609,74 +422,47 @@ npx prisma studio
 - successful email verification highlights all boxes green before the panel disappears
 - phone number and phone verification flow removed from frontend, backend routes/controllers, and Prisma schema direction
 
-#### Recent completed functions confirmed as done
-- Account Settings route/page completed:
-  - `/account/settings`
-  - `AccountSettingsPage.jsx`
-  - `AccountSettings.css`
-  - `client/src/api/accountSettings.js`
-- Account Settings frontend API helpers completed:
-  - `getMyAccount()`
-  - `updateMyAccount(payload)`
-  - `changeMyPassword(payload)`
-  - `uploadProfilePicture(file)`
-  - `sendEmailVerificationCode()`
-  - `confirmEmailVerificationCode(code)`
-- User/account backend routes completed:
-  - `GET /api/user/me`
-  - `PATCH /api/user/me`
-  - `PATCH /api/user/me/password`
-  - `POST /api/user/me/profile-picture`
-  - `POST /api/user/me/email-verification/send`
-  - `POST /api/user/me/email-verification/confirm`
-- Profile image upload function completed:
-  - hidden avatar file input
-  - protected backend upload endpoint
-  - `multer` memory upload
-  - S3 upload helper
-  - saved `Profile.profileImageUrl`
-  - immediate localStorage/navbar refresh after upload
-- Avatar loading/polish completed:
-  - Account Settings avatar hover upload overlay
-  - Navbar avatar immediate update
-  - upload loading/shimmer/glow effect
-  - circular clipping/frame correction
-- Spend-based Loyalty functions completed:
-  - loyalty tier calculation based on completed spend
-  - Bronze/Silver/Gold/Platinum thresholds
-  - completed matches kept as stat only
-  - total gold display
-  - gold-to-dollar display where `10 gold = $1`
-  - tier-based loyalty theme/glow
-- Referral-link direction completed for the Loyalty page:
-  - backend loyalty response direction includes referral link data
-  - existing users should receive a referral code fallback when loyalty loads
-  - Loyalty page should display the referral link field without separately showing the raw code
-- Email verification functions completed:
-  - send 6-digit email verification code
-  - confirm 6-digit email verification code
-  - mark `emailVerifiedAt`
-  - return `emailVerified`
-  - reset verification status when a verified user changes email
-- Email verification frontend UX completed:
-  - six digit boxes
-  - auto-focus next digit
-  - backspace previous digit
-  - paste full code
-  - auto-submit after 6 digits
-  - resend cooldown timer
-  - red box highlight/shake on wrong code
-  - green box highlight on success
-  - slide-down panel after email change
-  - slide-up panel after successful verification
-- Phone verification cleanup completed:
-  - removed phone UI from Account Settings
-  - removed phone API helpers
-  - removed phone routes
-  - removed phone controller functions
-  - removed phone fields from Prisma schema direction
-  - removed `VerificationCodeType.PHONE`
-  - cleared old `PHONE` verification records before Prisma enum removal
+#### Completed functions
+- Referral eligibility completed on Loyalty page:
+  - verified email required
+  - at least 3 completed orders required
+  - requirement cards show green tick / red X
+  - duplicate “Referral link ready” card removed
+  - completed-order requirement display capped at `3/3`
+- Private referral invite flow completed/directed:
+  - `/r/:referralCode` route opens the homepage register modal with invite context
+  - register request sends optional `referralCode`
+  - backend saves `referredById` on invited users
+  - referral reward is granted when invited user verifies email and inviter meets requirements
+  - inviter and invited user each receive `+50 gold` (`$5` discount credit)
+- Public referral preview completed:
+  - `GET /api/referrals/public/:referralCode`
+  - returns inviter username/display name fallback
+  - returns inviter profile image URL
+  - returns inviter eligibility and reward explanation
+- Private invite register modal completed:
+  - wider modal state for private invite registration
+  - circular inviter profile image/avatar fallback
+  - reward explanation and conditions shown before registration
+  - unnecessary “Private invite detected” wording removed
+  - invite card spacing fixed so it does not collide with username input
+- Reward History model/direction completed:
+  - `RewardHistory` model direction added for referral rewards and future bonuses
+  - referral rewards protected from duplicate grants with unique inviter/invited reward records
+  - Loyalty response combines completed-order rewards and stored reward-history records
+  - Total Gold includes completed-order gold plus reward-history gold
+- Reward History frontend completed:
+  - section renamed from Completed Match Rewards to Reward History
+  - max 5 history items per page
+  - pagination controls added below history
+  - pagination loading no longer collapses the whole page to the top
+  - reward-section scroll preservation added after page changes
+- Loyalty tier update completed:
+  - Diamond tier added after Platinum
+  - Diamond is now the highest/max tier in progress logic
+  - Diamond styling follows the order page diamond-blue color direction
+  - tier benefit cards display Bronze/Silver/Gold/Platinum/Diamond bonuses
+  - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
 - final duplicate chat notification verification after clearing old unread records
@@ -692,6 +478,23 @@ npx prisma studio
 
 ## Next steps (recommended)
 
+1. Test referral invite flow end-to-end:
+   - login as inviter with verified email and at least 3 completed orders
+   - copy private referral link from Loyalty page
+   - open `/r/:referralCode` in another browser/session
+   - confirm wider invite register modal shows inviter username/avatar and reward conditions
+   - register invited user through the private link
+   - verify invited user's email
+   - confirm both users receive `+50 gold` in Reward History
+2. Test Reward History pagination:
+   - create more than 5 reward/history records
+   - confirm only 5 show per page
+   - click Next/Previous/page number
+   - confirm the page stays near Reward History and does not jump to the top
+3. Test Diamond tier display:
+   - create completed spend above $1500
+   - confirm Diamond is the max tier and uses the diamond-blue theme
+   - confirm tier benefit cards show coin/top-up bonus display direction
 1. Test email verification end-to-end:
    - login as an existing verified user
    - change email in Account Settings
@@ -738,6 +541,9 @@ npx prisma studio
 
 ## Resume-ready highlights
 
+- Implemented a private referral invite workflow with eligibility requirements, public invite previews, invite-aware registration UI, and reward-history based gold rewards for both inviter and invited users.
+- Added paginated Reward History combining completed-order gold, referral rewards, and future bonus records, including smooth page-change behavior that preserves scroll position.
+- Expanded loyalty tiers with Diamond as the new highest tier and added tier benefit displays for coin/top-up bonus direction.
 - Implemented email verification in Account Settings with 6-digit SMTP codes, animated verification UI, auto-submit digit boxes, and unverified-state handling when users change email.
 - Removed demo-only phone verification after evaluating SMS delivery requirements, cleaning the frontend, backend routes/controllers, and Prisma schema to avoid shipping fake phone verification.
 - Added referral-link direction in the Loyalty page to support future invite/reward benefits.
