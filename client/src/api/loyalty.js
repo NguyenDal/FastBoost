@@ -9,8 +9,13 @@ function authHeaders() {
     };
 }
 
-export async function getMyLoyalty() {
-    const res = await fetch(`${API_BASE_URL}/loyalty/me`, {
+export async function getMyLoyalty({ rewardPage = 1, rewardLimit = 5 } = {}) {
+    const params = new URLSearchParams({
+        rewardPage: String(rewardPage),
+        rewardLimit: String(rewardLimit),
+    });
+
+    const res = await fetch(`${API_BASE_URL}/loyalty/me?${params.toString()}`, {
         headers: authHeaders(),
     });
 

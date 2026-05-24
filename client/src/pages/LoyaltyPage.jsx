@@ -55,6 +55,9 @@ export default function LoyaltyPage() {
     const [error, setError] = useState("");
     const [copiedReferral, setCopiedReferral] = useState(false);
 
+    const [rewardPage, setRewardPage] = useState(1);
+    const REWARD_PAGE_SIZE = 5;
+
     useEffect(() => {
         if (!hasAccess) return;
 
@@ -63,7 +66,10 @@ export default function LoyaltyPage() {
                 setLoading(true);
                 setError("");
 
-                const loadedLoyalty = await getMyLoyalty();
+                const loadedLoyalty = await getMyLoyalty({
+                    rewardPage,
+                    rewardLimit: REWARD_PAGE_SIZE,
+                });
                 setLoyalty(loadedLoyalty);
             } catch (e) {
                 setError(e?.message || "Failed to load loyalty page");
@@ -73,9 +79,17 @@ export default function LoyaltyPage() {
         };
 
         loadLoyalty();
-    }, [hasAccess]);
+    }, [hasAccess, rewardPage]);
 
     const rewardHistory = loyalty?.rewardHistory || loyalty?.completedOrders || [];
+    const rewardPagination = loyalty?.rewardPagination || {
+        page: 1,
+        limit: REWARD_PAGE_SIZE,
+        totalItems: rewardHistory.length,
+        totalPages: 1,
+    };
+
+    const totalRewardPages = Math.max(1, rewardPagination.totalPages || 1);
     const completedMatches = loyalty?.completedMatches || 0;
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
@@ -293,27 +307,68 @@ export default function LoyaltyPage() {
                             </div>
 
                             {rewardHistory.length > 0 ? (
-                                <div className="loyalty-match-list">
-                                    {rewardHistory.map((reward) => (
-                                        <div className="loyalty-match-row" key={reward.id}>
-                                            <div>
-                                                <strong>{reward.title || "Reward"}</strong>
+                                <>
+                                    <div className="loyalty-match-list">
+                                        {rewardHistory.map((reward) => (
+                                            <div className="loyalty-match-row" key={reward.id}>
+                                                <div>
+                                                    <strong>{reward.title || "Reward"}</strong>
 
-                                                <small>
-                                                    {reward.description || "Reward added"} •{" "}
-                                                    {reward.createdAt
-                                                        ? new Date(reward.createdAt).toLocaleString()
-                                                        : "Recently added"}
-                                                </small>
+                                                    <small>
+                                                        {reward.description || "Reward added"} •{" "}
+                                                        {reward.createdAt
+                                                            ? new Date(reward.createdAt).toLocaleString()
+                                                            : "Recently added"}
+                                                    </small>
+                                                </div>
+
+                                                <div className="loyalty-match-gold">
+                                                    <span>+{reward.goldEarned}</span>
+                                                    <small>gold</small>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {totalRewardPages > 1 && (
+                                        <div className="loyalty-pagination">
+                                            <button
+                                                type="button"
+                                                onClick={() => setRewardPage((page) => Math.max(1, page - 1))}
+                                                disabled={rewardPage <= 1}
+                                            >
+                                                Previous
+                                            </button>
+
+                                            <div className="loyalty-page-numbers">
+                                                {Array.from({ length: totalRewardPages }, (_, index) => {
+                                                    const pageNumber = index + 1;
+
+                                                    return (
+                                                        <button
+                                                            key={pageNumber}
+                                                            type="button"
+                                                            className={pageNumber === rewardPage ? "active" : ""}
+                                                            onClick={() => setRewardPage(pageNumber)}
+                                                        >
+                                                            {pageNumber}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
 
-                                            <div className="loyalty-match-gold">
-                                                <span>+{reward.goldEarned}</span>
-                                                <small>gold</small>
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setRewardPage((page) => Math.min(totalRewardPages, page + 1))
+                                                }
+                                                disabled={rewardPage >= totalRewardPages}
+                                            >
+                                                Next
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="loyalty-empty">
                                     <h3>No rewards yet</h3>

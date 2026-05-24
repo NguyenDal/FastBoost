@@ -176,6 +176,11 @@ exports.getMyLoyalty = async (req, res) => {
     try {
         const userId = getUserId(req);
 
+        const rewardPage = Math.max(1, Number(req.query.rewardPage || 1));
+        const rewardLimit = Math.min(10, Math.max(1, Number(req.query.rewardLimit || 5)));
+        const rewardTake = rewardPage * rewardLimit;
+        const rewardStartIndex = (rewardPage - 1) * rewardLimit;
+
         if (!userId) {
             return res.status(401).json({
                 ok: false,
@@ -190,7 +195,13 @@ exports.getMyLoyalty = async (req, res) => {
             status: "COMPLETED",
         };
 
-        const [completedOrdersStats, recentCompletedOrders, rewardRecords] = await Promise.all([
+        const [
+            completedOrdersStats,
+            recentCompletedOrders,
+            rewardRecords,
+            completedOrderRewardCount,
+            rewardRecordCount,
+        ] = await Promise.all([
             prisma.order.aggregate({
                 where: completedOrderWhere,
                 _count: {
@@ -203,7 +214,7 @@ exports.getMyLoyalty = async (req, res) => {
 
             prisma.order.findMany({
                 where: completedOrderWhere,
-                take: 10,
+                take: rewardTake,
                 include: {
                     service: {
                         select: {
@@ -221,9 +232,19 @@ exports.getMyLoyalty = async (req, res) => {
                 where: {
                     userId,
                 },
-                take: 10,
+                take: rewardTake,
                 orderBy: {
                     createdAt: "desc",
+                },
+            }),
+
+            prisma.order.count({
+                where: completedOrderWhere,
+            }),
+
+            prisma.rewardHistory.count({
+                where: {
+                    userId,
                 },
             }),
         ]);
@@ -270,9 +291,16 @@ exports.getMyLoyalty = async (req, res) => {
             createdAt: reward.createdAt,
         }));
 
-        const rewardHistory = [...completedOrderRewards, ...bonusRewards]
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0, 10);
+        const allRewardHistory = [...completedOrderRewards, ...bonusRewards]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const totalRewardItems = completedOrderRewardCount + rewardRecordCount;
+        const totalRewardPages = Math.max(1, Math.ceil(totalRewardItems / rewardLimit));
+
+        const rewardHistory = allRewardHistory.slice(
+            rewardStartIndex,
+            rewardStartIndex + rewardLimit
+        );
 
         return res.json({
             ok: true,
@@ -297,6 +325,12 @@ exports.getMyLoyalty = async (req, res) => {
                 tiers: LOYALTY_TIERS,
                 rewardHistory,
                 completedOrders: rewardHistory,
+                rewardPagination: {
+                    page: rewardPage,
+                    limit: rewardLimit,
+                    totalItems: totalRewardItems,
+                    totalPages: totalRewardPages,
+                },
 
                 referralCode: user?.referralCode || null,
                 referralLink:

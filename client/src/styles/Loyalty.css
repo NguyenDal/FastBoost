@@ -334,6 +334,55 @@
     color: #8f9aad;
 }
 
+.loyalty-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.loyalty-pagination button,
+.loyalty-page-numbers button {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.045);
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.loyalty-pagination button:hover:not(:disabled),
+.loyalty-page-numbers button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(250, 204, 21, 0.28);
+    background: rgba(250, 204, 21, 0.08);
+}
+
+.loyalty-page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.loyalty-page-numbers button.active {
+    color: #111827;
+    border-color: rgba(250, 204, 21, 0.55);
+    background: linear-gradient(135deg, #facc15, #f59e0b);
+    box-shadow: 0 10px 24px rgba(250, 204, 21, 0.16);
+}
+
+.loyalty-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .loyalty-match-gold {
     text-align: right;
     min-width: 86px;
