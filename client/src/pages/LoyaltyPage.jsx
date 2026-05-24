@@ -75,7 +75,7 @@ export default function LoyaltyPage() {
         loadLoyalty();
     }, [hasAccess]);
 
-    const completedOrders = loyalty?.completedOrders || [];
+    const rewardHistory = loyalty?.rewardHistory || loyalty?.completedOrders || [];
     const completedMatches = loyalty?.completedMatches || 0;
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
@@ -283,8 +283,8 @@ export default function LoyaltyPage() {
                         <section className="loyalty-card">
                             <div className="loyalty-section-header">
                                 <div>
-                                    <h2>Completed Match Rewards</h2>
-                                    <p>Your latest completed match rewards.</p>
+                                    <h2>Reward History</h2>
+                                    <p>Your latest completed match rewards, referral rewards, and bonus gold.</p>
                                 </div>
 
                                 <Link to="/account/orders" className="loyalty-secondary-btn">
@@ -292,29 +292,23 @@ export default function LoyaltyPage() {
                                 </Link>
                             </div>
 
-                            {completedOrders.length > 0 ? (
+                            {rewardHistory.length > 0 ? (
                                 <div className="loyalty-match-list">
-                                    {completedOrders.map((order) => (
-                                        <div className="loyalty-match-row" key={order.id}>
+                                    {rewardHistory.map((reward) => (
+                                        <div className="loyalty-match-row" key={reward.id}>
                                             <div>
-                                                <strong>
-                                                    {order.service?.title || order.boostType || "Completed Order"}
-                                                </strong>
+                                                <strong>{reward.title || "Reward"}</strong>
 
                                                 <small>
-                                                    #{String(order.id).slice(0, 8)} •{" "}
-                                                    {order.completedAt
-                                                        ? new Date(order.completedAt).toLocaleString()
-                                                        : order.updatedAt
-                                                            ? new Date(order.updatedAt).toLocaleString()
-                                                            : order.createdAt
-                                                                ? new Date(order.createdAt).toLocaleString()
-                                                                : "Completed"}
+                                                    {reward.description || "Reward added"} •{" "}
+                                                    {reward.createdAt
+                                                        ? new Date(reward.createdAt).toLocaleString()
+                                                        : "Recently added"}
                                                 </small>
                                             </div>
 
                                             <div className="loyalty-match-gold">
-                                                <span>+{order.goldEarned}</span>
+                                                <span>+{reward.goldEarned}</span>
                                                 <small>gold</small>
                                             </div>
                                         </div>
@@ -322,10 +316,11 @@ export default function LoyaltyPage() {
                                 </div>
                             ) : (
                                 <div className="loyalty-empty">
-                                    <h3>No completed matches yet</h3>
+                                    <h3>No rewards yet</h3>
                                     <p>
-                                        Your loyalty progress starts when your first order is marked completed.
+                                        Your reward history starts when you complete orders or earn referral rewards.
                                     </p>
+
                                     <Link to="/" className="loyalty-primary-btn">
                                         Browse Services
                                     </Link>

@@ -25,6 +25,9 @@ function RegisterPage({
   forgotError,
   setForgotError,
   handleForgotPasswordSubmit,
+  referralInvite,
+  referralInviteLoading,
+  referralInviteError,
 }) {
   // Local computed state for Register mode
   const [nameStatus, setNameStatus] = useState({
@@ -102,7 +105,13 @@ function RegisterPage({
 
   return (
     <div className="modal-backdrop" onClick={closeAuthModal}>
-      <div className="auth-modal" onClick={(event) => event.stopPropagation()}>
+      <div
+        className={`auth-modal ${authMode === "register" && registerForm?.referralCode
+          ? "auth-modal-private-invite"
+          : ""
+          }`}
+        onClick={(event) => event.stopPropagation()}
+      >
         <button className="modal-close-btn" onClick={closeAuthModal}>
           ×
         </button>
@@ -207,6 +216,79 @@ function RegisterPage({
               </form>
             ) : (
               <form className="auth-modal-form" onSubmit={handleValidatedRegisterSubmit}>
+                {registerForm?.referralCode && (
+                  <div className="private-invite-register-card">
+                    <div className="private-invite-card-top">
+                      <div className="private-invite-avatar">
+                        {referralInvite?.inviter?.profileImageUrl ? (
+                          <img
+                            src={referralInvite.inviter.profileImageUrl}
+                            alt="Inviter profile"
+                          />
+                        ) : (
+                          <span>
+                            {(referralInvite?.inviter?.username || "F")
+                              .slice(0, 1)
+                              .toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="private-invite-label">You are invited by</p>
+
+                        <h3>
+                          {referralInviteLoading
+                            ? "Loading inviter..."
+                            : referralInvite?.inviter?.username
+                              ? referralInvite.inviter.username
+                              : "FastBoost Invite"}
+                        </h3>
+
+                        {referralInviteError ? (
+                          <p className="private-invite-error">{referralInviteError}</p>
+                        ) : (
+                          <p>
+                            Register with this private link and verify your email to unlock the referral reward.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="private-invite-reward-box">
+                      <div>
+                        <strong>Reward</strong>
+                        <span>Both users receive 50 gold = $5 discount.</span>
+                      </div>
+
+                      <div className="private-invite-gold-pill">+50 gold</div>
+                    </div>
+
+                    <div className="private-invite-condition-list">
+                      <div className="private-invite-condition">
+                        <span className="condition-dot success">✓</span>
+                        <p>Register using this private invite link.</p>
+                      </div>
+
+                      <div className="private-invite-condition">
+                        <span className="condition-dot success">✓</span>
+                        <p>You verify your email after creating the account.</p>
+                      </div>
+
+                      <div className="private-invite-condition">
+                        <span
+                          className={`condition-dot ${referralInvite?.eligibility?.eligible ? "success" : "warning"
+                            }`}
+                        >
+                          {referralInvite?.eligibility?.eligible ? "✓" : "!"}
+                        </span>
+                        <p>
+                          Inviter must have verified email and at least 3 completed orders.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div
                   className={`username-field-wrap ${submitAttempted && nameStatus.checked && !nameStatus.available
                     ? "show-username-tooltip"

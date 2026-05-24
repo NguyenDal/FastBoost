@@ -395,6 +395,33 @@
   transform: translateY(0);
 }
 
+/* Wider private invite register modal */
+.auth-modal.auth-modal-private-invite {
+  width: min(920px, calc(100vw - 40px)) !important;
+  max-width: 920px !important;
+}
+
+.auth-modal.auth-modal-private-invite .auth-modal-form {
+  gap: 14px;
+}
+
+.auth-modal.auth-modal-private-invite .private-invite-register-card {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.auth-modal.auth-modal-private-invite .private-invite-reward-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.auth-modal.auth-modal-private-invite .private-invite-card-top {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+}
+
 /* Responsive for Home */
 @media (max-width: 1100px) {
   .news-layout { grid-template-columns: 1fr; }

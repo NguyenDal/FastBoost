@@ -190,7 +190,7 @@ exports.getMyLoyalty = async (req, res) => {
             status: "COMPLETED",
         };
 
-        const [completedOrdersStats, recentCompletedOrders] = await Promise.all([
+        const [completedOrdersStats, recentCompletedOrders, rewardRecords] = await Promise.all([
             prisma.order.aggregate({
                 where: completedOrderWhere,
                 _count: {
@@ -216,6 +216,16 @@ exports.getMyLoyalty = async (req, res) => {
                     updatedAt: "desc",
                 },
             }),
+
+            prisma.rewardHistory.findMany({
+                where: {
+                    userId,
+                },
+                take: 10,
+                orderBy: {
+                    createdAt: "desc",
+                },
+            }),
         ]);
 
         const completedMatches = completedOrdersStats._count._all || 0;
@@ -230,7 +240,11 @@ exports.getMyLoyalty = async (req, res) => {
         const totalCompletedSpend = Number(completedOrdersStats._sum.totalPrice || 0);
 
 
-        const totalGold = Math.floor(totalCompletedSpend);
+        const extraRewardGold = rewardRecords.reduce((sum, reward) => {
+            return sum + Number(reward.goldAmount || 0);
+        }, 0);
+
+        const totalGold = Math.floor(totalCompletedSpend) + extraRewardGold;
 
         const tierInfo = getTierInfo(totalCompletedSpend);
         const progressPercent = getTierProgressPercent(
@@ -238,17 +252,27 @@ exports.getMyLoyalty = async (req, res) => {
             tierInfo
         );
 
-        const rewardHistory = recentCompletedOrders.map((order) => ({
-            id: order.id,
-            service: order.service,
-            boostType: order.boostType,
-            status: order.status,
-            totalPrice: order.totalPrice,
+        const completedOrderRewards = recentCompletedOrders.map((order) => ({
+            id: `order-${order.id}`,
+            type: "COMPLETED_ORDER",
+            title: order.service?.title || order.boostType || "Completed Order",
+            description: `#${String(order.id).slice(0, 8)} • Completed match reward`,
             goldEarned: getGoldFromOrder(order),
-            completedAt: order.updatedAt,
-            createdAt: order.createdAt,
-            updatedAt: order.updatedAt,
+            createdAt: order.updatedAt || order.createdAt,
         }));
+
+        const bonusRewards = rewardRecords.map((reward) => ({
+            id: `reward-${reward.id}`,
+            type: reward.type,
+            title: reward.title,
+            description: reward.description || "Reward added to your account.",
+            goldEarned: reward.goldAmount,
+            createdAt: reward.createdAt,
+        }));
+
+        const rewardHistory = [...completedOrderRewards, ...bonusRewards]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 10);
 
         return res.json({
             ok: true,
@@ -271,6 +295,7 @@ exports.getMyLoyalty = async (req, res) => {
                 progressPercent,
 
                 tiers: LOYALTY_TIERS,
+                rewardHistory,
                 completedOrders: rewardHistory,
 
                 referralCode: user?.referralCode || null,
