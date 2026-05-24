@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getMyLoyalty } from "../api/loyalty";
@@ -52,33 +52,59 @@ export default function LoyaltyPage() {
 
     const [loyalty, setLoyalty] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [rewardLoading, setRewardLoading] = useState(false);
     const [error, setError] = useState("");
     const [copiedReferral, setCopiedReferral] = useState(false);
 
     const [rewardPage, setRewardPage] = useState(1);
     const REWARD_PAGE_SIZE = 5;
 
+    const rewardSectionRef = useRef(null);
+    const hasLoadedOnceRef = useRef(false);
+
     useEffect(() => {
         if (!hasAccess) return;
 
+        let cancelled = false;
+
         const loadLoyalty = async () => {
+            const shouldOnlyRefreshRewards = hasLoadedOnceRef.current;
+
             try {
-                setLoading(true);
+                if (shouldOnlyRefreshRewards) {
+                    setRewardLoading(true);
+                } else {
+                    setLoading(true);
+                }
+
                 setError("");
 
                 const loadedLoyalty = await getMyLoyalty({
                     rewardPage,
                     rewardLimit: REWARD_PAGE_SIZE,
                 });
-                setLoyalty(loadedLoyalty);
+
+                if (!cancelled) {
+                    setLoyalty(loadedLoyalty);
+                    hasLoadedOnceRef.current = true;
+                }
             } catch (e) {
-                setError(e?.message || "Failed to load loyalty page");
+                if (!cancelled) {
+                    setError(e?.message || "Failed to load loyalty page");
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                    setRewardLoading(false);
+                }
             }
         };
 
         loadLoyalty();
+
+        return () => {
+            cancelled = true;
+        };
     }, [hasAccess, rewardPage]);
 
     const rewardHistory = loyalty?.rewardHistory || loyalty?.completedOrders || [];
@@ -132,6 +158,17 @@ export default function LoyaltyPage() {
     const loyaltyTiers = loyalty?.tiers || LOYALTY_TIERS;
 
     if (!hasAccess) return null;
+
+    const changeRewardPage = (nextPage) => {
+        setRewardPage(nextPage);
+
+        window.requestAnimationFrame(() => {
+            rewardSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        });
+    };
 
     return (
         <div className="loyalty-page-shell">
@@ -294,7 +331,7 @@ export default function LoyaltyPage() {
                             </div>
                         </section>
 
-                        <section className="loyalty-card">
+                        <section className="loyalty-card" ref={rewardSectionRef}>
                             <div className="loyalty-section-header">
                                 <div>
                                     <h2>Reward History</h2>
@@ -308,6 +345,10 @@ export default function LoyaltyPage() {
 
                             {rewardHistory.length > 0 ? (
                                 <>
+                                    {rewardLoading && (
+                                        <p className="loyalty-reward-loading">Updating reward history...</p>
+                                    )}
+
                                     <div className="loyalty-match-list">
                                         {rewardHistory.map((reward) => (
                                             <div className="loyalty-match-row" key={reward.id}>
@@ -334,8 +375,8 @@ export default function LoyaltyPage() {
                                         <div className="loyalty-pagination">
                                             <button
                                                 type="button"
-                                                onClick={() => setRewardPage((page) => Math.max(1, page - 1))}
-                                                disabled={rewardPage <= 1}
+                                                onClick={() => changeRewardPage(Math.max(1, rewardPage - 1))}
+                                                disabled={rewardPage <= 1 || rewardLoading}
                                             >
                                                 Previous
                                             </button>
@@ -349,7 +390,8 @@ export default function LoyaltyPage() {
                                                             key={pageNumber}
                                                             type="button"
                                                             className={pageNumber === rewardPage ? "active" : ""}
-                                                            onClick={() => setRewardPage(pageNumber)}
+                                                            onClick={() => changeRewardPage(pageNumber)}
+                                                            disabled={rewardLoading}
                                                         >
                                                             {pageNumber}
                                                         </button>
@@ -359,10 +401,8 @@ export default function LoyaltyPage() {
 
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    setRewardPage((page) => Math.min(totalRewardPages, page + 1))
-                                                }
-                                                disabled={rewardPage >= totalRewardPages}
+                                                onClick={() => changeRewardPage(Math.min(totalRewardPages, rewardPage + 1))}
+                                                disabled={rewardPage >= totalRewardPages || rewardLoading}
                                             >
                                                 Next
                                             </button>

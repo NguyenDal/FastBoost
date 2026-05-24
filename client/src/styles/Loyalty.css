@@ -383,6 +383,12 @@
     cursor: not-allowed;
 }
 
+.loyalty-reward-loading {
+    margin: 0 0 12px;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
 .loyalty-match-gold {
     text-align: right;
     min-width: 86px;
