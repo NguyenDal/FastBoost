@@ -13,6 +13,7 @@ async function ensureReferralCode(userId, username = "") {
         select: {
             id: true,
             username: true,
+            emailVerifiedAt: true,
             referralCode: true,
             _count: {
                 select: {
@@ -62,6 +63,7 @@ async function ensureReferralCode(userId, username = "") {
         select: {
             id: true,
             username: true,
+            emailVerifiedAt: true,
             referralCode: true,
             _count: {
                 select: {
@@ -79,6 +81,9 @@ const LOYALTY_TIERS = [
         icon: "🥉",
         minSpend: 0,
         nextTier: "Silver",
+        bonusCoins: 0,
+        topUpBonusPercent: 0,
+        benefits: ["No bonus"],
     },
     {
         key: "silver",
@@ -86,6 +91,9 @@ const LOYALTY_TIERS = [
         icon: "🥈",
         minSpend: 200,
         nextTier: "Gold",
+        bonusCoins: 200,
+        topUpBonusPercent: 3,
+        benefits: ["200 bonus coins", "3% top-up bonus"],
     },
     {
         key: "gold",
@@ -93,13 +101,29 @@ const LOYALTY_TIERS = [
         icon: "🥇",
         minSpend: 500,
         nextTier: "Platinum",
+        bonusCoins: 500,
+        topUpBonusPercent: 5,
+        benefits: ["500 bonus coins", "5% top-up bonus"],
     },
     {
         key: "platinum",
         name: "Platinum",
         icon: "💎",
         minSpend: 1000,
+        nextTier: "Diamond",
+        bonusCoins: 800,
+        topUpBonusPercent: 8,
+        benefits: ["800 bonus coins", "8% top-up bonus"],
+    },
+    {
+        key: "diamond",
+        name: "Diamond",
+        icon: "🔷",
+        minSpend: 1500,
         nextTier: null,
+        bonusCoins: 1500,
+        topUpBonusPercent: 10,
+        benefits: ["1500 bonus coins", "10% top-up bonus"],
     },
 ];
 
@@ -132,7 +156,7 @@ function getTierInfo(totalCompletedSpend) {
 }
 
 function getTierProgressPercent(totalCompletedSpend, tierInfo) {
-    if (tierInfo.key === "platinum") return 100;
+    if (tierInfo.key === "diamond") return 100;
 
     const currentMin = tierInfo.minSpend;
 
@@ -152,6 +176,11 @@ exports.getMyLoyalty = async (req, res) => {
     try {
         const userId = getUserId(req);
 
+        const rewardPage = Math.max(1, Number(req.query.rewardPage || 1));
+        const rewardLimit = Math.min(10, Math.max(1, Number(req.query.rewardLimit || 5)));
+        const rewardTake = rewardPage * rewardLimit;
+        const rewardStartIndex = (rewardPage - 1) * rewardLimit;
+
         if (!userId) {
             return res.status(401).json({
                 ok: false,
@@ -161,33 +190,82 @@ exports.getMyLoyalty = async (req, res) => {
 
         const user = await ensureReferralCode(userId);
 
-        const completedOrders = await prisma.order.findMany({
-            where: {
-                customerId: userId,
-                status: "COMPLETED",
-            },
-            include: {
-                service: {
-                    select: {
-                        id: true,
-                        title: true,
+        const completedOrderWhere = {
+            customerId: userId,
+            status: "COMPLETED",
+        };
+
+        const [
+            completedOrdersStats,
+            recentCompletedOrders,
+            rewardRecords,
+            completedOrderRewardCount,
+            rewardRecordCount,
+        ] = await Promise.all([
+            prisma.order.aggregate({
+                where: completedOrderWhere,
+                _count: {
+                    _all: true,
+                },
+                _sum: {
+                    totalPrice: true,
+                },
+            }),
+
+            prisma.order.findMany({
+                where: completedOrderWhere,
+                take: rewardTake,
+                include: {
+                    service: {
+                        select: {
+                            id: true,
+                            title: true,
+                        },
                     },
                 },
-            },
-            orderBy: {
-                updatedAt: "desc",
-            },
-        });
+                orderBy: {
+                    updatedAt: "desc",
+                },
+            }),
 
-        const completedMatches = completedOrders.length;
+            prisma.rewardHistory.findMany({
+                where: {
+                    userId,
+                },
+                take: rewardTake,
+                orderBy: {
+                    createdAt: "desc",
+                },
+            }),
 
-        const totalCompletedSpend = completedOrders.reduce((sum, order) => {
-            return sum + Number(order.totalPrice || 0);
+            prisma.order.count({
+                where: completedOrderWhere,
+            }),
+
+            prisma.rewardHistory.count({
+                where: {
+                    userId,
+                },
+            }),
+        ]);
+
+        const completedMatches = completedOrdersStats._count._all || 0;
+
+        const hasVerifiedEmail = Boolean(user?.emailVerifiedAt);
+        const hasEnoughCompletedOrders = completedMatches >= 3;
+        const hasReferralLink = Boolean(user?.referralCode);
+
+        const referralEligible =
+            hasVerifiedEmail && hasEnoughCompletedOrders && hasReferralLink;
+
+        const totalCompletedSpend = Number(completedOrdersStats._sum.totalPrice || 0);
+
+
+        const extraRewardGold = rewardRecords.reduce((sum, reward) => {
+            return sum + Number(reward.goldAmount || 0);
         }, 0);
 
-        const totalGold = completedOrders.reduce((sum, order) => {
-            return sum + getGoldFromOrder(order);
-        }, 0);
+        const totalGold = Math.floor(totalCompletedSpend) + extraRewardGold;
 
         const tierInfo = getTierInfo(totalCompletedSpend);
         const progressPercent = getTierProgressPercent(
@@ -195,17 +273,34 @@ exports.getMyLoyalty = async (req, res) => {
             tierInfo
         );
 
-        const rewardHistory = completedOrders.map((order) => ({
-            id: order.id,
-            service: order.service,
-            boostType: order.boostType,
-            status: order.status,
-            totalPrice: order.totalPrice,
+        const completedOrderRewards = recentCompletedOrders.map((order) => ({
+            id: `order-${order.id}`,
+            type: "COMPLETED_ORDER",
+            title: order.service?.title || order.boostType || "Completed Order",
+            description: `#${String(order.id).slice(0, 8)} • Completed match reward`,
             goldEarned: getGoldFromOrder(order),
-            completedAt: order.updatedAt,
-            createdAt: order.createdAt,
-            updatedAt: order.updatedAt,
+            createdAt: order.updatedAt || order.createdAt,
         }));
+
+        const bonusRewards = rewardRecords.map((reward) => ({
+            id: `reward-${reward.id}`,
+            type: reward.type,
+            title: reward.title,
+            description: reward.description || "Reward added to your account.",
+            goldEarned: reward.goldAmount,
+            createdAt: reward.createdAt,
+        }));
+
+        const allRewardHistory = [...completedOrderRewards, ...bonusRewards]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const totalRewardItems = completedOrderRewardCount + rewardRecordCount;
+        const totalRewardPages = Math.max(1, Math.ceil(totalRewardItems / rewardLimit));
+
+        const rewardHistory = allRewardHistory.slice(
+            rewardStartIndex,
+            rewardStartIndex + rewardLimit
+        );
 
         return res.json({
             ok: true,
@@ -213,6 +308,9 @@ exports.getMyLoyalty = async (req, res) => {
                 tier: tierInfo.name,
                 tierKey: tierInfo.key,
                 icon: tierInfo.icon,
+                bonusCoins: tierInfo.bonusCoins,
+                topUpBonusPercent: tierInfo.topUpBonusPercent,
+                benefits: tierInfo.benefits,
 
                 // Keep this for stats only, not tier calculation.
                 completedMatches,
@@ -225,13 +323,51 @@ exports.getMyLoyalty = async (req, res) => {
                 progressPercent,
 
                 tiers: LOYALTY_TIERS,
+                rewardHistory,
                 completedOrders: rewardHistory,
+                rewardPagination: {
+                    page: rewardPage,
+                    limit: rewardLimit,
+                    totalItems: totalRewardItems,
+                    totalPages: totalRewardPages,
+                },
 
                 referralCode: user?.referralCode || null,
-                referralLink: user?.referralCode
-                    ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
-                    : null,
+                referralLink:
+                    referralEligible && user?.referralCode
+                        ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
+                        : null,
                 referralCount: user?._count?.referrals || 0,
+
+                referralEligibility: {
+                    eligible: referralEligible,
+                    discountAmount: 5,
+                    conditions: {
+                        emailVerified: {
+                            passed: hasVerifiedEmail,
+                            label: "Email verified",
+                            helpText: hasVerifiedEmail
+                                ? "Your email is verified."
+                                : "Verify your email in Account Settings first.",
+                        },
+                        completedOrders: {
+                            passed: hasEnoughCompletedOrders,
+                            label: "At least 3 completed orders",
+                            current: Math.min(completedMatches, 3),
+                            required: 3,
+                            helpText: hasEnoughCompletedOrders
+                                ? "You have enough completed orders."
+                                : `Complete ${Math.max(0, 3 - completedMatches)} more order(s) to unlock referrals.`,
+                        },
+                        referralLinkReady: {
+                            passed: hasReferralLink,
+                            label: "Referral link ready",
+                            helpText: hasReferralLink
+                                ? "Your private referral link is ready."
+                                : "Referral link is still being created. Refresh this page.",
+                        },
+                    },
+                },
             },
         });
     } catch (error) {

@@ -200,6 +200,17 @@ exports.Prisma.OrderAssignmentScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.RewardHistoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  goldAmount: 'goldAmount',
+  title: 'title',
+  description: 'description',
+  sourceUserId: 'sourceUserId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AssignmentRequestScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -305,6 +316,13 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.RewardType = exports.$Enums.RewardType = {
+  REFERRAL_INVITER: 'REFERRAL_INVITER',
+  REFERRAL_INVITED: 'REFERRAL_INVITED',
+  TOP_UP_BONUS: 'TOP_UP_BONUS',
+  PROMO: 'PROMO'
+};
+
 exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
@@ -333,6 +351,7 @@ exports.Prisma.ModelName = {
   Service: 'Service',
   Order: 'Order',
   OrderAssignment: 'OrderAssignment',
+  RewardHistory: 'RewardHistory',
   AssignmentRequest: 'AssignmentRequest',
   Conversation: 'Conversation',
   ConversationParticipant: 'ConversationParticipant',

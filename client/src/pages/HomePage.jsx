@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
+import { API_BASE_URL } from "../api/config";
 import "../styles/HomePage.css";
 
 function HomePage() {
   const navigate = useNavigate();
+  const { referralCode } = useParams();
   const [healthMessage, setHealthMessage] = useState("Checking backend...");
   const [healthError, setHealthError] = useState("");
 
@@ -15,6 +17,10 @@ function HomePage() {
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
+
+  const [referralInvite, setReferralInvite] = useState(null);
+  const [referralInviteLoading, setReferralInviteLoading] = useState(false);
+  const [referralInviteError, setReferralInviteError] = useState("");
 
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -27,6 +33,7 @@ function HomePage() {
     role: "CUSTOMER",
     username: "",
     confirmPassword: "",
+    referralCode: referralCode || "",
   });
 
   const [forgotEmail, setForgotEmail] = useState("");
@@ -104,6 +111,57 @@ function HomePage() {
       tag: "Guide",
     },
   ];
+
+  useEffect(() => {
+    if (!referralCode) return;
+
+    let cancelled = false;
+
+    const loadReferralInvite = async () => {
+      setReferralInviteLoading(true);
+      setReferralInviteError("");
+
+      setRegisterForm((prev) => ({
+        ...prev,
+        referralCode,
+      }));
+
+      setAuthMode("register");
+      setShowAuthModal(true);
+      setAuthMessage("");
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/referrals/public/${encodeURIComponent(referralCode)}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.message || "Could not load private invite.");
+        }
+
+        if (!cancelled) {
+          setReferralInvite(data.invite || null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setReferralInvite(null);
+          setReferralInviteError(error.message || "Could not load private invite.");
+        }
+      } finally {
+        if (!cancelled) {
+          setReferralInviteLoading(false);
+        }
+      }
+    };
+
+    loadReferralInvite();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [referralCode]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -244,7 +302,14 @@ function HomePage() {
       role: "CUSTOMER",
       username: "",
       confirmPassword: "",
+      referralCode: referralCode || "",
     });
+
+    if (!referralCode) {
+      setReferralInvite(null);
+      setReferralInviteLoading(false);
+      setReferralInviteError("");
+    }
   };
 
   const handleLogout = () => {
@@ -341,14 +406,20 @@ function HomePage() {
 
     try {
       // Only send expected fields to backend
-      const { email, password, role, username } = registerForm;
+      const { email, password, role, username, referralCode } = registerForm;
 
       const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, role, username }),
+        body: JSON.stringify({
+          email,
+          password,
+          role,
+          username,
+          referralCode: referralCode || undefined,
+        }),
       });
 
       const registerData = await registerResponse.json();
@@ -392,6 +463,9 @@ function HomePage() {
             email: "",
             password: "",
             role: "CUSTOMER",
+            username: "",
+            confirmPassword: "",
+            referralCode: referralCode || "",
           });
           setAuthSuccessTitle("");
           setAuthSuccessText("");
@@ -679,6 +753,9 @@ function HomePage() {
         forgotError={forgotError}
         setForgotError={setForgotError}
         handleForgotPasswordSubmit={handleForgotPasswordSubmit}
+        referralInvite={referralInvite}
+        referralInviteLoading={referralInviteLoading}
+        referralInviteError={referralInviteError}
       />
     </div>
   );

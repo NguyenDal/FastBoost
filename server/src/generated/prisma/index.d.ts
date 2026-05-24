@@ -39,6 +39,11 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  */
 export type OrderAssignment = $Result.DefaultSelection<Prisma.$OrderAssignmentPayload>
 /**
+ * Model RewardHistory
+ * 
+ */
+export type RewardHistory = $Result.DefaultSelection<Prisma.$RewardHistoryPayload>
+/**
  * Model AssignmentRequest
  * 
  */
@@ -78,7 +83,17 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
  * Enums
  */
 export namespace $Enums {
-  export const AssignmentRequestStatus: {
+  export const RewardType: {
+  REFERRAL_INVITER: 'REFERRAL_INVITER',
+  REFERRAL_INVITED: 'REFERRAL_INVITED',
+  TOP_UP_BONUS: 'TOP_UP_BONUS',
+  PROMO: 'PROMO'
+};
+
+export type RewardType = (typeof RewardType)[keyof typeof RewardType]
+
+
+export const AssignmentRequestStatus: {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
   DECLINED: 'DECLINED',
@@ -128,6 +143,10 @@ export const NotificationType: {
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 }
+
+export type RewardType = $Enums.RewardType
+
+export const RewardType: typeof $Enums.RewardType
 
 export type AssignmentRequestStatus = $Enums.AssignmentRequestStatus
 
@@ -319,6 +338,16 @@ export class PrismaClient<
     * ```
     */
   get orderAssignment(): Prisma.OrderAssignmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rewardHistory`: Exposes CRUD operations for the **RewardHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RewardHistories
+    * const rewardHistories = await prisma.rewardHistory.findMany()
+    * ```
+    */
+  get rewardHistory(): Prisma.RewardHistoryDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.assignmentRequest`: Exposes CRUD operations for the **AssignmentRequest** model.
@@ -828,6 +857,7 @@ export namespace Prisma {
     Service: 'Service',
     Order: 'Order',
     OrderAssignment: 'OrderAssignment',
+    RewardHistory: 'RewardHistory',
     AssignmentRequest: 'AssignmentRequest',
     Conversation: 'Conversation',
     ConversationParticipant: 'ConversationParticipant',
@@ -850,7 +880,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1221,6 +1251,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderAssignmentCountArgs<ExtArgs>
             result: $Utils.Optional<OrderAssignmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      RewardHistory: {
+        payload: Prisma.$RewardHistoryPayload<ExtArgs>
+        fields: Prisma.RewardHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RewardHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RewardHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.RewardHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RewardHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.RewardHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.RewardHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.RewardHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RewardHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.RewardHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          update: {
+            args: Prisma.RewardHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.RewardHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RewardHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RewardHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.RewardHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RewardHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.RewardHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRewardHistory>
+          }
+          groupBy: {
+            args: Prisma.RewardHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RewardHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RewardHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<RewardHistoryCountAggregateOutputType> | number
           }
         }
       }
@@ -1855,6 +1959,7 @@ export namespace Prisma {
     service?: ServiceOmit
     order?: OrderOmit
     orderAssignment?: OrderAssignmentOmit
+    rewardHistory?: RewardHistoryOmit
     assignmentRequest?: AssignmentRequestOmit
     conversation?: ConversationOmit
     conversationParticipant?: ConversationParticipantOmit
@@ -1945,6 +2050,7 @@ export namespace Prisma {
     orders: number
     verificationCodes: number
     passwordResetTokens: number
+    rewardHistory: number
     referrals: number
     providedAssignments: number
     conversationMembers: number
@@ -1958,6 +2064,7 @@ export namespace Prisma {
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
     verificationCodes?: boolean | UserCountOutputTypeCountVerificationCodesArgs
     passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
+    rewardHistory?: boolean | UserCountOutputTypeCountRewardHistoryArgs
     referrals?: boolean | UserCountOutputTypeCountReferralsArgs
     providedAssignments?: boolean | UserCountOutputTypeCountProvidedAssignmentsArgs
     conversationMembers?: boolean | UserCountOutputTypeCountConversationMembersArgs
@@ -1997,6 +2104,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PasswordResetTokenWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRewardHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RewardHistoryWhereInput
   }
 
   /**
@@ -2372,6 +2486,7 @@ export namespace Prisma {
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
+    rewardHistory?: boolean | User$rewardHistoryArgs<ExtArgs>
     referredBy?: boolean | User$referredByArgs<ExtArgs>
     referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
@@ -2430,6 +2545,7 @@ export namespace Prisma {
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
+    rewardHistory?: boolean | User$rewardHistoryArgs<ExtArgs>
     referredBy?: boolean | User$referredByArgs<ExtArgs>
     referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
@@ -2454,6 +2570,7 @@ export namespace Prisma {
       verificationCodes: Prisma.$VerificationCodePayload<ExtArgs>[]
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
       profile: Prisma.$ProfilePayload<ExtArgs> | null
+      rewardHistory: Prisma.$RewardHistoryPayload<ExtArgs>[]
       referredBy: Prisma.$UserPayload<ExtArgs> | null
       referrals: Prisma.$UserPayload<ExtArgs>[]
       providedAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
@@ -2872,6 +2989,7 @@ export namespace Prisma {
     verificationCodes<T extends User$verificationCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     profile<T extends User$profileArgs<ExtArgs> = {}>(args?: Subset<T, User$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    rewardHistory<T extends User$rewardHistoryArgs<ExtArgs> = {}>(args?: Subset<T, User$rewardHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     referredBy<T extends User$referredByArgs<ExtArgs> = {}>(args?: Subset<T, User$referredByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     referrals<T extends User$referralsArgs<ExtArgs> = {}>(args?: Subset<T, User$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     providedAssignments<T extends User$providedAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$providedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3408,6 +3526,30 @@ export namespace Prisma {
      */
     include?: ProfileInclude<ExtArgs> | null
     where?: ProfileWhereInput
+  }
+
+  /**
+   * User.rewardHistory
+   */
+  export type User$rewardHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    where?: RewardHistoryWhereInput
+    orderBy?: RewardHistoryOrderByWithRelationInput | RewardHistoryOrderByWithRelationInput[]
+    cursor?: RewardHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RewardHistoryScalarFieldEnum | RewardHistoryScalarFieldEnum[]
   }
 
   /**
@@ -8487,6 +8629,1142 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderAssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RewardHistory
+   */
+
+  export type AggregateRewardHistory = {
+    _count: RewardHistoryCountAggregateOutputType | null
+    _avg: RewardHistoryAvgAggregateOutputType | null
+    _sum: RewardHistorySumAggregateOutputType | null
+    _min: RewardHistoryMinAggregateOutputType | null
+    _max: RewardHistoryMaxAggregateOutputType | null
+  }
+
+  export type RewardHistoryAvgAggregateOutputType = {
+    goldAmount: number | null
+  }
+
+  export type RewardHistorySumAggregateOutputType = {
+    goldAmount: number | null
+  }
+
+  export type RewardHistoryMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.RewardType | null
+    goldAmount: number | null
+    title: string | null
+    description: string | null
+    sourceUserId: string | null
+    createdAt: Date | null
+  }
+
+  export type RewardHistoryMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.RewardType | null
+    goldAmount: number | null
+    title: string | null
+    description: string | null
+    sourceUserId: string | null
+    createdAt: Date | null
+  }
+
+  export type RewardHistoryCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    goldAmount: number
+    title: number
+    description: number
+    sourceUserId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type RewardHistoryAvgAggregateInputType = {
+    goldAmount?: true
+  }
+
+  export type RewardHistorySumAggregateInputType = {
+    goldAmount?: true
+  }
+
+  export type RewardHistoryMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    goldAmount?: true
+    title?: true
+    description?: true
+    sourceUserId?: true
+    createdAt?: true
+  }
+
+  export type RewardHistoryMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    goldAmount?: true
+    title?: true
+    description?: true
+    sourceUserId?: true
+    createdAt?: true
+  }
+
+  export type RewardHistoryCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    goldAmount?: true
+    title?: true
+    description?: true
+    sourceUserId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type RewardHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RewardHistory to aggregate.
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RewardHistories to fetch.
+     */
+    orderBy?: RewardHistoryOrderByWithRelationInput | RewardHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RewardHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RewardHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RewardHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RewardHistories
+    **/
+    _count?: true | RewardHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RewardHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RewardHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RewardHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RewardHistoryMaxAggregateInputType
+  }
+
+  export type GetRewardHistoryAggregateType<T extends RewardHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateRewardHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRewardHistory[P]>
+      : GetScalarType<T[P], AggregateRewardHistory[P]>
+  }
+
+
+
+
+  export type RewardHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RewardHistoryWhereInput
+    orderBy?: RewardHistoryOrderByWithAggregationInput | RewardHistoryOrderByWithAggregationInput[]
+    by: RewardHistoryScalarFieldEnum[] | RewardHistoryScalarFieldEnum
+    having?: RewardHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RewardHistoryCountAggregateInputType | true
+    _avg?: RewardHistoryAvgAggregateInputType
+    _sum?: RewardHistorySumAggregateInputType
+    _min?: RewardHistoryMinAggregateInputType
+    _max?: RewardHistoryMaxAggregateInputType
+  }
+
+  export type RewardHistoryGroupByOutputType = {
+    id: string
+    userId: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description: string | null
+    sourceUserId: string | null
+    createdAt: Date
+    _count: RewardHistoryCountAggregateOutputType | null
+    _avg: RewardHistoryAvgAggregateOutputType | null
+    _sum: RewardHistorySumAggregateOutputType | null
+    _min: RewardHistoryMinAggregateOutputType | null
+    _max: RewardHistoryMaxAggregateOutputType | null
+  }
+
+  type GetRewardHistoryGroupByPayload<T extends RewardHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RewardHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RewardHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RewardHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], RewardHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RewardHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    goldAmount?: boolean
+    title?: boolean
+    description?: boolean
+    sourceUserId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rewardHistory"]>
+
+  export type RewardHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    goldAmount?: boolean
+    title?: boolean
+    description?: boolean
+    sourceUserId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rewardHistory"]>
+
+  export type RewardHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    goldAmount?: boolean
+    title?: boolean
+    description?: boolean
+    sourceUserId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rewardHistory"]>
+
+  export type RewardHistorySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    goldAmount?: boolean
+    title?: boolean
+    description?: boolean
+    sourceUserId?: boolean
+    createdAt?: boolean
+  }
+
+  export type RewardHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "goldAmount" | "title" | "description" | "sourceUserId" | "createdAt", ExtArgs["result"]["rewardHistory"]>
+  export type RewardHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RewardHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RewardHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $RewardHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RewardHistory"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: $Enums.RewardType
+      goldAmount: number
+      title: string
+      description: string | null
+      sourceUserId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["rewardHistory"]>
+    composites: {}
+  }
+
+  type RewardHistoryGetPayload<S extends boolean | null | undefined | RewardHistoryDefaultArgs> = $Result.GetResult<Prisma.$RewardHistoryPayload, S>
+
+  type RewardHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RewardHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RewardHistoryCountAggregateInputType | true
+    }
+
+  export interface RewardHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RewardHistory'], meta: { name: 'RewardHistory' } }
+    /**
+     * Find zero or one RewardHistory that matches the filter.
+     * @param {RewardHistoryFindUniqueArgs} args - Arguments to find a RewardHistory
+     * @example
+     * // Get one RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RewardHistoryFindUniqueArgs>(args: SelectSubset<T, RewardHistoryFindUniqueArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RewardHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RewardHistoryFindUniqueOrThrowArgs} args - Arguments to find a RewardHistory
+     * @example
+     * // Get one RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RewardHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, RewardHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RewardHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryFindFirstArgs} args - Arguments to find a RewardHistory
+     * @example
+     * // Get one RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RewardHistoryFindFirstArgs>(args?: SelectSubset<T, RewardHistoryFindFirstArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RewardHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryFindFirstOrThrowArgs} args - Arguments to find a RewardHistory
+     * @example
+     * // Get one RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RewardHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, RewardHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RewardHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RewardHistories
+     * const rewardHistories = await prisma.rewardHistory.findMany()
+     * 
+     * // Get first 10 RewardHistories
+     * const rewardHistories = await prisma.rewardHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rewardHistoryWithIdOnly = await prisma.rewardHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RewardHistoryFindManyArgs>(args?: SelectSubset<T, RewardHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RewardHistory.
+     * @param {RewardHistoryCreateArgs} args - Arguments to create a RewardHistory.
+     * @example
+     * // Create one RewardHistory
+     * const RewardHistory = await prisma.rewardHistory.create({
+     *   data: {
+     *     // ... data to create a RewardHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends RewardHistoryCreateArgs>(args: SelectSubset<T, RewardHistoryCreateArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RewardHistories.
+     * @param {RewardHistoryCreateManyArgs} args - Arguments to create many RewardHistories.
+     * @example
+     * // Create many RewardHistories
+     * const rewardHistory = await prisma.rewardHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RewardHistoryCreateManyArgs>(args?: SelectSubset<T, RewardHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RewardHistories and returns the data saved in the database.
+     * @param {RewardHistoryCreateManyAndReturnArgs} args - Arguments to create many RewardHistories.
+     * @example
+     * // Create many RewardHistories
+     * const rewardHistory = await prisma.rewardHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RewardHistories and only return the `id`
+     * const rewardHistoryWithIdOnly = await prisma.rewardHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RewardHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, RewardHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RewardHistory.
+     * @param {RewardHistoryDeleteArgs} args - Arguments to delete one RewardHistory.
+     * @example
+     * // Delete one RewardHistory
+     * const RewardHistory = await prisma.rewardHistory.delete({
+     *   where: {
+     *     // ... filter to delete one RewardHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RewardHistoryDeleteArgs>(args: SelectSubset<T, RewardHistoryDeleteArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RewardHistory.
+     * @param {RewardHistoryUpdateArgs} args - Arguments to update one RewardHistory.
+     * @example
+     * // Update one RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RewardHistoryUpdateArgs>(args: SelectSubset<T, RewardHistoryUpdateArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RewardHistories.
+     * @param {RewardHistoryDeleteManyArgs} args - Arguments to filter RewardHistories to delete.
+     * @example
+     * // Delete a few RewardHistories
+     * const { count } = await prisma.rewardHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RewardHistoryDeleteManyArgs>(args?: SelectSubset<T, RewardHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RewardHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RewardHistories
+     * const rewardHistory = await prisma.rewardHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RewardHistoryUpdateManyArgs>(args: SelectSubset<T, RewardHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RewardHistories and returns the data updated in the database.
+     * @param {RewardHistoryUpdateManyAndReturnArgs} args - Arguments to update many RewardHistories.
+     * @example
+     * // Update many RewardHistories
+     * const rewardHistory = await prisma.rewardHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RewardHistories and only return the `id`
+     * const rewardHistoryWithIdOnly = await prisma.rewardHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RewardHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, RewardHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RewardHistory.
+     * @param {RewardHistoryUpsertArgs} args - Arguments to update or create a RewardHistory.
+     * @example
+     * // Update or create a RewardHistory
+     * const rewardHistory = await prisma.rewardHistory.upsert({
+     *   create: {
+     *     // ... data to create a RewardHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RewardHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RewardHistoryUpsertArgs>(args: SelectSubset<T, RewardHistoryUpsertArgs<ExtArgs>>): Prisma__RewardHistoryClient<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RewardHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryCountArgs} args - Arguments to filter RewardHistories to count.
+     * @example
+     * // Count the number of RewardHistories
+     * const count = await prisma.rewardHistory.count({
+     *   where: {
+     *     // ... the filter for the RewardHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends RewardHistoryCountArgs>(
+      args?: Subset<T, RewardHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RewardHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RewardHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RewardHistoryAggregateArgs>(args: Subset<T, RewardHistoryAggregateArgs>): Prisma.PrismaPromise<GetRewardHistoryAggregateType<T>>
+
+    /**
+     * Group by RewardHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RewardHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RewardHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RewardHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: RewardHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RewardHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRewardHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RewardHistory model
+   */
+  readonly fields: RewardHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RewardHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RewardHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RewardHistory model
+   */
+  interface RewardHistoryFieldRefs {
+    readonly id: FieldRef<"RewardHistory", 'String'>
+    readonly userId: FieldRef<"RewardHistory", 'String'>
+    readonly type: FieldRef<"RewardHistory", 'RewardType'>
+    readonly goldAmount: FieldRef<"RewardHistory", 'Int'>
+    readonly title: FieldRef<"RewardHistory", 'String'>
+    readonly description: FieldRef<"RewardHistory", 'String'>
+    readonly sourceUserId: FieldRef<"RewardHistory", 'String'>
+    readonly createdAt: FieldRef<"RewardHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RewardHistory findUnique
+   */
+  export type RewardHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which RewardHistory to fetch.
+     */
+    where: RewardHistoryWhereUniqueInput
+  }
+
+  /**
+   * RewardHistory findUniqueOrThrow
+   */
+  export type RewardHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which RewardHistory to fetch.
+     */
+    where: RewardHistoryWhereUniqueInput
+  }
+
+  /**
+   * RewardHistory findFirst
+   */
+  export type RewardHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which RewardHistory to fetch.
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RewardHistories to fetch.
+     */
+    orderBy?: RewardHistoryOrderByWithRelationInput | RewardHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RewardHistories.
+     */
+    cursor?: RewardHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RewardHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RewardHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RewardHistories.
+     */
+    distinct?: RewardHistoryScalarFieldEnum | RewardHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * RewardHistory findFirstOrThrow
+   */
+  export type RewardHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which RewardHistory to fetch.
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RewardHistories to fetch.
+     */
+    orderBy?: RewardHistoryOrderByWithRelationInput | RewardHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RewardHistories.
+     */
+    cursor?: RewardHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RewardHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RewardHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RewardHistories.
+     */
+    distinct?: RewardHistoryScalarFieldEnum | RewardHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * RewardHistory findMany
+   */
+  export type RewardHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which RewardHistories to fetch.
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RewardHistories to fetch.
+     */
+    orderBy?: RewardHistoryOrderByWithRelationInput | RewardHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RewardHistories.
+     */
+    cursor?: RewardHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RewardHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RewardHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RewardHistories.
+     */
+    distinct?: RewardHistoryScalarFieldEnum | RewardHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * RewardHistory create
+   */
+  export type RewardHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RewardHistory.
+     */
+    data: XOR<RewardHistoryCreateInput, RewardHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * RewardHistory createMany
+   */
+  export type RewardHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RewardHistories.
+     */
+    data: RewardHistoryCreateManyInput | RewardHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RewardHistory createManyAndReturn
+   */
+  export type RewardHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many RewardHistories.
+     */
+    data: RewardHistoryCreateManyInput | RewardHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RewardHistory update
+   */
+  export type RewardHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RewardHistory.
+     */
+    data: XOR<RewardHistoryUpdateInput, RewardHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which RewardHistory to update.
+     */
+    where: RewardHistoryWhereUniqueInput
+  }
+
+  /**
+   * RewardHistory updateMany
+   */
+  export type RewardHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RewardHistories.
+     */
+    data: XOR<RewardHistoryUpdateManyMutationInput, RewardHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which RewardHistories to update
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * Limit how many RewardHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RewardHistory updateManyAndReturn
+   */
+  export type RewardHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update RewardHistories.
+     */
+    data: XOR<RewardHistoryUpdateManyMutationInput, RewardHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which RewardHistories to update
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * Limit how many RewardHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RewardHistory upsert
+   */
+  export type RewardHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RewardHistory to update in case it exists.
+     */
+    where: RewardHistoryWhereUniqueInput
+    /**
+     * In case the RewardHistory found by the `where` argument doesn't exist, create a new RewardHistory with this data.
+     */
+    create: XOR<RewardHistoryCreateInput, RewardHistoryUncheckedCreateInput>
+    /**
+     * In case the RewardHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RewardHistoryUpdateInput, RewardHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * RewardHistory delete
+   */
+  export type RewardHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which RewardHistory to delete.
+     */
+    where: RewardHistoryWhereUniqueInput
+  }
+
+  /**
+   * RewardHistory deleteMany
+   */
+  export type RewardHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RewardHistories to delete
+     */
+    where?: RewardHistoryWhereInput
+    /**
+     * Limit how many RewardHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RewardHistory without action
+   */
+  export type RewardHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RewardHistory
+     */
+    select?: RewardHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RewardHistory
+     */
+    omit?: RewardHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RewardHistoryInclude<ExtArgs> | null
   }
 
 
@@ -16288,6 +17566,20 @@ export namespace Prisma {
   export type OrderAssignmentScalarFieldEnum = (typeof OrderAssignmentScalarFieldEnum)[keyof typeof OrderAssignmentScalarFieldEnum]
 
 
+  export const RewardHistoryScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    goldAmount: 'goldAmount',
+    title: 'title',
+    description: 'description',
+    sourceUserId: 'sourceUserId',
+    createdAt: 'createdAt'
+  };
+
+  export type RewardHistoryScalarFieldEnum = (typeof RewardHistoryScalarFieldEnum)[keyof typeof RewardHistoryScalarFieldEnum]
+
+
   export const AssignmentRequestScalarFieldEnum: {
     id: 'id',
     orderId: 'orderId',
@@ -16528,6 +17820,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'RewardType'
+   */
+  export type EnumRewardTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RewardType'>
+    
+
+
+  /**
+   * Reference to a field of type 'RewardType[]'
+   */
+  export type ListEnumRewardTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RewardType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'AssignmentRequestStatus'
    */
   export type EnumAssignmentRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssignmentRequestStatus'>
@@ -16590,6 +17896,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    rewardHistory?: RewardHistoryListRelationFilter
     referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
@@ -16615,6 +17922,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeOrderByRelationAggregateInput
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
     profile?: ProfileOrderByWithRelationInput
+    rewardHistory?: RewardHistoryOrderByRelationAggregateInput
     referredBy?: UserOrderByWithRelationInput
     referrals?: UserOrderByRelationAggregateInput
     providedAssignments?: OrderAssignmentOrderByRelationAggregateInput
@@ -16643,6 +17951,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    rewardHistory?: RewardHistoryListRelationFilter
     referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
@@ -17096,6 +18405,79 @@ export namespace Prisma {
     orderId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     boosterId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"OrderAssignment"> | Date | string
+  }
+
+  export type RewardHistoryWhereInput = {
+    AND?: RewardHistoryWhereInput | RewardHistoryWhereInput[]
+    OR?: RewardHistoryWhereInput[]
+    NOT?: RewardHistoryWhereInput | RewardHistoryWhereInput[]
+    id?: StringFilter<"RewardHistory"> | string
+    userId?: StringFilter<"RewardHistory"> | string
+    type?: EnumRewardTypeFilter<"RewardHistory"> | $Enums.RewardType
+    goldAmount?: IntFilter<"RewardHistory"> | number
+    title?: StringFilter<"RewardHistory"> | string
+    description?: StringNullableFilter<"RewardHistory"> | string | null
+    sourceUserId?: StringNullableFilter<"RewardHistory"> | string | null
+    createdAt?: DateTimeFilter<"RewardHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type RewardHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    goldAmount?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sourceUserId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type RewardHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_type_sourceUserId?: RewardHistoryUserIdTypeSourceUserIdCompoundUniqueInput
+    AND?: RewardHistoryWhereInput | RewardHistoryWhereInput[]
+    OR?: RewardHistoryWhereInput[]
+    NOT?: RewardHistoryWhereInput | RewardHistoryWhereInput[]
+    userId?: StringFilter<"RewardHistory"> | string
+    type?: EnumRewardTypeFilter<"RewardHistory"> | $Enums.RewardType
+    goldAmount?: IntFilter<"RewardHistory"> | number
+    title?: StringFilter<"RewardHistory"> | string
+    description?: StringNullableFilter<"RewardHistory"> | string | null
+    sourceUserId?: StringNullableFilter<"RewardHistory"> | string | null
+    createdAt?: DateTimeFilter<"RewardHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_type_sourceUserId">
+
+  export type RewardHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    goldAmount?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sourceUserId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: RewardHistoryCountOrderByAggregateInput
+    _avg?: RewardHistoryAvgOrderByAggregateInput
+    _max?: RewardHistoryMaxOrderByAggregateInput
+    _min?: RewardHistoryMinOrderByAggregateInput
+    _sum?: RewardHistorySumOrderByAggregateInput
+  }
+
+  export type RewardHistoryScalarWhereWithAggregatesInput = {
+    AND?: RewardHistoryScalarWhereWithAggregatesInput | RewardHistoryScalarWhereWithAggregatesInput[]
+    OR?: RewardHistoryScalarWhereWithAggregatesInput[]
+    NOT?: RewardHistoryScalarWhereWithAggregatesInput | RewardHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RewardHistory"> | string
+    userId?: StringWithAggregatesFilter<"RewardHistory"> | string
+    type?: EnumRewardTypeWithAggregatesFilter<"RewardHistory"> | $Enums.RewardType
+    goldAmount?: IntWithAggregatesFilter<"RewardHistory"> | number
+    title?: StringWithAggregatesFilter<"RewardHistory"> | string
+    description?: StringNullableWithAggregatesFilter<"RewardHistory"> | string | null
+    sourceUserId?: StringNullableWithAggregatesFilter<"RewardHistory"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"RewardHistory"> | Date | string
   }
 
   export type AssignmentRequestWhereInput = {
@@ -17571,6 +18953,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -17596,6 +18979,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -17619,6 +19003,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -17644,6 +19029,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -18168,6 +19554,82 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     orderId?: StringFieldUpdateOperationsInput | string
     boosterId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RewardHistoryCreateInput = {
+    id?: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutRewardHistoryInput
+  }
+
+  export type RewardHistoryUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RewardHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutRewardHistoryNestedInput
+  }
+
+  export type RewardHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RewardHistoryCreateManyInput = {
+    id?: string
+    userId: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RewardHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RewardHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -18719,6 +20181,12 @@ export namespace Prisma {
     isNot?: ProfileWhereInput | null
   }
 
+  export type RewardHistoryListRelationFilter = {
+    every?: RewardHistoryWhereInput
+    some?: RewardHistoryWhereInput
+    none?: RewardHistoryWhereInput
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -18774,6 +20242,10 @@ export namespace Prisma {
   }
 
   export type PasswordResetTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RewardHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19293,6 +20765,97 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumRewardTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeFilter<$PrismaModel> | $Enums.RewardType
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type RewardHistoryUserIdTypeSourceUserIdCompoundUniqueInput = {
+    userId: string
+    type: $Enums.RewardType
+    sourceUserId: string
+  }
+
+  export type RewardHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    goldAmount?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    sourceUserId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RewardHistoryAvgOrderByAggregateInput = {
+    goldAmount?: SortOrder
+  }
+
+  export type RewardHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    goldAmount?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    sourceUserId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RewardHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    goldAmount?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    sourceUserId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RewardHistorySumOrderByAggregateInput = {
+    goldAmount?: SortOrder
+  }
+
+  export type EnumRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.RewardType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRewardTypeFilter<$PrismaModel>
+    _max?: NestedEnumRewardTypeFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type EnumAssignmentRequestStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
@@ -19585,6 +21148,13 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type RewardHistoryCreateNestedManyWithoutUserInput = {
+    create?: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput> | RewardHistoryCreateWithoutUserInput[] | RewardHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RewardHistoryCreateOrConnectWithoutUserInput | RewardHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: RewardHistoryCreateManyUserInputEnvelope
+    connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutReferralsInput = {
     create?: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
     connectOrCreate?: UserCreateOrConnectWithoutReferralsInput
@@ -19665,6 +21235,13 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
     connect?: ProfileWhereUniqueInput
+  }
+
+  export type RewardHistoryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput> | RewardHistoryCreateWithoutUserInput[] | RewardHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RewardHistoryCreateOrConnectWithoutUserInput | RewardHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: RewardHistoryCreateManyUserInputEnvelope
+    connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
   }
 
   export type UserUncheckedCreateNestedManyWithoutReferredByInput = {
@@ -19786,6 +21363,20 @@ export namespace Prisma {
     delete?: ProfileWhereInput | boolean
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RewardHistoryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput> | RewardHistoryCreateWithoutUserInput[] | RewardHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RewardHistoryCreateOrConnectWithoutUserInput | RewardHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: RewardHistoryUpsertWithWhereUniqueWithoutUserInput | RewardHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RewardHistoryCreateManyUserInputEnvelope
+    set?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    disconnect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    delete?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    update?: RewardHistoryUpdateWithWhereUniqueWithoutUserInput | RewardHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RewardHistoryUpdateManyWithWhereWithoutUserInput | RewardHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
   }
 
   export type UserUpdateOneWithoutReferralsNestedInput = {
@@ -19946,6 +21537,20 @@ export namespace Prisma {
     delete?: ProfileWhereInput | boolean
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutUserInput, ProfileUpdateWithoutUserInput>, ProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RewardHistoryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput> | RewardHistoryCreateWithoutUserInput[] | RewardHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RewardHistoryCreateOrConnectWithoutUserInput | RewardHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: RewardHistoryUpsertWithWhereUniqueWithoutUserInput | RewardHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RewardHistoryCreateManyUserInputEnvelope
+    set?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    disconnect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    delete?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+    update?: RewardHistoryUpdateWithWhereUniqueWithoutUserInput | RewardHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RewardHistoryUpdateManyWithWhereWithoutUserInput | RewardHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
   }
 
   export type UserUncheckedUpdateManyWithoutReferredByNestedInput = {
@@ -20296,6 +21901,32 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutProvidedAssignmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProvidedAssignmentsInput, UserUpdateWithoutProvidedAssignmentsInput>, UserUncheckedUpdateWithoutProvidedAssignmentsInput>
+  }
+
+  export type UserCreateNestedOneWithoutRewardHistoryInput = {
+    create?: XOR<UserCreateWithoutRewardHistoryInput, UserUncheckedCreateWithoutRewardHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRewardHistoryInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumRewardTypeFieldUpdateOperationsInput = {
+    set?: $Enums.RewardType
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutRewardHistoryNestedInput = {
+    create?: XOR<UserCreateWithoutRewardHistoryInput, UserUncheckedCreateWithoutRewardHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRewardHistoryInput
+    upsert?: UserUpsertWithoutRewardHistoryInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRewardHistoryInput, UserUpdateWithoutRewardHistoryInput>, UserUncheckedUpdateWithoutRewardHistoryInput>
   }
 
   export type OrderCreateNestedOneWithoutAssignmentRequestsInput = {
@@ -20808,6 +22439,39 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedEnumRewardTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeFilter<$PrismaModel> | $Enums.RewardType
+  }
+
+  export type NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.RewardType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRewardTypeFilter<$PrismaModel>
+    _max?: NestedEnumRewardTypeFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type NestedEnumAssignmentRequestStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AssignmentRequestStatus | EnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssignmentRequestStatus[] | ListEnumAssignmentRequestStatusFieldRefInput<$PrismaModel>
@@ -21036,6 +22700,36 @@ export namespace Prisma {
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
   }
 
+  export type RewardHistoryCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RewardHistoryUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RewardHistoryCreateOrConnectWithoutUserInput = {
+    where: RewardHistoryWhereUniqueInput
+    create: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type RewardHistoryCreateManyUserInputEnvelope = {
+    data: RewardHistoryCreateManyUserInput | RewardHistoryCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutReferralsInput = {
     id?: string
     email: string
@@ -21050,6 +22744,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -21074,6 +22769,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -21101,6 +22797,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -21124,6 +22821,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -21451,6 +23149,36 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type RewardHistoryUpsertWithWhereUniqueWithoutUserInput = {
+    where: RewardHistoryWhereUniqueInput
+    update: XOR<RewardHistoryUpdateWithoutUserInput, RewardHistoryUncheckedUpdateWithoutUserInput>
+    create: XOR<RewardHistoryCreateWithoutUserInput, RewardHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type RewardHistoryUpdateWithWhereUniqueWithoutUserInput = {
+    where: RewardHistoryWhereUniqueInput
+    data: XOR<RewardHistoryUpdateWithoutUserInput, RewardHistoryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RewardHistoryUpdateManyWithWhereWithoutUserInput = {
+    where: RewardHistoryScalarWhereInput
+    data: XOR<RewardHistoryUpdateManyMutationInput, RewardHistoryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type RewardHistoryScalarWhereInput = {
+    AND?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
+    OR?: RewardHistoryScalarWhereInput[]
+    NOT?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
+    id?: StringFilter<"RewardHistory"> | string
+    userId?: StringFilter<"RewardHistory"> | string
+    type?: EnumRewardTypeFilter<"RewardHistory"> | $Enums.RewardType
+    goldAmount?: IntFilter<"RewardHistory"> | number
+    title?: StringFilter<"RewardHistory"> | string
+    description?: StringNullableFilter<"RewardHistory"> | string | null
+    sourceUserId?: StringNullableFilter<"RewardHistory"> | string | null
+    createdAt?: DateTimeFilter<"RewardHistory"> | Date | string
+  }
+
   export type UserUpsertWithoutReferralsInput = {
     update: XOR<UserUpdateWithoutReferralsInput, UserUncheckedUpdateWithoutReferralsInput>
     create: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
@@ -21476,6 +23204,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -21500,6 +23229,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -21710,6 +23440,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -21734,6 +23465,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -21772,6 +23504,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -21796,6 +23529,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -21932,6 +23666,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -21956,6 +23691,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -22088,6 +23824,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -22112,6 +23849,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -22316,6 +24054,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -22340,6 +24079,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -22477,6 +24217,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -22501,7 +24242,120 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutRewardHistoryInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutRewardHistoryInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutRewardHistoryInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRewardHistoryInput, UserUncheckedCreateWithoutRewardHistoryInput>
+  }
+
+  export type UserUpsertWithoutRewardHistoryInput = {
+    update: XOR<UserUpdateWithoutRewardHistoryInput, UserUncheckedUpdateWithoutRewardHistoryInput>
+    create: XOR<UserCreateWithoutRewardHistoryInput, UserUncheckedCreateWithoutRewardHistoryInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRewardHistoryInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRewardHistoryInput, UserUncheckedUpdateWithoutRewardHistoryInput>
+  }
+
+  export type UserUpdateWithoutRewardHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRewardHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
@@ -22616,6 +24470,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -22640,6 +24495,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -22667,6 +24523,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -22691,6 +24548,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -22828,6 +24686,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -22852,6 +24711,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -22885,6 +24745,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -22909,6 +24770,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -23228,6 +25090,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -23252,6 +25115,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -23319,6 +25183,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -23343,6 +25208,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -23388,6 +25254,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -23412,6 +25279,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -23479,6 +25347,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -23503,6 +25372,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -23524,6 +25394,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -23548,6 +25419,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -23586,6 +25458,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -23610,6 +25483,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -23632,6 +25506,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutCustomerInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -23656,6 +25531,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -23694,6 +25570,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -23718,6 +25595,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -23741,6 +25619,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -23765,6 +25644,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -23803,6 +25683,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -23827,6 +25708,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -23891,6 +25773,16 @@ export namespace Prisma {
     tokenHash: string
     expiresAt: Date | string
     usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type RewardHistoryCreateManyUserInput = {
+    id?: string
+    type: $Enums.RewardType
+    goldAmount: number
+    title: string
+    description?: string | null
+    sourceUserId?: string | null
     createdAt?: Date | string
   }
 
@@ -24139,6 +26031,36 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type RewardHistoryUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RewardHistoryUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RewardHistoryUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumRewardTypeFieldUpdateOperationsInput | $Enums.RewardType
+    goldAmount?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserUpdateWithoutReferredByInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -24153,6 +26075,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -24176,6 +26099,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput

@@ -20,6 +20,7 @@ model User {
   verificationCodes VerificationCode[]
   passwordResetTokens PasswordResetToken[]
   profile             Profile?
+  rewardHistory       RewardHistory[]
 
   referralCode String? @unique
   referredById String?
@@ -125,6 +126,30 @@ model OrderAssignment {
 
   @@unique([orderId, boosterId])
   @@index([boosterId])
+}
+
+model RewardHistory {
+  id           String     @id @default(cuid())
+  userId       String
+  type         RewardType
+  goldAmount   Int
+  title        String
+  description  String?
+  sourceUserId String?
+  createdAt    DateTime   @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@unique([userId, type, sourceUserId])
+}
+
+enum RewardType {
+  REFERRAL_INVITER
+  REFERRAL_INVITED
+  TOP_UP_BONUS
+  PROMO
 }
 
 enum AssignmentRequestStatus {

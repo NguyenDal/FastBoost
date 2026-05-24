@@ -73,6 +73,17 @@
         0 0 44px rgba(70, 210, 220, 0.08);
 }
 
+.loyalty-hero-diamond {
+    border-color: rgba(100, 145, 255, 0.40);
+    background:
+        radial-gradient(700px 260px at 8% 0%, rgba(100, 145, 255, 0.16), transparent 62%),
+        radial-gradient(600px 260px at 95% 0%, rgba(70, 210, 220, 0.12), transparent 60%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.32),
+        0 0 44px rgba(100, 145, 255, 0.09);
+}
+
 .loyalty-eyebrow {
     margin: 0 0 10px;
     font-size: 12px;
@@ -181,9 +192,13 @@
     background: linear-gradient(90deg, #38bdf8, #a78bfa);
 }
 
+.loyalty-fill-diamond {
+    background: linear-gradient(90deg, #4f8cff, #93c5fd);
+}
+
 .loyalty-tier-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-top: 18px;
 }
@@ -225,6 +240,11 @@
     box-shadow: 0 0 0 4px rgba(70, 210, 220, 0.10);
 }
 
+.loyalty-tier-step.tier-diamond.current {
+    border-color: rgba(100, 145, 255, 0.55);
+    box-shadow: 0 0 0 4px rgba(100, 145, 255, 0.10);
+}
+
 .loyalty-tier-step span {
     display: block;
     font-size: 24px;
@@ -240,6 +260,20 @@
     display: block;
     margin-top: 4px;
     color: #9ca3af;
+}
+
+.loyalty-tier-benefits {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+}
+
+.loyalty-tier-benefits em {
+    display: block;
+    color: #b8c2d8;
+    font-size: 12px;
+    font-style: normal;
+    line-height: 1.35;
 }
 
 .loyalty-stats-grid {
@@ -298,6 +332,61 @@
     display: block;
     margin-top: 5px;
     color: #8f9aad;
+}
+
+.loyalty-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.loyalty-pagination button,
+.loyalty-page-numbers button {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.045);
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.loyalty-pagination button:hover:not(:disabled),
+.loyalty-page-numbers button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(250, 204, 21, 0.28);
+    background: rgba(250, 204, 21, 0.08);
+}
+
+.loyalty-page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.loyalty-page-numbers button.active {
+    color: #111827;
+    border-color: rgba(250, 204, 21, 0.55);
+    background: linear-gradient(135deg, #facc15, #f59e0b);
+    box-shadow: 0 10px 24px rgba(250, 204, 21, 0.16);
+}
+
+.loyalty-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.loyalty-reward-loading {
+    margin: 0 0 12px;
+    color: #9ca3af;
+    font-size: 13px;
 }
 
 .loyalty-match-gold {
@@ -469,6 +558,201 @@
 .loyalty-referral-link-box button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+.loyalty-referral-card {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(255, 255, 255, 0.10);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+}
+
+.loyalty-referral-card.is-unlocked,
+.loyalty-referral-card.is-locked {
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+.loyalty-referral-card::before {
+    display: none;
+}
+
+.loyalty-referral-count {
+    min-width: 128px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.loyalty-referral-count span {
+    display: block;
+    font-size: 30px;
+    font-weight: 950;
+    color: #facc15;
+}
+
+.loyalty-referral-count small {
+    display: block;
+    margin-top: 4px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.loyalty-referral-condition-box {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.loyalty-referral-condition-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.loyalty-referral-condition-header strong {
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.condition-status-ready,
+.condition-status-locked {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.condition-status-ready {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.26);
+}
+
+.condition-status-locked {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.26);
+}
+
+.loyalty-referral-condition-list {
+    display: grid;
+    gap: 10px;
+}
+
+.loyalty-referral-condition {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.loyalty-referral-condition.passed {
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+.loyalty-referral-condition.failed {
+    border-color: rgba(239, 68, 68, 0.22);
+}
+
+.condition-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 24px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.loyalty-referral-condition.passed .condition-icon {
+    color: #ffffff;
+    background: #16a34a;
+    box-shadow: 0 0 18px rgba(34, 197, 94, 0.24);
+}
+
+.loyalty-referral-condition.failed .condition-icon {
+    color: #ffffff;
+    background: #dc2626;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.22);
+}
+
+.loyalty-referral-condition strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.loyalty-referral-condition small {
+    display: block;
+    margin-top: 3px;
+    color: #9ca3af;
+    line-height: 1.45;
+}
+
+.loyalty-referral-link-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.loyalty-referral-link-box span {
+    flex: 1;
+    min-width: 0;
+    color: #e5e7eb;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loyalty-referral-link-box button {
+    border: none;
+    border-radius: 12px;
+    padding: 9px 14px;
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+}
+
+.loyalty-referral-link-box button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+}
+
+.loyalty-referral-link-box button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.loyalty-referral-link-box.is-disabled {
+    opacity: 0.72;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.loyalty-referral-link-box.is-disabled span {
+    color: #9ca3af;
 }
 
 @media (max-width: 900px) {
