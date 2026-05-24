@@ -201,6 +201,8 @@ exports.getMyLoyalty = async (req, res) => {
             rewardRecords,
             completedOrderRewardCount,
             rewardRecordCount,
+            rewardGoldStats,
+            completedOrderGoldRows,
         ] = await Promise.all([
             prisma.order.aggregate({
                 where: completedOrderWhere,
@@ -247,6 +249,22 @@ exports.getMyLoyalty = async (req, res) => {
                     userId,
                 },
             }),
+
+            prisma.rewardHistory.aggregate({
+                where: {
+                    userId,
+                },
+                _sum: {
+                    goldAmount: true,
+                },
+            }),
+
+            prisma.$queryRaw`
+    SELECT COALESCE(SUM(FLOOR("totalPrice")), 0)::int AS "totalGold"
+    FROM "Order"
+    WHERE "customerId" = ${userId}
+    AND "status" = 'COMPLETED'
+`,
         ]);
 
         const completedMatches = completedOrdersStats._count._all || 0;
@@ -261,11 +279,10 @@ exports.getMyLoyalty = async (req, res) => {
         const totalCompletedSpend = Number(completedOrdersStats._sum.totalPrice || 0);
 
 
-        const extraRewardGold = rewardRecords.reduce((sum, reward) => {
-            return sum + Number(reward.goldAmount || 0);
-        }, 0);
+        const completedOrderGold = Number(completedOrderGoldRows?.[0]?.totalGold || 0);
+        const extraRewardGold = Number(rewardGoldStats?._sum?.goldAmount || 0);
 
-        const totalGold = Math.floor(totalCompletedSpend) + extraRewardGold;
+        const totalGold = completedOrderGold + extraRewardGold;
 
         const tierInfo = getTierInfo(totalCompletedSpend);
         const progressPercent = getTierProgressPercent(
