@@ -1649,26 +1649,25 @@ function OrderPage() {
             <p className="section-label">Checkout</p>
             <h2 className="order-summary-heading">{serviceType}</h2>
 
-            {serviceType === "Rank Boost" && (
+            {normalizedServiceType === "Rank Boost" && (
               <div
-                className={`order-rank-strip order-rank-track rank-track-current-${getTierFromRank(
+                className={`order-rank-track order-rank-strip rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
-                ).toLowerCase()} rank-track-target-${getTierFromRank(
+                ).toLowerCase()} rank-track-target-${getTierFromAnyRank(
                   formData.desiredRank
                 ).toLowerCase()}`}
               >
                 <div className="order-rank-track-side">
                   <img
-                    src={rankImageMap[getTierFromRank(formData.currentRank)]}
+                    src={rankImageMap[getTierFromAnyRank(formData.currentRank)]}
                     alt={formData.currentRank}
                     className="order-rank-track-icon"
                   />
 
                   <div className="order-rank-track-copy">
                     <span className="order-rank-label">Current</span>
-
                     <div className="order-rank-track-main">
-                      <strong>{formatRankTrackDisplay(formData.currentRank, formData.currentMasterLp)}</strong>
+                      <strong>{formData.currentRank}</strong>
                     </div>
                   </div>
                 </div>
@@ -1678,14 +1677,13 @@ function OrderPage() {
                 <div className="order-rank-track-side order-rank-track-side-target">
                   <div className="order-rank-track-copy">
                     <span className="order-rank-label order-rank-target-label">Target</span>
-
                     <div className="order-rank-track-main">
-                      <strong>{formatRankTrackDisplay(formData.desiredRank, formData.desiredMasterLp)}</strong>
+                      <strong>{formData.desiredRank}</strong>
                     </div>
                   </div>
 
                   <img
-                    src={rankImageMap[getTierFromRank(formData.desiredRank)]}
+                    src={rankImageMap[getTierFromAnyRank(formData.desiredRank)]}
                     alt={formData.desiredRank}
                     className="order-rank-track-icon"
                   />
@@ -1693,7 +1691,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Placement Boost" && (
+            {normalizedServiceType === "Placement Boost" && (
               <div
                 className={`order-rank-strip order-rank-track placement-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.peakRank
@@ -1721,7 +1719,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Win Boost" && (
+            {normalizedServiceType === "Win Boost" && (
               <div
                 className={`order-rank-strip order-rank-track ranked-wins-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
@@ -1748,7 +1746,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Pro Duo" && (
+            {normalizedServiceType === "Pro Duo" && (
               <div
                 className={`order-rank-strip order-rank-track ranked-wins-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
@@ -2716,7 +2714,9 @@ function calculateTftRankBoostPrice(
   const desiredTier = getTierFromAnyRank(desiredRank);
 
   if (currentTier === "Master" && desiredTier === "Master") {
-    const lpDifference = Math.max(0, Number(desiredMasterLp) - Number(currentMasterLp));
+    const lpDifference =
+      Math.max(0, Number(desiredMasterLp) - Number(currentMasterLp));
+
     return lpDifference * 1.3;
   }
 
@@ -2727,7 +2727,11 @@ function calculateTftRankBoostPrice(
   const currentIndex = rankOptions.indexOf(currentRank);
   const desiredIndex = rankOptions.indexOf(desiredRank);
 
-  if (currentIndex === -1 || desiredIndex === -1 || desiredIndex <= currentIndex) {
+  if (
+    currentIndex === -1 ||
+    desiredIndex === -1 ||
+    desiredIndex <= currentIndex
+  ) {
     return 0;
   }
 
@@ -2735,15 +2739,16 @@ function calculateTftRankBoostPrice(
 
   for (let i = currentIndex; i < desiredIndex; i += 1) {
     const stepRank = rankOptions[i];
+    const stepPrice = tftDivisionStepPrices[stepRank] || 0;
 
-    if (getTierFromAnyRank(stepRank) === "Master") {
-      total += 50 * 1.3;
+    if (i === currentIndex) {
+      total += stepPrice * getCurrentLpProgressModifier(currentLP);
     } else {
-      total += tftDivisionStepPrices[stepRank] || 0;
+      total += stepPrice;
     }
   }
 
-  return total * getLpMultiplier(currentLP);
+  return total;
 }
 
 function calculateTftWinBoostPrice(currentRank, desiredWins) {
