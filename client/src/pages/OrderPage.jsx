@@ -123,12 +123,14 @@ function OrderPage() {
   }, [serviceId]);
 
   const serviceType = selectedBoostType || service?.title || "";
+  const isTftService = serviceType.startsWith("TFT ");
+  const normalizedServiceType = serviceType.replace("TFT ", "");
 
   useEffect(() => {
     if (!serviceType) return;
 
     setFormData((prev) => {
-      if (serviceType === "Rank Boost") {
+      if (normalizedServiceType === "Rank Boost") {
         return {
           ...prev,
           currentLP: "0-20 LP",
@@ -142,7 +144,7 @@ function OrderPage() {
         };
       }
 
-      if (serviceType === "Placement Boost") {
+      if (normalizedServiceType === "Placement Boost") {
         return {
           ...prev,
           lpGain: "",
@@ -153,7 +155,7 @@ function OrderPage() {
         };
       }
 
-      if (serviceType === "Win Boost") {
+      if (normalizedServiceType === "Win Boost") {
         return {
           ...prev,
           lpGain: "18-23 LP / win",
@@ -164,7 +166,7 @@ function OrderPage() {
         };
       }
 
-      if (serviceType === "Pro Duo") {
+      if (normalizedServiceType === "Pro Duo") {
         return {
           ...prev,
           lpGain: "18-23 LP / win",
@@ -178,7 +180,7 @@ function OrderPage() {
 
       return prev;
     });
-  }, [serviceType]);
+  }, [normalizedServiceType]);
 
   useEffect(() => {
     const loadChampions = async () => {
@@ -208,7 +210,7 @@ function OrderPage() {
   }, []);
 
   const isInvalidRankPath = useMemo(() => {
-    if (serviceType !== "Rank Boost") return false;
+    if (normalizedServiceType !== "Rank Boost") return false;
 
     const currentTier = getTierFromAnyRank(formData.currentRank);
     const desiredTier = getTierFromAnyRank(formData.desiredRank);
@@ -235,7 +237,17 @@ function OrderPage() {
   ]);
 
   const basePrice = useMemo(() => {
-    if (serviceType === "Rank Boost") {
+    if (normalizedServiceType === "Rank Boost") {
+      if (isTftService) {
+        return calculateTftRankBoostPrice(
+          formData.currentRank,
+          formData.desiredRank,
+          formData.currentLP,
+          formData.currentMasterLp,
+          formData.desiredMasterLp
+        );
+      }
+
       return calculateRankBoostPrice(
         formData.currentRank,
         formData.desiredRank,
@@ -246,14 +258,28 @@ function OrderPage() {
       );
     }
 
-    if (serviceType === "Placement Boost") {
+    if (normalizedServiceType === "Placement Boost") {
+      if (isTftService) {
+        return calculateTftPlacementBoostPrice(
+          formData.peakRank,
+          Number(formData.placementGames)
+        );
+      }
+
       return calculatePlacementBoostPrice(
         formData.peakRank,
         Number(formData.placementGames)
       );
     }
 
-    if (serviceType === "Win Boost") {
+    if (normalizedServiceType === "Win Boost") {
+      if (isTftService) {
+        return calculateTftWinBoostPrice(
+          formData.currentRank,
+          Number(formData.desiredWins)
+        );
+      }
+
       return calculateWinBoostPrice(
         formData.currentRank,
         formData.lpGain,
@@ -261,7 +287,7 @@ function OrderPage() {
       );
     }
 
-    if (serviceType === "Pro Duo") {
+    if (normalizedServiceType === "Pro Duo") {
       return calculateProDuoPrice(
         formData.currentRank,
         formData.lpGain,
@@ -271,7 +297,8 @@ function OrderPage() {
 
     return 0;
   }, [
-    serviceType,
+    normalizedServiceType,
+    isTftService,
     formData.currentRank,
     formData.desiredRank,
     formData.currentLP,
@@ -286,18 +313,18 @@ function OrderPage() {
 
   const modeAdjustedBasePrice = useMemo(() => {
     // Pro Duo already priced as duo; do not apply duo multiplier
-    if (serviceType !== "Pro Duo" && formData.playMode === "Duo") {
+    if (normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo") {
       return basePrice * 1.4;
     }
 
     return basePrice;
-  }, [basePrice, formData.playMode, serviceType]);
+  }, [basePrice, formData.playMode, normalizedServiceType]);
 
   const addonPrice = useMemo(() => {
     let total = 0;
 
     // Skip base duo surcharge for Pro Duo (already factored into base price)
-    const duoExtra = serviceType !== "Pro Duo" && formData.playMode === "Duo" ? basePrice * 0.4 : 0;
+    const duoExtra = normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo" ? basePrice * 0.4 : 0;
 
     if (formData.priorityOrder) total += modeAdjustedBasePrice * 0.15;
 
@@ -336,7 +363,7 @@ function OrderPage() {
     formData.bonusWin,
     formData.currentRank,
     formData.championPreferenceTier,
-    serviceType,
+    normalizedServiceType,
   ]);
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
@@ -556,7 +583,7 @@ function OrderPage() {
     localStorage.removeItem("user");
     setCurrentUser(null);
     setShowProfileMenu(false);
-    try { window.dispatchEvent(new Event("auth:changed")); } catch {}
+    try { window.dispatchEvent(new Event("auth:changed")); } catch { }
     navigate("/", { replace: true });
   };
 
@@ -698,7 +725,7 @@ function OrderPage() {
             ? Number(formData.desiredMasterLp)
             : null,
           lpGain: formData.lpGain || null,
-          peakRank: serviceType === "Placement Boost" ? (formData.peakRank || null) : null,
+          peakRank: normalizedServiceType === "Placement Boost" ? (formData.peakRank || null) : null,
           desiredWins: formData.desiredWins,
           placementGames: formData.placementGames,
           firstRole:
@@ -836,15 +863,17 @@ function OrderPage() {
             <div className="boost-type-panel">
               <div className="boost-type-tabs">
                 {[
-                  { value: "Rank Boost", label: "Division" },
-                  { value: "Placement Boost", label: "Placements" },
-                  { value: "Win Boost", label: "Ranked Wins" },
-                  { value: "Pro Duo", label: "Pro Duo" },
+                  { value: `${isTftService ? "TFT " : ""}Rank Boost`, label: "Division" },
+                  { value: `${isTftService ? "TFT " : ""}Placement Boost`, label: "Placements" },
+                  { value: `${isTftService ? "TFT " : ""}Win Boost`, label: "Ranked Wins" },
+                  ...(!isTftService
+                    ? [{ value: "Pro Duo", label: "Pro Duo" }]
+                    : []),
                 ].map((type) => (
                   <button
                     key={type.value}
                     type="button"
-                    className={`boost-type-tab ${serviceType === type.value ? "active" : ""}`}
+                    className={`boost-type-tab ${selectedBoostType === type.value ? "active" : ""}`}
                     onClick={() => setSelectedBoostType(type.value)}
                   >
                     {type.label}
@@ -855,7 +884,7 @@ function OrderPage() {
 
             <section className="order-form-panel">
               <div className="order-grid">
-                {serviceType === "Rank Boost" && (
+                {normalizedServiceType === "Rank Boost" && (
                   <>
                     <div
                       className={`rank-selector-card rank-selector-current rank-card-${getTierFromRank(
@@ -1181,7 +1210,7 @@ function OrderPage() {
                   </>
                 )}
 
-                {serviceType === "Placement Boost" && (
+                {normalizedServiceType === "Placement Boost" && (
                   <>
                     <div
                       className={`rank-selector-card rank-selector-current placement-selector-card rank-card-${getTierFromAnyRank(
@@ -1293,7 +1322,7 @@ function OrderPage() {
                   </>
                 )}
 
-                {serviceType === "Win Boost" && (
+                {normalizedServiceType === "Win Boost" && (
                   <>
                     <div
                       className={`rank-selector-card rank-selector-current ranked-wins-selector-card rank-card-${getTierFromAnyRank(
@@ -1453,7 +1482,7 @@ function OrderPage() {
                   </>
                 )}
 
-                {serviceType === "Pro Duo" && (
+                {normalizedServiceType === "Pro Duo" && (
                   <>
                     <div
                       className={`rank-selector-card rank-selector-current ranked-wins-selector-card rank-card-${getTierFromAnyRank(
@@ -1620,26 +1649,25 @@ function OrderPage() {
             <p className="section-label">Checkout</p>
             <h2 className="order-summary-heading">{serviceType}</h2>
 
-            {serviceType === "Rank Boost" && (
+            {normalizedServiceType === "Rank Boost" && (
               <div
-                className={`order-rank-strip order-rank-track rank-track-current-${getTierFromRank(
+                className={`order-rank-track order-rank-strip rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
-                ).toLowerCase()} rank-track-target-${getTierFromRank(
+                ).toLowerCase()} rank-track-target-${getTierFromAnyRank(
                   formData.desiredRank
                 ).toLowerCase()}`}
               >
                 <div className="order-rank-track-side">
                   <img
-                    src={rankImageMap[getTierFromRank(formData.currentRank)]}
+                    src={rankImageMap[getTierFromAnyRank(formData.currentRank)]}
                     alt={formData.currentRank}
                     className="order-rank-track-icon"
                   />
 
                   <div className="order-rank-track-copy">
                     <span className="order-rank-label">Current</span>
-
                     <div className="order-rank-track-main">
-                      <strong>{formatRankTrackDisplay(formData.currentRank, formData.currentMasterLp)}</strong>
+                      <strong>{formData.currentRank}</strong>
                     </div>
                   </div>
                 </div>
@@ -1649,14 +1677,13 @@ function OrderPage() {
                 <div className="order-rank-track-side order-rank-track-side-target">
                   <div className="order-rank-track-copy">
                     <span className="order-rank-label order-rank-target-label">Target</span>
-
                     <div className="order-rank-track-main">
-                      <strong>{formatRankTrackDisplay(formData.desiredRank, formData.desiredMasterLp)}</strong>
+                      <strong>{formData.desiredRank}</strong>
                     </div>
                   </div>
 
                   <img
-                    src={rankImageMap[getTierFromRank(formData.desiredRank)]}
+                    src={rankImageMap[getTierFromAnyRank(formData.desiredRank)]}
                     alt={formData.desiredRank}
                     className="order-rank-track-icon"
                   />
@@ -1664,7 +1691,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Placement Boost" && (
+            {normalizedServiceType === "Placement Boost" && (
               <div
                 className={`order-rank-strip order-rank-track placement-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.peakRank
@@ -1692,7 +1719,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Win Boost" && (
+            {normalizedServiceType === "Win Boost" && (
               <div
                 className={`order-rank-strip order-rank-track ranked-wins-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
@@ -1719,7 +1746,7 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType === "Pro Duo" && (
+            {normalizedServiceType === "Pro Duo" && (
               <div
                 className={`order-rank-strip order-rank-track ranked-wins-rank-track rank-track-current-${getTierFromAnyRank(
                   formData.currentRank
@@ -1746,39 +1773,39 @@ function OrderPage() {
               </div>
             )}
 
-            {serviceType !== "Pro Duo" && (
-            <div className="summary-mode-strip">
-              <button
-                type="button"
-                className={`summary-mode-btn ${formData.playMode === "Solo" ? "active" : ""}`}
-                onClick={() =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    playMode: "Solo",
-                    premiumCoaching: false,
-                    highMMRDuo: false,
-                    untrackableDuo: false,
-                  }))
-                }
-              >
-                Solo
-              </button>
+            {normalizedServiceType !== "Pro Duo" && (
+              <div className="summary-mode-strip">
+                <button
+                  type="button"
+                  className={`summary-mode-btn ${formData.playMode === "Solo" ? "active" : ""}`}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      playMode: "Solo",
+                      premiumCoaching: false,
+                      highMMRDuo: false,
+                      untrackableDuo: false,
+                    }))
+                  }
+                >
+                  Solo
+                </button>
 
-              <button
-                type="button"
-                className={`summary-mode-btn ${formData.playMode === "Duo" ? "active" : ""}`}
-                onClick={() =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    playMode: "Duo",
-                    soloOnly: false,
-                    appearOffline: false,
-                  }))
-                }
-              >
-                Duo
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className={`summary-mode-btn ${formData.playMode === "Duo" ? "active" : ""}`}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      playMode: "Duo",
+                      soloOnly: false,
+                      appearOffline: false,
+                    }))
+                  }
+                >
+                  Duo
+                </button>
+              </div>
             )}
 
             <div className="order-addon-panel">
@@ -2608,6 +2635,138 @@ function getChampionPreferencePrice(basePrice, tier) {
   if (tier === "1") return basePrice * 0.1;
   if (tier === "2-3") return basePrice * 0.05;
   return 0;
+}
+
+const tftDivisionStepPrices = {
+  "Iron IV": 4,
+  "Iron III": 4,
+  "Iron II": 4,
+  "Iron I": 4,
+
+  "Bronze IV": 4,
+  "Bronze III": 4,
+  "Bronze II": 4,
+  "Bronze I": 4,
+
+  "Silver IV": 5,
+  "Silver III": 6,
+  "Silver II": 7,
+  "Silver I": 7,
+
+  "Gold IV": 7,
+  "Gold III": 8,
+  "Gold II": 9,
+  "Gold I": 10,
+
+  "Platinum IV": 10,
+  "Platinum III": 11,
+  "Platinum II": 12,
+  "Platinum I": 13,
+
+  "Emerald IV": 13,
+  "Emerald III": 15,
+  "Emerald II": 17,
+  "Emerald I": 20,
+
+  "Diamond IV": 22,
+  "Diamond III": 27,
+  "Diamond II": 32,
+  "Diamond I": 40,
+};
+
+const tftWinBoostPrices = {
+  Iron: 3,
+  Bronze: 3,
+  Silver: 3,
+  Gold: 4,
+  Platinum: 5,
+  Emerald: 6,
+  Diamond: 8,
+  Master: 18,
+  Grandmaster: 22,
+};
+
+const tftPlacementPrices = {
+  Unranked: 15,
+  Iron: 15,
+  Bronze: 15,
+  Silver: 15,
+  Gold: 17,
+  Platinum: 20,
+  Emerald: 25,
+  "Diamond IV": 30,
+  "Diamond III": 32,
+  "Diamond II": 37,
+  "Diamond I": 40,
+  Master: 49,
+  Grandmaster: 49,
+  Challenger: 49,
+};
+
+function calculateTftRankBoostPrice(
+  currentRank,
+  desiredRank,
+  currentLP,
+  currentMasterLp = 0,
+  desiredMasterLp = 50
+) {
+  const currentTier = getTierFromAnyRank(currentRank);
+  const desiredTier = getTierFromAnyRank(desiredRank);
+
+  if (currentTier === "Master" && desiredTier === "Master") {
+    const lpDifference =
+      Math.max(0, Number(desiredMasterLp) - Number(currentMasterLp));
+
+    return lpDifference * 1.3;
+  }
+
+  if (currentTier === "Master" && desiredTier !== "Master") {
+    return 0;
+  }
+
+  const currentIndex = rankOptions.indexOf(currentRank);
+  const desiredIndex = rankOptions.indexOf(desiredRank);
+
+  if (
+    currentIndex === -1 ||
+    desiredIndex === -1 ||
+    desiredIndex <= currentIndex
+  ) {
+    return 0;
+  }
+
+  let total = 0;
+
+  for (let i = currentIndex; i < desiredIndex; i += 1) {
+    const stepRank = rankOptions[i];
+    const stepPrice = tftDivisionStepPrices[stepRank] || 0;
+
+    if (i === currentIndex) {
+      total += stepPrice * getCurrentLpProgressModifier(currentLP);
+    } else {
+      total += stepPrice;
+    }
+  }
+
+  return total;
+}
+
+function calculateTftWinBoostPrice(currentRank, desiredWins) {
+  const tier = getTierFromAnyRank(currentRank);
+  const pricePerWin = tftWinBoostPrices[tier] || 0;
+
+  return pricePerWin * (Number(desiredWins) || 0);
+}
+
+function calculateTftPlacementBoostPrice(peakRank, placementGames) {
+  const tier = getTierFromAnyRank(peakRank);
+
+  const pricePerGame =
+    tftPlacementPrices[peakRank] ??
+    tftPlacementPrices[tier] ??
+    0;
+
+  return pricePerGame * (Number(placementGames) || 0);
 }
 
 export default OrderPage;
