@@ -16,6 +16,7 @@ function HomePage() {
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
   const [selectedGame, setSelectedGame] = useState("");
+  const [visibleGame, setVisibleGame] = useState("");
   const [selectedUpdateType, setSelectedUpdateType] = useState("event");
 
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -261,6 +262,19 @@ function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedGame) {
+      setVisibleGame(selectedGame);
+      return;
+    }
+
+    const closeTimer = setTimeout(() => {
+      setVisibleGame("");
+    }, 430);
+
+    return () => clearTimeout(closeTimer);
+  }, [selectedGame]);
+
   const selectedHomepageUpdate =
     homepageUpdates.find((item) => item.type === selectedUpdateType) ||
     homepageUpdates[0];
@@ -285,7 +299,7 @@ function HomePage() {
   };
 
   const selectedServiceTitles =
-    selectedGame === "tft" ? tftServiceTitles : lolServiceTitles;
+    visibleGame === "tft" ? tftServiceTitles : lolServiceTitles;
 
   const featuredServices = [...services]
     .filter((service) => selectedServiceTitles.includes(service.title))
@@ -698,15 +712,15 @@ function HomePage() {
             <div className="section-header services-mode-header">
               <div>
                 <p className="section-label">
-                  {selectedGame === "tft" ? "Teamfight Tactics" : "League of Legends"}
+                  {visibleGame === "tft" ? "Teamfight Tactics" : "League of Legends"}
                 </p>
 
                 <h2>
-                  {selectedGame === "tft" ? "Choose Your TFT Service" : "Choose Your LoL Service"}
+                  {visibleGame === "tft" ? "Choose Your TFT Service" : "Choose Your LoL Service"}
                 </h2>
               </div>
               <p className="section-description">
-                {selectedGame === "tft"
+                {visibleGame === "tft"
                   ? "These are the current TFT order modes available on FastBoost."
                   : "These are the current LoL order modes available on FastBoost."}
               </p>
@@ -717,7 +731,7 @@ function HomePage() {
 
             {!servicesLoading && !servicesError && featuredServices.length === 0 && (
               <p className="info-message">
-                {selectedGame === "tft" ? "No TFT services found." : "No LoL services found."}
+                {visibleGame === "tft" ? "No TFT services found." : "No LoL services found."}
               </p>
             )}
 

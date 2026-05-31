@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const iconCache = new Map();
+
 function isCheckerboardBackgroundPixel(r, g, b, a) {
   if (a === 0) return true;
 
@@ -21,21 +23,35 @@ function isCheckerboardBackgroundPixel(r, g, b, a) {
 }
 
 function CleanIcon({ src, alt, className }) {
-  const [cleanSrc, setCleanSrc] = useState(src);
+  const [cleanSrc, setCleanSrc] = useState(() => iconCache.get(src) || "");
+  const [isReady, setIsReady] = useState(() => iconCache.has(src));
 
   useEffect(() => {
     if (!src) return;
+
+    if (iconCache.has(src)) {
+      setCleanSrc(iconCache.get(src));
+      setIsReady(true);
+      return;
+    }
+
+    let cancelled = false;
+
+    setIsReady(false);
+    setCleanSrc("");
 
     const image = new Image();
     image.crossOrigin = "anonymous";
 
     const cacheBustedSrc = src.includes("?")
-      ? `${src}&clean=${Date.now()}`
-      : `${src}?clean=${Date.now()}`;
+      ? `${src}&clean=v2`
+      : `${src}?clean=v2`;
 
     image.src = cacheBustedSrc;
 
     image.onload = () => {
+      if (cancelled) return;
+
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
@@ -49,8 +65,15 @@ function CleanIcon({ src, alt, className }) {
       try {
         imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       } catch (error) {
-        console.warn("CleanIcon failed because S3 CORS is not allowing canvas access:", src);
-        setCleanSrc(src);
+        console.warn("CleanIcon skipped because S3 CORS blocked canvas access:", src);
+
+        iconCache.set(src, src);
+
+        if (!cancelled) {
+          setCleanSrc(src);
+          setIsReady(true);
+        }
+
         return;
       }
 
@@ -72,15 +95,36 @@ function CleanIcon({ src, alt, className }) {
       }
 
       ctx.putImageData(imageData, 0, 0);
-      setCleanSrc(canvas.toDataURL("image/png"));
+
+      const processedSrc = canvas.toDataURL("image/png");
+      iconCache.set(src, processedSrc);
+
+      if (!cancelled) {
+        setCleanSrc(processedSrc);
+        setIsReady(true);
+      }
     };
 
     image.onerror = () => {
+      if (cancelled) return;
+
+      iconCache.set(src, src);
       setCleanSrc(src);
+      setIsReady(true);
+    };
+
+    return () => {
+      cancelled = true;
     };
   }, [src]);
 
-  return <img src={cleanSrc} alt={alt} className={className} />;
+  return (
+    <img
+      src={cleanSrc || undefined}
+      alt={alt}
+      className={`${className || ""} clean-icon ${isReady ? "clean-icon-ready" : ""}`}
+    />
+  );
 }
 
 export default CleanIcon;
