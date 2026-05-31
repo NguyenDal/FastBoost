@@ -15,6 +15,7 @@ function HomePage() {
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
   const [selectedGame, setSelectedGame] = useState("");
+  const [selectedUpdateType, setSelectedUpdateType] = useState("event");
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -118,21 +119,39 @@ function HomePage() {
 
   const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
 
-  const patchHighlights = [
+  const homepageUpdates = [
     {
-      title: "Patch Overview",
-      text: "Champion balance, item tuning, and system adjustments summarized in one place.",
-      tag: "Live",
+      title: "Latest Event",
+      text: "FastBoost is now open. View our launch event and starter service availability.",
+      tag: "Event",
+      type: "event",
+      featureTag: "Opening Event",
+      featureTitle: "Opening Event is now live",
+      featureText:
+        "FastBoost is starting with League of Legends services first. More games, service options, and customer updates will be added as the platform grows.",
+      buttonText: "Show Event",
     },
     {
-      title: "Meta Watch",
-      text: "Quick snapshot of what may become stronger or weaker after the newest patch.",
+      title: "Latest Updates",
+      text: "View recent service changes, new game support, and platform improvements.",
       tag: "Update",
+      type: "updates",
+      featureTag: "Platform Updates",
+      featureTitle: "Service updates and new features",
+      featureText:
+        "Follow the newest FastBoost changes, including new service modes, game support, order improvements, and customer account features.",
+      buttonText: "Show Updates",
     },
     {
-      title: "Gameplay Notes",
-      text: "Useful highlights for players planning ranked climbs this patch cycle.",
-      tag: "Guide",
+      title: "FAQ / Help",
+      text: "Learn how orders work, what details are needed, and how to get support.",
+      tag: "Help",
+      type: "faq",
+      featureTag: "Help Center",
+      featureTitle: "Need help before ordering?",
+      featureText:
+        "Find answers about order steps, account safety, required information, payment flow, service progress, and how to contact support.",
+      buttonText: "Show FAQ",
     },
   ];
 
@@ -244,6 +263,10 @@ function HomePage() {
     "Pro Duo": 4,
   };
 
+  const selectedHomepageUpdate =
+    homepageUpdates.find((item) => item.type === selectedUpdateType) ||
+    homepageUpdates[0];
+
   const featuredServices = [...services]
     .filter((service) => lolServiceTitles.includes(service.title))
     .sort((a, b) => {
@@ -258,6 +281,26 @@ function HomePage() {
 
   const handleDetails = (service) => {
     navigate(`/services/${service.id}`);
+  };
+
+  const handleHomepageUpdateClick = (type) => {
+    setSelectedUpdateType(type);
+  };
+
+  const handleHomepageUpdateButtonClick = (type) => {
+    if (type === "event") {
+      alert("Opening event page coming soon.");
+      return;
+    }
+
+    if (type === "updates") {
+      alert("Latest updates page coming soon.");
+      return;
+    }
+
+    if (type === "faq") {
+      alert("FAQ / Help page coming soon.");
+    }
   };
 
   const handleLoginInputChange = (event) => {
@@ -712,20 +755,29 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="patch" className="content-section news-layout page-content">
+        <section id="updates" className="content-section news-layout page-content">
           <div className="news-left">
             <div className="section-header left-aligned">
               <div>
-                <p className="section-label">Latest Patch</p>
-                <h2>League Patch Center</h2>
+                <p className="section-label">Latest News</p>
+                <h2>FastBoost Updates</h2>
               </div>
             </div>
 
             <div className="news-list">
-              {patchHighlights.map((item, index) => (
+              {homepageUpdates.map((item, index) => (
                 <article
                   key={item.title}
-                  className={`news-item ${index === 0 ? "news-item-active" : ""}`}
+                  className={`news-item ${selectedUpdateType === item.type ? "news-item-active" : ""
+                    }`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleHomepageUpdateClick(item.type)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      handleHomepageUpdateClick(item.type);
+                    }
+                  }}
                 >
                   <div className="news-thumb" />
                   <div className="news-content">
@@ -742,19 +794,22 @@ function HomePage() {
             <div className="feature-image-wrap">
               <img
                 src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=1400&q=80"
-                alt="Latest patch feature"
+                alt="FastBoost updates feature"
               />
               <div className="feature-overlay" />
             </div>
 
             <div className="feature-card">
-              <span className="feature-chip">Latest Patch</span>
-              <h3>Patch 25.X — balance changes and ranked impact</h3>
-              <p>
-                Use this space to show the newest patch summary, key champion
-                adjustments, item changes, and a quick read-more action.
-              </p>
-              <button className="card-btn primary-card-btn">Read Patch Notes</button>
+              <span className="feature-chip">{selectedHomepageUpdate.featureTag}</span>
+              <h3>{selectedHomepageUpdate.featureTitle}</h3>
+              <p>{selectedHomepageUpdate.featureText}</p>
+
+              <button
+                className="card-btn primary-card-btn feature-action-btn"
+                onClick={() => handleHomepageUpdateButtonClick(selectedHomepageUpdate.type)}
+              >
+                {selectedHomepageUpdate.buttonText}
+              </button>
             </div>
           </div>
         </section>
