@@ -8,86 +8,108 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Referral rewards, private invite registration popup, Diamond tier, and Reward History pagination
+### Latest session update — Homepage LoL/TFT service dropdown, TFT order pricing, service card redesign, and checkout tag polish
 
-#### Referral eligibility and private referral link unlock
-- Implemented referral eligibility rules on the Loyalty page:
-  - user must have a verified email
-  - user must have at least 3 completed orders
-- Loyalty page now clearly displays the referral requirements with green tick / red X status cards.
-- Removed the duplicate “Referral link ready” requirement card because the visible link box already proves the link is available.
-- Referral link UI now stays aligned with the grey/dark Loyalty page theme while keeping:
-  - Unlocked status badge green
-  - Locked status badge red
-  - tick icons green
-  - X icons red
-- Completed-order requirement display is capped at `3/3`, so users with more than 3 completed orders do not show confusing values like `5/3`.
+#### Homepage game selection and dropdown flow
+- Updated the homepage service area so users first choose a game before seeing order modes:
+  - League of Legends
+  - Teamfight Tactics
+- Changed TFT from a disabled Coming Soon card into an active selectable game card.
+- Added a shared service dropdown that opens for both LoL and TFT.
+- Added dynamic dropdown headings:
+  - League of Legends → Choose Your LoL Service
+  - Teamfight Tactics → Choose Your TFT Service
+- Added `selectedGame` and `visibleGame` separation:
+  - `selectedGame` controls whether the dropdown is open or closed
+  - `visibleGame` controls which game content remains visible while the dropdown animation finishes
+- Fixed the bug where closing the service dropdown briefly blinked LoL services before swiping up.
+- Fixed the bug where quickly switching between TFT and LoL caused service content to flash during the animation.
+- Kept the dropdown open/close class controlled by `selectedGame`, while the text/cards inside use `visibleGame`.
 
-#### Referral reward flow
-- Added referral reward direction where a user can share a private invite link after meeting eligibility requirements.
-- New invited-user flow:
-  - inviter shares `/r/:referralCode`
-  - invited user opens the private link
-  - register modal opens with the referral code attached
-  - invited user registers using the private link
-  - backend saves `referredById` on the invited user
-  - when the invited user verifies their email, the backend checks inviter eligibility
-  - if eligible, both inviter and invited user receive `+50 gold`, equal to `$5` discount credit because `10 gold = $1`
-- Added `RewardHistory` direction so referral rewards can be stored separately from completed-order rewards.
-- Referral reward records are protected from duplicate grants by using unique reward-history records for inviter/invited referral pairs.
+#### Homepage service card redesign
+- Reworked service cards from full background-image hover cards into cleaner dark service cards.
+- Changed service images into small top-left icons instead of card backgrounds.
+- Removed the Details button from homepage service cards.
+- Removed the old Service Details frontend route direction because cards now route directly to the order flow.
+- Kept the backend `GET /api/services/:id` endpoint because `OrderPage` still needs it to load the selected service.
+- Added/confirmed homepage service filtering for:
+  - LoL: Rank Boost, Placement Boost, Win Boost, Pro Duo
+  - TFT: TFT Rank Boost, TFT Win Boost, TFT Placement Boost / TFT Placement Games depending on the database service title
+- Added service priority ordering so the cards display in the intended order.
+- Confirmed TFT service titles must match the database Qexactly or the homepage dropdown will show an empty service list.
 
-#### Public referral invite preview
-- Added a public referral lookup direction:
-  - `GET /api/referrals/public/:referralCode`
-- The public referral lookup returns inviter preview data:
-  - inviter username/display name fallback
-  - inviter profile image URL
-  - referral code
-  - inviter eligibility status
-  - reward explanation data
-- Fixed Prisma client initialization in the referral controller by using the shared project Prisma client instead of creating a new `PrismaClient()` directly.
+#### Homepage copy and background polish
+- Removed copied/demo-style wording such as fake “Trusted since” and fake rating claims because FastBoost is new.
+- Replaced the hero text with more natural FastBoost copy.
+- Removed the old hero image/card container direction so the homepage background feels more connected.
+- Extended the page background upward under the navbar while keeping the purple glow.
+- Replaced the old League Patch Center direction with a more useful FastBoost Updates area.
+- Added three clickable update/help items:
+  - Latest Event
+  - Latest Updates
+  - FAQ / Help
+- Added selected update behavior so clicking the left item changes the right-side detail card instead of navigating immediately.
 
-#### Private invite register modal UI
-- Added `/r/:referralCode` route to open the homepage/register flow with a private invite attached.
-- Register modal can now show a wider private-invite layout when opened from a referral link.
-- Private invite popup shows:
-  - inviter username
-  - circular profile image/avatar fallback
-  - reward explanation: both users receive `50 gold = $5 discount`
-  - conditions for receiving the reward
-- Removed unnecessary “Private invite detected” wording from the invite card.
-- Widened and polished the private invite modal so text has more horizontal space.
-- Fixed spacing so the invite card border no longer collides with the username input border.
+#### Service icons and CleanIcon handling
+- Generated original icon directions for the service card set:
+  - Rank Boost: trophy / climb theme
+  - Win Boost: goal / target theme
+  - Placement Boost: blank shield / unknown rank theme
+  - Pro Duo: two-person / duo theme
+- Adjusted Placement Boost icon direction to a simple grey blank shield.
+- Added a `CleanIcon` component for client-side cleanup of uploaded icons that still display checkerboard or flat backgrounds.
+- Added icon cleanup caching so the same icon does not reprocess every time the user switches between LoL and TFT.
+- Fixed the issue where icons briefly showed the dirty/non-transparent image before becoming transparent by:
+  - not rendering the original unprocessed image first
+  - waiting until the processed icon is ready
+  - caching the processed data URL
+  - using a small ready-state fade-in class
+- Added S3 CORS direction for canvas-based image processing if browser security blocks `getImageData()`.
 
-#### Loyalty tier update: Diamond added
-- Finalized Loyalty tier benefits:
-  - Bronze: no bonus
-  - Silver: `200` coins added and `3%` top-up bonus direction
-  - Gold: `500` coins added and `5%` top-up bonus direction
-  - Platinum: `800` coins added and `8%` top-up bonus direction
-  - Diamond: `1500` coins added and `10%` top-up bonus direction
-- Added Diamond as the highest tier after Platinum.
-- Updated tier progress logic so Diamond is treated as the final/max tier.
-- Added Diamond styling direction using the same blue diamond color family as the order page.
-- Added tier benefit display on Loyalty tier cards.
-- Note: top-up bonus is currently display/business-direction only unless connected later to a real wallet/top-up/payment system.
+#### TFT pricing and order-page support
+- Added TFT pricing direction into the existing `OrderPage` format instead of creating a separate TFT order page.
+- Added TFT service detection using the service title prefix:
+  - `isTftService = serviceType.startsWith("TFT ")`
+  - `normalizedServiceType = serviceType.replace("TFT ", "")`
+- Updated pricing logic so TFT services use TFT calculators while LoL services keep the existing LoL calculators.
+- Added TFT Rank Boost pricing direction:
+  - Iron/Bronze under Silver style pricing starts at `$4` per division step
+  - Silver through Diamond division step pricing follows the provided screenshots
+  - Master pricing direction starts at `$1.30` per LP
+- Added TFT Win Boost pricing direction from the screenshots:
+  - Under Silver/Silver: `$3` per win
+  - Gold: `$4` per win
+  - Platinum: `$5` per win
+  - Emerald: `$6` per win
+  - Diamond: `$8` per win
+  - Master: `$18` per win
+  - Grandmaster: `$22` per win
+- Added TFT Placement pricing direction from the screenshots:
+  - Under Silver/Silver: `$15`
+  - Gold: `$17`
+  - Platinum: `$20`
+  - Emerald: `$25`
+  - Diamond IV: `$30`
+  - Diamond III: `$32`
+  - Diamond II: `$37`
+  - Diamond I: `$40`
+  - Master: `$49`
+- Fixed the `getLpMultiplier is not defined` bug by using the existing current-LP helper direction instead of a non-existent helper.
+- Updated order form/service checks to use `normalizedServiceType` so TFT modes can reuse the same UI paths as LoL modes.
+- Confirmed TFT should not show Pro Duo unless a separate TFT duo/coaching service is intentionally added later.
 
-#### Reward History page update
-- Renamed the Loyalty page history section from **Completed Match Rewards** to **Reward History**.
-- Reward History can now include:
-  - completed order gold
-  - referral inviter rewards
-  - invited-user welcome rewards
-  - future promo/top-up bonuses
-- Loyalty backend now combines recent completed-order rewards and stored reward-history records.
-- Total Gold now includes completed-order gold plus extra reward-history gold.
-- Reward History displays max 5 items per page.
-- Added pagination below Reward History so users can move between pages.
-- Fixed pagination UX so clicking Next/Previous does not collapse the whole Loyalty page back to the top loading state.
-- Added reward-section scroll preservation so pagination keeps the user near Reward History instead of forcing them to scroll down again.
+#### Checkout rank/tag display polish
+- Added/updated the checkout rank strip so it can display for TFT modes the same way it displays for LoL modes.
+- Changed checkout display conditions from exact `serviceType === "Rank Boost"` style checks to `normalizedServiceType` checks.
+- This allows the checkout summary tag/strip to work for:
+  - Rank Boost and TFT Rank Boost
+  - Placement Boost and TFT Placement Boost
+  - Win Boost and TFT Win Boost
+  - Pro Duo for LoL only
+- Removed the wrong small info-tag direction after confirming the desired UI was the existing LoL-style rank strip/tag.
+- Cleaned duplicate Rank Boost checkout strip direction so the order summary does not render duplicate tags.
 
 ---
-
 ## Project concept
 
 Planned roles:
@@ -115,6 +137,9 @@ Chat-related entities:
 - Placement Boost / Placements
 - Win Boost / Ranked Wins
 - Pro Duo
+- TFT Rank Boost
+- TFT Win Boost
+- TFT Placement Boost / Placement Games
 
 ### Important design decisions
 A **Service** is a **platform-wide service category**, not a user-owned listing.
@@ -423,6 +448,40 @@ npx prisma studio
 - phone number and phone verification flow removed from frontend, backend routes/controllers, and Prisma schema direction
 
 #### Completed functions
+- Homepage game/service dropdown completed:
+  - LoL and TFT game cards are selectable
+  - service dropdown opens for both games
+  - dropdown content uses `visibleGame` to avoid close/switch blinking
+  - dropdown animation uses `selectedGame` for open/close state
+- Homepage service card redesign completed:
+  - old background-image service cards replaced with cleaner dark cards
+  - service images moved into small top-left icon positions
+  - Details button removed from homepage cards
+  - homepage cards now route users directly to `/order/:serviceId`
+- TFT homepage service cards completed/directed:
+  - TFT Rank Boost
+  - TFT Win Boost
+  - TFT Placement Boost / Placement Games depending on exact database title
+  - service filtering and priority ordering added for TFT services
+- FastBoost Updates section completed/directed:
+  - old League Patch Center copy replaced
+  - Latest Event, Latest Updates, and FAQ / Help items are clickable
+  - right-side detail card changes based on selected update item
+- Service icon cleanup completed/directed:
+  - original service icons generated/directed for Rank, Win, Placement, and Duo
+  - `CleanIcon` component added for client-side background cleanup
+  - icon cache and ready-state fade-in added to avoid half-second dirty-image flashing
+- TFT order pricing completed/directed:
+  - TFT Rank Boost pricing added with division-step pricing and Master `$1.30/LP` direction
+  - TFT Win Boost pricing added from provided price screenshot
+  - TFT Placement pricing added from provided price screenshot
+  - pricing branches split by `isTftService`
+  - TFT service labels normalized through `normalizedServiceType`
+- Checkout summary tag/strip polish completed:
+  - LoL-style rank strip/tag reused for TFT modes
+  - summary checks updated from exact `serviceType` to `normalizedServiceType`
+  - duplicate Rank Boost strip direction removed
+
 - Referral eligibility completed on Loyalty page:
   - verified email required
   - at least 3 completed orders required
@@ -469,14 +528,37 @@ npx prisma studio
 - notification sender avatars using saved profile images
 - final status automation cleanup across admin/provider/customer flows
 - remaining shared navbar consistency polish across all protected pages
-- pricing logic cleanup and verification
+- final TFT and LoL pricing verification with real order tests
 - duo-specific addon field cleanup, including `untrackableDuo`
-- patch section real endpoint
+- FastBoost Updates real endpoint/pages for Latest Event, Latest Updates, and FAQ / Help
 - reveal/audit logging for viewed game credentials
 
 ---
 
 ## Next steps (recommended)
+
+1. Test homepage game dropdown end-to-end:
+   - click LoL and confirm four LoL service cards appear
+   - click TFT and confirm three TFT service cards appear
+   - close dropdown and confirm it swipes up without blinking LoL content
+   - quickly switch between LoL and TFT and confirm icons do not flash dirty backgrounds
+2. Test S3 icon behavior:
+   - confirm `CleanIcon` does not show checkerboard/solid backgrounds before processing
+   - confirm S3 CORS allows canvas cleanup if using remote S3 images
+   - confirm cleaned icons stay cached after switching games
+3. Test TFT order page pricing:
+   - TFT Rank Boost: test normal division climb and Master LP pricing
+   - TFT Win Boost: test every tier price per win
+   - TFT Placement Boost: test peak-rank pricing and placement game count behavior
+   - confirm LoL prices still behave the same after TFT branching
+4. Test checkout summary display:
+   - confirm LoL Rank/Placement/Win/Pro Duo still show the correct checkout strip/tag
+   - confirm TFT Rank/Placement/Win show the same LoL-style checkout strip/tag
+   - confirm no duplicate Rank Boost strip appears
+5. Add or verify database Service rows:
+   - `TFT Rank Boost`
+   - `TFT Win Boost`
+   - `TFT Placement Boost` or `TFT Placement Games`, matching the frontend title exactly
 
 1. Test referral invite flow end-to-end:
    - login as inviter with verified email and at least 3 completed orders
@@ -541,6 +623,10 @@ npx prisma studio
 
 ## Resume-ready highlights
 
+- Expanded the marketplace homepage from LoL-only services into a two-game LoL/TFT service hub with animated dropdown cards, dynamic filtering, and direct order routing.
+- Added TFT pricing support into the existing order configurator by branching pricing logic through normalized service types while preserving the existing LoL order format.
+- Built a client-side icon cleanup component using canvas processing, caching, and ready-state rendering to prevent non-transparent icon backgrounds from flashing during UI transitions.
+- Replaced a demo patch-news section with a FastBoost-specific updates/help hub that supports Latest Event, Latest Updates, and FAQ / Help content previews.
 - Implemented a private referral invite workflow with eligibility requirements, public invite previews, invite-aware registration UI, and reward-history based gold rewards for both inviter and invited users.
 - Added paginated Reward History combining completed-order gold, referral rewards, and future bonus records, including smooth page-change behavior that preserves scroll position.
 - Expanded loyalty tiers with Diamond as the new highest tier and added tier benefit displays for coin/top-up bonus direction.
