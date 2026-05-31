@@ -373,7 +373,7 @@
 .hero-game-picker {
   position: relative;
   z-index: 2;
-  padding: 42px 36px 32px;
+  padding: 56px 36px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -401,7 +401,7 @@
 }
 
 .hero-game-heading h1 {
-  margin: 20px 0 0;
+  margin: 0;
   font-size: clamp(2.7rem, 5vw, 4.6rem);
   line-height: 0.98;
   letter-spacing: -0.05em;

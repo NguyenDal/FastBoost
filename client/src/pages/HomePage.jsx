@@ -588,14 +588,10 @@ function HomePage() {
 
             <div className="hero-game-picker">
               <div className="hero-game-heading">
-                <span>Trusted Since 2020</span>
-                <h1>All-in-One Boosting Services</h1>
-                <p>Top-Tier Accounts · Premium Gaming Services · Expert Coaching</p>
-
-                <div className="hero-rating-pill">
-                  <span>★ ★ ★ ★ ★</span>
-                  <strong>Rated 4.9 Excellent by 10,000+ players</strong>
-                </div>
+                <h1>Choose Your Game, Start Your Boost</h1>
+                <p>
+                  FastBoost helps players order game services with a clean, simple, and secure flow.
+                </p>
               </div>
 
               <div className="hero-game-grid">
