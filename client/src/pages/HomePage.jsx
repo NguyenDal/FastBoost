@@ -280,10 +280,6 @@ const serviceImageMap = {
     navigate(`/order/${service.id}`);
   };
 
-  const handleDetails = (service) => {
-    navigate(`/services/${service.id}`);
-  };
-
   const handleHomepageUpdateClick = (type) => {
     setSelectedUpdateType(type);
   };
@@ -731,13 +727,6 @@ const serviceImageMap = {
                           onClick={() => handleOrderNow(service)}
                         >
                           Buy Now
-                        </button>
-
-                        <button
-                          className="card-btn secondary-card-btn"
-                          onClick={() => handleDetails(service)}
-                        >
-                          Details
                         </button>
                       </div>
                     </article>
