@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
+import CleanIcon from "../components/CleanIcon";
 import { API_BASE_URL } from "../api/config";
 import "../styles/HomePage.css";
 
@@ -106,16 +107,16 @@ function HomePage() {
     },
   ];
 
-  const serviceImageMap = {
-    "Rank Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost.png",
-    "Placement Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost.png",
-    "Win Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/win-boost.png",
-    "Pro Duo":
-      "https://fastboost-assets.s3.amazonaws.com/services/hire-a-teammate.png",
-  };
+const serviceImageMap = {
+  "Rank Boost":
+    "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
+  "Placement Boost":
+    "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
+  "Win Boost":
+    "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
+  "Pro Duo":
+    "https://fastboost-assets.s3.amazonaws.com/services/pro-duo-transparent.png",
+};
 
   const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
 
@@ -717,7 +718,7 @@ function HomePage() {
                       {service.title === "Pro Duo" && <span className="service-new-badge">New!</span>}
 
                       <div className="service-card-icon">
-                        <img src={serviceImage} alt={`${service.title} icon`} />
+                        <CleanIcon src={serviceImage} alt={`${service.title} icon`} />
                       </div>
 
                       <h3>{service.title}</h3>
