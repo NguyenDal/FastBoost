@@ -108,9 +108,9 @@ function HomePage() {
 
   const serviceImageMap = {
     "Rank Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost.webp",
+      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost.png",
     "Placement Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost.webp",
+      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost.png",
     "Win Boost":
       "https://fastboost-assets.s3.amazonaws.com/services/win-boost.png",
     "Pro Duo":
@@ -712,40 +712,32 @@ function HomePage() {
                     fallbackImages[index % fallbackImages.length];
 
                   return (
-                    <article
-                      key={service.id}
-                      className="hover-service-card"
-                      style={{
-                        backgroundImage: `url(${serviceImage})`,
-                      }}
-                    >
-                      <div className="hover-service-overlay" />
+                    <article key={service.id} className="hover-service-card">
+                      {index === 0 && <span className="service-new-badge">Popular</span>}
+                      {service.title === "Pro Duo" && <span className="service-new-badge">New!</span>}
 
-                      <div className="hover-service-default">
-                        <span className="service-tag">
-                          {index === 0 ? "Popular" : "Service"}
-                        </span>
-                        <h3>{service.title}</h3>
+                      <div className="service-card-icon">
+                        <img src={serviceImage} alt={`${service.title} icon`} />
                       </div>
 
-                      <div className="hover-service-content">
-                        <h3>{service.title}</h3>
-                        <p>{service.description || "No description available."}</p>
+                      <h3>{service.title}</h3>
 
-                        <div className="hover-service-actions">
-                          <button
-                            className="card-btn primary-card-btn"
-                            onClick={() => handleOrderNow(service)}
-                          >
-                            Order Now
-                          </button>
-                          <button
-                            className="card-btn secondary-card-btn"
-                            onClick={() => handleDetails(service)}
-                          >
-                            Details
-                          </button>
-                        </div>
+                      <p>{service.description || "No description available."}</p>
+
+                      <div className="hover-service-actions">
+                        <button
+                          className="card-btn primary-card-btn"
+                          onClick={() => handleOrderNow(service)}
+                        >
+                          Buy Now
+                        </button>
+
+                        <button
+                          className="card-btn secondary-card-btn"
+                          onClick={() => handleDetails(service)}
+                        >
+                          Details
+                        </button>
                       </div>
                     </article>
                   );
