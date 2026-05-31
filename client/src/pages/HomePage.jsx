@@ -616,11 +616,19 @@ function HomePage() {
                         className="hero-game-select-btn"
                         disabled={game.key === "tft"}
                       >
-                        {game.key === "tft"
-                          ? "⌃ Coming Soon"
-                          : selectedGame === game.key
-                            ? "⌄ Hide Services"
-                            : "⌃ Select Game"}
+                        <span className="hero-game-btn-content">
+                          <span
+                            className={`hero-game-btn-arrow ${selectedGame === game.key ? "hero-game-btn-arrow-open" : ""
+                              }`}
+                          />
+                          <span>
+                            {game.key === "tft"
+                              ? "Coming Soon"
+                              : selectedGame === game.key
+                                ? "Hide Services"
+                                : "Select Game"}
+                          </span>
+                        </span>
                       </button>
                     </div>
                   </article>

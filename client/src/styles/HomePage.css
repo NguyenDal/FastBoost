@@ -531,6 +531,31 @@
   color: white;
   font-weight: 900;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-game-btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.hero-game-btn-arrow {
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: rotate(45deg) translateY(1px);
+  transition: transform 0.22s ease;
+  flex-shrink: 0;
+}
+
+.hero-game-btn-arrow-open {
+  transform: rotate(225deg) translateY(-1px);
 }
 
 .hero-game-select-btn:disabled {
