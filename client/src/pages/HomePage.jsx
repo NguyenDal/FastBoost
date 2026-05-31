@@ -100,25 +100,29 @@ function HomePage() {
       key: "tft",
       title: "Teamfight Tactics",
       shortTitle: "TFT",
-      description: "TFT boosting services are coming next.",
+      description: "Rank boost, win boost, and placement services for TFT.",
       image:
         "https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg",
-      status: "Coming Soon",
+      status: "Available",
     },
   ];
 
-const serviceImageMap = {
-  "Rank Boost":
-    "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
-  "Placement Boost":
-    "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
-  "Win Boost":
-    "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
-  "Pro Duo":
-    "https://fastboost-assets.s3.amazonaws.com/services/pro-duo-transparent.png",
-};
-
-  const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
+  const serviceImageMap = {
+    "Rank Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
+    "Placement Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
+    "Win Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
+    "Pro Duo":
+      "https://fastboost-assets.s3.amazonaws.com/services/pro-duo-transparent.png",
+    "TFT Rank Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
+    "TFT Win Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
+    "TFT Placement Boost":
+      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
+  };
 
   const homepageUpdates = [
     {
@@ -257,19 +261,34 @@ const serviceImageMap = {
     };
   }, []);
 
+  const selectedHomepageUpdate =
+    homepageUpdates.find((item) => item.type === selectedUpdateType) ||
+    homepageUpdates[0];
+
+  const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
+
+  const tftServiceTitles = [
+    "TFT Rank Boost",
+    "TFT Win Boost",
+    "TFT Placement Boost",
+  ];
+
   const servicePriority = {
     "Rank Boost": 1,
     "Placement Boost": 2,
     "Win Boost": 3,
     "Pro Duo": 4,
+
+    "TFT Rank Boost": 1,
+    "TFT Win Boost": 2,
+    "TFT Placement Boost": 3,
   };
 
-  const selectedHomepageUpdate =
-    homepageUpdates.find((item) => item.type === selectedUpdateType) ||
-    homepageUpdates[0];
+  const selectedServiceTitles =
+    selectedGame === "tft" ? tftServiceTitles : lolServiceTitles;
 
   const featuredServices = [...services]
-    .filter((service) => lolServiceTitles.includes(service.title))
+    .filter((service) => selectedServiceTitles.includes(service.title))
     .sort((a, b) => {
       const aPriority = servicePriority[a.title] ?? 999;
       const bPriority = servicePriority[b.title] ?? 999;
@@ -638,11 +657,8 @@ const serviceImageMap = {
                 {gameOptions.map((game) => (
                   <article
                     key={game.key}
-                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""
-                      } ${game.key === "tft" ? "hero-game-card-disabled" : ""}`}
+                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""}`}
                     onClick={() => {
-                      if (game.key === "tft") return;
-
                       setSelectedGame((prevGame) => (prevGame === game.key ? "" : game.key));
                     }}
                   >
@@ -654,7 +670,7 @@ const serviceImageMap = {
                       <button
                         type="button"
                         className="hero-game-select-btn"
-                        disabled={game.key === "tft"}
+                        disabled={false}
                       >
                         <span className="hero-game-btn-content">
                           <span
@@ -662,11 +678,7 @@ const serviceImageMap = {
                               }`}
                           />
                           <span>
-                            {game.key === "tft"
-                              ? "Coming Soon"
-                              : selectedGame === game.key
-                                ? "Hide Services"
-                                : "Select Game"}
+                            {selectedGame === game.key ? "Hide Services" : "Select Game"}
                           </span>
                         </span>
                       </button>
@@ -680,17 +692,23 @@ const serviceImageMap = {
 
         <section
           id="services"
-          className={`services-dropdown-section ${selectedGame === "lol" ? "services-dropdown-section-open" : ""
-            }`}
+          className={`services-dropdown-section ${selectedGame ? "services-dropdown-section-open" : ""}`}
         >
           <div className="services-dropdown-inner page-content">
             <div className="section-header services-mode-header">
               <div>
-                <p className="section-label">League of Legends</p>
-                <h2>Choose Your LoL Service</h2>
+                <p className="section-label">
+                  {selectedGame === "tft" ? "Teamfight Tactics" : "League of Legends"}
+                </p>
+
+                <h2>
+                  {selectedGame === "tft" ? "Choose Your TFT Service" : "Choose Your LoL Service"}
+                </h2>
               </div>
               <p className="section-description">
-                These are the current LoL order modes available on FastBoost.
+                {selectedGame === "tft"
+                  ? "These are the current TFT order modes available on FastBoost."
+                  : "These are the current LoL order modes available on FastBoost."}
               </p>
             </div>
 
@@ -698,7 +716,9 @@ const serviceImageMap = {
             {servicesError && <p className="error-message">{servicesError}</p>}
 
             {!servicesLoading && !servicesError && featuredServices.length === 0 && (
-              <p className="info-message">No LoL services found.</p>
+              <p className="info-message">
+                {selectedGame === "tft" ? "No TFT services found." : "No LoL services found."}
+              </p>
             )}
 
             {!servicesLoading && !servicesError && featuredServices.length > 0 && (

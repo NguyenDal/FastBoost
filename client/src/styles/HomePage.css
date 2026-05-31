@@ -615,6 +615,14 @@
   min-height: 300px;
 }
 
+.hover-service-grid {
+  align-items: stretch;
+}
+
+.hover-service-card {
+  min-height: 360px;
+}
+
 @keyframes selectedGameReveal {
   from {
     opacity: 0;

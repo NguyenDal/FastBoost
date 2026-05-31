@@ -5,7 +5,6 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import OrderPage from "./pages/OrderPage";
-import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MatchPage from "./pages/MatchPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
@@ -72,7 +71,6 @@ function App() {
         }
       />
 
-      <Route path="/services/:serviceId" element={<ServiceDetailsPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       <Route
