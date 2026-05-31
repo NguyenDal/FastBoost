@@ -14,6 +14,7 @@ function HomePage() {
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
+  const [selectedGame, setSelectedGame] = useState("");
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -83,6 +84,27 @@ function HomePage() {
     "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
   ];
 
+  const gameOptions = [
+    {
+      key: "lol",
+      title: "League of Legends",
+      shortTitle: "LOL",
+      description: "Rank boosting, placements, win boosting, and pro duo services.",
+      image:
+        "https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg",
+      status: "Available",
+    },
+    {
+      key: "tft",
+      title: "Teamfight Tactics",
+      shortTitle: "TFT",
+      description: "TFT boosting services are coming next.",
+      image:
+        "https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg",
+      status: "Coming Soon",
+    },
+  ];
+
   const serviceImageMap = {
     "Rank Boost":
       "https://fastboost-assets.s3.amazonaws.com/services/rank-boost.webp",
@@ -93,6 +115,8 @@ function HomePage() {
     "Pro Duo":
       "https://fastboost-assets.s3.amazonaws.com/services/hire-a-teammate.png",
   };
+
+  const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
 
   const patchHighlights = [
     {
@@ -221,14 +245,12 @@ function HomePage() {
   };
 
   const featuredServices = [...services]
+    .filter((service) => lolServiceTitles.includes(service.title))
     .sort((a, b) => {
       const aPriority = servicePriority[a.title] ?? 999;
       const bPriority = servicePriority[b.title] ?? 999;
       return aPriority - bPriority;
-    })
-    .slice(0, 4);
-
-  const hasSession = Boolean(localStorage.getItem("token")) || Boolean(currentUser);
+    });
 
   const handleOrderNow = (service) => {
     navigate(`/order/${service.id}`);
@@ -534,6 +556,8 @@ function HomePage() {
     }
   };
 
+  const hasSession = Boolean(localStorage.getItem("token")) || Boolean(currentUser);
+
   const profileImage =
     currentUser?.profileImage ||
     currentUser?.avatar ||
@@ -558,116 +582,133 @@ function HomePage() {
         setShowAuthModal={setShowAuthModal}
         handleLogout={handleLogout}
       />
-      <main id="home" className="page-content">
-        <section className="hero-section">
+      <main id="home">
+        <section className="hero-section hero-fullscreen-section">
           <div className="hero-banner">
-            <div className="hero-overlay" />
 
-            <img
-              className="hero-image"
-              src="https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1600&q=80"
-              alt="Gaming hero banner"
-            />
+            <div className="hero-game-picker">
+              <div className="hero-game-heading">
+                <span>Trusted Since 2020</span>
+                <h1>All-in-One Boosting Services</h1>
+                <p>Top-Tier Accounts · Premium Gaming Services · Expert Coaching</p>
 
-            <div className="hero-content">
-              <p className="hero-kicker">Competitive Gaming Platform</p>
-              <h1>Level up your League experience with a sleek, modern service hub.</h1>
-              <p className="hero-text">
-                Explore rank boosting, win boosting, placements, and duo queue
-                services in a premium gaming-style homepage built for growth.
-              </p>
-
-              <div className="hero-actions">
-                <a href="#services" className="primary-btn">
-                  Browse Services
-                </a>
-                <a href="#patch" className="secondary-btn">
-                  Latest LoL Patch
-                </a>
+                <div className="hero-rating-pill">
+                  <span>★ ★ ★ ★ ★</span>
+                  <strong>Rated 4.9 Excellent by 10,000+ players</strong>
+                </div>
               </div>
-            </div>
 
-            <div className="hero-side-card">
-              <p className="side-card-tag">Now Building</p>
-              <h3>Homepage + Services + Patch Hub</h3>
-              <p>
-                This layout is ready for real API-driven services and a future
-                live League patch notes section.
-              </p>
-              <button className="side-card-btn">Read More</button>
-            </div>
-          </div>
-        </section>
-
-        <section id="services" className="content-section">
-          <div className="section-header">
-            <div>
-              <p className="section-label">Services</p>
-              <h2>Featured Gaming Services</h2>
-            </div>
-            <p className="section-description">
-              Hover over a service to view details and start your order flow.
-            </p>
-          </div>
-
-          {servicesLoading && <p className="info-message">Loading services...</p>}
-          {servicesError && <p className="error-message">{servicesError}</p>}
-
-          {!servicesLoading && !servicesError && featuredServices.length === 0 && (
-            <p className="info-message">No services found.</p>
-          )}
-
-          {!servicesLoading && !servicesError && featuredServices.length > 0 && (
-            <div className="hover-service-grid">
-              {featuredServices.map((service, index) => {
-                const serviceImage =
-                  serviceImageMap[service.title] ||
-                  fallbackImages[index % fallbackImages.length];
-
-                return (
+              <div className="hero-game-grid">
+                {gameOptions.map((game) => (
                   <article
-                    key={service.id}
-                    className="hover-service-card"
-                    style={{
-                      backgroundImage: `url(${serviceImage})`,
+                    key={game.key}
+                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""
+                      } ${game.key === "tft" ? "hero-game-card-disabled" : ""}`}
+                    onClick={() => {
+                      if (game.key === "tft") return;
+
+                      setSelectedGame((prevGame) => (prevGame === game.key ? "" : game.key));
                     }}
                   >
-                    <div className="hover-service-overlay" />
+                    <img src={game.image} alt={game.title} />
 
-                    <div className="hover-service-default">
-                      <span className="service-tag">
-                        {index === 0 ? "Popular" : "Service"}
-                      </span>
-                      <h3>{service.title}</h3>
-                    </div>
+                    <div className="hero-game-card-bottom">
+                      <h3>{game.shortTitle}</h3>
 
-                    <div className="hover-service-content">
-                      <h3>{service.title}</h3>
-                      <p>{service.description || "No description available."}</p>
-
-                      <div className="hover-service-actions">
-                        <button
-                          className="card-btn primary-card-btn"
-                          onClick={() => handleOrderNow(service)}
-                        >
-                          Order Now
-                        </button>
-                        <button
-                          className="card-btn secondary-card-btn"
-                          onClick={() => handleDetails(service)}
-                        >
-                          Details
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="hero-game-select-btn"
+                        disabled={game.key === "tft"}
+                      >
+                        {game.key === "tft"
+                          ? "⌃ Coming Soon"
+                          : selectedGame === game.key
+                            ? "⌄ Hide Services"
+                            : "⌃ Select Game"}
+                      </button>
                     </div>
                   </article>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          )}
+          </div>
         </section>
 
-        <section id="patch" className="content-section news-layout">
+        <section
+          id="services"
+          className={`services-dropdown-section ${selectedGame === "lol" ? "services-dropdown-section-open" : ""
+            }`}
+        >
+          <div className="services-dropdown-inner page-content">
+            <div className="section-header services-mode-header">
+              <div>
+                <p className="section-label">League of Legends</p>
+                <h2>Choose Your LoL Service</h2>
+              </div>
+              <p className="section-description">
+                These are the current LoL order modes available on FastBoost.
+              </p>
+            </div>
+
+            {servicesLoading && <p className="info-message">Loading services...</p>}
+            {servicesError && <p className="error-message">{servicesError}</p>}
+
+            {!servicesLoading && !servicesError && featuredServices.length === 0 && (
+              <p className="info-message">No LoL services found.</p>
+            )}
+
+            {!servicesLoading && !servicesError && featuredServices.length > 0 && (
+              <div className="hover-service-grid">
+                {featuredServices.map((service, index) => {
+                  const serviceImage =
+                    serviceImageMap[service.title] ||
+                    fallbackImages[index % fallbackImages.length];
+
+                  return (
+                    <article
+                      key={service.id}
+                      className="hover-service-card"
+                      style={{
+                        backgroundImage: `url(${serviceImage})`,
+                      }}
+                    >
+                      <div className="hover-service-overlay" />
+
+                      <div className="hover-service-default">
+                        <span className="service-tag">
+                          {index === 0 ? "Popular" : "Service"}
+                        </span>
+                        <h3>{service.title}</h3>
+                      </div>
+
+                      <div className="hover-service-content">
+                        <h3>{service.title}</h3>
+                        <p>{service.description || "No description available."}</p>
+
+                        <div className="hover-service-actions">
+                          <button
+                            className="card-btn primary-card-btn"
+                            onClick={() => handleOrderNow(service)}
+                          >
+                            Order Now
+                          </button>
+                          <button
+                            className="card-btn secondary-card-btn"
+                            onClick={() => handleDetails(service)}
+                          >
+                            Details
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section id="patch" className="content-section news-layout page-content">
           <div className="news-left">
             <div className="section-header left-aligned">
               <div>
@@ -714,7 +755,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="status" className="content-section">
+        <section id="status" className="content-section page-content">
           <div className="status-panel">
             <div className="status-dot" />
             <div>
