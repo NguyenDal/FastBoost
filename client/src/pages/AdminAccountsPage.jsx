@@ -39,6 +39,7 @@ export default function AdminAccountsPage() {
     const [loading, setLoading] = useState(false);
     const [savingUserId, setSavingUserId] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [data, setData] = useState({
         items: [],
         total: 0,
@@ -61,6 +62,7 @@ export default function AdminAccountsPage() {
     const loadUsers = async () => {
         setLoading(true);
         setError("");
+        setSuccess("");
 
         try {
             const res = await adminListUsers({
@@ -256,6 +258,7 @@ export default function AdminAccountsPage() {
                 </form>
 
                 {error && <p className="admin-feedback admin-feedback-error">{error}</p>}
+                {success && <p className="admin-feedback admin-feedback-success">{success}</p>}
 
                 {loading ? (
                     <p className="muted-text">Loading users...</p>
