@@ -1267,11 +1267,6 @@
   font-weight: 900;
 }
 
-.role-confirm-warning {
-  font-size: 13px;
-  color: #9ca3af !important;
-}
-
 .role-confirm-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1310,6 +1305,107 @@
 
 .role-confirm-btn.yes:hover {
   box-shadow: 0 18px 38px rgba(217, 30, 54, 0.26);
+}
+
+.role-success-check {
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(34, 197, 94, 0.20), rgba(34, 197, 94, 0.04));
+  animation: roleSuccessPop 0.34s ease forwards;
+}
+
+.role-success-check svg {
+  width: 104px;
+  height: 104px;
+  overflow: visible;
+}
+
+.role-success-circle {
+  fill: rgba(34, 197, 94, 0.14);
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: roleCircleDraw 0.48s ease forwards;
+}
+
+.role-success-mark {
+  fill: none;
+  stroke: #bbf7d0;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  animation: roleCheckDraw 0.38s ease 0.34s forwards;
+}
+
+.role-saving-spinner {
+  width: 94px;
+  height: 94px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    conic-gradient(#a78bfa, #f87171, #a78bfa);
+  animation: roleSpinnerRotate 0.9s linear infinite;
+  position: relative;
+}
+
+.role-saving-spinner::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: rgba(13, 18, 30, 0.98);
+}
+
+.role-saving-spinner span {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.45);
+}
+
+.role-confirm-actions.one {
+  grid-template-columns: 1fr;
+}
+
+@keyframes roleSuccessPop {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes roleCircleDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes roleCheckDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes roleSpinnerRotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes roleConfirmFadeIn {

@@ -392,7 +392,6 @@ function Navbar({
             </div>
 
             <nav className="nav">
-                <Link to="/">Home</Link>
                 {effectiveHasSession && (
                     <Link to="/account/loyalty">Loyalty</Link>
                 )}

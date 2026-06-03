@@ -39,7 +39,6 @@ export default function AdminAccountsPage() {
     const [loading, setLoading] = useState(false);
     const [savingUserId, setSavingUserId] = useState("");
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
     const [data, setData] = useState({
         items: [],
         total: 0,
@@ -49,7 +48,9 @@ export default function AdminAccountsPage() {
 
     const [pendingRoleChange, setPendingRoleChange] = useState(null);
     const [confirmSecondsLeft, setConfirmSecondsLeft] = useState(10);
+    const [confirmModalStatus, setConfirmModalStatus] = useState("confirm");
     const confirmIntervalRef = useRef(null);
+    const successTimeoutRef = useRef(null);
 
     const currentUserId = getStoredUserId();
 
@@ -60,7 +61,6 @@ export default function AdminAccountsPage() {
     const loadUsers = async () => {
         setLoading(true);
         setError("");
-        setSuccess("");
 
         try {
             const res = await adminListUsers({
@@ -95,8 +95,14 @@ export default function AdminAccountsPage() {
             confirmIntervalRef.current = null;
         }
 
+        if (successTimeoutRef.current) {
+            clearTimeout(successTimeoutRef.current);
+            successTimeoutRef.current = null;
+        }
+
         setPendingRoleChange(null);
         setConfirmSecondsLeft(10);
+        setConfirmModalStatus("confirm");
     };
 
     const handleRoleChange = (user, nextRole) => {
@@ -112,16 +118,18 @@ export default function AdminAccountsPage() {
         setError("");
         setSuccess("");
         setConfirmSecondsLeft(10);
+        setConfirmModalStatus("confirm");
 
         setPendingRoleChange({
             user,
             nextRole,
             previousRole: user.role,
+            updatedUser: null,
         });
     };
 
     useEffect(() => {
-        if (!pendingRoleChange) return;
+        if (!pendingRoleChange || confirmModalStatus !== "confirm") return;
 
         if (confirmIntervalRef.current) {
             clearInterval(confirmIntervalRef.current);
@@ -133,6 +141,7 @@ export default function AdminAccountsPage() {
                     clearInterval(confirmIntervalRef.current);
                     confirmIntervalRef.current = null;
                     setPendingRoleChange(null);
+                    setConfirmModalStatus("confirm");
                     return 10;
                 }
 
@@ -146,15 +155,19 @@ export default function AdminAccountsPage() {
                 confirmIntervalRef.current = null;
             }
         };
-    }, [pendingRoleChange]);
+    }, [pendingRoleChange, confirmModalStatus]);
 
     const confirmRoleChange = async () => {
         if (!pendingRoleChange) return;
 
         const { user, nextRole } = pendingRoleChange;
 
-        closeRoleConfirmModal();
+        if (confirmIntervalRef.current) {
+            clearInterval(confirmIntervalRef.current);
+            confirmIntervalRef.current = null;
+        }
 
+        setConfirmModalStatus("saving");
         setSavingUserId(user.id);
         setError("");
         setSuccess("");
@@ -170,9 +183,20 @@ export default function AdminAccountsPage() {
                 ),
             }));
 
-            setSuccess(`Updated ${updatedUser.username || updatedUser.email} to ${updatedUser.role}.`);
+            setPendingRoleChange((prev) => ({
+                ...prev,
+                updatedUser,
+            }));
+
+            setConfirmModalStatus("success");
+
+            successTimeoutRef.current = setTimeout(() => {
+                closeRoleConfirmModal();
+            }, 5000);
         } catch (err) {
+            setConfirmModalStatus("confirm");
             setError(err?.message || "Failed to update user role");
+            setConfirmSecondsLeft(10);
         } finally {
             setSavingUserId("");
         }
@@ -232,7 +256,6 @@ export default function AdminAccountsPage() {
                 </form>
 
                 {error && <p className="admin-feedback admin-feedback-error">{error}</p>}
-                {success && <p className="admin-feedback admin-feedback-success">{success}</p>}
 
                 {loading ? (
                     <p className="muted-text">Loading users...</p>
@@ -357,58 +380,119 @@ export default function AdminAccountsPage() {
                 </div>
             </main>
             {pendingRoleChange && (
-                <div className="role-confirm-backdrop" onClick={closeRoleConfirmModal}>
+                <div
+                    className="role-confirm-backdrop"
+                    onClick={confirmModalStatus === "saving" ? undefined : closeRoleConfirmModal}
+                >
                     <div className="role-confirm-modal" onClick={(event) => event.stopPropagation()}>
                         <div className="role-confirm-timer-wrap">
-                            <div
-                                className="role-confirm-timer"
-                                style={{
-                                    "--progress": `${(confirmSecondsLeft / 10) * 360}deg`,
-                                }}
-                            >
-                                <span>{confirmSecondsLeft}</span>
-                            </div>
+                            {confirmModalStatus === "success" ? (
+                                <div className="role-success-check">
+                                    <svg viewBox="0 0 52 52" aria-hidden="true">
+                                        <circle className="role-success-circle" cx="26" cy="26" r="24" />
+                                        <path className="role-success-mark" d="M15 27.5L22.5 35L38 18" />
+                                    </svg>
+                                </div>
+                            ) : confirmModalStatus === "saving" ? (
+                                <div className="role-saving-spinner">
+                                    <span></span>
+                                </div>
+                            ) : (
+                                <div
+                                    className="role-confirm-timer"
+                                    style={{
+                                        "--progress": `${(confirmSecondsLeft / 10) * 360}deg`,
+                                    }}
+                                >
+                                    <span>{confirmSecondsLeft}</span>
+                                </div>
+                            )}
                         </div>
 
                         <div className="role-confirm-content">
-                            <p className="admin-eyebrow">Confirm Privilege Change</p>
-
-                            <h2>Change account role?</h2>
-
-                            <p>
-                                You are about to change{" "}
-                                <strong>
-                                    {pendingRoleChange.user.username || pendingRoleChange.user.email}
-                                </strong>{" "}
-                                from{" "}
-                                <strong>{pendingRoleChange.previousRole}</strong>{" "}
-                                to{" "}
-                                <strong>{pendingRoleChange.nextRole}</strong>.
+                            <p className="admin-eyebrow">
+                                {confirmModalStatus === "success"
+                                    ? "Privilege Updated"
+                                    : confirmModalStatus === "saving"
+                                        ? "Updating Privilege"
+                                        : "Confirm Privilege Change"}
                             </p>
 
-                            <p className="role-confirm-warning">
-                                This will update what the account can access after refresh or next login.
-                                If you do nothing, this confirmation will automatically cancel.
-                            </p>
+                            {confirmModalStatus === "success" ? (
+                                <>
+                                    <h2>Role updated successfully</h2>
+                                    <p>
+                                        <strong>
+                                            {pendingRoleChange.updatedUser?.username ||
+                                                pendingRoleChange.updatedUser?.email ||
+                                                pendingRoleChange.user.username ||
+                                                pendingRoleChange.user.email}
+                                        </strong>{" "}
+                                        is now{" "}
+                                        <strong>
+                                            {pendingRoleChange.updatedUser?.role || pendingRoleChange.nextRole}
+                                        </strong>.
+                                    </p>
+                                </>
+                            ) : confirmModalStatus === "saving" ? (
+                                <>
+                                    <h2>Updating account role...</h2>
+                                    <p>
+                                        Please wait while FastBoost updates this account privilege.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <h2>Change account role?</h2>
+
+                                    <p>
+                                        You are about to change{" "}
+                                        <strong>
+                                            {pendingRoleChange.user.username || pendingRoleChange.user.email}
+                                        </strong>{" "}
+                                        from <strong>{pendingRoleChange.previousRole}</strong> to{" "}
+                                        <strong>{pendingRoleChange.nextRole}</strong>.
+                                    </p>
+
+                                    <p className="role-confirm-warning">
+                                        This will update what the account can access after refresh or next login.
+                                        If you do nothing, this confirmation will automatically cancel.
+                                    </p>
+                                </>
+                            )}
                         </div>
 
-                        <div className="role-confirm-actions">
-                            <button
-                                type="button"
-                                className="role-confirm-btn no"
-                                onClick={closeRoleConfirmModal}
-                            >
-                                No, cancel
-                            </button>
+                        {confirmModalStatus === "confirm" && (
+                            <div className="role-confirm-actions">
+                                <button
+                                    type="button"
+                                    className="role-confirm-btn no"
+                                    onClick={closeRoleConfirmModal}
+                                >
+                                    No, cancel
+                                </button>
 
-                            <button
-                                type="button"
-                                className="role-confirm-btn yes"
-                                onClick={confirmRoleChange}
-                            >
-                                Yes, change role
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    className="role-confirm-btn yes"
+                                    onClick={confirmRoleChange}
+                                >
+                                    Yes, change role
+                                </button>
+                            </div>
+                        )}
+
+                        {confirmModalStatus === "success" && (
+                            <div className="role-confirm-actions one">
+                                <button
+                                    type="button"
+                                    className="role-confirm-btn yes"
+                                    onClick={closeRoleConfirmModal}
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
