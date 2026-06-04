@@ -48,6 +48,10 @@ function HomePage() {
   const [authSuccess, setAuthSuccess] = useState(false);
   const [authSuccessTitle, setAuthSuccessTitle] = useState("");
   const [authSuccessText, setAuthSuccessText] = useState("");
+  const [suspendedModal, setSuspendedModal] = useState({
+    open: false,
+    reason: "",
+  });
 
   const [loginErrors, setLoginErrors] = useState({
     email: false,
@@ -459,10 +463,26 @@ function HomePage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === "ACCOUNT_SUSPENDED") {
+          setSuspendedModal({
+            open: true,
+            reason: data.suspendedReason || "This account has been suspended.",
+          });
+
+          setLoginErrors({
+            email: false,
+            password: false,
+          });
+
+          setAuthMessage("");
+          return;
+        }
+
         setLoginErrors({
           email: true,
           password: true,
         });
+
         setAuthMessage(data.message || "Incorrect email or password");
         return;
       }
@@ -873,6 +893,41 @@ function HomePage() {
         referralInviteLoading={referralInviteLoading}
         referralInviteError={referralInviteError}
       />
+
+      {suspendedModal.open && (
+        <div
+          className="suspended-login-backdrop"
+          onClick={() => setSuspendedModal({ open: false, reason: "" })}
+        >
+          <div
+            className="suspended-login-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="suspended-login-icon">
+              <div className="suspended-lock-body">
+                <span className="suspended-lock-shackle" />
+                <span className="suspended-lock-dot" />
+              </div>
+            </div>
+
+            <p className="section-label">Access Restricted</p>
+            <h2>Account Suspended</h2>
+
+            <p>
+              {suspendedModal.reason ||
+                "This account is currently suspended and cannot be used to login."}
+            </p>
+
+            <button
+              type="button"
+              className="primary-btn suspended-login-btn"
+              onClick={() => setSuspendedModal({ open: false, reason: "" })}
+            >
+              I understand
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

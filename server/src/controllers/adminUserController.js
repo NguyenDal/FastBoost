@@ -38,6 +38,8 @@ async function adminListUsers(req, res) {
                     username: true,
                     email: true,
                     role: true,
+                    suspendedAt: true,
+                    suspendedReason: true,
                     createdAt: true,
                     updatedAt: true,
                     emailVerifiedAt: true,
@@ -99,6 +101,8 @@ async function adminUpdateUserRole(req, res) {
                 username: true,
                 email: true,
                 role: true,
+                suspendedAt: true,
+                suspendedReason: true,
                 emailVerifiedAt: true,
                 createdAt: true,
                 updatedAt: true,
@@ -121,7 +125,72 @@ async function adminUpdateUserRole(req, res) {
     }
 }
 
+async function adminUpdateUserSuspension(req, res) {
+    try {
+        const { userId } = req.params;
+        const { suspended, reason } = req.body;
+
+        if (req.user?.userId === userId || req.user?.id === userId) {
+            return res.status(400).json({
+                message: "You cannot suspend your own account.",
+            });
+        }
+
+        const targetUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                role: true,
+                suspendedAt: true,
+            },
+        });
+
+        if (!targetUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: suspended
+                ? {
+                    suspendedAt: new Date(),
+                    suspendedReason: reason || "Suspended by admin",
+                }
+                : {
+                    suspendedAt: null,
+                    suspendedReason: null,
+                },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                suspendedAt: true,
+                suspendedReason: true,
+                emailVerifiedAt: true,
+                createdAt: true,
+                updatedAt: true,
+                profile: {
+                    select: {
+                        displayName: true,
+                        profileImageUrl: true,
+                    },
+                },
+            },
+        });
+
+        return res.json({
+            message: suspended ? "User suspended" : "User restored",
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error("adminUpdateUserSuspension error:", error);
+        return res.status(500).json({ message: "Failed to update account status" });
+    }
+}
+
 module.exports = {
     adminListUsers,
     adminUpdateUserRole,
+    adminUpdateUserSuspension,
 };

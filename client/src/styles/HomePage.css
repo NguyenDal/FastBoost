@@ -632,6 +632,164 @@
   min-height: 360px;
 }
 
+/* Suspended Login Modal */
+
+.suspended-login-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2600;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 8, 14, 0.74);
+  backdrop-filter: blur(8px);
+  animation: suspendedFadeIn 0.18s ease forwards;
+}
+
+.suspended-login-modal {
+  width: min(430px, 100%);
+  padding: 30px;
+  border-radius: 28px;
+  text-align: center;
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  background:
+    radial-gradient(520px 220px at 50% 0%, rgba(239, 68, 68, 0.20), transparent 58%),
+    radial-gradient(420px 220px at 100% 20%, rgba(124, 58, 237, 0.14), transparent 62%),
+    rgba(13, 18, 30, 0.98);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.50);
+  animation: suspendedPopIn 0.22s ease forwards;
+}
+
+.suspended-login-icon {
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 0deg, rgba(248, 113, 113, 0.25), rgba(248, 113, 113, 0.95), rgba(124, 58, 237, 0.55), rgba(248, 113, 113, 0.25));
+  animation: suspendedPulseRing 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+.suspended-login-icon::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: rgba(13, 18, 30, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.suspended-lock-body {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 36px;
+  margin-top: 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.28);
+  animation: suspendedLockShake 0.55s ease 0.22s;
+}
+
+.suspended-lock-shackle {
+  position: absolute;
+  left: 8px;
+  top: -27px;
+  width: 28px;
+  height: 34px;
+  border: 6px solid #fecaca;
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+}
+
+.suspended-lock-dot {
+  position: absolute;
+  left: 50%;
+  top: 13px;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #fff7ed;
+}
+
+.suspended-login-modal h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.suspended-login-modal p {
+  margin: 14px 0 0;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.suspended-login-btn {
+  width: 100%;
+  border: none;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+@keyframes suspendedFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes suspendedPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes suspendedPulseRing {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(248, 113, 113, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 34px rgba(248, 113, 113, 0.24);
+  }
+}
+
+@keyframes suspendedLockShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-4px);
+  }
+
+  40% {
+    transform: translateX(4px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(3px);
+  }
+}
+
 @keyframes selectedGameReveal {
   from {
     opacity: 0;

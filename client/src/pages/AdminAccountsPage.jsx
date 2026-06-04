@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import {
     adminListUsers,
     adminUpdateUserRole,
+    adminUpdateUserSuspension,
 } from "../api/adminUsers";
 import "../styles/Admin.css";
 
@@ -50,8 +51,15 @@ export default function AdminAccountsPage() {
     const [pendingRoleChange, setPendingRoleChange] = useState(null);
     const [confirmSecondsLeft, setConfirmSecondsLeft] = useState(10);
     const [confirmModalStatus, setConfirmModalStatus] = useState("confirm");
+
+    const [pendingSuspensionChange, setPendingSuspensionChange] = useState(null);
+    const [suspensionModalStatus, setSuspensionModalStatus] = useState("confirm");
+    const [suspensionSecondsLeft, setSuspensionSecondsLeft] = useState(10);
+
     const confirmIntervalRef = useRef(null);
     const successTimeoutRef = useRef(null);
+    const suspensionTimeoutRef = useRef(null);
+    const suspensionIntervalRef = useRef(null);
 
     const currentUserId = getStoredUserId();
 
@@ -105,6 +113,22 @@ export default function AdminAccountsPage() {
         setPendingRoleChange(null);
         setConfirmSecondsLeft(10);
         setConfirmModalStatus("confirm");
+    };
+
+    const closeSuspensionModal = () => {
+        if (suspensionTimeoutRef.current) {
+            clearTimeout(suspensionTimeoutRef.current);
+            suspensionTimeoutRef.current = null;
+        }
+
+        if (suspensionIntervalRef.current) {
+            clearInterval(suspensionIntervalRef.current);
+            suspensionIntervalRef.current = null;
+        }
+
+        setPendingSuspensionChange(null);
+        setSuspensionModalStatus("confirm");
+        setSuspensionSecondsLeft(10);
     };
 
     const handleRoleChange = (user, nextRole) => {
@@ -204,6 +228,104 @@ export default function AdminAccountsPage() {
         }
     };
 
+    const handleSuspensionChange = (user, shouldSuspend) => {
+        const isSelf = user.id === currentUserId;
+
+        if (isSelf) {
+            setError("You cannot suspend your own account.");
+            return;
+        }
+
+        setError("");
+        setSuccess("");
+        setSuspensionModalStatus("confirm");
+        setSuspensionSecondsLeft(10);
+
+        setPendingSuspensionChange({
+            user,
+            shouldSuspend,
+            updatedUser: null,
+        });
+    };
+
+    useEffect(() => {
+        if (!pendingSuspensionChange || suspensionModalStatus !== "confirm") return;
+
+        if (suspensionIntervalRef.current) {
+            clearInterval(suspensionIntervalRef.current);
+        }
+
+        suspensionIntervalRef.current = setInterval(() => {
+            setSuspensionSecondsLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(suspensionIntervalRef.current);
+                    suspensionIntervalRef.current = null;
+                    setPendingSuspensionChange(null);
+                    setSuspensionModalStatus("confirm");
+                    return 10;
+                }
+
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => {
+            if (suspensionIntervalRef.current) {
+                clearInterval(suspensionIntervalRef.current);
+                suspensionIntervalRef.current = null;
+            }
+        };
+    }, [pendingSuspensionChange, suspensionModalStatus]);
+
+    const confirmSuspensionChange = async () => {
+        if (!pendingSuspensionChange) return;
+
+        const { user, shouldSuspend } = pendingSuspensionChange;
+
+        if (suspensionIntervalRef.current) {
+            clearInterval(suspensionIntervalRef.current);
+            suspensionIntervalRef.current = null;
+        }
+
+        setSuspensionModalStatus("saving");
+        setSavingUserId(user.id);
+        setError("");
+        setSuccess("");
+
+        try {
+            const res = await adminUpdateUserSuspension(
+                user.id,
+                shouldSuspend,
+                shouldSuspend ? "Suspended by admin" : ""
+            );
+
+            const updatedUser = res.user;
+
+            setData((prev) => ({
+                ...prev,
+                items: prev.items.map((item) =>
+                    item.id === updatedUser.id ? updatedUser : item
+                ),
+            }));
+
+            setPendingSuspensionChange((prev) => ({
+                ...prev,
+                updatedUser,
+            }));
+
+            setSuspensionModalStatus("success");
+
+            suspensionTimeoutRef.current = setTimeout(() => {
+                closeSuspensionModal();
+            }, 5000);
+        } catch (err) {
+            setSuspensionModalStatus("confirm");
+            setError(err?.message || "Failed to update account status");
+        } finally {
+            setSavingUserId("");
+        }
+    };
+
     return (
         <div className="page-shell">
             <Navbar />
@@ -270,8 +392,10 @@ export default function AdminAccountsPage() {
                                     <th>User</th>
                                     <th>Email</th>
                                     <th>Verified</th>
+                                    <th>Status</th>
                                     <th>Current Role</th>
                                     <th>Change Privilege</th>
+                                    <th>Account Action</th>
                                     <th>Created</th>
                                 </tr>
                             </thead>
@@ -318,6 +442,12 @@ export default function AdminAccountsPage() {
                                             </td>
 
                                             <td>
+                                                <span className={`account-pill ${user.suspendedAt ? "suspended" : "active"}`}>
+                                                    {user.suspendedAt ? "Suspended" : "Active"}
+                                                </span>
+                                            </td>
+
+                                            <td>
                                                 <RoleBadge role={user.role} />
                                             </td>
 
@@ -341,14 +471,27 @@ export default function AdminAccountsPage() {
                                                 )}
                                             </td>
 
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    className={`account-status-action-btn ${user.suspendedAt ? "restore" : "suspend"}`}
+                                                    disabled={savingUserId === user.id || isSelf}
+                                                    onClick={() => handleSuspensionChange(user, !user.suspendedAt)}
+                                                    title={isSelf ? "You cannot suspend your own account" : user.suspendedAt ? "Restore account" : "Suspend account"}
+                                                >
+                                                    {user.suspendedAt ? "Restore" : "Suspend"}
+                                                </button>
+                                            </td>
+
                                             <td>{formatDate(user.createdAt)}</td>
+
                                         </tr>
                                     );
                                 })}
 
                                 {data.items.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="admin-empty">
+                                        <td colSpan={8} className="admin-empty">
                                             No users found
                                         </td>
                                     </tr>
@@ -491,6 +634,160 @@ export default function AdminAccountsPage() {
                                     type="button"
                                     className="role-confirm-btn yes"
                                     onClick={closeRoleConfirmModal}
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {pendingSuspensionChange && (
+                <div
+                    className="role-confirm-backdrop"
+                    onClick={suspensionModalStatus === "saving" ? undefined : closeSuspensionModal}
+                >
+                    <div className="role-confirm-modal suspension-confirm-modal" onClick={(event) => event.stopPropagation()}>
+                        <div className="role-confirm-timer-wrap">
+                            {suspensionModalStatus === "success" ? (
+                                pendingSuspensionChange.shouldSuspend ? (
+                                    <div className="suspension-no-entry-icon success diagonal">
+                                        <span></span>
+                                    </div>
+                                ) : (
+                                    <div className="role-success-check">
+                                        <svg viewBox="0 0 52 52" aria-hidden="true">
+                                            <circle className="role-success-circle" cx="26" cy="26" r="24" />
+                                            <path className="role-success-mark" d="M15 27.5L22.5 35L38 18" />
+                                        </svg>
+                                    </div>
+                                )
+                            ) : suspensionModalStatus === "saving" ? (
+                                <div className="role-saving-spinner">
+                                    <span></span>
+                                </div>
+                            ) : pendingSuspensionChange.shouldSuspend ? (
+                                <div
+                                    className="suspension-countdown-icon"
+                                    style={{
+                                        "--progress": `${(suspensionSecondsLeft / 10) * 360}deg`,
+                                    }}
+                                />
+                            ) : (
+                                <div
+                                    className="suspension-restore-countdown-icon"
+                                    style={{
+                                        "--progress": `${(suspensionSecondsLeft / 10) * 360}deg`,
+                                    }}
+                                >
+                                    <span className="restore-countdown-slash" />
+                                    <span className="restore-countdown-number">
+                                        {suspensionSecondsLeft}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="role-confirm-content">
+                            <p className="admin-eyebrow">
+                                {suspensionModalStatus === "success"
+                                    ? pendingSuspensionChange.shouldSuspend
+                                        ? "Account Suspended"
+                                        : "Account Restored"
+                                    : suspensionModalStatus === "saving"
+                                        ? "Updating Account Status"
+                                        : pendingSuspensionChange.shouldSuspend
+                                            ? "Confirm Account Suspension"
+                                            : "Confirm Account Restore"}
+                            </p>
+
+                            {suspensionModalStatus === "success" ? (
+                                <>
+                                    <h2>
+                                        {pendingSuspensionChange.shouldSuspend
+                                            ? "Account suspended successfully"
+                                            : "Account restored successfully"}
+                                    </h2>
+
+                                    <p>
+                                        <strong>
+                                            {pendingSuspensionChange.updatedUser?.username ||
+                                                pendingSuspensionChange.updatedUser?.email ||
+                                                pendingSuspensionChange.user.username ||
+                                                pendingSuspensionChange.user.email}
+                                        </strong>{" "}
+                                        {pendingSuspensionChange.shouldSuspend
+                                            ? "is suspended."
+                                            : "can now login again."}
+                                    </p>
+                                </>
+                            ) : suspensionModalStatus === "saving" ? (
+                                <>
+                                    <h2>
+                                        {pendingSuspensionChange.shouldSuspend
+                                            ? "Suspending account..."
+                                            : "Restoring account..."}
+                                    </h2>
+
+                                    <p>Please wait while FastBoost updates this account status.</p>
+                                </>
+                            ) : (
+                                <>
+                                    <h2>
+                                        {pendingSuspensionChange.shouldSuspend
+                                            ? "Suspend this account?"
+                                            : "Restore this account?"}
+                                    </h2>
+
+                                    <p>
+                                        You are about to{" "}
+                                        <strong>
+                                            {pendingSuspensionChange.shouldSuspend ? "suspend" : "restore"}
+                                        </strong>{" "}
+                                        <strong>
+                                            {pendingSuspensionChange.user.username ||
+                                                pendingSuspensionChange.user.email}
+                                        </strong>.
+                                    </p>
+
+                                    <p className="role-confirm-warning">
+                                        {pendingSuspensionChange.shouldSuspend
+                                            ? "A suspended account will not be able to login, place orders, or access protected pages."
+                                            : "A restored account will regain normal access based on its current role."}
+                                    </p>
+                                </>
+                            )}
+                        </div>
+
+                        {suspensionModalStatus === "confirm" && (
+                            <div className="role-confirm-actions">
+                                <button
+                                    type="button"
+                                    className="role-confirm-btn no"
+                                    onClick={closeSuspensionModal}
+                                >
+                                    No, cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`role-confirm-btn ${pendingSuspensionChange.shouldSuspend ? "danger" : "yes"}`}
+                                    onClick={confirmSuspensionChange}
+                                >
+                                    {pendingSuspensionChange.shouldSuspend
+                                        ? "Yes, suspend"
+                                        : "Yes, restore"}
+                                </button>
+                            </div>
+                        )}
+
+                        {suspensionModalStatus === "success" && (
+                            <div className="role-confirm-actions one">
+                                <button
+                                    type="button"
+                                    className={pendingSuspensionChange.shouldSuspend ? "role-confirm-btn danger" : "role-confirm-btn yes"}
+                                    onClick={closeSuspensionModal}
                                 >
                                     Done
                                 </button>

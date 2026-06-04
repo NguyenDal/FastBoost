@@ -46,3 +46,19 @@ export async function adminUpdateUserRole(userId, role) {
 
     return data;
 }
+
+export async function adminUpdateUserSuspension(userId, suspended, reason = "") {
+    const res = await fetch(`${API_BASE_URL}/admin/users/${userId}/suspension`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ suspended, reason }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+        throw new Error(data.message || "Failed to update account status");
+    }
+
+    return data;
+}
