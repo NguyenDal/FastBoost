@@ -236,6 +236,16 @@ const loginUser = async (req, res) => {
       });
     }
 
+    if (user.suspendedAt) {
+      return res.status(403).json({
+        ok: false,
+        code: "ACCOUNT_SUSPENDED",
+        message: "Account suspended",
+        suspendedAt: user.suspendedAt,
+        suspendedReason: user.suspendedReason || "This account has been suspended.",
+      });
+    }
+
     const token = signToken(user);
 
     return res.status(200).json({

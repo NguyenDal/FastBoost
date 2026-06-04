@@ -392,7 +392,6 @@ function Navbar({
             </div>
 
             <nav className="nav">
-                <Link to="/">Home</Link>
                 {effectiveHasSession && (
                     <Link to="/account/loyalty">Loyalty</Link>
                 )}
@@ -402,7 +401,7 @@ function Navbar({
                 )}
 
                 {effectiveCurrentUser?.role === "ADMIN" && (
-                    <Link to="/admin/orders">Order Manager</Link>
+                    <Link to="/admin/management">Management Utilities</Link>
                 )}
 
                 {effectiveCurrentUser?.role === "PROVIDER" && (

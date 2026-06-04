@@ -14,6 +14,8 @@ model User {
   emailVerifiedAt     DateTime?
   passwordHash        String
   role                UserRole             @default(CUSTOMER)
+  suspendedAt         DateTime?
+  suspendedReason     String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   orders              Order[]

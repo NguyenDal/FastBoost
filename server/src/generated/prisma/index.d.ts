@@ -2295,6 +2295,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    suspendedAt: Date | null
+    suspendedReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
     referralCode: string | null
@@ -2308,6 +2310,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    suspendedAt: Date | null
+    suspendedReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
     referralCode: string | null
@@ -2321,6 +2325,8 @@ export namespace Prisma {
     emailVerifiedAt: number
     passwordHash: number
     role: number
+    suspendedAt: number
+    suspendedReason: number
     createdAt: number
     updatedAt: number
     referralCode: number
@@ -2336,6 +2342,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    suspendedAt?: true
+    suspendedReason?: true
     createdAt?: true
     updatedAt?: true
     referralCode?: true
@@ -2349,6 +2357,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    suspendedAt?: true
+    suspendedReason?: true
     createdAt?: true
     updatedAt?: true
     referralCode?: true
@@ -2362,6 +2372,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    suspendedAt?: true
+    suspendedReason?: true
     createdAt?: true
     updatedAt?: true
     referralCode?: true
@@ -2448,6 +2460,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string
     role: $Enums.UserRole
+    suspendedAt: Date | null
+    suspendedReason: string | null
     createdAt: Date
     updatedAt: Date
     referralCode: string | null
@@ -2478,6 +2492,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    suspendedAt?: boolean
+    suspendedReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     referralCode?: boolean
@@ -2505,6 +2521,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    suspendedAt?: boolean
+    suspendedReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     referralCode?: boolean
@@ -2519,6 +2537,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    suspendedAt?: boolean
+    suspendedReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     referralCode?: boolean
@@ -2533,13 +2553,15 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    suspendedAt?: boolean
+    suspendedReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     referralCode?: boolean
     referredById?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | User$ordersArgs<ExtArgs>
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
@@ -2587,6 +2609,8 @@ export namespace Prisma {
       emailVerifiedAt: Date | null
       passwordHash: string
       role: $Enums.UserRole
+      suspendedAt: Date | null
+      suspendedReason: string | null
       createdAt: Date
       updatedAt: Date
       referralCode: string | null
@@ -3033,6 +3057,8 @@ export namespace Prisma {
     readonly emailVerifiedAt: FieldRef<"User", 'DateTime'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
+    readonly suspendedAt: FieldRef<"User", 'DateTime'>
+    readonly suspendedReason: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly referralCode: FieldRef<"User", 'String'>
@@ -17478,6 +17504,8 @@ export namespace Prisma {
     emailVerifiedAt: 'emailVerifiedAt',
     passwordHash: 'passwordHash',
     role: 'role',
+    suspendedAt: 'suspendedAt',
+    suspendedReason: 'suspendedReason',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     referralCode: 'referralCode',
@@ -17888,6 +17916,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referralCode?: StringNullableFilter<"User"> | string | null
@@ -17914,6 +17944,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendedReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referralCode?: SortOrderInput | SortOrder
@@ -17944,6 +17976,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referredById?: StringNullableFilter<"User"> | string | null
@@ -17969,6 +18003,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    suspendedAt?: SortOrderInput | SortOrder
+    suspendedReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referralCode?: SortOrderInput | SortOrder
@@ -17988,6 +18024,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     passwordHash?: StringWithAggregatesFilter<"User"> | string
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    suspendedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    suspendedReason?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     referralCode?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -18946,6 +18984,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -18971,6 +19011,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -18996,6 +19038,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19021,6 +19065,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19046,6 +19092,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -19059,6 +19107,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19071,6 +19121,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20280,6 +20332,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    suspendedAt?: SortOrder
+    suspendedReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referralCode?: SortOrder
@@ -20293,6 +20347,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    suspendedAt?: SortOrder
+    suspendedReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referralCode?: SortOrder
@@ -20306,6 +20362,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    suspendedAt?: SortOrder
+    suspendedReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referralCode?: SortOrder
@@ -22737,6 +22795,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -22761,6 +22821,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -22790,6 +22852,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -22814,6 +22878,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -23197,6 +23263,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23221,6 +23289,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23264,6 +23334,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referralCode?: StringNullableFilter<"User"> | string | null
@@ -23434,6 +23506,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -23458,6 +23532,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -23498,6 +23574,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23522,6 +23600,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23660,6 +23740,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -23684,6 +23766,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -23818,6 +23902,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23842,6 +23928,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24047,6 +24135,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24071,6 +24161,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24210,6 +24302,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24234,6 +24328,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24258,6 +24354,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24282,6 +24380,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24322,6 +24422,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24346,6 +24448,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24463,6 +24567,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24487,6 +24593,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24516,6 +24624,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24540,6 +24650,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -24679,6 +24791,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24703,6 +24817,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24738,6 +24854,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24762,6 +24880,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25083,6 +25203,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25107,6 +25229,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25176,6 +25300,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25200,6 +25326,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25247,6 +25375,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25271,6 +25401,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25340,6 +25472,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25364,6 +25498,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25388,6 +25524,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25412,6 +25550,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25452,6 +25592,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25476,6 +25618,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25500,6 +25644,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25524,6 +25670,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25564,6 +25712,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25588,6 +25738,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25612,6 +25764,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25636,6 +25790,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -25676,6 +25832,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25700,6 +25858,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25793,6 +25953,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
@@ -26068,6 +26230,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26092,6 +26256,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26116,6 +26282,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null

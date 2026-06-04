@@ -10,6 +10,7 @@ const assignmentRequestRoutes = require("./routes/assignmentRequestRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const loyaltyRoutes = require("./routes/loyaltyRoutes");
 const referralRoutes = require("./routes/referralRoutes");
+const adminUserRoutes = require("./routes/adminUserRoutes");
 
 const app = express();
 
@@ -33,5 +34,6 @@ app.use("/api/assignment-requests", assignmentRequestRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralRoutes);
+app.use("/api/admin", adminUserRoutes);
 
 module.exports = app;

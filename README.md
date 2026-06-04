@@ -8,106 +8,108 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Homepage LoL/TFT service dropdown, TFT order pricing, service card redesign, and checkout tag polish
+### Latest session update — Admin Management Utilities, Account Management, privilege changes, suspension flow, and suspended-login modal
 
-#### Homepage game selection and dropdown flow
-- Updated the homepage service area so users first choose a game before seeing order modes:
-  - League of Legends
-  - Teamfight Tactics
-- Changed TFT from a disabled Coming Soon card into an active selectable game card.
-- Added a shared service dropdown that opens for both LoL and TFT.
-- Added dynamic dropdown headings:
-  - League of Legends → Choose Your LoL Service
-  - Teamfight Tactics → Choose Your TFT Service
-- Added `selectedGame` and `visibleGame` separation:
-  - `selectedGame` controls whether the dropdown is open or closed
-  - `visibleGame` controls which game content remains visible while the dropdown animation finishes
-- Fixed the bug where closing the service dropdown briefly blinked LoL services before swiping up.
-- Fixed the bug where quickly switching between TFT and LoL caused service content to flash during the animation.
-- Kept the dropdown open/close class controlled by `selectedGame`, while the text/cards inside use `visibleGame`.
+#### Admin navbar and Management Utilities hub
+- Replaced the old admin navbar entry from **Order Manager** to **Management Utilities**.
+- Added a new protected admin utilities route:
+  - `/admin/management`
+- Added a new Management Utilities hub page with scalable admin cards:
+  - Order Management
+  - Account Management
+  - Booster Management
+  - Service Management
+  - Event Management
+  - Update Management
+  - FAQ Management
+- Connected the **Order Management** card to the existing admin order manager route:
+  - `/admin/orders`
+- Connected the **Account Management** card to the new account management route:
+  - `/admin/accounts`
+- Left the remaining management cards as display-only / future utilities so the admin hub already looks scalable without implementing everything at once.
 
-#### Homepage service card redesign
-- Reworked service cards from full background-image hover cards into cleaner dark service cards.
-- Changed service images into small top-left icons instead of card backgrounds.
-- Removed the Details button from homepage service cards.
-- Removed the old Service Details frontend route direction because cards now route directly to the order flow.
-- Kept the backend `GET /api/services/:id` endpoint because `OrderPage` still needs it to load the selected service.
-- Added/confirmed homepage service filtering for:
-  - LoL: Rank Boost, Placement Boost, Win Boost, Pro Duo
-  - TFT: TFT Rank Boost, TFT Win Boost, TFT Placement Boost / TFT Placement Games depending on the database service title
-- Added service priority ordering so the cards display in the intended order.
-- Confirmed TFT service titles must match the database Qexactly or the homepage dropdown will show an empty service list.
+#### Account Management page
+- Added a protected admin-only **Account Management** page.
+- Added user search/filter support through the new admin account API.
+- Displayed account data in an admin table:
+  - User/avatar
+  - Email
+  - Email verification status
+  - Account status
+  - Current role
+  - Change privilege
+  - Account action
+  - Created date
+- Removed the unnecessary order-count column because Account Management is focused on privileges and account status.
+- Added role display badges for:
+  - Customer
+  - Booster / Provider
+  - Admin
+- Added account status badges:
+  - Active
+  - Suspended
+- Prevented admins from changing or suspending their own account from this page.
 
-#### Homepage copy and background polish
-- Removed copied/demo-style wording such as fake “Trusted since” and fake rating claims because FastBoost is new.
-- Replaced the hero text with more natural FastBoost copy.
-- Removed the old hero image/card container direction so the homepage background feels more connected.
-- Extended the page background upward under the navbar while keeping the purple glow.
-- Replaced the old League Patch Center direction with a more useful FastBoost Updates area.
-- Added three clickable update/help items:
-  - Latest Event
-  - Latest Updates
-  - FAQ / Help
-- Added selected update behavior so clicking the left item changes the right-side detail card instead of navigating immediately.
+#### Admin account APIs
+- Added admin account-management API helpers and backend routes.
+- Added admin-only user listing:
+  - `GET /api/admin/users`
+- Added admin-only role update:
+  - `PATCH /api/admin/users/:userId/role`
+- Added admin-only suspension/restore update:
+  - `PATCH /api/admin/users/:userId/suspension`
+- Reused existing `protect` and `adminOnly` middleware instead of creating duplicate auth middleware.
+- Fixed backend module-format issues by using CommonJS style imports/exports to match the current Express backend.
+- Fixed Prisma field mismatch by using `emailVerifiedAt` instead of the non-existent `emailVerified` field.
+- Added `suspendedAt` and `suspendedReason` fields to the `User` model direction for soft suspension.
 
-#### Service icons and CleanIcon handling
-- Generated original icon directions for the service card set:
-  - Rank Boost: trophy / climb theme
-  - Win Boost: goal / target theme
-  - Placement Boost: blank shield / unknown rank theme
-  - Pro Duo: two-person / duo theme
-- Adjusted Placement Boost icon direction to a simple grey blank shield.
-- Added a `CleanIcon` component for client-side cleanup of uploaded icons that still display checkerboard or flat backgrounds.
-- Added icon cleanup caching so the same icon does not reprocess every time the user switches between LoL and TFT.
-- Fixed the issue where icons briefly showed the dirty/non-transparent image before becoming transparent by:
-  - not rendering the original unprocessed image first
-  - waiting until the processed icon is ready
-  - caching the processed data URL
-  - using a small ready-state fade-in class
-- Added S3 CORS direction for canvas-based image processing if browser security blocks `getImageData()`.
+#### Role privilege change modal
+- Replaced the browser `window.confirm()` role-change popup with a custom modern confirmation modal.
+- Added a circular countdown timer for role changes.
+- Added automatic cancel when the countdown reaches zero.
+- Added No / Yes actions below the timer.
+- Added saving state with animated spinner.
+- Added success state where the timer area transitions into a green check animation.
+- Changed the success message from a page-level text banner into the modal itself.
+- Added auto-close after 5 seconds on successful privilege update.
+- Kept role-update success state polished while still updating the table row immediately.
 
-#### TFT pricing and order-page support
-- Added TFT pricing direction into the existing `OrderPage` format instead of creating a separate TFT order page.
-- Added TFT service detection using the service title prefix:
-  - `isTftService = serviceType.startsWith("TFT ")`
-  - `normalizedServiceType = serviceType.replace("TFT ", "")`
-- Updated pricing logic so TFT services use TFT calculators while LoL services keep the existing LoL calculators.
-- Added TFT Rank Boost pricing direction:
-  - Iron/Bronze under Silver style pricing starts at `$4` per division step
-  - Silver through Diamond division step pricing follows the provided screenshots
-  - Master pricing direction starts at `$1.30` per LP
-- Added TFT Win Boost pricing direction from the screenshots:
-  - Under Silver/Silver: `$3` per win
-  - Gold: `$4` per win
-  - Platinum: `$5` per win
-  - Emerald: `$6` per win
-  - Diamond: `$8` per win
-  - Master: `$18` per win
-  - Grandmaster: `$22` per win
-- Added TFT Placement pricing direction from the screenshots:
-  - Under Silver/Silver: `$15`
-  - Gold: `$17`
-  - Platinum: `$20`
-  - Emerald: `$25`
-  - Diamond IV: `$30`
-  - Diamond III: `$32`
-  - Diamond II: `$37`
-  - Diamond I: `$40`
-  - Master: `$49`
-- Fixed the `getLpMultiplier is not defined` bug by using the existing current-LP helper direction instead of a non-existent helper.
-- Updated order form/service checks to use `normalizedServiceType` so TFT modes can reuse the same UI paths as LoL modes.
-- Confirmed TFT should not show Pro Duo unless a separate TFT duo/coaching service is intentionally added later.
+#### Account suspension and restore flow
+- Added suspend/restore controls to Account Management.
+- Replaced the browser confirmation popup for suspension/restore with a custom modal.
+- Added a red **No Entry / suspension** icon direction for suspension confirmation.
+- Added a red circular countdown ring for suspension confirmation:
+  - countdown ring decreases visually
+  - no number in the center
+  - center keeps a horizontal dash
+  - timer auto-cancels if no action is taken
+- Added suspension success animation:
+  - red circle redraws
+  - horizontal bar transitions into a diagonal slash
+  - success message says the user is suspended
+  - modal auto-closes after 5 seconds
+- Added restore confirmation animation:
+  - starts from the blocked/slash visual direction
+  - transitions to a green countdown ring
+  - slash compresses/fades away
+  - countdown number appears inside the green circle
+  - timer auto-cancels if no action is taken
+- Cleaned the restore countdown CSS so the green ring behaves like the red countdown ring and does not leave an extra full green border on the empty counted section.
+- Kept successful restore confirmation as the existing green check animation and auto-close behavior.
 
-#### Checkout rank/tag display polish
-- Added/updated the checkout rank strip so it can display for TFT modes the same way it displays for LoL modes.
-- Changed checkout display conditions from exact `serviceType === "Rank Boost"` style checks to `normalizedServiceType` checks.
-- This allows the checkout summary tag/strip to work for:
-  - Rank Boost and TFT Rank Boost
-  - Placement Boost and TFT Placement Boost
-  - Win Boost and TFT Win Boost
-  - Pro Duo for LoL only
-- Removed the wrong small info-tag direction after confirming the desired UI was the existing LoL-style rank strip/tag.
-- Cleaned duplicate Rank Boost checkout strip direction so the order summary does not render duplicate tags.
+#### Suspended login handling
+- Updated backend login behavior so suspended users cannot log in.
+- Added backend response code direction:
+  - `ACCOUNT_SUSPENDED`
+- Login only reveals suspended status after correct email/password validation, avoiding unnecessary account-status leakage.
+- Added homepage login handling for suspended accounts.
+- Replaced normal login error text for suspended accounts with a custom animated popup.
+- Suspended login popup shows:
+  - animated lock/access-restricted icon
+  - “Account Suspended” message
+  - suspension reason text
+  - close/understand action
+- Kept normal invalid email/password handling unchanged for non-suspended login failures.
 
 ---
 ## Project concept
@@ -273,6 +275,11 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `POST /api/orders/:id/assign/:boosterId` — manual assign fallback
 - `DELETE /api/orders/:id/assign/:boosterId` — admin unassign booster
 
+### Admin account management
+- `GET /api/admin/users?page=1&pageSize=20&q=<search>&role=<role>` — admin-only user list/search for Account Management
+- `PATCH /api/admin/users/:userId/role` — admin-only privilege update for Customer / Provider-Booster / Admin
+- `PATCH /api/admin/users/:userId/suspension` — admin-only suspend/restore account status update
+
 ### Provider / booster orders
 - `GET /api/orders/provider/assigned` — provider assigned order list
 - `PATCH /api/orders/:id/provider-complete` — provider marks assigned order completed
@@ -415,6 +422,20 @@ npx prisma studio
 - smart MatchPage chat scrolling and scroll restoration
 - MatchPage overview moved into sidebar while preserving overview styling
 - redundant order summary sidebar card removed
+- admin navbar changed from Order Manager to Management Utilities
+- protected Management Utilities hub page added at `/admin/management`
+- protected Account Management page added at `/admin/accounts`
+- admin user search/list API added for account management
+- admin role update API added for Customer / Provider-Booster / Admin privileges
+- account role-change confirmation modal with countdown, saving state, green-check success, and auto-close
+- user soft-suspension fields added/directed through `suspendedAt` and `suspendedReason`
+- admin suspend/restore API added for account status management
+- account status column and suspend/restore actions added to Account Management
+- suspension confirmation modal with red countdown ring, no-entry visual, auto-cancel, saving state, diagonal-slash success, and auto-close
+- restore confirmation modal with green countdown ring, slash fade/compress transition, auto-cancel, green-check success, and auto-close
+- suspended-account login blocking added with `ACCOUNT_SUSPENDED` response direction
+- suspended-login popup added so suspended users see an animated Account Suspended modal instead of a plain error message
+
 
 - provider order detail route/page for assigned boosters
 - provider order flow now opens detail page before MatchPage conversation
@@ -448,6 +469,44 @@ npx prisma studio
 - phone number and phone verification flow removed from frontend, backend routes/controllers, and Prisma schema direction
 
 #### Completed functions
+- Admin Management Utilities completed:
+  - admin navbar now opens `/admin/management`
+  - Order Management card links to existing `/admin/orders`
+  - Account Management card links to new `/admin/accounts`
+  - Booster, Service, Event, Update, and FAQ management cards are displayed as future utilities
+- Account Management completed/directed:
+  - protected admin-only route added
+  - searchable user table added
+  - email verification and active/suspended status badges added
+  - role badges and privilege dropdown added
+  - order-count column removed because the page is focused on account control
+- Admin account API completed/directed:
+  - user list/search endpoint added
+  - role update endpoint added
+  - suspension/restore endpoint added
+  - existing `protect` and `adminOnly` middleware reused
+  - `emailVerifiedAt` used correctly for Prisma user verification state
+- Privilege update modal completed:
+  - browser confirm popup removed
+  - countdown confirmation modal added
+  - timer auto-cancel added
+  - saving spinner added
+  - success green-check animation added
+  - modal success auto-close added
+- Account suspension/restore completed:
+  - suspend and restore actions added to account table
+  - browser confirm popup removed
+  - red countdown ring added for suspension confirmation
+  - suspension countdown auto-cancel added
+  - suspension success animation uses red circle redraw and diagonal slash
+  - restore confirmation uses green countdown ring with slash fade/compress transition
+  - restore success keeps the green check animation
+- Suspended login flow completed/directed:
+  - backend blocks login when `suspendedAt` is set
+  - backend returns `ACCOUNT_SUSPENDED`
+  - frontend homepage login shows animated Account Suspended popup
+  - normal invalid-login errors remain unchanged
+
 - Homepage game/service dropdown completed:
   - LoL and TFT game cards are selectable
   - service dropdown opens for both games
@@ -537,6 +596,37 @@ npx prisma studio
 
 ## Next steps (recommended)
 
+1. Test admin management flow end-to-end:
+   - login as an admin
+   - open Management Utilities
+   - confirm Order Management opens `/admin/orders`
+   - confirm Account Management opens `/admin/accounts`
+   - confirm future utility cards are visible but not accidentally routed
+2. Test Account Management role changes:
+   - search by username/email/display name
+   - change Customer to Provider/Booster
+   - confirm countdown modal auto-cancels if left alone
+   - confirm Yes shows saving then green-check success
+   - logout/login as that account and verify provider navbar access
+   - confirm admins cannot change their own role
+3. Test suspension/restore:
+   - suspend a non-admin test account
+   - confirm red countdown ring auto-cancels if left alone
+   - confirm suspension success shows diagonal slash and auto-closes
+   - confirm suspended badge appears in the account table
+   - restore the account and confirm green countdown/green-check success flow
+   - confirm admins cannot suspend their own account
+4. Test suspended-login behavior:
+   - suspend a test user
+   - try logging in with wrong password and confirm normal invalid-login behavior
+   - try logging in with correct password and confirm animated Account Suspended popup
+   - restore the user and confirm login works again
+5. Clean up final Account Management polish:
+   - remove unused `success` state if no page-level success banner is needed
+   - consider adding a status filter: Active / Suspended
+   - consider adding suspend reason input later if needed
+   - consider adding audit logs for role changes and suspension events
+
 1. Test homepage game dropdown end-to-end:
    - click LoL and confirm four LoL service cards appear
    - click TFT and confirm three TFT service cards appear
@@ -622,6 +712,12 @@ npx prisma studio
 9. Connect the patch section to a real backend endpoint later.
 
 ## Resume-ready highlights
+
+- Built a protected admin Management Utilities hub with scalable utility cards and role-gated navigation for admin workflows.
+- Implemented an admin Account Management page with user search, verification/status badges, privilege changes, and suspend/restore account controls.
+- Added admin-only account APIs for user listing, role updates, and soft suspension using Express middleware, Prisma, and PostgreSQL.
+- Replaced browser confirmation dialogs with polished React confirmation modals including countdown auto-cancel, saving states, success animations, and timed auto-close behavior.
+- Implemented suspended-account login protection with backend enforcement and an animated frontend Account Suspended popup instead of plain login error text.
 
 - Expanded the marketplace homepage from LoL-only services into a two-game LoL/TFT service hub with animated dropdown cards, dynamic filtering, and direct order routing.
 - Added TFT pricing support into the existing order configurator by branching pricing logic through normalized service types while preserving the existing LoL order format.

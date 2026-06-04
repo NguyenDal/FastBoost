@@ -14,6 +14,8 @@ import CustomerOrdersPage from "./pages/CustomerOrdersPage";
 import ProviderOrderDetailsPage from "./pages/ProviderOrderDetailsPage";
 import LoyaltyPage from "./pages/LoyaltyPage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
+import AdminManagementPage from "./pages/AdminManagementPage";
+import AdminAccountsPage from "./pages/AdminAccountsPage";
 
 import { clearExpiredSession, getStoredUser, hasValidSession } from "./utils/authSession";
 
@@ -141,6 +143,24 @@ function App() {
         element={
           <ProtectedRoute>
             <AccountSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/management"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/accounts"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <AdminAccountsPage />
           </ProtectedRoute>
         }
       />
