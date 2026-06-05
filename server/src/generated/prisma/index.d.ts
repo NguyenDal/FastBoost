@@ -137,7 +137,8 @@ export const NotificationType: {
   ASSIGNMENT_CANCELLED: 'ASSIGNMENT_CANCELLED',
   ASSIGNMENT_REMOVED: 'ASSIGNMENT_REMOVED',
   BOOSTER_LEFT_ORDER: 'BOOSTER_LEFT_ORDER',
-  CHAT_MESSAGE: 'CHAT_MESSAGE'
+  CHAT_MESSAGE: 'CHAT_MESSAGE',
+  ACCOUNT_ROLE_UPDATED: 'ACCOUNT_ROLE_UPDATED'
 };
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

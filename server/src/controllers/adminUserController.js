@@ -2,6 +2,12 @@ const prisma = require("../prisma");
 
 const ALLOWED_ROLES = ["CUSTOMER", "PROVIDER", "ADMIN"];
 
+function getRoleLabel(role) {
+    if (role === "ADMIN") return "Admin";
+    if (role === "PROVIDER") return "Booster";
+    return "Customer";
+}
+
 async function adminListUsers(req, res) {
     try {
         const page = Math.max(Number(req.query.page || 1), 1);
@@ -71,11 +77,13 @@ async function adminUpdateUserRole(req, res) {
         const { userId } = req.params;
         const { role } = req.body;
 
+        const currentAdminId = req.user?.id || req.user?.userId;
+
         if (!ALLOWED_ROLES.includes(role)) {
             return res.status(400).json({ message: "Invalid role" });
         }
 
-        if (req.user?.id === userId && role !== "ADMIN") {
+        if (currentAdminId === userId && role !== "ADMIN") {
             return res.status(400).json({
                 message: "You cannot remove your own admin access.",
             });
@@ -85,6 +93,8 @@ async function adminUpdateUserRole(req, res) {
             where: { id: userId },
             select: {
                 id: true,
+                username: true,
+                email: true,
                 role: true,
             },
         });
@@ -114,6 +124,24 @@ async function adminUpdateUserRole(req, res) {
                 },
             },
         });
+
+        if (targetUser.role !== role) {
+            await prisma.notification.create({
+                data: {
+                    userId,
+                    type: "ACCOUNT_ROLE_UPDATED",
+                    title: "Account privilege updated",
+                    message: `Your account privilege was updated from ${getRoleLabel(targetUser.role)} to ${getRoleLabel(role)}.`,
+                    data: {
+                        oldRole: targetUser.role,
+                        newRole: role,
+                        oldRoleLabel: getRoleLabel(targetUser.role),
+                        newRoleLabel: getRoleLabel(role),
+                        changedByAdminId: currentAdminId || null,
+                    },
+                },
+            });
+        }
 
         return res.json({
             message: "User role updated",

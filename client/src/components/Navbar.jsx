@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import CleanIcon from "./CleanIcon";
 import {
     listMyNotifications,
     markAllNotificationsRead,
@@ -383,7 +384,14 @@ function Navbar({
         <header className="topbar">
             <div className="brand">
                 <Link to="/" className="brand-link">
-                    <div className="brand-icon">F</div>
+                    <div className="brand-icon brand-logo-image-wrap">
+                        <CleanIcon
+                            src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
+                            alt="FastBoost logo"
+                            className="brand-logo-image"
+                        />
+                    </div>
+
                     <div>
                         <p className="brand-title">FastBoost</p>
                         <p className="brand-subtitle">League Services Platform</p>
@@ -437,7 +445,30 @@ function Navbar({
                             }
                         }}
                     >
-                        Login
+                        <span className="nav-login-icon" aria-hidden>
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M10 7L15 12L10 17"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                <path
+                                    d="M15 12H3"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round"
+                                />
+                                <path
+                                    d="M13 4H18C19.6569 4 21 5.34315 21 7V17C21 18.6569 19.6569 20 18 20H13"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                        </span>
+                        <span>Login</span>
                     </button>
                 ) : (
                     <div

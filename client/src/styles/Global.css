@@ -54,15 +54,39 @@ button {
 }
 
 .brand-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 54px;
+  height: 54px;
+  border-radius: 0;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #d91e36, #5b21b6);
-  font-weight: 800;
-  color: white;
-  box-shadow: 0 10px 24px rgba(217, 30, 54, 0.25);
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+  padding: 0;
+}
+
+.brand-logo-image-wrap {
+  background: transparent !important;
+  overflow: visible;
+  padding: 0;
+  box-shadow: none !important;
+}
+
+.brand-logo-image {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  display: block;
+  background: transparent !important;
+}
+
+.clean-icon {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.clean-icon.clean-icon-ready {
+  opacity: 1;
 }
 
 .brand-title {
@@ -101,13 +125,47 @@ button {
 }
 
 .nav-cta {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   border: none;
   border-radius: 999px;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #d91e36, #7c3aed);
-  color: white;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+  color: #ffffff;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    background 0.18s ease;
+}
+
+.nav-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: none;
+}
+
+.nav-cta:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.nav-login-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-login-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Shared layout + text utilities */
