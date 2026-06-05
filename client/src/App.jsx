@@ -64,14 +64,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      <Route
-        path="/order/:serviceId"
-        element={
-          <ProtectedRoute>
-            <OrderPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/order/:serviceId" element={<OrderPage />} />
 
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
