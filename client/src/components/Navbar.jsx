@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import CleanIcon from "./CleanIcon";
 import {
     listMyNotifications,
     markAllNotificationsRead,
@@ -383,7 +384,14 @@ function Navbar({
         <header className="topbar">
             <div className="brand">
                 <Link to="/" className="brand-link">
-                    <div className="brand-icon">F</div>
+                    <div className="brand-icon brand-logo-image-wrap">
+                        <CleanIcon
+                            src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
+                            alt="FastBoost logo"
+                            className="brand-logo-image"
+                        />
+                    </div>
+
                     <div>
                         <p className="brand-title">FastBoost</p>
                         <p className="brand-subtitle">League Services Platform</p>

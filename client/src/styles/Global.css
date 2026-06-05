@@ -54,15 +54,39 @@ button {
 }
 
 .brand-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 54px;
+  height: 54px;
+  border-radius: 0;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #d91e36, #5b21b6);
-  font-weight: 800;
-  color: white;
-  box-shadow: 0 10px 24px rgba(217, 30, 54, 0.25);
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+  padding: 0;
+}
+
+.brand-logo-image-wrap {
+  background: transparent !important;
+  overflow: visible;
+  padding: 0;
+  box-shadow: none !important;
+}
+
+.brand-logo-image {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  display: block;
+  background: transparent !important;
+}
+
+.clean-icon {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.clean-icon.clean-icon-ready {
+  opacity: 1;
 }
 
 .brand-title {
