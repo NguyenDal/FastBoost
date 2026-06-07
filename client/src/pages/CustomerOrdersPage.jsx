@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { customerListMyOrders } from "../api/customerOrders";
 import "../styles/Admin.css";
 
@@ -95,133 +94,127 @@ export default function CustomerOrdersPage() {
     if (!allowed) return null;
 
     return (
-        <div className="page-shell">
-            <Navbar />
-
-            <div className="page-container">
-                <div className="admin-list-hero customer-list-hero">
-                    <div>
-                        <p className="admin-eyebrow">FastBoost Account</p>
-                        <h1 className="admin-order-title">My Orders</h1>
-                        <p className="admin-list-subtitle">
-                            Track your active orders, view order details, and open chat with your assigned booster.
-                        </p>
-                    </div>
-
-                    <div className="admin-list-stats">
-                        <div className="admin-stat-card">
-                            <span>Total Orders</span>
-                            <strong>{orders.length}</strong>
-                        </div>
-
-                        <div className="admin-stat-card">
-                            <span>Visible</span>
-                            <strong>{filteredOrders.length}</strong>
-                        </div>
-                    </div>
+        <div className="dashboard-embedded-page customer-orders-embedded">
+            <div className="admin-list-hero customer-list-hero">
+                <div>
+                    <p className="admin-eyebrow">FastBoost Account</p>
+                    <h1 className="admin-order-title">My Orders</h1>
+                    <p className="admin-list-subtitle">
+                        Track your active orders, view order details, and open chat with your assigned booster.
+                    </p>
                 </div>
 
-                <div className="admin-toolbar premium-toolbar">
-                    <input
-                        className="admin-input"
-                        placeholder="Search by order ID, service, boost type, or region"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        style={{ minWidth: 320 }}
-                    />
-
-                    <select
-                        className="admin-select"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                    >
-                        <option value="CURRENT">Current Orders</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </div>
-
-                {loading ? (
-                    <p className="muted-text">Loading your orders...</p>
-                ) : error ? (
-                    <p style={{ color: "#ef4444" }}>{error}</p>
-                ) : (
-                    <div className="admin-table-wrap premium-table-wrap">
-                        <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Order</th>
-                                    <th>Created</th>
-                                    <th>Status</th>
-                                    <th>Service</th>
-                                    <th>Boost Path</th>
-                                    <th>Region</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {filteredOrders.map((order) => (
-                                    <tr key={order.id}>
-                                        <td className="mono order-id-cell">
-                                            #{order.id.slice(0, 8)}
-                                        </td>
-
-                                        <td>
-                                            {order.createdAt
-                                                ? new Date(order.createdAt).toLocaleString()
-                                                : "-"}
-                                        </td>
-
-                                        <td>
-                                            <StatusBadge status={order.status} />
-                                        </td>
-
-                                        <td>
-                                            <div className="service-cell">
-                                                <span>{order.service?.title || order.boostType || "Order"}</span>
-                                                <small>{order.boostType || "Custom order"}</small>
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <div className="service-cell">
-                                                <span>
-                                                    {buildBoostPath(order)}
-                                                </span>
-                                                <small>{order.queueType || "-"}</small>
-                                            </div>
-                                        </td>
-
-                                        <td>{order.region || "-"}</td>
-
-                                        <td className="price-cell">
-                                            ${Number(order.totalPrice || 0).toFixed(2)}
-                                        </td>
-
-                                        <td className="right">
-                                            <Link className="secondary-btn" to={`/match/${order.id}`}>
-                                                Open Chat
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-
-                                {filteredOrders.length === 0 && (
-                                    <tr>
-                                        <td colSpan={8} className="admin-empty">
-                                            No orders found.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                <div className="admin-list-stats">
+                    <div className="admin-stat-card">
+                        <span>Total Orders</span>
+                        <strong>{orders.length}</strong>
                     </div>
-                )}
+
+                    <div className="admin-stat-card">
+                        <span>Visible</span>
+                        <strong>{filteredOrders.length}</strong>
+                    </div>
+                </div>
             </div>
+
+            <div className="admin-toolbar premium-toolbar">
+                <input
+                    className="admin-input"
+                    placeholder="Search by order ID, service, boost type, or region"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    style={{ minWidth: 320 }}
+                />
+
+                <select
+                    className="admin-select"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                >
+                    <option value="CURRENT">Current Orders</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+            </div>
+
+            {loading ? (
+                <p className="muted-text">Loading your orders...</p>
+            ) : error ? (
+                <p style={{ color: "#ef4444" }}>{error}</p>
+            ) : (
+                <div className="admin-table-wrap premium-table-wrap">
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Service</th>
+                                <th>Boost Path</th>
+                                <th>Region</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {filteredOrders.map((order) => (
+                                <tr key={order.id}>
+                                    <td className="mono order-id-cell">
+                                        #{order.id.slice(0, 8)}
+                                    </td>
+
+                                    <td>
+                                        {order.createdAt
+                                            ? new Date(order.createdAt).toLocaleString()
+                                            : "-"}
+                                    </td>
+
+                                    <td>
+                                        <StatusBadge status={order.status} />
+                                    </td>
+
+                                    <td>
+                                        <div className="service-cell">
+                                            <span>{order.service?.title || order.boostType || "Order"}</span>
+                                            <small>{order.boostType || "Custom order"}</small>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div className="service-cell">
+                                            <span>{buildBoostPath(order)}</span>
+                                            <small>{order.queueType || "-"}</small>
+                                        </div>
+                                    </td>
+
+                                    <td>{order.region || "-"}</td>
+
+                                    <td className="price-cell">
+                                        ${Number(order.totalPrice || 0).toFixed(2)}
+                                    </td>
+
+                                    <td className="right">
+                                        <Link className="secondary-btn" to={`/match/${order.id}`}>
+                                            Open Chat
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))}
+
+                            {filteredOrders.length === 0 && (
+                                <tr>
+                                    <td colSpan={8} className="admin-empty">
+                                        No orders found.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

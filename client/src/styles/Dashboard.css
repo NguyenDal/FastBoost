@@ -25,13 +25,11 @@
 .dashboard-with-sidebar .topbar {
     border-bottom: none;
     background:
-        linear-gradient(
-            to right,
+        linear-gradient(to right,
             rgba(24, 18, 54, 0.96) 0,
             rgba(24, 18, 54, 0.96) 280px,
             rgba(10, 15, 24, 0.86) 280px,
-            rgba(10, 15, 24, 0.86) 100%
-        );
+            rgba(10, 15, 24, 0.86) 100%);
 }
 
 .dashboard-side-nav {
@@ -432,7 +430,7 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.dashboard-referral-condition > span {
+.dashboard-referral-condition>span {
     width: 24px;
     height: 24px;
     display: grid;
@@ -441,12 +439,12 @@
     font-weight: 950;
 }
 
-.dashboard-referral-condition.passed > span {
+.dashboard-referral-condition.passed>span {
     color: #052e1d;
     background: #34d399;
 }
 
-.dashboard-referral-condition.failed > span {
+.dashboard-referral-condition.failed>span {
     color: #ffffff;
     background: #ef4444;
 }
@@ -515,6 +513,21 @@
     border-color: rgba(248, 113, 113, 0.25);
 }
 
+.dashboard-embedded-page {
+    width: 100%;
+}
+
+.dashboard-embedded-page .page-container,
+.dashboard-embedded-page .account-settings-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard-embedded-settings .account-settings-hero {
+    margin-bottom: 20px;
+}
+
 @media (max-width: 1180px) {
     .dashboard-layout {
         grid-template-columns: 1fr;
@@ -526,7 +539,7 @@
     }
 
     .dashboard-side-nav {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 

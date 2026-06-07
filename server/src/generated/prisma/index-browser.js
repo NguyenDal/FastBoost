@@ -141,6 +141,9 @@ exports.Prisma.ProfileScalarFieldEnum = {
   displayName: 'displayName',
   bio: 'bio',
   profileImageUrl: 'profileImageUrl',
+  discord: 'discord',
+  country: 'country',
+  birthday: 'birthday',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
