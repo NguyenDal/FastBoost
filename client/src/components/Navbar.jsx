@@ -400,21 +400,6 @@ function Navbar({
             </div>
 
             <nav className="nav">
-                {effectiveHasSession && (
-                    <Link to="/account/loyalty">Loyalty</Link>
-                )}
-
-                {effectiveHasSession && (
-                    <Link to="/account/orders">My Orders</Link>
-                )}
-
-                {effectiveCurrentUser?.role === "ADMIN" && (
-                    <Link to="/admin/management">Management Utilities</Link>
-                )}
-
-                {effectiveCurrentUser?.role === "PROVIDER" && (
-                    <Link to="/provider/orders">Assigned Orders</Link>
-                )}
 
                 {!effectiveHasSession ? (
                     <button
@@ -497,7 +482,7 @@ function Navbar({
                         </div>
 
                         {effectiveShowProfileMenu && (
-                            <div className="profile-menu" role="menu">
+                            <div className="profile-menu profile-menu-expanded" role="menu">
                                 <div className="profile-quick-grid">
                                     <button
                                         className={`quick-tile notification-tile ${unreadNotifications > 0 ? "has-notifications" : ""}`}
@@ -508,13 +493,25 @@ function Navbar({
                                     >
                                         <span className="quick-icon" aria-hidden>
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 3a6 6 0 0 0-6 6v3.764c0 .536-.214 1.05-.595 1.43L4 15.6V17h16v-1.4l-1.405-1.406A2.02 2.02 0 0 1 18 12.764V9a6 6 0 0 0-6-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                                                <path
+                                                    d="M12 3a6 6 0 0 0-6 6v3.764c0 .536-.214 1.05-.595 1.43L4 15.6V17h16v-1.4l-1.405-1.406A2.02 2.02 0 0 1 18 12.764V9a6 6 0 0 0-6-6Z"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                                <path
+                                                    d="M10 17a2 2 0 0 0 4 0"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                    strokeLinecap="round"
+                                                />
                                             </svg>
                                         </span>
 
                                         {unreadNotifications > 0 && <span className="quick-soft-dot notification" />}
                                     </button>
+
                                     <button
                                         className={`quick-tile message-tile ${unreadMessages > 0 ? "has-messages" : ""}`}
                                         role="menuitem"
@@ -524,26 +521,91 @@ function Navbar({
                                     >
                                         <span className="quick-icon" aria-hidden>
                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M7 8h10M7 11h7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                                                <path
+                                                    d="M21 14a4 4 0 0 1-4 4H9l-4 3v-3H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                                <path
+                                                    d="M7 8h10M7 11h7"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.8"
+                                                    strokeLinecap="round"
+                                                />
                                             </svg>
                                         </span>
 
                                         {unreadMessages > 0 && <span className="quick-soft-dot message" />}
                                     </button>
                                 </div>
+
                                 <button
-                                    className="profile-menu-item"
+                                    className="profile-menu-item profile-menu-row"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        effectiveSetShowProfileMenu(false);
+                                        navigate("/account/dashboard");
+                                    }}
+                                >
+                                    <ProfileMenuIcon type="dashboard" />
+                                    <span>Dashboard</span>
+                                </button>
+
+                                {effectiveCurrentUser?.role === "ADMIN" && (
+                                    <button
+                                        className="profile-menu-item profile-menu-row"
+                                        role="menuitem"
+                                        onClick={() => {
+                                            effectiveSetShowProfileMenu(false);
+                                            navigate("/admin/management");
+                                        }}
+                                    >
+                                        <ProfileMenuIcon type="management" />
+                                        <span>Management Utilities</span>
+                                    </button>
+                                )}
+
+                                <button
+                                    className="profile-menu-item profile-menu-row"
+                                    role="menuitem"
+                                    onClick={() => {
+                                        effectiveSetShowProfileMenu(false);
+                                        navigate(
+                                            effectiveCurrentUser?.role === "PROVIDER"
+                                                ? "/provider/orders"
+                                                : "/account/orders"
+                                        );
+                                    }}
+                                >
+                                    <ProfileMenuIcon type="orders" />
+                                    <span>
+                                        {effectiveCurrentUser?.role === "PROVIDER"
+                                            ? "Assigned Orders"
+                                            : "Orders"}
+                                    </span>
+                                </button>
+
+                                <button
+                                    className="profile-menu-item profile-menu-row"
                                     role="menuitem"
                                     onClick={() => {
                                         effectiveSetShowProfileMenu(false);
                                         navigate("/account/settings");
                                     }}
                                 >
-                                    Account Settings
+                                    <ProfileMenuIcon type="profile" />
+                                    <span>Profile</span>
                                 </button>
-                                <button className="profile-menu-item" onClick={onLogout} role="menuitem">
-                                    Logout
+
+                                <button
+                                    className="profile-menu-item profile-menu-row logout-row"
+                                    onClick={onLogout}
+                                    role="menuitem"
+                                >
+                                    <ProfileMenuIcon type="logout" />
+                                    <span>Logout</span>
                                 </button>
                             </div>
                         )}
@@ -609,6 +671,61 @@ function Navbar({
                 </div>
             )}
         </header>
+    );
+}
+
+function ProfileMenuIcon({ type }) {
+    if (type === "dashboard") {
+        return (
+            <span className="profile-menu-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 4h7v7H4V4ZM13 4h7v7h-7V4ZM4 13h7v7H4v-7ZM13 13h7v7h-7v-7Z" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+            </span>
+        );
+    }
+
+    if (type === "management") {
+        return (
+            <span className="profile-menu-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="M19.4 15a8.1 8.1 0 0 0 .1-1 8.1 8.1 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.8-1L15 5.5h-4l-.3 2.6a8 8 0 0 0-1.8 1l-2.4-1-2 3.4 2 1.5a8.1 8.1 0 0 0-.1 1c0 .3 0 .7.1 1l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 1.8 1l.3 2.6h4l.3-2.6a8 8 0 0 0 1.8-1l2.4 1 2-3.4-2.1-1.5Z" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+            </span>
+        );
+    }
+
+    if (type === "orders") {
+        return (
+            <span className="profile-menu-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 4h13l-2 10H8L7 4ZM7 4H4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+            </span>
+        );
+    }
+
+    if (type === "profile") {
+        return (
+            <span className="profile-menu-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+            </span>
+        );
+    }
+
+    return (
+        <span className="profile-menu-icon" aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M10 7 5 12l5 5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 12h11" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+                <path d="M13 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+            </svg>
+        </span>
     );
 }
 

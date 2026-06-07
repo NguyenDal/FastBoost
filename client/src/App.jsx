@@ -16,6 +16,7 @@ import LoyaltyPage from "./pages/LoyaltyPage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
 import AdminManagementPage from "./pages/AdminManagementPage";
 import AdminAccountsPage from "./pages/AdminAccountsPage";
+import DashboardPage from "./pages/DashboardPage";
 
 import { clearExpiredSession, getStoredUser, hasValidSession } from "./utils/authSession";
 
@@ -105,6 +106,15 @@ function App() {
       />
 
       <Route
+        path="/account/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/account/orders"
         element={
           <ProtectedRoute>
@@ -159,7 +169,7 @@ function App() {
       />
 
     </Routes>
-    
+
   );
 }
 
