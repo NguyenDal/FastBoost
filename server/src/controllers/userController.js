@@ -88,6 +88,9 @@ module.exports.me = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+            discord: true,
+            country: true,
+            birthday: true,
           },
         },
         _count: {
@@ -139,6 +142,26 @@ module.exports.updateMyAccount = async (req, res) => {
     const username = (req.body.username || "").toString().trim();
     const email = (req.body.email || "").toString().trim().toLowerCase();
     const profileImageUrl = (req.body.profileImageUrl || "").toString().trim();
+
+    const discord = (req.body.discord || "").toString().trim();
+    const country = (req.body.country || "").toString().trim();
+    const birthdayRaw = (req.body.birthday || "").toString().trim();
+
+    let birthday = null;
+
+    if (birthdayRaw) {
+      const parsedBirthday = new Date(`${birthdayRaw}T00:00:00.000Z`);
+
+      if (Number.isNaN(parsedBirthday.getTime())) {
+        return res.status(400).json({
+          ok: false,
+          field: "birthday",
+          message: "Please enter a valid birthday.",
+        });
+      }
+
+      birthday = parsedBirthday;
+    }
 
     if (!username) {
       return res.status(400).json({
@@ -241,10 +264,18 @@ module.exports.updateMyAccount = async (req, res) => {
         profile: {
           upsert: {
             create: {
+              displayName: username,
               profileImageUrl: profileImageUrl || null,
+              discord: discord || null,
+              country: country || null,
+              birthday,
             },
             update: {
+              displayName: username,
               profileImageUrl: profileImageUrl || null,
+              discord: discord || null,
+              country: country || null,
+              birthday,
             },
           },
         },
@@ -255,6 +286,9 @@ module.exports.updateMyAccount = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+            discord: true,
+            country: true,
+            birthday: true,
           },
         },
         _count: {
@@ -452,6 +486,9 @@ module.exports.uploadMyProfilePicture = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+            discord: true,
+            country: true,
+            birthday: true,
           },
         },
         _count: {
@@ -515,6 +552,9 @@ module.exports.listProviders = async (req, res) => {
           select: {
             displayName: true,
             profileImageUrl: true,
+            discord: true,
+            country: true,
+            birthday: true,
           },
         },
       },
@@ -771,6 +811,9 @@ module.exports.confirmEmailVerificationCode = async (req, res) => {
             displayName: true,
             bio: true,
             profileImageUrl: true,
+            discord: true,
+            country: true,
+            birthday: true,
           },
         },
         _count: {

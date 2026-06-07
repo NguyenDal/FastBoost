@@ -54,7 +54,6 @@ export default function LoyaltyPage() {
     const [loading, setLoading] = useState(true);
     const [rewardLoading, setRewardLoading] = useState(false);
     const [error, setError] = useState("");
-    const [copiedReferral, setCopiedReferral] = useState(false);
 
     const [rewardPage, setRewardPage] = useState(1);
     const REWARD_PAGE_SIZE = 5;
@@ -120,31 +119,6 @@ export default function LoyaltyPage() {
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
     const goldDollarValue = (totalGold / 10).toFixed(2);
-    const referralLink = loyalty?.referralLink || "";
-    const referralCount = loyalty?.referralCount || 0;
-    const referralEligibility = loyalty?.referralEligibility || null;
-    const referralConditions = referralEligibility?.conditions || {};
-    const canUseReferral = Boolean(referralEligibility?.eligible && referralLink);
-
-    const referralConditionList = [
-        referralConditions.emailVerified,
-        referralConditions.completedOrders,
-    ].filter(Boolean);
-
-    const handleCopyReferralLink = async () => {
-        if (!canUseReferral || !referralLink) return;
-
-        try {
-            await navigator.clipboard.writeText(referralLink);
-            setCopiedReferral(true);
-
-            setTimeout(() => {
-                setCopiedReferral(false);
-            }, 1600);
-        } catch {
-            setCopiedReferral(false);
-        }
-    };
 
     const tierInfo = {
         key: loyalty?.tierKey || "bronze",
@@ -232,7 +206,7 @@ export default function LoyaltyPage() {
 
                                         <div className="loyalty-tier-benefits">
                                             {tier.bonusCoins > 0 ? (
-                                                <em>{tier.bonusCoins} bonus coins</em>
+                                                <em>{tier.bonusCoins} bonus gold</em>
                                             ) : (
                                                 <em>No bonus</em>
                                             )}
@@ -262,72 +236,6 @@ export default function LoyaltyPage() {
                             <div className="loyalty-stat-card">
                                 <span>Total Completed Spend</span>
                                 <strong>${totalSpent.toFixed(2)}</strong>
-                            </div>
-                        </section>
-
-                        <section className={`loyalty-card loyalty-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
-                            <div className="loyalty-section-header">
-                                <div>
-                                    <p className="loyalty-eyebrow">Private Invite</p>
-                                    <h2>Share Your Referral Link</h2>
-                                    <p>
-                                        Invite friends to FastBoost. Once this feature is fully connected,
-                                        successful referred registrations can give you a $5 discount.
-                                    </p>
-                                </div>
-
-                                <div className="loyalty-referral-count">
-                                    <span>{referralCount}</span>
-                                    <small>Invited Users</small>
-                                </div>
-                            </div>
-
-                            <div className="loyalty-referral-condition-box">
-                                <div className="loyalty-referral-condition-header">
-                                    <strong>Referral Requirements</strong>
-                                    <span className={canUseReferral ? "condition-status-ready" : "condition-status-locked"}>
-                                        {canUseReferral ? "Unlocked" : "Locked"}
-                                    </span>
-                                </div>
-
-                                <div className="loyalty-referral-condition-list">
-                                    {referralConditionList.map((condition) => (
-                                        <div
-                                            key={condition.label}
-                                            className={`loyalty-referral-condition ${condition.passed ? "passed" : "failed"}`}
-                                        >
-                                            <span className="condition-icon">
-                                                {condition.passed ? "✓" : "×"}
-                                            </span>
-
-                                            <div>
-                                                <strong>
-                                                    {condition.label}
-                                                    {condition.current !== undefined && condition.required !== undefined
-                                                        ? ` • ${condition.current}/${condition.required}`
-                                                        : ""}
-                                                </strong>
-                                                <small>{condition.helpText}</small>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className={`loyalty-referral-link-box ${!canUseReferral ? "is-disabled" : ""}`}>
-                                <span>
-                                    {canUseReferral
-                                        ? referralLink
-                                        : "Complete all requirements to unlock your referral link."}
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={handleCopyReferralLink}
-                                    disabled={!canUseReferral}
-                                >
-                                    {copiedReferral ? "Copied!" : canUseReferral ? "Copy" : "Locked"}
-                                </button>
                             </div>
                         </section>
 
@@ -448,7 +356,7 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
-        benefits: ["200 bonus coins", "3% top-up bonus"],
+        benefits: ["200 bonus gold", "3% top-up bonus"],
     },
     {
         key: "gold",
@@ -458,7 +366,7 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
-        benefits: ["500 bonus coins", "5% top-up bonus"],
+        benefits: ["500 bonus gold", "5% top-up bonus"],
     },
     {
         key: "platinum",
@@ -468,7 +376,7 @@ const LOYALTY_TIERS = [
         nextTier: "Diamond",
         bonusCoins: 800,
         topUpBonusPercent: 8,
-        benefits: ["800 bonus coins", "8% top-up bonus"],
+        benefits: ["800 bonus gold", "8% top-up bonus"],
     },
     {
         key: "diamond",
@@ -478,6 +386,6 @@ const LOYALTY_TIERS = [
         nextTier: null,
         bonusCoins: 1500,
         topUpBonusPercent: 10,
-        benefits: ["1500 bonus coins", "10% top-up bonus"],
+        benefits: ["1500 bonus gold", "10% top-up bonus"],
     },
 ];

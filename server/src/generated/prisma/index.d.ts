@@ -87,7 +87,8 @@ export namespace $Enums {
   REFERRAL_INVITER: 'REFERRAL_INVITER',
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
-  PROMO: 'PROMO'
+  PROMO: 'PROMO',
+  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS'
 };
 
 export type RewardType = (typeof RewardType)[keyof typeof RewardType]
@@ -3801,6 +3802,9 @@ export namespace Prisma {
     displayName: string | null
     bio: string | null
     profileImageUrl: string | null
+    discord: string | null
+    country: string | null
+    birthday: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3811,6 +3815,9 @@ export namespace Prisma {
     displayName: string | null
     bio: string | null
     profileImageUrl: string | null
+    discord: string | null
+    country: string | null
+    birthday: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3821,6 +3828,9 @@ export namespace Prisma {
     displayName: number
     bio: number
     profileImageUrl: number
+    discord: number
+    country: number
+    birthday: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3833,6 +3843,9 @@ export namespace Prisma {
     displayName?: true
     bio?: true
     profileImageUrl?: true
+    discord?: true
+    country?: true
+    birthday?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3843,6 +3856,9 @@ export namespace Prisma {
     displayName?: true
     bio?: true
     profileImageUrl?: true
+    discord?: true
+    country?: true
+    birthday?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3853,6 +3869,9 @@ export namespace Prisma {
     displayName?: true
     bio?: true
     profileImageUrl?: true
+    discord?: true
+    country?: true
+    birthday?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3936,6 +3955,9 @@ export namespace Prisma {
     displayName: string | null
     bio: string | null
     profileImageUrl: string | null
+    discord: string | null
+    country: string | null
+    birthday: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ProfileCountAggregateOutputType | null
@@ -3963,6 +3985,9 @@ export namespace Prisma {
     displayName?: boolean
     bio?: boolean
     profileImageUrl?: boolean
+    discord?: boolean
+    country?: boolean
+    birthday?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3974,6 +3999,9 @@ export namespace Prisma {
     displayName?: boolean
     bio?: boolean
     profileImageUrl?: boolean
+    discord?: boolean
+    country?: boolean
+    birthday?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3985,6 +4013,9 @@ export namespace Prisma {
     displayName?: boolean
     bio?: boolean
     profileImageUrl?: boolean
+    discord?: boolean
+    country?: boolean
+    birthday?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3996,11 +4027,14 @@ export namespace Prisma {
     displayName?: boolean
     bio?: boolean
     profileImageUrl?: boolean
+    discord?: boolean
+    country?: boolean
+    birthday?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "displayName" | "bio" | "profileImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "displayName" | "bio" | "profileImageUrl" | "discord" | "country" | "birthday" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -4022,6 +4056,9 @@ export namespace Prisma {
       displayName: string | null
       bio: string | null
       profileImageUrl: string | null
+      discord: string | null
+      country: string | null
+      birthday: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["profile"]>
@@ -4453,6 +4490,9 @@ export namespace Prisma {
     readonly displayName: FieldRef<"Profile", 'String'>
     readonly bio: FieldRef<"Profile", 'String'>
     readonly profileImageUrl: FieldRef<"Profile", 'String'>
+    readonly discord: FieldRef<"Profile", 'String'>
+    readonly country: FieldRef<"Profile", 'String'>
+    readonly birthday: FieldRef<"Profile", 'DateTime'>
     readonly createdAt: FieldRef<"Profile", 'DateTime'>
     readonly updatedAt: FieldRef<"Profile", 'DateTime'>
   }
@@ -17522,6 +17562,9 @@ export namespace Prisma {
     displayName: 'displayName',
     bio: 'bio',
     profileImageUrl: 'profileImageUrl',
+    discord: 'discord',
+    country: 'country',
+    birthday: 'birthday',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -18042,6 +18085,9 @@ export namespace Prisma {
     displayName?: StringNullableFilter<"Profile"> | string | null
     bio?: StringNullableFilter<"Profile"> | string | null
     profileImageUrl?: StringNullableFilter<"Profile"> | string | null
+    discord?: StringNullableFilter<"Profile"> | string | null
+    country?: StringNullableFilter<"Profile"> | string | null
+    birthday?: DateTimeNullableFilter<"Profile"> | Date | string | null
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -18053,6 +18099,9 @@ export namespace Prisma {
     displayName?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     profileImageUrl?: SortOrderInput | SortOrder
+    discord?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -18067,6 +18116,9 @@ export namespace Prisma {
     displayName?: StringNullableFilter<"Profile"> | string | null
     bio?: StringNullableFilter<"Profile"> | string | null
     profileImageUrl?: StringNullableFilter<"Profile"> | string | null
+    discord?: StringNullableFilter<"Profile"> | string | null
+    country?: StringNullableFilter<"Profile"> | string | null
+    birthday?: DateTimeNullableFilter<"Profile"> | Date | string | null
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -18078,6 +18130,9 @@ export namespace Prisma {
     displayName?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     profileImageUrl?: SortOrderInput | SortOrder
+    discord?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
@@ -18094,6 +18149,9 @@ export namespace Prisma {
     displayName?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     bio?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     profileImageUrl?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    discord?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    country?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    birthday?: DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
   }
@@ -19135,6 +19193,9 @@ export namespace Prisma {
     displayName?: string | null
     bio?: string | null
     profileImageUrl?: string | null
+    discord?: string | null
+    country?: string | null
+    birthday?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProfileInput
@@ -19146,6 +19207,9 @@ export namespace Prisma {
     displayName?: string | null
     bio?: string | null
     profileImageUrl?: string | null
+    discord?: string | null
+    country?: string | null
+    birthday?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19155,6 +19219,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProfileNestedInput
@@ -19166,6 +19233,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19176,6 +19246,9 @@ export namespace Prisma {
     displayName?: string | null
     bio?: string | null
     profileImageUrl?: string | null
+    discord?: string | null
+    country?: string | null
+    birthday?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19185,6 +19258,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19195,6 +19271,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20456,6 +20535,9 @@ export namespace Prisma {
     displayName?: SortOrder
     bio?: SortOrder
     profileImageUrl?: SortOrder
+    discord?: SortOrder
+    country?: SortOrder
+    birthday?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20466,6 +20548,9 @@ export namespace Prisma {
     displayName?: SortOrder
     bio?: SortOrder
     profileImageUrl?: SortOrder
+    discord?: SortOrder
+    country?: SortOrder
+    birthday?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20476,6 +20561,9 @@ export namespace Prisma {
     displayName?: SortOrder
     bio?: SortOrder
     profileImageUrl?: SortOrder
+    discord?: SortOrder
+    country?: SortOrder
+    birthday?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -22741,6 +22829,9 @@ export namespace Prisma {
     displayName?: string | null
     bio?: string | null
     profileImageUrl?: string | null
+    discord?: string | null
+    country?: string | null
+    birthday?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22750,6 +22841,9 @@ export namespace Prisma {
     displayName?: string | null
     bio?: string | null
     profileImageUrl?: string | null
+    discord?: string | null
+    country?: string | null
+    birthday?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23203,6 +23297,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23212,6 +23309,9 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    discord?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

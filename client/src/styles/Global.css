@@ -411,7 +411,7 @@ button {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  min-width: 220px;
+  min-width: 260px;
   background: rgba(13, 18, 30, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -420,21 +420,71 @@ button {
   z-index: 1000;
 }
 
+.profile-menu-expanded {
+  display: grid;
+  gap: 4px;
+}
+
 .profile-menu-item {
   width: 100%;
-  display: block;
   border: none;
   background: transparent;
   color: #ffffff;
   text-align: left;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
   cursor: pointer;
   font: inherit;
 }
 
 .profile-menu-item:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #d1d5db;
+  font-weight: 800;
+}
+
+.profile-menu-row:hover {
+  color: #ffffff;
+}
+
+.profile-menu-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #aab3c2;
+}
+
+.profile-menu-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-menu-row:hover .profile-menu-icon {
+  color: #ffffff;
+}
+
+.logout-row {
+  margin-top: 4px;
+  color: #fca5a5;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 12px 12px;
+}
+
+.logout-row .profile-menu-icon {
+  color: #f87171;
+}
+
+.logout-row:hover {
+  color: #ffffff;
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* Quick tiles (notifications/messages) in profile menu */

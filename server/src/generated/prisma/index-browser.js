@@ -141,6 +141,9 @@ exports.Prisma.ProfileScalarFieldEnum = {
   displayName: 'displayName',
   bio: 'bio',
   profileImageUrl: 'profileImageUrl',
+  discord: 'discord',
+  country: 'country',
+  birthday: 'birthday',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -322,7 +325,8 @@ exports.RewardType = exports.$Enums.RewardType = {
   REFERRAL_INVITER: 'REFERRAL_INVITER',
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
-  PROMO: 'PROMO'
+  PROMO: 'PROMO',
+  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS'
 };
 
 exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {

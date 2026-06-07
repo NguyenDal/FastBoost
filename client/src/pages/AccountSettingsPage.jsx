@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import {
     getMyAccount,
     updateMyAccount,
-    changeMyPassword,
     uploadProfilePicture,
     sendEmailVerificationCode,
     confirmEmailVerificationCode,
@@ -50,12 +49,10 @@ export default function AccountSettingsPage() {
         username: "",
         email: "",
         emailVerified: false,
-    });
-
-    const [passwordForm, setPasswordForm] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+        profileImageUrl: "",
+        discord: "",
+        country: "",
+        birthday: "",
     });
 
     const [accountErrors, setAccountErrors] = useState({
@@ -75,9 +72,7 @@ export default function AccountSettingsPage() {
     const [uploadingImage, setUploadingImage] = useState(false);
     const [imageUploadError, setImageUploadError] = useState("");
     const [savingAccount, setSavingAccount] = useState(false);
-    const [savingPassword, setSavingPassword] = useState(false);
     const [accountSuccess, setAccountSuccess] = useState("");
-    const [passwordSuccess, setPasswordSuccess] = useState("");
     const [emailCodeDigits, setEmailCodeDigits] = useState(["", "", "", "", "", ""]);
     const [emailCooldown, setEmailCooldown] = useState(0);
     const emailCodeInputRefs = useRef([]);
@@ -110,6 +105,11 @@ export default function AccountSettingsPage() {
                         user?.profileImage ||
                         "",
                     emailVerified: Boolean(user?.emailVerified),
+                    discord: user?.profile?.discord || "",
+                    country: user?.profile?.country || "",
+                    birthday: user?.profile?.birthday
+                        ? new Date(user.profile.birthday).toISOString().slice(0, 10)
+                        : "",
                 });
 
                 setShowEmailVerificationPanel(!Boolean(user?.emailVerified));
@@ -137,27 +137,6 @@ export default function AccountSettingsPage() {
         return () => clearTimeout(timer);
     }, [emailCooldown]);
 
-    const checks = useMemo(() => {
-        const password = passwordForm.newPassword;
-
-        return {
-            length: password.length >= 8,
-            upper: /[A-Z]/.test(password),
-            lower: /[a-z]/.test(password),
-            number: /[0-9]/.test(password),
-            special: /[^A-Za-z0-9]/.test(password),
-        };
-    }, [passwordForm.newPassword]);
-
-    const score = Object.values(checks).filter(Boolean).length;
-    const allValid = score === 5;
-
-    const passwordsMatch =
-        passwordForm.confirmPassword.length > 0 &&
-        passwordForm.newPassword === passwordForm.confirmPassword;
-
-    const barPercent = `${(score / 5) * 100}%`;
-
     const handleAccountChange = (event) => {
         const { name, value } = event.target;
 
@@ -173,23 +152,6 @@ export default function AccountSettingsPage() {
         }));
 
         setAccountSuccess("");
-    };
-
-    const handlePasswordChange = (event) => {
-        const { name, value } = event.target;
-
-        setPasswordForm((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-
-        setPasswordErrors((prev) => ({
-            ...prev,
-            [name]: "",
-            general: "",
-        }));
-
-        setPasswordSuccess("");
     };
 
     const handleProfileImageFileChange = async (event) => {
@@ -271,6 +233,7 @@ export default function AccountSettingsPage() {
         const nextErrors = {
             username: "",
             email: "",
+            birthday: "",
             general: "",
         };
 
@@ -295,6 +258,9 @@ export default function AccountSettingsPage() {
                 username: accountForm.username,
                 email: accountForm.email,
                 profileImageUrl: accountForm.profileImageUrl,
+                discord: accountForm.discord,
+                country: accountForm.country,
+                birthday: accountForm.birthday,
             });
 
             syncUpdatedUser(updatedUser);
@@ -320,61 +286,6 @@ export default function AccountSettingsPage() {
         }
     };
 
-    const handlePasswordSubmit = async (event) => {
-        event.preventDefault();
-
-        const nextErrors = {
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-            general: "",
-        };
-
-        if (!passwordForm.currentPassword) {
-            nextErrors.currentPassword = "Current password is required.";
-        }
-
-        if (!allValid) {
-            nextErrors.newPassword = "Password does not meet all requirements.";
-        }
-
-        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-            nextErrors.confirmPassword = "Passwords do not match.";
-        }
-
-        if (
-            nextErrors.currentPassword ||
-            nextErrors.newPassword ||
-            nextErrors.confirmPassword
-        ) {
-            setPasswordErrors(nextErrors);
-            return;
-        }
-
-        try {
-            setSavingPassword(true);
-            setPasswordSuccess("");
-
-            await changeMyPassword(passwordForm);
-
-            setPasswordForm({
-                currentPassword: "",
-                newPassword: "",
-                confirmPassword: "",
-            });
-
-            setPasswordSuccess("Password updated successfully.");
-        } catch (error) {
-            setPasswordErrors((prev) => ({
-                ...prev,
-                [error.field]: error.message,
-                general: error.field ? "" : error.message,
-            }));
-        } finally {
-            setSavingPassword(false);
-        }
-    };
-
     const syncUpdatedUser = (updatedUser) => {
         if (!updatedUser) return;
 
@@ -387,6 +298,11 @@ export default function AccountSettingsPage() {
                 updatedUser?.profileImage ||
                 "",
             emailVerified: Boolean(updatedUser?.emailVerified),
+            discord: updatedUser?.profile?.discord || "",
+            country: updatedUser?.profile?.country || "",
+            birthday: updatedUser?.profile?.birthday
+                ? new Date(updatedUser.profile.birthday).toISOString().slice(0, 10)
+                : "",
         }));
 
         localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -605,9 +521,9 @@ export default function AccountSettingsPage() {
                 <section className="account-settings-hero">
                     <div>
                         <p className="account-settings-eyebrow">FastBoost Account</p>
-                        <h1>Account Settings</h1>
+                        <h1>Profile Settings</h1>
                         <p>
-                            Manage your profile picture, username, email, and account password.
+                            Manage your profile picture, username, email, Discord, country, and birthday.
                         </p>
                     </div>
 
@@ -754,6 +670,54 @@ export default function AccountSettingsPage() {
                                     <p className="settings-success">{verificationMessage}</p>
                                 )}
 
+                                <div className="settings-form-row two-columns">
+                                    <label>
+                                        Discord
+                                        <input
+                                            type="text"
+                                            name="discord"
+                                            value={accountForm.discord}
+                                            onChange={handleAccountChange}
+                                            placeholder="Discord username"
+                                        />
+                                    </label>
+
+                                    <label>
+                                        Country
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={accountForm.country}
+                                            onChange={handleAccountChange}
+                                            placeholder="Country"
+                                        />
+                                    </label>
+                                </div>
+
+                                <div className="settings-form-row two-columns">
+                                    <label>
+                                        Birthday
+                                        <input
+                                            type="date"
+                                            name="birthday"
+                                            value={accountForm.birthday}
+                                            onChange={handleAccountChange}
+                                            className={accountErrors.birthday ? "settings-input-error" : ""}
+                                        />
+                                    </label>
+
+                                    <div className="settings-info-box">
+                                        <strong>Birthday discount</strong>
+                                        <p>
+                                            Birthday rewards are not active yet, but this helps us prepare future birthday discounts.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {accountErrors.birthday && (
+                                    <p className="settings-error">{accountErrors.birthday}</p>
+                                )}
+
                                 {accountErrors.general && (
                                     <p className="settings-error">{accountErrors.general}</p>
                                 )}
@@ -768,119 +732,6 @@ export default function AccountSettingsPage() {
                                     disabled={savingAccount}
                                 >
                                     {savingAccount ? "Saving..." : "Save Profile"}
-                                </button>
-                            </form>
-                        </section>
-
-                        <section className="account-settings-card">
-                            <div className="account-settings-card-header">
-                                <h2>Change Password</h2>
-                                <p>Use a strong password to protect your account.</p>
-                            </div>
-
-                            <form className="account-settings-form" onSubmit={handlePasswordSubmit}>
-                                <label>
-                                    Current password
-                                    <input
-                                        type="password"
-                                        name="currentPassword"
-                                        value={passwordForm.currentPassword}
-                                        onChange={handlePasswordChange}
-                                        className={
-                                            passwordErrors.currentPassword ? "settings-input-error" : ""
-                                        }
-                                        placeholder="Current password"
-                                    />
-                                </label>
-
-                                {passwordErrors.currentPassword && (
-                                    <p className="settings-error">
-                                        {passwordErrors.currentPassword}
-                                    </p>
-                                )}
-
-                                <label>
-                                    New password
-                                    <input
-                                        type="password"
-                                        name="newPassword"
-                                        value={passwordForm.newPassword}
-                                        onChange={handlePasswordChange}
-                                        className={`${allValid ? "settings-input-valid" : ""} ${passwordErrors.newPassword ? "settings-input-error" : ""
-                                            }`}
-                                        placeholder="New password"
-                                    />
-                                </label>
-
-                                <div className="password-strength">
-                                    <div
-                                        className={`password-strength-track ${allValid ? "is-strong" : ""
-                                            }`}
-                                    >
-                                        <div
-                                            className="password-strength-cover"
-                                            style={{ left: barPercent }}
-                                        />
-                                    </div>
-
-                                    <div className="password-rules">
-                                        <p className={checks.length ? "rule-valid" : ""}>
-                                            {checks.length ? "✓" : "•"} At least 8 characters
-                                        </p>
-                                        <p className={checks.upper ? "rule-valid" : ""}>
-                                            {checks.upper ? "✓" : "•"} One uppercase letter
-                                        </p>
-                                        <p className={checks.lower ? "rule-valid" : ""}>
-                                            {checks.lower ? "✓" : "•"} One lowercase letter
-                                        </p>
-                                        <p className={checks.number ? "rule-valid" : ""}>
-                                            {checks.number ? "✓" : "•"} One number
-                                        </p>
-                                        <p className={checks.special ? "rule-valid" : ""}>
-                                            {checks.special ? "✓" : "•"} One special character
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {passwordErrors.newPassword && (
-                                    <p className="settings-error">{passwordErrors.newPassword}</p>
-                                )}
-
-                                <label>
-                                    Confirm new password
-                                    <input
-                                        type="password"
-                                        name="confirmPassword"
-                                        value={passwordForm.confirmPassword}
-                                        onChange={handlePasswordChange}
-                                        className={`${passwordsMatch ? "settings-input-valid" : ""} ${passwordErrors.confirmPassword
-                                            ? "settings-input-error"
-                                            : ""
-                                            }`}
-                                        placeholder="Confirm new password"
-                                    />
-                                </label>
-
-                                {passwordErrors.confirmPassword && (
-                                    <p className="settings-error">
-                                        {passwordErrors.confirmPassword}
-                                    </p>
-                                )}
-
-                                {passwordErrors.general && (
-                                    <p className="settings-error">{passwordErrors.general}</p>
-                                )}
-
-                                {passwordSuccess && (
-                                    <p className="settings-success">{passwordSuccess}</p>
-                                )}
-
-                                <button
-                                    type="submit"
-                                    className="settings-primary-btn"
-                                    disabled={savingPassword}
-                                >
-                                    {savingPassword ? "Updating..." : "Update Password"}
                                 </button>
                             </form>
                         </section>

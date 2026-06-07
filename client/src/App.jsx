@@ -16,6 +16,9 @@ import LoyaltyPage from "./pages/LoyaltyPage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
 import AdminManagementPage from "./pages/AdminManagementPage";
 import AdminAccountsPage from "./pages/AdminAccountsPage";
+import DashboardPage from "./pages/DashboardPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 import { clearExpiredSession, getStoredUser, hasValidSession } from "./utils/authSession";
 
@@ -105,13 +108,16 @@ function App() {
       />
 
       <Route
-        path="/account/orders"
         element={
           <ProtectedRoute>
-            <CustomerOrdersPage />
+            <DashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="/account/dashboard" element={<DashboardPage />} />
+        <Route path="/account/orders" element={<CustomerOrdersPage />} />
+        <Route path="/account/change-password" element={<ChangePasswordPage />} />
+      </Route>
 
       <Route
         path="/provider/orders/:id"
@@ -159,7 +165,7 @@ function App() {
       />
 
     </Routes>
-    
+
   );
 }
 

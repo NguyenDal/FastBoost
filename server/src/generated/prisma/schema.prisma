@@ -42,14 +42,17 @@ model User {
 }
 
 model Profile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
+  id              String    @id @default(cuid())
+  userId          String    @unique
   displayName     String?
   bio             String?
   profileImageUrl String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discord         String?
+  country         String?
+  birthday        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Service {
@@ -152,6 +155,7 @@ enum RewardType {
   REFERRAL_INVITED
   TOP_UP_BONUS
   PROMO
+  LOYALTY_TIER_BONUS
 }
 
 enum AssignmentRequestStatus {

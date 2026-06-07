@@ -8,108 +8,87 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Admin Management Utilities, Account Management, privilege changes, suspension flow, and suspended-login modal
+### Latest session update — Dashboard layout redesign, profile dropdown navigation, referral relocation, account profile expansion, and embedded change-password flow
 
-#### Admin navbar and Management Utilities hub
-- Replaced the old admin navbar entry from **Order Manager** to **Management Utilities**.
-- Added a new protected admin utilities route:
-  - `/admin/management`
-- Added a new Management Utilities hub page with scalable admin cards:
-  - Order Management
-  - Account Management
-  - Booster Management
-  - Service Management
-  - Event Management
-  - Update Management
-  - FAQ Management
-- Connected the **Order Management** card to the existing admin order manager route:
-  - `/admin/orders`
-- Connected the **Account Management** card to the new account management route:
-  - `/admin/accounts`
-- Left the remaining management cards as display-only / future utilities so the admin hub already looks scalable without implementing everything at once.
+#### Navbar and profile dropdown redesign
+- Moved account-related navigation into the profile dropdown while keeping the existing notification and message quick icons at the top of the dropdown.
+- Profile dropdown now contains:
+  - Dashboard
+  - Management Utilities for admin users
+  - Orders / Assigned Orders based on role direction
+  - Profile
+  - Logout
+- Removed the duplicated top-navbar account links from the normal nav area while preserving the original navbar logo, notification/message behavior, avatar/profile icon, and profile-menu behavior.
+- Kept the logo position consistent with the homepage so clicking Dashboard does not make the FastBoost logo/subtitle shift or compress.
+- Dashboard-specific navbar styling now only visually connects the left logo column with the dashboard sidebar without changing the actual Navbar JSX/layout.
 
-#### Account Management page
-- Added a protected admin-only **Account Management** page.
-- Added user search/filter support through the new admin account API.
-- Displayed account data in an admin table:
-  - User/avatar
-  - Email
-  - Email verification status
-  - Account status
-  - Current role
-  - Change privilege
-  - Account action
-  - Created date
-- Removed the unnecessary order-count column because Account Management is focused on privileges and account status.
-- Added role display badges for:
-  - Customer
-  - Booster / Provider
-  - Admin
-- Added account status badges:
-  - Active
-  - Suspended
-- Prevented admins from changing or suspending their own account from this page.
+#### Dashboard page redesign
+- Added a protected dashboard route:
+  - `/account/dashboard`
+- Built the dashboard around the current FastBoost dark/purple theme instead of copying the demo colors.
+- Replaced the old dashboard card direction:
+  - **Active Orders** became **New Notifications**
+  - **New Notifications** became **New Messages**
+- Dashboard notification cards now separate unread normal notifications from unread `CHAT_MESSAGE` notifications using the existing notification API.
+- Added a loyalty progress card to the dashboard using the loyalty endpoint data.
+- Loyalty card displays the current tier, spend-to-next-tier copy, progress bar, and tier cards.
+- Loyalty card is clickable and routes to:
+  - `/account/loyalty`
+- Added tier-aware hover/glow colors so Bronze/Silver/Gold/Platinum/Diamond hover states match their own tier theme.
 
-#### Admin account APIs
-- Added admin account-management API helpers and backend routes.
-- Added admin-only user listing:
-  - `GET /api/admin/users`
-- Added admin-only role update:
-  - `PATCH /api/admin/users/:userId/role`
-- Added admin-only suspension/restore update:
-  - `PATCH /api/admin/users/:userId/suspension`
-- Reused existing `protect` and `adminOnly` middleware instead of creating duplicate auth middleware.
-- Fixed backend module-format issues by using CommonJS style imports/exports to match the current Express backend.
-- Fixed Prisma field mismatch by using `emailVerifiedAt` instead of the non-existent `emailVerified` field.
-- Added `suspendedAt` and `suspendedReason` fields to the `User` model direction for soft suspension.
+#### Referral card relocation
+- Moved **Share Your Referral Link** from the Loyalty page direction to the Dashboard page.
+- Dashboard referral card now displays:
+  - private invite heading
+  - referral eligibility requirements
+  - email verified condition
+  - at least 3 completed orders condition
+  - invited-user count
+  - referral link copy button
+- Loyalty page referral card can now be removed because the dashboard owns that workflow.
 
-#### Role privilege change modal
-- Replaced the browser `window.confirm()` role-change popup with a custom modern confirmation modal.
-- Added a circular countdown timer for role changes.
-- Added automatic cancel when the countdown reaches zero.
-- Added No / Yes actions below the timer.
-- Added saving state with animated spinner.
-- Added success state where the timer area transitions into a green check animation.
-- Changed the success message from a page-level text banner into the modal itself.
-- Added auto-close after 5 seconds on successful privilege update.
-- Kept role-update success state polished while still updating the table row immediately.
+#### Shared dashboard sidebar/layout
+- Added a shared dashboard layout direction so protected account pages can keep the dashboard sidebar visible.
+- Dashboard sidebar now includes only:
+  - Dashboard
+  - My Orders
+  - Change Password
+  - Home
+- Removed **Management Utilities** from the dashboard sidebar while keeping Management Utilities available from the admin profile dropdown and its protected route.
+- Sidebar **My Orders** routes to the customer order page inside the dashboard layout.
+- Sidebar **Change Password** routes to the change-password page inside the dashboard layout.
+- Sidebar **Home** routes to `/` and leaves the dashboard layout.
+- Sidebar styling was adjusted so it visually connects with the left logo column while avoiding unwanted horizontal/vertical divider lines.
+- Sidebar text weight was reduced so the menu is less bold and closer to the desired demo style.
 
-#### Account suspension and restore flow
-- Added suspend/restore controls to Account Management.
-- Replaced the browser confirmation popup for suspension/restore with a custom modal.
-- Added a red **No Entry / suspension** icon direction for suspension confirmation.
-- Added a red circular countdown ring for suspension confirmation:
-  - countdown ring decreases visually
-  - no number in the center
-  - center keeps a horizontal dash
-  - timer auto-cancels if no action is taken
-- Added suspension success animation:
-  - red circle redraws
-  - horizontal bar transitions into a diagonal slash
-  - success message says the user is suspended
-  - modal auto-closes after 5 seconds
-- Added restore confirmation animation:
-  - starts from the blocked/slash visual direction
-  - transitions to a green countdown ring
-  - slash compresses/fades away
-  - countdown number appears inside the green circle
-  - timer auto-cancels if no action is taken
-- Cleaned the restore countdown CSS so the green ring behaves like the red countdown ring and does not leave an extra full green border on the empty counted section.
-- Kept successful restore confirmation as the existing green check animation and auto-close behavior.
+#### Account Settings page split
+- Split password management out of Account Settings.
+- Account Settings is now focused on profile details only.
+- Account Settings Profile Details was expanded after removing the password card.
+- Added profile fields:
+  - Discord
+  - Country
+  - Birthday
+- Added birthday helper direction for future birthday discounts.
+- Updated Profile Details copy to include Discord, country, and birthday.
+- Softened the Save Profile button from a strong purple/red gradient to a calmer purple gradient.
+- Updated backend/profile direction so `Profile` can store:
+  - `discord`
+  - `country`
+  - `birthday`
+- Updated current-user profile response/save direction so these new fields can load and persist through `/api/user/me`.
 
-#### Suspended login handling
-- Updated backend login behavior so suspended users cannot log in.
-- Added backend response code direction:
-  - `ACCOUNT_SUSPENDED`
-- Login only reveals suspended status after correct email/password validation, avoiding unnecessary account-status leakage.
-- Added homepage login handling for suspended accounts.
-- Replaced normal login error text for suspended accounts with a custom animated popup.
-- Suspended login popup shows:
-  - animated lock/access-restricted icon
-  - “Account Suspended” message
-  - suspension reason text
-  - close/understand action
-- Kept normal invalid email/password handling unchanged for non-suspended login failures.
+#### Change Password page
+- Created a dedicated Change Password page direction:
+  - `/account/change-password`
+- Reused the existing authenticated password-change API:
+  - `PATCH /api/user/me/password`
+- Moved the old password form from Account Settings into the dedicated Change Password page.
+- Spread the Change Password content into a wider two-column layout:
+  - left side: current password, new password, confirm password, update button
+  - right side: password requirements and password strength bar
+- Embedded the Change Password page inside the dashboard layout so the sidebar remains visible when navigating from the dashboard sidebar.
+- Fixed the temporary placeholder issue where the password fields and requirements disappeared after moving the page into the shared dashboard layout.
 
 ---
 ## Project concept
@@ -254,7 +233,7 @@ socket.on("chat:message", (m) => console.log("msg", m));
 
 ### User / profile
 - `GET /api/user/me` — current authenticated user with profile data
-- `PATCH /api/user/me` — update username, email, and saved profile image URL
+- `PATCH /api/user/me` — update username, email, saved profile image URL, Discord, country, and birthday
 - `PATCH /api/user/me/password` — change authenticated user's password
 - `POST /api/user/me/email-verification/send` — send a 6-digit email verification code
 - `POST /api/user/me/email-verification/confirm` — confirm the email verification code and mark email verified
@@ -378,6 +357,22 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- protected dashboard page added at `/account/dashboard`
+- profile dropdown account navigation reorganized while keeping notification/message quick icons
+- dashboard cards updated to New Notifications and New Messages
+- dashboard loyalty progress card added with clickable navigation to Loyalty page
+- tier-specific hover/glow behavior added for dashboard loyalty tier cards
+- private referral link card moved from Loyalty page direction to Dashboard page
+- dashboard sidebar redesigned with Dashboard / My Orders / Change Password / Home
+- Management Utilities removed from dashboard sidebar while staying available through admin profile dropdown
+- shared dashboard layout direction added so Dashboard, My Orders, and Change Password keep the sidebar visible
+- Account Settings split into profile-only page after moving password change out
+- Profile Details expanded with Discord, Country, and Birthday fields
+- Profile model direction expanded with `discord`, `country`, and `birthday`
+- account update direction expanded to save/load Discord, country, and birthday through `/api/user/me`
+- dedicated Change Password page added at `/account/change-password`
+- Change Password page embedded into dashboard layout with wider two-column form/requirements layout
+- Save Profile button softened to a calmer purple gradient
 - homepage UI structure and FastBoost branding
 - hover-based featured services
 - service ordering
@@ -469,6 +464,29 @@ npx prisma studio
 - phone number and phone verification flow removed from frontend, backend routes/controllers, and Prisma schema direction
 
 #### Completed functions
+- Dashboard/account center redesign completed:
+  - profile dropdown keeps notification/message quick icons and now includes Dashboard, Management Utilities, Orders, Profile, and Logout
+  - dashboard route added at `/account/dashboard`
+  - dashboard sidebar contains Dashboard, My Orders, Change Password, and Home only
+  - Management Utilities removed from dashboard sidebar but still accessible to admins from profile dropdown
+  - sidebar/logo visual connection polished without moving the original homepage/navbar logo
+- Dashboard cards completed:
+  - New Notifications shows unread non-chat notifications
+  - New Messages shows unread `CHAT_MESSAGE` notifications
+  - Loyalty Rewards Status card uses spend/tier/progress data and routes to Loyalty page
+  - tier card hover states match Bronze/Silver/Gold/Platinum/Diamond colors
+  - Share Your Referral Link card moved onto Dashboard and copied from Loyalty direction
+- Account settings split completed:
+  - Account Settings is now profile-only
+  - Change Password moved to `/account/change-password`
+  - Discord, Country, and Birthday fields added to Profile Details direction
+  - profile save direction expanded to include Discord, country, and birthday
+  - Save Profile button color softened
+- Shared account layout completed/directed:
+  - Dashboard, My Orders, and Change Password render inside a shared dashboard layout
+  - Home exits the dashboard layout
+  - Customer Orders page direction adjusted to avoid duplicate Navbar/page shell inside dashboard layout
+  - Change Password page direction adjusted to avoid duplicate Navbar/page shell inside dashboard layout
 - Admin Management Utilities completed:
   - admin navbar now opens `/admin/management`
   - Order Management card links to existing `/admin/orders`
@@ -583,6 +601,9 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
+- final shared dashboard layout testing across Dashboard, My Orders, and Change Password
+- final Account Settings profile-field save/load verification for Discord, country, and birthday
+- final Loyalty page cleanup after moving referral card to Dashboard
 - final duplicate chat notification verification after clearing old unread records
 - notification sender avatars using saved profile images
 - final status automation cleanup across admin/provider/customer flows
@@ -596,6 +617,30 @@ npx prisma studio
 
 ## Next steps (recommended)
 
+1. Test shared dashboard layout navigation:
+   - open `/account/dashboard`
+   - click Dashboard, My Orders, and Change Password from the sidebar
+   - confirm the sidebar stays visible on those pages
+   - click Home and confirm it exits to `/`
+   - confirm Management Utilities is not in the dashboard sidebar
+   - confirm admin Management Utilities still appears in the profile dropdown
+2. Test dashboard cards:
+   - create unread normal notifications and confirm they appear under New Notifications
+   - create unread chat notifications and confirm they appear under New Messages
+   - click the loyalty progress card and confirm it routes to `/account/loyalty`
+   - confirm tier hover color matches each tier
+   - copy the referral link from the dashboard card
+3. Test Account Settings profile fields:
+   - save Discord
+   - save Country
+   - save Birthday
+   - refresh and confirm all values persist
+   - confirm profile picture upload, username, email, and email verification still work
+4. Test Change Password inside dashboard layout:
+   - confirm no duplicate Navbar appears
+   - confirm the password form and requirements box are visible
+   - test weak password, wrong current password, mismatched confirmation, and successful update
+   - logout and login using the new password
 1. Test admin management flow end-to-end:
    - login as an admin
    - open Management Utilities

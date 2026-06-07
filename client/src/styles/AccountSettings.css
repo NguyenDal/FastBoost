@@ -114,10 +114,18 @@
 
 .account-settings-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
     margin-top: 20px;
     align-items: start;
+}
+
+.account-settings-grid .account-settings-card {
+    width: 100%;
+}
+
+.account-settings-grid .account-settings-form {
+    max-width: none;
 }
 
 .account-settings-card {
@@ -144,6 +152,41 @@
     display: grid;
     gap: 14px;
     margin-top: 20px;
+}
+
+.settings-form-row {
+    display: grid;
+    gap: 14px;
+}
+
+.settings-form-row.two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-info-box {
+    min-height: 74px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background:
+        radial-gradient(240px 120px at 100% 0%, rgba(124, 58, 237, 0.12), transparent 60%),
+        rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-info-box strong {
+    color: #e5e7eb;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.settings-info-box p {
+    margin: 5px 0 0;
+    color: #8f9aad;
+    font-size: 13px;
+    line-height: 1.45;
 }
 
 .account-settings-form label {
@@ -205,10 +248,17 @@
     border: none;
     border-radius: 15px;
     color: #fff;
-    font-weight: 900;
+    font-weight: 800;
     cursor: pointer;
-    background: linear-gradient(135deg, #7c3aed, #e11d48);
-    box-shadow: 0 14px 32px rgba(124, 58, 237, 0.22);
+    background: linear-gradient(135deg, #6d5dfc, #8b5cf6);
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.18);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.settings-primary-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow: 0 14px 30px rgba(124, 58, 237, 0.24);
 }
 
 .settings-primary-btn:disabled {
@@ -472,6 +522,60 @@
     width: 100%;
 }
 
+.change-password-page-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.change-password-page-grid .account-settings-card {
+    width: 100%;
+}
+
+.change-password-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.change-password-fields {
+    display: grid;
+    gap: 14px;
+}
+
+.change-password-guide {
+    min-height: 100%;
+    padding: 18px;
+    border-radius: 18px;
+    background:
+        radial-gradient(280px 160px at 100% 0%, rgba(124, 58, 237, 0.14), transparent 62%),
+        rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transform: translateY(-40px);
+}
+
+.change-password-guide h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.change-password-guide p {
+    margin: 0;
+    color: #9ca3af;
+    line-height: 1.55;
+}
+
+.change-password-guide .password-strength {
+    margin-top: 18px;
+}
+
+.change-password-guide .password-rules {
+    margin-top: 12px;
+}
+
 .verification-pill.compact {
     min-height: 24px;
     padding: 0 9px;
@@ -633,5 +737,13 @@
 
     .verification-code-boxes {
         grid-template-columns: repeat(6, minmax(34px, 1fr));
+    }
+
+    .settings-form-row.two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .change-password-layout {
+        grid-template-columns: 1fr;
     }
 }
