@@ -120,7 +120,6 @@ export default function DashboardPage() {
         <>
             <div className="dashboard-title-row">
                 <div>
-                    <p className="dashboard-eyebrow">Account Center</p>
                     <h1>Dashboard</h1>
                 </div>
             </div>
