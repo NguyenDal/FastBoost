@@ -30,6 +30,119 @@ function canViewOrderLoginInfo(order, req) {
     return isCustomer || isAdminUser(req) || assignedProvider;
 }
 
+const LOYALTY_TIER_BONUS_REWARDS = [
+    {
+        key: "silver",
+        name: "Silver",
+        minSpend: 200,
+        bonusGold: 200,
+    },
+    {
+        key: "gold",
+        name: "Gold",
+        minSpend: 500,
+        bonusGold: 500,
+    },
+    {
+        key: "platinum",
+        name: "Platinum",
+        minSpend: 1000,
+        bonusGold: 800,
+    },
+    {
+        key: "diamond",
+        name: "Diamond",
+        minSpend: 1500,
+        bonusGold: 1500,
+    },
+];
+
+async function syncLoyaltyTierBonuses(customerId) {
+    if (!customerId) {
+        return {
+            createdBonuses: [],
+            removedBonuses: [],
+        };
+    }
+
+    const completedStats = await prisma.order.aggregate({
+        where: {
+            customerId,
+            status: "COMPLETED",
+        },
+        _sum: {
+            totalPrice: true,
+        },
+    });
+
+    const totalCompletedSpend = Number(completedStats._sum.totalPrice || 0);
+
+    const reachedTiers = LOYALTY_TIER_BONUS_REWARDS.filter(
+        (tier) => totalCompletedSpend >= tier.minSpend
+    );
+
+    const reachedSourceKeys = reachedTiers.map(
+        (tier) => `LOYALTY_TIER_${tier.key.toUpperCase()}`
+    );
+
+    const existingRewards = await prisma.rewardHistory.findMany({
+        where: {
+            userId: customerId,
+            type: "LOYALTY_TIER_BONUS",
+        },
+        select: {
+            id: true,
+            sourceUserId: true,
+            title: true,
+            goldAmount: true,
+        },
+    });
+
+    const existingSourceKeys = new Set(
+        existingRewards.map((reward) => reward.sourceUserId)
+    );
+
+    const rewardsToRemove = existingRewards.filter(
+        (reward) => !reachedSourceKeys.includes(reward.sourceUserId)
+    );
+
+    if (rewardsToRemove.length > 0) {
+        await prisma.rewardHistory.deleteMany({
+            where: {
+                id: {
+                    in: rewardsToRemove.map((reward) => reward.id),
+                },
+            },
+        });
+    }
+
+    const rewardsToCreate = reachedTiers
+        .filter((tier) => {
+            const sourceKey = `LOYALTY_TIER_${tier.key.toUpperCase()}`;
+            return !existingSourceKeys.has(sourceKey);
+        })
+        .map((tier) => ({
+            userId: customerId,
+            type: "LOYALTY_TIER_BONUS",
+            goldAmount: tier.bonusGold,
+            title: `${tier.name} Account Bonus`,
+            description: `You reached ${tier.name} account status and earned ${tier.bonusGold} bonus gold.`,
+            sourceUserId: `LOYALTY_TIER_${tier.key.toUpperCase()}`,
+        }));
+
+    if (rewardsToCreate.length > 0) {
+        await prisma.rewardHistory.createMany({
+            data: rewardsToCreate,
+            skipDuplicates: true,
+        });
+    }
+
+    return {
+        createdBonuses: rewardsToCreate,
+        removedBonuses: rewardsToRemove,
+    };
+}
+
 async function formatOrderForDetailResponse(order, req, options = {}) {
     const { includeDecryptedLoginPassword = false } = options;
 
@@ -508,6 +621,22 @@ module.exports.updateOrderStatus = async (req, res) => {
             });
         }
 
+        const existingOrder = await prisma.order.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                customerId: true,
+                status: true,
+            },
+        });
+
+        if (!existingOrder) {
+            return res.status(404).json({
+                ok: false,
+                message: "Order not found",
+            });
+        }
+
         const updated = await prisma.order.update({
             where: { id },
             data: { status },
@@ -547,9 +676,23 @@ module.exports.updateOrderStatus = async (req, res) => {
             },
         });
 
+        let loyaltyBonusSync = {
+            createdBonuses: [],
+            removedBonuses: [],
+        };
+
+        if (existingOrder.status !== status) {
+            loyaltyBonusSync = await syncLoyaltyTierBonuses(existingOrder.customerId);
+        }
+
         return res.json({
             ok: true,
+            message:
+                status === "COMPLETED"
+                    ? "Order marked as completed"
+                    : "Order cancelled",
             order: formatOrderForListResponse(updated),
+            loyaltyBonusSync,
         });
     } catch (error) {
         console.error("updateOrderStatus error:", error);
@@ -917,6 +1060,22 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             });
         }
 
+        const existingOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+            select: {
+                id: true,
+                customerId: true,
+                status: true,
+            },
+        });
+
+        if (!existingOrder) {
+            return res.status(404).json({
+                ok: false,
+                message: "Order not found",
+            });
+        }
+
         const updated = await prisma.order.update({
             where: { id: orderId },
             data: {
@@ -958,10 +1117,19 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             },
         });
 
+        let loyaltyBonusSync = {
+            createdBonuses: [],
+            removedBonuses: [],
+        };
+
+        if (existingOrder.status !== "COMPLETED") {
+            loyaltyBonusSync = await syncLoyaltyTierBonuses(existingOrder.customerId);
+        }
         return res.json({
             ok: true,
             message: "Order marked as completed",
             order: formatOrderForListResponse(updated),
+            loyaltyBonusSync,
         });
     } catch (error) {
         console.error("providerCompleteAssignedOrder error:", error);

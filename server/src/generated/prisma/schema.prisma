@@ -152,6 +152,7 @@ enum RewardType {
   REFERRAL_INVITED
   TOP_UP_BONUS
   PROMO
+  LOYALTY_TIER_BONUS
 }
 
 enum AssignmentRequestStatus {

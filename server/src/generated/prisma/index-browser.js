@@ -322,7 +322,8 @@ exports.RewardType = exports.$Enums.RewardType = {
   REFERRAL_INVITER: 'REFERRAL_INVITER',
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
-  PROMO: 'PROMO'
+  PROMO: 'PROMO',
+  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS'
 };
 
 exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {
