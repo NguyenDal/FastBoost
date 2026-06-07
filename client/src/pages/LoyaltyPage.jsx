@@ -232,7 +232,7 @@ export default function LoyaltyPage() {
 
                                         <div className="loyalty-tier-benefits">
                                             {tier.bonusCoins > 0 ? (
-                                                <em>{tier.bonusCoins} bonus coins</em>
+                                                <em>{tier.bonusCoins} bonus gold</em>
                                             ) : (
                                                 <em>No bonus</em>
                                             )}
@@ -448,7 +448,7 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
-        benefits: ["200 bonus coins", "3% top-up bonus"],
+        benefits: ["200 bonus gold", "3% top-up bonus"],
     },
     {
         key: "gold",
@@ -458,7 +458,7 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
-        benefits: ["500 bonus coins", "5% top-up bonus"],
+        benefits: ["500 bonus gold", "5% top-up bonus"],
     },
     {
         key: "platinum",
@@ -468,7 +468,7 @@ const LOYALTY_TIERS = [
         nextTier: "Diamond",
         bonusCoins: 800,
         topUpBonusPercent: 8,
-        benefits: ["800 bonus coins", "8% top-up bonus"],
+        benefits: ["800 bonus gold", "8% top-up bonus"],
     },
     {
         key: "diamond",
@@ -478,6 +478,6 @@ const LOYALTY_TIERS = [
         nextTier: null,
         bonusCoins: 1500,
         topUpBonusPercent: 10,
-        benefits: ["1500 bonus coins", "10% top-up bonus"],
+        benefits: ["1500 bonus gold", "10% top-up bonus"],
     },
 ];
