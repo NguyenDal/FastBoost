@@ -163,6 +163,12 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  paymentStatus: 'paymentStatus',
+  stripeCheckoutSessionId: 'stripeCheckoutSessionId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  paidAt: 'paidAt',
+  currency: 'currency',
+  amountCents: 'amountCents',
   boostType: 'boostType',
   playMode: 'playMode',
   region: 'region',
@@ -318,6 +324,14 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   PENDING: 'PENDING',
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
   CANCELLED: 'CANCELLED'
 };
 

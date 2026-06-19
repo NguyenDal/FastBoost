@@ -72,6 +72,13 @@ model Order {
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
+  paymentStatus           PaymentStatus @default(PENDING)
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId   String?
+  paidAt                  DateTime?
+  currency                String        @default("cad")
+  amountCents             Int?
+
   boostType String
   playMode  String?
   region    String?
@@ -275,6 +282,14 @@ enum OrderStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
   CANCELLED
 }
 
