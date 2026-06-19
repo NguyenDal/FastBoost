@@ -27,13 +27,6 @@ export function isTokenExpired(token) {
   }
 }
 
-export function clearExpiredSession() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("unreadMessages");
-  localStorage.removeItem("unreadNotifications");
-}
-
 export function notifyAuthChanged(detail = {}) {
   try {
     window.dispatchEvent(
@@ -50,11 +43,61 @@ export function notifyUnreadChanged() {
   } catch {}
 }
 
+export function notifySessionExpired() {
+  try {
+    window.dispatchEvent(
+      new CustomEvent("session:expired", {
+        detail: {
+          reason: "expired",
+        },
+      })
+    );
+  } catch {}
+}
+
+export function clearExpiredSession({ showExpiredModal = true } = {}) {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("unreadMessages");
+  localStorage.removeItem("unreadNotifications");
+
+  notifyAuthChanged({
+    loggedOut: true,
+    sessionExpired: showExpiredModal,
+  });
+
+  notifyUnreadChanged();
+
+  if (showExpiredModal) {
+    notifySessionExpired();
+  }
+}
+
+export function clearLoggedOutSession() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("unreadMessages");
+  localStorage.removeItem("unreadNotifications");
+
+  notifyAuthChanged({
+    loggedOut: true,
+  });
+
+  notifyUnreadChanged();
+}
+
 export function hasValidSession() {
   const token = localStorage.getItem("token");
 
-  if (!token || isTokenExpired(token)) {
-    clearExpiredSession();
+  if (!token) {
+    return false;
+  }
+
+  if (isTokenExpired(token)) {
+    clearExpiredSession({
+      showExpiredModal: true,
+    });
+
     return false;
   }
 

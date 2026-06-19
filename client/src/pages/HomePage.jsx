@@ -1,5 +1,11 @@
+import {
+  getStoredUser,
+  hasValidSession,
+  notifyAuthChanged,
+} from "../utils/authSession";
+
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import CleanIcon from "../components/CleanIcon";
@@ -8,6 +14,7 @@ import "../styles/HomePage.css";
 
 function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { referralCode } = useParams();
   const [healthMessage, setHealthMessage] = useState("Checking backend...");
   const [healthError, setHealthError] = useState("");
@@ -64,22 +71,8 @@ function HomePage() {
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem("user");
-      const savedToken = localStorage.getItem("token");
-
-      if (savedUser) {
-        return JSON.parse(savedUser);
-      }
-
-      if (savedToken) {
-        return { email: "Signed in user" };
-      }
-
-      return null;
-    } catch (error) {
-      return null;
-    }
+    if (!hasValidSession()) return null;
+    return getStoredUser();
   });
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -164,6 +157,37 @@ function HomePage() {
       buttonText: "Show FAQ",
     },
   ];
+
+  useEffect(() => {
+    if (!location.state?.openAuthModal) return;
+
+    setAuthMode(location.state.authMode || "login");
+    setShowAuthModal(true);
+    setAuthMessage(
+      location.state.reason === "session-expired"
+        ? "Your session expired. Please login again."
+        : ""
+    );
+    setAuthSuccess(false);
+
+    setLoginErrors({
+      email: false,
+      password: false,
+    });
+
+    setRegisterErrors({
+      email: false,
+      password: false,
+    });
+
+    setForgotError(false);
+    setForgotEmail("");
+
+    navigate(location.pathname, {
+      replace: true,
+      state: null,
+    });
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     if (!referralCode) return;
@@ -263,6 +287,26 @@ function HomePage() {
 
     return () => {
       window.removeEventListener("click", handleWindowClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleAuthChanged = (event) => {
+      if (event.detail?.loggedOut || event.detail?.sessionExpired) {
+        setCurrentUser(null);
+        setShowProfileMenu(false);
+        return;
+      }
+
+      if (event.detail?.user) {
+        setCurrentUser(event.detail.user);
+      }
+    };
+
+    window.addEventListener("auth:changed", handleAuthChanged);
+
+    return () => {
+      window.removeEventListener("auth:changed", handleAuthChanged);
     };
   }, []);
 
@@ -418,16 +462,25 @@ function HomePage() {
     setShowProfileMenu(false);
   };
 
-  const finishLogin = ({ token, email, profileImage = "", role = "CUSTOMER" }) => {
+  const finishLogin = ({ token, user }) => {
     const loggedInUser = {
-      email,
-      profileImage,
-      role,
+      ...user,
+      profileImage:
+        user?.profile?.profileImageUrl ||
+        user?.profileImage ||
+        user?.avatar ||
+        user?.photoUrl ||
+        "",
     };
 
     localStorage.setItem("token", token || "logged-in");
     localStorage.setItem("user", JSON.stringify(loggedInUser));
+
     setCurrentUser(loggedInUser);
+
+    notifyAuthChanged({
+      user: loggedInUser,
+    });
 
     setAuthLoading(false);
     setAuthSuccess(true);
@@ -489,13 +542,11 @@ function HomePage() {
 
       finishLogin({
         token: data?.token,
-        email: data?.user?.email || data?.email || loginForm.email,
-        profileImage:
-          data?.user?.profileImage ||
-          data?.user?.avatar ||
-          data?.user?.photoUrl ||
-          "",
-        role: data?.user?.role || "CUSTOMER",
+        user: {
+          ...(data?.user || {}),
+          email: data?.user?.email || data?.email || loginForm.email,
+          role: data?.user?.role || "CUSTOMER",
+        },
       });
     } catch (error) {
       setLoginErrors({
@@ -591,13 +642,11 @@ function HomePage() {
 
       finishLogin({
         token: loginData?.token,
-        email: loginData?.user?.email || loginData?.email || registerForm.email,
-        profileImage:
-          loginData?.user?.profileImage ||
-          loginData?.user?.avatar ||
-          loginData?.user?.photoUrl ||
-          "",
-        role: loginData?.user?.role || "CUSTOMER",
+        user: {
+          ...(loginData?.user || {}),
+          email: loginData?.user?.email || loginData?.email || registerForm.email,
+          role: loginData?.user?.role || "CUSTOMER",
+        },
       });
     } catch (error) {
       setRegisterErrors({

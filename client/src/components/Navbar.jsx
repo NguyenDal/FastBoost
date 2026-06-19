@@ -62,7 +62,9 @@ function Navbar({
             const tokenIsValid = hasValidSession();
 
             if (!tokenIsValid) {
-                clearExpiredSession();
+                clearExpiredSession({
+                    showExpiredModal: true,
+                });
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
                 setLocalShowProfileMenu(false);
