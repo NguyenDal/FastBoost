@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/MatchPage.css";
 import {
@@ -12,6 +12,7 @@ import { updateOrderLoginInfo } from "../api/orders";
 function MatchPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [hasSession, setHasSession] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -39,6 +40,18 @@ function MatchPage() {
     const [loginInfoError, setLoginInfoError] = useState("");
 
     const [order, setOrder] = useState(null);
+    const initialGameMode =
+        location.state?.gameMode ||
+        sessionStorage.getItem(`fastboost:order:${orderId}:gameMode`) ||
+        "lol";
+
+    const loadedOrderGameMode =
+        String(order?.boostType || order?.service?.title || "").startsWith("TFT ")
+            ? "tft"
+            : initialGameMode;
+
+    const matchPageModeClass =
+        loadedOrderGameMode === "tft" ? "order-page-tft" : "order-page-lol";
     const [matchStatus, setMatchStatus] = useState("searching");
     const [matchedBooster, setMatchedBooster] = useState(null);
     const [messages, setMessages] = useState([
@@ -364,6 +377,17 @@ function MatchPage() {
                 const loadedOrder = orderData.order;
                 setOrder(loadedOrder);
 
+                const loadedGameMode = String(
+                    loadedOrder?.boostType || loadedOrder?.service?.title || ""
+                ).startsWith("TFT ")
+                    ? "tft"
+                    : "lol";
+
+                sessionStorage.setItem(
+                    `fastboost:order:${orderId}:gameMode`,
+                    loadedGameMode
+                );
+
                 // 2. Get or create conversation for this order
                 const loadedConversation = await getOrderConversation(orderId);
                 setConversation(loadedConversation);
@@ -567,9 +591,28 @@ function MatchPage() {
 
     if (chatLoading) {
         return (
-            <div className="order-page-shell">
+            <div className={`order-page-shell ${matchPageModeClass}`}>
+                <div className="order-page-bg-overlay" />
+
+                <Navbar
+                    hasSession={hasSession}
+                    currentUser={currentUser}
+                    profileImage={profileImage}
+                    showProfileMenu={showProfileMenu}
+                    setShowProfileMenu={setShowProfileMenu}
+                    setAuthMode={setAuthMode}
+                    setAuthMessage={setAuthMessage}
+                    setAuthSuccess={setAuthSuccess}
+                    setLoginErrors={setLoginErrors}
+                    setRegisterErrors={setRegisterErrors}
+                    setForgotError={setForgotError}
+                    setForgotEmail={setForgotEmail}
+                    setShowAuthModal={setShowAuthModal}
+                    handleLogout={handleLogout}
+                />
+
                 <div className="order-page-container">
-                    <p className="info-message">Loading order chat...</p>
+                    <MatchPageSkeleton />
                 </div>
             </div>
         );
@@ -577,7 +620,8 @@ function MatchPage() {
 
     if (!order) {
         return (
-            <div className="order-page-shell">
+            <div className={`order-page-shell ${matchPageModeClass}`}>
+                <div className="order-page-bg-overlay" />
                 <div className="order-page-container">
                     <p className="error-message">
                         {chatError || "Order not found."}
@@ -591,7 +635,7 @@ function MatchPage() {
     }
 
     return (
-        <div className="order-page-shell">
+        <div className={`order-page-shell ${matchPageModeClass}`}>
             <div className="order-page-bg-overlay" />
             <Navbar
                 hasSession={hasSession}
@@ -1032,6 +1076,98 @@ function MatchPage() {
                     </form>
                 </div>
             )}
+        </div>
+    );
+}
+
+function MatchPageSkeleton() {
+    return (
+        <div className="match-loading-page">
+            <section className="match-loading-hero skeleton-card">
+                <div className="skeleton-line skeleton-eyebrow" />
+                <div className="skeleton-line skeleton-title" />
+                <div className="skeleton-line skeleton-subtitle" />
+            </section>
+
+            <div className="match-loading-tabs">
+                <div className="skeleton-pill" />
+                <div className="skeleton-pill skeleton-pill-short" />
+            </div>
+
+            <div className="match-loading-layout">
+                <section className="match-loading-main">
+                    <div className="match-loading-chat skeleton-card">
+                        <div className="match-loading-chat-header">
+                            <div className="skeleton-avatar" />
+                            <div>
+                                <div className="skeleton-line skeleton-name" />
+                                <div className="skeleton-line skeleton-small" />
+                            </div>
+                            <div className="skeleton-pill skeleton-pill-status" />
+                        </div>
+
+                        <div className="match-loading-message skeleton-message-left">
+                            <div className="skeleton-avatar skeleton-avatar-sm" />
+                            <div className="skeleton-bubble">
+                                <div className="skeleton-line skeleton-bubble-line-lg" />
+                                <div className="skeleton-line skeleton-bubble-line-md" />
+                            </div>
+                        </div>
+
+                        <div className="match-loading-message skeleton-message-right">
+                            <div className="skeleton-bubble skeleton-bubble-right">
+                                <div className="skeleton-line skeleton-bubble-line-md" />
+                                <div className="skeleton-line skeleton-bubble-line-sm" />
+                            </div>
+                        </div>
+
+                        <div className="match-loading-message skeleton-message-left">
+                            <div className="skeleton-avatar skeleton-avatar-sm" />
+                            <div className="skeleton-bubble">
+                                <div className="skeleton-line skeleton-bubble-line-lg" />
+                                <div className="skeleton-line skeleton-bubble-line-sm" />
+                            </div>
+                        </div>
+
+                        <div className="match-loading-composer">
+                            <div className="skeleton-circle-btn" />
+                            <div className="skeleton-input" />
+                            <div className="skeleton-circle-btn" />
+                        </div>
+                    </div>
+
+                    <div className="match-loading-options skeleton-card">
+                        <div className="skeleton-line skeleton-section-title" />
+                        <div className="match-loading-option-grid">
+                            <div className="skeleton-option-pill" />
+                            <div className="skeleton-option-pill" />
+                            <div className="skeleton-option-pill" />
+                            <div className="skeleton-option-pill" />
+                        </div>
+                    </div>
+                </section>
+
+                <aside className="match-loading-sidebar">
+                    <div className="skeleton-card match-loading-side-card">
+                        <div className="skeleton-avatar skeleton-avatar-lg" />
+                        <div className="skeleton-line skeleton-name-wide" />
+                        <div className="skeleton-line skeleton-small-wide" />
+                        <div className="skeleton-line skeleton-small-wide-2" />
+                    </div>
+
+                    <div className="skeleton-card match-loading-side-card">
+                        <div className="skeleton-line skeleton-section-title" />
+                        <div className="skeleton-option-pill" />
+                        <div className="skeleton-option-pill" />
+                    </div>
+
+                    <div className="skeleton-card match-loading-side-card">
+                        <div className="skeleton-line skeleton-section-title" />
+                        <div className="skeleton-option-pill" />
+                        <div className="skeleton-option-pill" />
+                    </div>
+                </aside>
+            </div>
         </div>
     );
 }

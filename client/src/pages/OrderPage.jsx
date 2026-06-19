@@ -773,7 +773,18 @@ function OrderPage() {
         throw new Error(data.message || "Failed to create order");
       }
 
-      navigate(`/match/${data.order.id}`);
+      const orderGameMode = isTftService ? "tft" : "lol";
+
+      sessionStorage.setItem(
+        `fastboost:order:${data.order.id}:gameMode`,
+        orderGameMode
+      );
+
+      navigate(`/match/${data.order.id}`, {
+        state: {
+          gameMode: orderGameMode,
+        },
+      });
     } catch (error) {
       setSubmitError(error.message || "Could not create order");
     }
@@ -781,7 +792,7 @@ function OrderPage() {
 
   if (loading) {
     return (
-      <div className="order-page-shell">
+      <div className="order-page-shell order-page-lol">
         <Navbar
           hasSession={hasSession}
           currentUser={currentUser}
@@ -807,7 +818,7 @@ function OrderPage() {
 
   if (loadError || !service) {
     return (
-      <div className="order-page-shell">
+      <div className="order-page-shell order-page-lol">
         <Navbar
           hasSession={hasSession}
           currentUser={currentUser}
@@ -835,7 +846,7 @@ function OrderPage() {
   }
 
   return (
-    <div className="order-page-shell">
+    <div className={`order-page-shell ${isTftService ? "order-page-tft" : "order-page-lol"}`}>
       <div className="order-page-bg-overlay" />
       <Navbar
         hasSession={hasSession}
