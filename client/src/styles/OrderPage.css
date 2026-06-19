@@ -471,3 +471,44 @@
 .master-lp-input { width: 90px; border: none; outline: none; background: transparent; color: #ffffff; text-align: center; font-size: 20px; font-weight: 700; }
 .master-lp-input::-webkit-outer-spin-button, .master-lp-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .master-lp-input[type="number"] { -moz-appearance: textfield; }
+
+.summary-gold-redemption-card {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 16px;
+  background: rgba(250, 204, 21, 0.06);
+}
+
+.summary-gold-redemption-header,
+.summary-gold-redemption-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.summary-gold-redemption-header span,
+.summary-gold-redemption-row span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.86rem;
+}
+
+.summary-gold-redemption-header strong,
+.summary-gold-redemption-row strong {
+  color: #facc15;
+  font-size: 0.9rem;
+}
+
+.summary-gold-slider {
+  width: 100%;
+  margin: 12px 0;
+}
+
+.summary-original-total {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.78rem;
+  text-decoration: line-through;
+}

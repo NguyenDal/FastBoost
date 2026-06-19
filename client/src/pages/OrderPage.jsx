@@ -1,3 +1,4 @@
+import { createCheckoutSession } from "../api/orders";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -87,6 +88,40 @@ function OrderPage() {
     highMMRDuo: false,
     championPreferenceTier: "4+",
   });
+
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [availableGold, setAvailableGold] = useState(0);
+  const [goldToUse, setGoldToUse] = useState(0);
+
+  useEffect(() => {
+    const loadGold = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:5000/api/loyalty/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        const totalGold =
+          data?.totalGold ??
+          data?.loyalty?.totalGold ??
+          data?.summary?.totalGold ??
+          data?.accountProgress?.totalGold ??
+          0;
+
+        setAvailableGold(Math.max(0, Number(totalGold || 0)));
+      } catch (error) {
+        console.error("Failed to load available gold:", error);
+      }
+    };
+
+    loadGold();
+  }, [currentUser]);
 
   const [isChampionPanelOpen, setIsChampionPanelOpen] = useState(false);
   const [championPreferenceEnabled, setChampionPreferenceEnabled] = useState(false);
@@ -367,6 +402,21 @@ function OrderPage() {
   ]);
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
+
+  const totalPriceCents = Math.round(Number(totalPrice || 0) * 100);
+  const maxGoldByOrder = Math.floor(totalPriceCents / 100) * 10;
+  const maxUsableGold = Math.max(
+    0,
+    Math.floor(Math.min(availableGold, maxGoldByOrder) / 10) * 10
+  );
+
+  const normalizedGoldToUse = Math.max(
+    0,
+    Math.min(Math.floor(Number(goldToUse || 0) / 10) * 10, maxUsableGold)
+  );
+
+  const goldDiscount = normalizedGoldToUse / 10;
+  const finalPrice = Math.max(0, Number(totalPrice || 0) - goldDiscount).toFixed(2);
 
   const coinCount = Math.floor(Number(totalPrice));
   const coinValue = (coinCount * 0.1).toFixed(2);
@@ -780,13 +830,27 @@ function OrderPage() {
         orderGameMode
       );
 
-      navigate(`/match/${data.order.id}`, {
-        state: {
-          gameMode: orderGameMode,
-        },
-      });
+      setPaymentLoading(true);
+
+      const checkout = await createCheckoutSession(
+        data.order.id,
+        normalizedGoldToUse
+      );
+
+      if (checkout.paidWithGoldOnly && checkout.redirectUrl) {
+        window.location.href = checkout.redirectUrl;
+        return;
+      }
+
+      if (!checkout.checkoutUrl) {
+        throw new Error("Checkout URL was not returned");
+      }
+
+      window.location.href = checkout.checkoutUrl;
     } catch (error) {
       setSubmitError(error.message || "Could not create order");
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -2035,6 +2099,32 @@ function OrderPage() {
               🪙 10 gold = $1.00 | Earn gold with every order
             </p>
 
+            <div className="summary-gold-redemption-card">
+              <div className="summary-gold-redemption-header">
+                <span>Use your gold</span>
+                <strong>{availableGold} available</strong>
+              </div>
+
+              <input
+                type="range"
+                min="0"
+                max={maxUsableGold}
+                step="10"
+                value={normalizedGoldToUse}
+                onChange={(event) => setGoldToUse(Number(event.target.value))}
+                className="summary-gold-slider"
+              />
+
+              <div className="summary-gold-redemption-row">
+                <span>{normalizedGoldToUse} gold applied</span>
+                <strong>-${goldDiscount.toFixed(2)}</strong>
+              </div>
+
+              <p className="summary-coins-footnote">
+                10 gold = $1.00. Gold is spent only after payment succeeds.
+              </p>
+            </div>
+
             {isInvalidRankPath ? (
               <div className="price-warning-box price-warning-box-blocking">
                 <p className="price-warning-text">
@@ -2046,14 +2136,18 @@ function OrderPage() {
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
                     <span>Total Price</span>
-                    <strong>${totalPrice}</strong>
+                    <strong>${finalPrice}</strong>
                   </div>
                 </div>
 
                 {submitError && <p className="error-message">{submitError}</p>}
 
-                <button type="submit" className="primary-btn order-submit-btn">
-                  Continue
+                <button
+                  type="submit"
+                  className="primary-btn order-submit-btn"
+                  disabled={paymentLoading}
+                >
+                  {paymentLoading ? "Preparing secure payment..." : "Continue to Secure Payment"}
                 </button>
               </>
             )}

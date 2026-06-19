@@ -2,211 +2,366 @@ const prisma = require("../prisma");
 const stripe = require("../utils/stripeClient");
 
 function getUserId(req) {
-  return req.user?.id || req.user?.userId;
+    return req.user?.id || req.user?.userId;
 }
 
 function getClientUrl() {
-  return process.env.CLIENT_URL || "http://localhost:5173";
+    return process.env.CLIENT_URL || "http://localhost:5173";
+}
+
+async function getAvailableGold(userId) {
+    const completedOrders = await prisma.order.findMany({
+        where: {
+            customerId: userId,
+            status: "COMPLETED",
+            paymentStatus: "PAID",
+        },
+        select: {
+            totalPrice: true,
+        },
+    });
+
+    const completedOrderGold = completedOrders.reduce((sum, order) => {
+        return sum + Math.floor(Number(order.totalPrice || 0));
+    }, 0);
+
+    const rewardStats = await prisma.rewardHistory.aggregate({
+        where: {
+            userId,
+        },
+        _sum: {
+            goldAmount: true,
+        },
+    });
+
+    const rewardGold = Number(rewardStats._sum.goldAmount || 0);
+
+    return Math.max(0, completedOrderGold + rewardGold);
+}
+
+function normalizeGoldToUse(rawGoldToUse, availableGold, totalAmountCents) {
+    let requestedGold = Math.floor(Number(rawGoldToUse || 0));
+
+    if (!Number.isFinite(requestedGold) || requestedGold < 0) {
+        requestedGold = 0;
+    }
+
+    requestedGold = Math.min(requestedGold, availableGold);
+
+    // 10 gold = $1.00, so only redeem in blocks of 10 gold.
+    requestedGold = Math.floor(requestedGold / 10) * 10;
+
+    const maxRedeemableGoldByOrder = Math.floor(totalAmountCents / 100) * 10;
+    requestedGold = Math.min(requestedGold, maxRedeemableGoldByOrder);
+
+    let discountCents = Math.floor(requestedGold / 10) * 100;
+    let cashAmountCents = Math.max(0, totalAmountCents - discountCents);
+
+    // Stripe card payments cannot be too tiny. If remaining cash is below $0.50,
+    // reduce redemption by 10 gold so cash becomes valid.
+    if (cashAmountCents > 0 && cashAmountCents < 50 && requestedGold >= 10) {
+        requestedGold -= 10;
+        discountCents -= 100;
+        cashAmountCents = Math.max(0, totalAmountCents - discountCents);
+    }
+
+    return {
+        goldRedeemed: requestedGold,
+        goldDiscountCents: discountCents,
+        cashAmountCents,
+    };
 }
 
 const createCheckoutSession = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    const { orderId } = req.body || {};
+    try {
+        const userId = getUserId(req);
+        const { orderId, goldToUse } = req.body || {};
 
-    if (!userId) {
-      return res.status(401).json({
-        ok: false,
-        message: "Invalid user token",
-      });
-    }
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token",
+            });
+        }
 
-    if (!orderId) {
-      return res.status(400).json({
-        ok: false,
-        message: "orderId is required",
-      });
-    }
+        if (!orderId) {
+            return res.status(400).json({
+                ok: false,
+                message: "orderId is required",
+            });
+        }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        service: true,
-        customer: {
-          select: {
-            id: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    if (!order) {
-      return res.status(404).json({
-        ok: false,
-        message: "Order not found",
-      });
-    }
-
-    if (String(order.customerId) !== String(userId)) {
-      return res.status(403).json({
-        ok: false,
-        message: "You can only pay for your own order",
-      });
-    }
-
-    if (order.paymentStatus === "PAID") {
-      return res.status(400).json({
-        ok: false,
-        message: "This order has already been paid",
-      });
-    }
-
-    const amountCents =
-      order.amountCents || Math.round(Number(order.totalPrice || 0) * 100);
-
-    if (!amountCents || amountCents < 50) {
-      return res.status(400).json({
-        ok: false,
-        message: "Invalid order amount",
-      });
-    }
-
-    const clientUrl = getClientUrl();
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: order.customer?.email || undefined,
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
-            unit_amount: amountCents,
-            product_data: {
-              name: order.service?.title || order.boostType || "FastBoost Order",
-              description: `Order #${order.id.slice(0, 8).toUpperCase()}`,
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                service: true,
+                customer: {
+                    select: {
+                        id: true,
+                        email: true,
+                    },
+                },
             },
-          },
-        },
-      ],
-      metadata: {
-        orderId: order.id,
-        customerId: order.customerId,
-      },
-      success_url: `${clientUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${clientUrl}/payment/cancelled?orderId=${order.id}`,
-    });
+        });
 
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        stripeCheckoutSessionId: session.id,
-        amountCents,
-        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
-      },
-    });
+        if (!order) {
+            return res.status(404).json({
+                ok: false,
+                message: "Order not found",
+            });
+        }
 
-    return res.json({
-      ok: true,
-      checkoutUrl: session.url,
-      sessionId: session.id,
-    });
-  } catch (error) {
-    console.error("createCheckoutSession error:", error);
+        if (String(order.customerId) !== String(userId)) {
+            return res.status(403).json({
+                ok: false,
+                message: "You can only pay for your own order",
+            });
+        }
 
-    return res.status(500).json({
-      ok: false,
-      message: "Failed to create checkout session",
-      error: error.message,
-    });
-  }
+        if (order.paymentStatus === "PAID") {
+            return res.status(400).json({
+                ok: false,
+                message: "This order has already been paid",
+            });
+        }
+
+        const amountCents =
+            order.amountCents || Math.round(Number(order.totalPrice || 0) * 100);
+
+        const availableGold = await getAvailableGold(userId);
+
+        const {
+            goldRedeemed,
+            goldDiscountCents,
+            cashAmountCents,
+        } = normalizeGoldToUse(goldToUse, availableGold, amountCents);
+
+        if (!amountCents || amountCents < 50) {
+            return res.status(400).json({
+                ok: false,
+                message: "Invalid order amount",
+            });
+        }
+
+        if (cashAmountCents <= 0) {
+            await prisma.$transaction([
+                prisma.order.update({
+                    where: { id: order.id },
+                    data: {
+                        paymentStatus: "PAID",
+                        paidAt: new Date(),
+                        amountCents,
+                        cashAmountCents: 0,
+                        goldRedeemed,
+                        goldDiscountCents,
+                        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+                    },
+                }),
+                ...(goldRedeemed > 0
+                    ? [
+                        prisma.rewardHistory.create({
+                            data: {
+                                userId,
+                                type: "ORDER_REDEMPTION",
+                                goldAmount: -goldRedeemed,
+                                title: "Gold redeemed for order",
+                                description: `Used ${goldRedeemed} gold for order #${order.id
+                                    .slice(0, 8)
+                                    .toUpperCase()}.`,
+                                sourceUserId: order.id,
+                            },
+                        }),
+                    ]
+                    : []),
+            ]);
+
+            return res.json({
+                ok: true,
+                paidWithGoldOnly: true,
+                orderId: order.id,
+                redirectUrl: `${clientUrl}/payment/success?orderId=${order.id}&gold=1`,
+            });
+        }
+
+        const clientUrl = getClientUrl();
+
+        const session = await stripe.checkout.sessions.create({
+            mode: "payment",
+            customer_email: order.customer?.email || undefined,
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    quantity: 1,
+                    price_data: {
+                        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+                        unit_amount: cashAmountCents,
+                        product_data: {
+                            name: order.service?.title || order.boostType || "FastBoost Order",
+                            description:
+                                goldRedeemed > 0
+                                    ? `Order #${order.id.slice(0, 8).toUpperCase()} • ${goldRedeemed} gold applied`
+                                    : `Order #${order.id.slice(0, 8).toUpperCase()}`,
+                        },
+                    },
+                },
+            ],
+            metadata: {
+                orderId: order.id,
+                customerId: order.customerId,
+                goldRedeemed: String(goldRedeemed),
+                goldDiscountCents: String(goldDiscountCents),
+                cashAmountCents: String(cashAmountCents),
+            },
+            success_url: `${clientUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${clientUrl}/payment/cancelled?orderId=${order.id}`,
+        });
+
+        await prisma.order.update({
+            where: { id: order.id },
+            data: {
+                stripeCheckoutSessionId: session.id,
+                amountCents,
+                cashAmountCents,
+                goldRedeemed,
+                goldDiscountCents,
+                currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+            },
+        });
+
+        return res.json({
+            ok: true,
+            checkoutUrl: session.url,
+            sessionId: session.id,
+        });
+    } catch (error) {
+        console.error("createCheckoutSession error:", error);
+
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to create checkout session",
+            error: error.message,
+        });
+    }
 };
 
 const handleStripeWebhook = async (req, res) => {
-  const signature = req.headers["stripe-signature"];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const signature = req.headers["stripe-signature"];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!webhookSecret) {
-    console.error("Missing STRIPE_WEBHOOK_SECRET in environment variables");
-    return res.status(500).send("Webhook secret not configured");
-  }
+    if (!webhookSecret) {
+        console.error("Missing STRIPE_WEBHOOK_SECRET in environment variables");
+        return res.status(500).send("Webhook secret not configured");
+    }
 
-  let event;
+    let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
-  } catch (error) {
-    console.error("Stripe webhook signature verification failed:", error.message);
-    return res.status(400).send(`Webhook Error: ${error.message}`);
-  }
+    try {
+        event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+    } catch (error) {
+        console.error("Stripe webhook signature verification failed:", error.message);
+        return res.status(400).send(`Webhook Error: ${error.message}`);
+    }
 
-  try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
+    try {
+        if (event.type === "checkout.session.completed") {
+            const session = event.data.object;
 
-      const orderId = session.metadata?.orderId;
-      const paymentIntentId =
-        typeof session.payment_intent === "string"
-          ? session.payment_intent
-          : session.payment_intent?.id || null;
+            const orderId = session.metadata?.orderId;
+            const paymentIntentId =
+                typeof session.payment_intent === "string"
+                    ? session.payment_intent
+                    : session.payment_intent?.id || null;
 
-      if (!orderId) {
-        console.warn("Stripe checkout.session.completed missing orderId metadata");
+            if (!orderId) {
+                console.warn("Stripe checkout.session.completed missing orderId metadata");
+                return res.json({ received: true });
+            }
+
+            const order = await prisma.order.findFirst({
+                where: {
+                    id: orderId,
+                    stripeCheckoutSessionId: session.id,
+                },
+                select: {
+                    id: true,
+                    customerId: true,
+                    paymentStatus: true,
+                    goldRedeemed: true,
+                    goldDiscountCents: true,
+                },
+            });
+
+            if (!order || order.paymentStatus === "PAID") {
+                return res.json({ received: true });
+            }
+
+            await prisma.$transaction([
+                prisma.order.update({
+                    where: {
+                        id: order.id,
+                    },
+                    data: {
+                        paymentStatus: "PAID",
+                        stripePaymentIntentId: paymentIntentId,
+                        paidAt: new Date(),
+                        amountCents: session.amount_subtotal
+                            ? Number(session.amount_subtotal) + Number(order.goldDiscountCents || 0)
+                            : undefined,
+                        cashAmountCents: session.amount_total || 0,
+                        currency: session.currency || "cad",
+                    },
+                }),
+                ...(Number(order.goldRedeemed || 0) > 0
+                    ? [
+                        prisma.rewardHistory.create({
+                            data: {
+                                userId: order.customerId,
+                                type: "ORDER_REDEMPTION",
+                                goldAmount: -Number(order.goldRedeemed || 0),
+                                title: "Gold redeemed for order",
+                                description: `Used ${order.goldRedeemed} gold for order #${order.id
+                                    .slice(0, 8)
+                                    .toUpperCase()}.`,
+                                sourceUserId: order.id,
+                            },
+                        }),
+                    ]
+                    : []),
+            ]);
+
+            console.log(
+                `Stripe payment completed for order ${orderId}. Updated rows: ${updated.count}`
+            );
+        }
+
+        if (event.type === "checkout.session.expired") {
+            const session = event.data.object;
+            const orderId = session.metadata?.orderId;
+
+            if (orderId) {
+                await prisma.order.updateMany({
+                    where: {
+                        id: orderId,
+                        stripeCheckoutSessionId: session.id,
+                        paymentStatus: "PENDING",
+                    },
+                    data: {
+                        paymentStatus: "CANCELLED",
+                    },
+                });
+
+                console.log(`Stripe checkout expired for order ${orderId}`);
+            }
+        }
+
         return res.json({ received: true });
-      }
-
-      const updated = await prisma.order.updateMany({
-        where: {
-          id: orderId,
-          stripeCheckoutSessionId: session.id,
-          paymentStatus: {
-            not: "PAID",
-          },
-        },
-        data: {
-          paymentStatus: "PAID",
-          stripePaymentIntentId: paymentIntentId,
-          paidAt: new Date(),
-          amountCents: session.amount_total || undefined,
-          currency: session.currency || "cad",
-        },
-      });
-
-      console.log(
-        `Stripe payment completed for order ${orderId}. Updated rows: ${updated.count}`
-      );
+    } catch (error) {
+        console.error("Stripe webhook handling error:", error);
+        return res.status(500).send("Webhook handler failed");
     }
-
-    if (event.type === "checkout.session.expired") {
-      const session = event.data.object;
-      const orderId = session.metadata?.orderId;
-
-      if (orderId) {
-        await prisma.order.updateMany({
-          where: {
-            id: orderId,
-            stripeCheckoutSessionId: session.id,
-            paymentStatus: "PENDING",
-          },
-          data: {
-            paymentStatus: "CANCELLED",
-          },
-        });
-
-        console.log(`Stripe checkout expired for order ${orderId}`);
-      }
-    }
-
-    return res.json({ received: true });
-  } catch (error) {
-    console.error("Stripe webhook handling error:", error);
-    return res.status(500).send("Webhook handler failed");
-  }
 };
 
 module.exports = {
-  createCheckoutSession,
-  handleStripeWebhook,
+    createCheckoutSession,
+    handleStripeWebhook,
 };
