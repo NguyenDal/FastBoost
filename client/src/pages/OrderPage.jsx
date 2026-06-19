@@ -403,20 +403,42 @@ function OrderPage() {
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
 
-  const totalPriceCents = Math.round(Number(totalPrice || 0) * 100);
-  const maxGoldByOrder = Math.floor(totalPriceCents / 100) * 10;
-  const maxUsableGold = Math.max(
-    0,
-    Math.floor(Math.min(availableGold, maxGoldByOrder) / 10) * 10
-  );
+  const totalPriceNumber = Number(totalPrice || 0);
+  const totalPriceCents = Math.round(totalPriceNumber * 100);
 
-  const normalizedGoldToUse = Math.max(
-    0,
-    Math.min(Math.floor(Number(goldToUse || 0) / 10) * 10, maxUsableGold)
-  );
+  // 1 gold = $0.10 = 10 cents
+  const maxGoldByOrder = Math.floor(totalPriceCents / 10);
 
-  const goldDiscount = normalizedGoldToUse / 10;
-  const finalPrice = Math.max(0, Number(totalPrice || 0) - goldDiscount).toFixed(2);
+  const goldInputText = String(goldToUse ?? "").trim();
+
+  const isGoldEmpty = goldInputText === "";
+  const isGoldNumeric = isGoldEmpty || /^\d+$/.test(goldInputText);
+
+  const enteredGoldToUse = isGoldNumeric && !isGoldEmpty
+    ? Number(goldInputText)
+    : 0;
+
+  const isGoldNegative = false; // text regex blocks minus signs
+  const isGoldNotWholeNumber = !isGoldNumeric;
+  const isGoldOverAvailable = enteredGoldToUse > availableGold;
+  const isGoldOverOrderTotal = enteredGoldToUse > maxGoldByOrder;
+
+  const isGoldInputInvalid =
+    isGoldNotWholeNumber ||
+    isGoldOverAvailable ||
+    isGoldOverOrderTotal;
+
+  const safeGoldToUse = isGoldInputInvalid ? 0 : enteredGoldToUse;
+  const goldDiscount = safeGoldToUse * 0.1;
+  const finalPrice = Math.max(0, totalPriceNumber - goldDiscount).toFixed(2);
+
+  const goldInputMessage = isGoldNotWholeNumber
+    ? "Please enter a whole number of gold."
+    : isGoldOverAvailable
+      ? `You only have ${availableGold} gold available.`
+      : isGoldOverOrderTotal
+        ? `You can only use up to ${maxGoldByOrder} gold for this order.`
+        : "";
 
   const coinCount = Math.floor(Number(totalPrice));
   const coinValue = (coinCount * 0.1).toFixed(2);
@@ -749,6 +771,11 @@ function OrderPage() {
         return;
       }
 
+      if (isGoldInputInvalid) {
+        setSubmitError(goldInputMessage || "Please enter a valid gold amount.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -834,7 +861,7 @@ function OrderPage() {
 
       const checkout = await createCheckoutSession(
         data.order.id,
-        normalizedGoldToUse
+        safeGoldToUse
       );
 
       if (checkout.paidWithGoldOnly && checkout.redirectUrl) {
@@ -2099,29 +2126,48 @@ function OrderPage() {
               🪙 10 gold = $1.00 | Earn gold with every order
             </p>
 
-            <div className="summary-gold-redemption-card">
+            <div
+              className={`summary-gold-redemption-card ${isGoldInputInvalid ? "summary-gold-redemption-card-error" : ""
+                }`}
+            >
               <div className="summary-gold-redemption-header">
                 <span>Use your gold</span>
                 <strong>{availableGold} available</strong>
               </div>
 
-              <input
-                type="range"
-                min="0"
-                max={maxUsableGold}
-                step="10"
-                value={normalizedGoldToUse}
-                onChange={(event) => setGoldToUse(Number(event.target.value))}
-                className="summary-gold-slider"
-              />
+              <div className="summary-gold-input-wrap">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={goldToUse}
+                  onChange={(event) => setGoldToUse(event.target.value)}
+                  className={`summary-gold-input ${isGoldInputInvalid ? "summary-gold-input-error" : ""
+                    }`}
+                  placeholder="0"
+                />
 
-              <div className="summary-gold-redemption-row">
-                <span>{normalizedGoldToUse} gold applied</span>
-                <strong>-${goldDiscount.toFixed(2)}</strong>
+                <button
+                  type="button"
+                  className="summary-gold-max-btn"
+                  onClick={() => setGoldToUse(Math.min(availableGold, maxGoldByOrder))}
+                >
+                  Max
+                </button>
               </div>
 
+              <div className="summary-gold-redemption-row">
+                <span>{enteredGoldToUse || 0} gold entered</span>
+                <strong>
+                  -${isGoldInputInvalid ? "0.00" : goldDiscount.toFixed(2)}
+                </strong>
+              </div>
+
+              {goldInputMessage && (
+                <p className="summary-gold-error-text">{goldInputMessage}</p>
+              )}
+
               <p className="summary-coins-footnote">
-                10 gold = $1.00. Gold is spent only after payment succeeds.
+                Gold is spent only after payment succeeds.
               </p>
             </div>
 
@@ -2145,7 +2191,7 @@ function OrderPage() {
                 <button
                   type="submit"
                   className="primary-btn order-submit-btn"
-                  disabled={paymentLoading}
+                  disabled={paymentLoading || isGoldInputInvalid}
                 >
                   {paymentLoading ? "Preparing secure payment..." : "Continue to Secure Payment"}
                 </button>

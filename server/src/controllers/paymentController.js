@@ -48,20 +48,22 @@ function normalizeGoldToUse(rawGoldToUse, availableGold, totalAmountCents) {
 
     requestedGold = Math.min(requestedGold, availableGold);
 
-    // 10 gold = $1.00, so only redeem in blocks of 10 gold.
-    requestedGold = Math.floor(requestedGold / 10) * 10;
-
-    const maxRedeemableGoldByOrder = Math.floor(totalAmountCents / 100) * 10;
+    // 1 gold = $0.10 = 10 cents
+    const maxRedeemableGoldByOrder = Math.floor(totalAmountCents / 10);
     requestedGold = Math.min(requestedGold, maxRedeemableGoldByOrder);
 
-    let discountCents = Math.floor(requestedGold / 10) * 100;
+    let discountCents = requestedGold * 10;
     let cashAmountCents = Math.max(0, totalAmountCents - discountCents);
 
-    // Stripe card payments cannot be too tiny. If remaining cash is below $0.50,
-    // reduce redemption by 10 gold so cash becomes valid.
-    if (cashAmountCents > 0 && cashAmountCents < 50 && requestedGold >= 10) {
-        requestedGold -= 10;
-        discountCents -= 100;
+    // Stripe card payments cannot be too tiny.
+    // If remaining cash is below $0.50, reduce redemption enough to make cash valid,
+    // unless gold fully covers the order.
+    if (cashAmountCents > 0 && cashAmountCents < 50 && requestedGold > 0) {
+        const neededCentsBack = 50 - cashAmountCents;
+        const goldToRemove = Math.ceil(neededCentsBack / 10);
+
+        requestedGold = Math.max(0, requestedGold - goldToRemove);
+        discountCents = requestedGold * 10;
         cashAmountCents = Math.max(0, totalAmountCents - discountCents);
     }
 
