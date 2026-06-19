@@ -8,87 +8,99 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Dashboard layout redesign, profile dropdown navigation, referral relocation, account profile expansion, and embedded change-password flow
+### Latest session update — Stripe Checkout payment flow, webhook fulfillment, and gold redemption UI
 
-#### Navbar and profile dropdown redesign
-- Moved account-related navigation into the profile dropdown while keeping the existing notification and message quick icons at the top of the dropdown.
-- Profile dropdown now contains:
-  - Dashboard
-  - Management Utilities for admin users
-  - Orders / Assigned Orders based on role direction
-  - Profile
-  - Logout
-- Removed the duplicated top-navbar account links from the normal nav area while preserving the original navbar logo, notification/message behavior, avatar/profile icon, and profile-menu behavior.
-- Kept the logo position consistent with the homepage so clicking Dashboard does not make the FastBoost logo/subtitle shift or compress.
-- Dashboard-specific navbar styling now only visually connects the left logo column with the dashboard sidebar without changing the actual Navbar JSX/layout.
+#### Stripe account and sandbox setup
+- Created/entered the Stripe sandbox account for FastBoost.
+- Selected non-recurring payments and dashboard-based setup for the current implementation path.
+- Added Stripe test API configuration to the backend environment.
+- Installed and configured Stripe SDK support in the Express backend.
+- Confirmed Stripe Checkout Sessions can be created from the FastBoost backend using the test secret key.
 
-#### Dashboard page redesign
-- Added a protected dashboard route:
-  - `/account/dashboard`
-- Built the dashboard around the current FastBoost dark/purple theme instead of copying the demo colors.
-- Replaced the old dashboard card direction:
-  - **Active Orders** became **New Notifications**
-  - **New Notifications** became **New Messages**
-- Dashboard notification cards now separate unread normal notifications from unread `CHAT_MESSAGE` notifications using the existing notification API.
-- Added a loyalty progress card to the dashboard using the loyalty endpoint data.
-- Loyalty card displays the current tier, spend-to-next-tier copy, progress bar, and tier cards.
-- Loyalty card is clickable and routes to:
-  - `/account/loyalty`
-- Added tier-aware hover/glow colors so Bronze/Silver/Gold/Platinum/Diamond hover states match their own tier theme.
+#### Payment database fields and order payment state
+- Added payment tracking direction to `Order` so order fulfillment can be separated from payment fulfillment.
+- Added/directed fields for:
+  - `paymentStatus`
+  - `stripeCheckoutSessionId`
+  - `stripePaymentIntentId`
+  - `paidAt`
+  - `currency`
+  - `amountCents`
+  - `cashAmountCents`
+  - `goldRedeemed`
+  - `goldDiscountCents`
+- Added/directed `PaymentStatus` enum:
+  - `PENDING`
+  - `PAID`
+  - `FAILED`
+  - `REFUNDED`
+  - `CANCELLED`
+- Added/directed `ORDER_REDEMPTION` as a `RewardType` for gold spent on orders.
+- Updated order creation direction so new orders store payment-ready amount data while keeping the existing order lifecycle intact.
 
-#### Referral card relocation
-- Moved **Share Your Referral Link** from the Loyalty page direction to the Dashboard page.
-- Dashboard referral card now displays:
-  - private invite heading
-  - referral eligibility requirements
-  - email verified condition
-  - at least 3 completed orders condition
-  - invited-user count
-  - referral link copy button
-- Loyalty page referral card can now be removed because the dashboard owns that workflow.
+#### Stripe Checkout backend integration
+- Added backend Stripe client helper:
+  - `server/src/utils/stripeClient.js`
+- Added payment controller direction:
+  - `server/src/controllers/paymentController.js`
+- Added payment route direction:
+  - `server/src/routes/paymentRoutes.js`
+- Added checkout session endpoint:
+  - `POST /api/payments/create-checkout-session`
+- Checkout Session creation now:
+  - validates authenticated customer ownership of the order
+  - blocks payment attempts for already-paid orders
+  - creates a Stripe Checkout Session with dynamic line item pricing from the FastBoost order
+  - stores the Stripe Checkout Session ID on the order
+  - redirects customers to Stripe-hosted Checkout
+- Verified the checkout URL returns successfully from Postman and opens Stripe test checkout.
 
-#### Shared dashboard sidebar/layout
-- Added a shared dashboard layout direction so protected account pages can keep the dashboard sidebar visible.
-- Dashboard sidebar now includes only:
-  - Dashboard
-  - My Orders
-  - Change Password
-  - Home
-- Removed **Management Utilities** from the dashboard sidebar while keeping Management Utilities available from the admin profile dropdown and its protected route.
-- Sidebar **My Orders** routes to the customer order page inside the dashboard layout.
-- Sidebar **Change Password** routes to the change-password page inside the dashboard layout.
-- Sidebar **Home** routes to `/` and leaves the dashboard layout.
-- Sidebar styling was adjusted so it visually connects with the left logo column while avoiding unwanted horizontal/vertical divider lines.
-- Sidebar text weight was reduced so the menu is less bold and closer to the desired demo style.
+#### Stripe webhook fulfillment
+- Added Stripe webhook route direction:
+  - `POST /api/payments/webhook`
+- Mounted the webhook route before `express.json()` using `express.raw({ type: "application/json" })` because Stripe signature verification requires the raw request body.
+- Installed and configured Stripe CLI locally for webhook forwarding.
+- Added local webhook forwarding command:
+  - `stripe listen --forward-to localhost:5000/api/payments/webhook`
+- Added `STRIPE_WEBHOOK_SECRET` to backend environment direction.
+- Verified successful local webhook delivery after resolving Stripe CLI and webhook-secret setup.
+- Confirmed paid test checkout updates the database correctly:
+  - `paymentStatus = PAID`
+  - `paidAt` filled
+  - `stripePaymentIntentId` saved
+  - `stripeCheckoutSessionId` saved
 
-#### Account Settings page split
-- Split password management out of Account Settings.
-- Account Settings is now focused on profile details only.
-- Account Settings Profile Details was expanded after removing the password card.
-- Added profile fields:
-  - Discord
-  - Country
-  - Birthday
-- Added birthday helper direction for future birthday discounts.
-- Updated Profile Details copy to include Discord, country, and birthday.
-- Softened the Save Profile button from a strong purple/red gradient to a calmer purple gradient.
-- Updated backend/profile direction so `Profile` can store:
-  - `discord`
-  - `country`
-  - `birthday`
-- Updated current-user profile response/save direction so these new fields can load and persist through `/api/user/me`.
+#### Frontend payment redirect flow
+- Updated the order page flow direction so `Continue` no longer sends the customer directly to MatchPage after order creation.
+- New intended flow:
+  - customer configures order
+  - frontend creates FastBoost order through `POST /api/orders`
+  - frontend calls `POST /api/payments/create-checkout-session`
+  - frontend redirects to Stripe Checkout using `checkoutUrl`
+  - Stripe webhook marks the order as paid
+  - customer returns to `/payment/success`
+- Added frontend API helper direction:
+  - `createCheckoutSession(orderId, goldToUse)`
+- Updated order submit button direction to show payment preparation state:
+  - `Preparing secure payment...`
+  - `Continue to Secure Payment`
 
-#### Change Password page
-- Created a dedicated Change Password page direction:
-  - `/account/change-password`
-- Reused the existing authenticated password-change API:
-  - `PATCH /api/user/me/password`
-- Moved the old password form from Account Settings into the dedicated Change Password page.
-- Spread the Change Password content into a wider two-column layout:
-  - left side: current password, new password, confirm password, update button
-  - right side: password requirements and password strength bar
-- Embedded the Change Password page inside the dashboard layout so the sidebar remains visible when navigating from the dashboard sidebar.
-- Fixed the temporary placeholder issue where the password fields and requirements disappeared after moving the page into the shared dashboard layout.
+#### Gold redemption during checkout
+- Added gold redemption direction to the checkout summary.
+- Customers can choose how much gold they want to apply before going to Stripe.
+- Final rule selected:
+  - `1 gold = $0.10`
+  - customers can use any whole-number amount of gold, not only multiples of 10
+- Added frontend validation so the gold field highlights red and blocks submit when:
+  - the value is not a whole number
+  - the value is negative
+  - the customer enters more gold than they own
+  - the customer enters more gold than the order total can cover
+- Changed the gold input from browser-native `type="number"` behavior to a custom styled text/numeric input so the browser spinner and native validation popup do not appear.
+- Added CSS direction to remove number input spinner UI where number inputs are still used.
+- Added backend validation/normalization direction so gold cannot be abused from frontend edits.
+- Gold is only permanently spent after payment succeeds through Stripe webhook, not just when the checkout session is created.
+- Gold-only orders are directed to mark as paid without Stripe redirect when gold fully covers the order.
 
 ---
 ## Project concept
@@ -157,6 +169,11 @@ Password/security decisions:
 - bcrypt
 - JWT
 
+### Payments
+- Stripe Checkout
+- Stripe Webhooks
+- Stripe CLI for local webhook forwarding
+
 ### Email
 - Nodemailer
 - Gmail SMTP App Password
@@ -205,6 +222,49 @@ Frontend URL:
 http://localhost:5173/
 ```
 
+### Stripe local payment testing
+Stripe webhooks require a separate local forwarding process during development.
+
+1. Start the backend:
+```bash
+cd server
+npm run dev
+```
+
+2. In a separate terminal, start Stripe webhook forwarding:
+```bash
+stripe listen --forward-to localhost:5000/api/payments/webhook
+```
+
+3. Copy the `whsec_...` webhook signing secret shown by Stripe CLI into `server/.env`:
+```env
+STRIPE_WEBHOOK_SECRET="whsec_your_local_webhook_secret"
+```
+
+4. Restart the backend after changing `.env`.
+
+5. Use Stripe test card data in Checkout:
+```text
+Card: 4242 4242 4242 4242
+Expiry: any future date, for example 12/34
+CVC: any 3 digits
+Postal/postal code: any valid-looking code, for example R3C 0A1
+```
+
+Expected successful webhook result in Prisma Studio:
+```text
+paymentStatus = PAID
+paidAt = filled
+stripePaymentIntentId = pi_...
+stripeCheckoutSessionId = cs_test_...
+```
+
+Important:
+- Keep the Stripe CLI terminal running while testing webhook fulfillment.
+- Do not commit Stripe keys or webhook secrets.
+- Do not trust `/payment/success` alone; the database should be updated by the webhook.
+
+
 ### Live chat quick test
 Socket server runs on the same port (`:5000`). Connect with JWT token:
 ```js
@@ -245,6 +305,10 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/orders/my` — customer order list
 - `GET /api/orders/:id` — order detail with access control
 - `PATCH /api/orders/:id/login-info` — customer updates in-game name/password from MatchPage
+
+### Payments
+- `POST /api/payments/create-checkout-session` — create a Stripe Checkout Session for an authenticated customer order, with optional gold redemption
+- `POST /api/payments/webhook` — Stripe webhook endpoint for payment fulfillment; must use raw request body before `express.json()`
 
 ### Admin orders
 - `GET /api/orders/admin` — list all orders with filters
@@ -297,6 +361,11 @@ JWT_SECRET="your_secret_here"
 
 APP_BASE_URL="http://localhost:5173"
 
+STRIPE_SECRET_KEY="sk_test_or_live_key_here"
+STRIPE_CURRENCY="cad"
+STRIPE_WEBHOOK_SECRET="whsec_local_or_live_webhook_secret"
+CLIENT_URL="http://localhost:5173"
+
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_SECURE="false"
@@ -316,12 +385,66 @@ AWS_SECRET_ACCESS_KEY="your_local_dev_secret_key"
 
 ✅ Do **not** commit `.env` to GitHub.
 
+Stripe production note:
+- Use `sk_test_...` only for sandbox/local testing.
+- Use `sk_live_...` only after Stripe live account verification is complete.
+- Configure a live webhook endpoint in Stripe Dashboard for production deployments.
+- The local `whsec_...` from `stripe listen` is only for local testing and changes when a new listen session is created.
+- Keep payment fulfillment dependent on Stripe webhooks, not the frontend success redirect.
+
 Production note:
 - Keep `AWS_REGION` and `ORDER_PASSWORD_KMS_KEY_ID`.
 - Prefer IAM role credentials for deployed backend.
 - Restrict KMS permissions to the exact key ARN before real launch.
 
 ---
+
+## Payment implementation notes
+
+### Stripe files and route structure
+Backend files/direction:
+```text
+server/src/utils/stripeClient.js
+server/src/controllers/paymentController.js
+server/src/routes/paymentRoutes.js
+server/src/app.js
+```
+
+Important route mounting direction in `app.js`:
+```js
+app.use(cors());
+
+app.post(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
+
+app.use(express.json());
+```
+
+The webhook route must stay above `express.json()` or Stripe signature verification will fail.
+
+### Local Stripe CLI workflow
+```bash
+stripe login
+stripe listen --forward-to localhost:5000/api/payments/webhook
+```
+
+When `stripe listen` starts, copy the shown `whsec_...` value into `server/.env`, then restart the backend.
+
+### Payment safety rules
+- The frontend success URL is not proof of payment.
+- The database should only mark an order as `PAID` after Stripe webhook verification.
+- Gold should only be permanently spent after payment succeeds.
+- Backend must always validate `orderId`, customer ownership, payment status, amount, and gold use.
+- Do not expose `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the frontend.
+
+### Gold redemption rule
+```text
+1 gold = $0.10
+```
+Gold redemption should support any whole-number amount of gold.
 
 ## Database / Prisma
 
@@ -357,6 +480,22 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- Stripe sandbox account setup completed for FastBoost payment testing
+- Stripe SDK installed/configured in the Express backend
+- payment fields added/directed for orders, including payment status, Stripe session/payment intent IDs, paid timestamp, currency, amount cents, cash amount cents, redeemed gold, and gold discount cents
+- `PaymentStatus` enum added/directed for PENDING / PAID / FAILED / REFUNDED / CANCELLED
+- `ORDER_REDEMPTION` reward type added/directed for gold spending records
+- backend Stripe Checkout Session endpoint added at `POST /api/payments/create-checkout-session`
+- backend Stripe webhook endpoint added at `POST /api/payments/webhook`
+- Stripe webhook raw body setup added before `express.json()` in `app.js`
+- Stripe CLI local webhook forwarding installed and verified with `stripe listen --forward-to localhost:5000/api/payments/webhook`
+- successful test payment confirmed through Stripe Checkout with webhook updating Prisma order payment status to PAID
+- frontend order submit flow redirected toward Stripe Checkout instead of going directly to MatchPage
+- frontend `createCheckoutSession(orderId, goldToUse)` API helper added/directed
+- checkout gold redemption UI added/directed with customer-entered gold amount
+- gold redemption rule finalized as `1 gold = $0.10`
+- gold input validation highlights invalid input red and blocks submit when over available gold, over order total, negative, or non-whole-number
+- gold input spinner/native browser validation popup removed/directed by using custom input behavior and CSS cleanup
 - protected dashboard page added at `/account/dashboard`
 - profile dropdown account navigation reorganized while keeping notification/message quick icons
 - dashboard cards updated to New Notifications and New Messages
@@ -601,6 +740,10 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
+- final frontend payment-success and payment-cancelled page polish
+- final customer order / admin order / provider order visibility rules for unpaid vs paid orders
+- final testing for gold redemption edge cases, including partial-gold, full-gold, invalid gold, and webhook retry/idempotency behavior
+- final refund/cancellation handling direction for Stripe and gold redemption reversal
 - final shared dashboard layout testing across Dashboard, My Orders, and Change Password
 - final Account Settings profile-field save/load verification for Discord, country, and birthday
 - final Loyalty page cleanup after moving referral card to Dashboard
@@ -617,7 +760,27 @@ npx prisma studio
 
 ## Next steps (recommended)
 
-1. Test shared dashboard layout navigation:
+1. Test Stripe payment flow end-to-end:
+   - start backend with `npm run dev`
+   - start Stripe CLI with `stripe listen --forward-to localhost:5000/api/payments/webhook`
+   - create an order from the frontend
+   - confirm the frontend calls `POST /api/payments/create-checkout-session`
+   - confirm customer is redirected to Stripe Checkout
+   - pay with Stripe test card `4242 4242 4242 4242`
+   - confirm webhook returns `200` in Stripe CLI
+   - confirm Prisma order fields show `paymentStatus = PAID`, `paidAt`, `stripeCheckoutSessionId`, and `stripePaymentIntentId`
+2. Test gold redemption payment cases:
+   - `0` gold should charge the full Stripe amount
+   - partial gold should reduce the Stripe cash amount
+   - gold equal to full order value should complete without Stripe redirect if backend gold-only path is enabled
+   - invalid decimal input like `1.1` should show the custom red error, not browser native validation
+   - entering more gold than available should highlight red and disable submit
+   - entering more gold than the order total can cover should highlight red and disable submit
+3. Build/polish payment redirect pages:
+   - `/payment/success`
+   - `/payment/cancelled`
+   - success page should verify order/session state through backend, not trust URL alone
+4. Test shared dashboard layout navigation:
    - open `/account/dashboard`
    - click Dashboard, My Orders, and Change Password from the sidebar
    - confirm the sidebar stays visible on those pages
@@ -756,8 +919,12 @@ npx prisma studio
    - `untrackableDuo`
 9. Connect the patch section to a real backend endpoint later.
 
-## Resume-ready highlights
+## Website highlights
 
+- Integrated Stripe Checkout into a React/Express marketplace flow with authenticated Checkout Session creation, dynamic order pricing, and Stripe-hosted payment redirects.
+- Implemented secure Stripe webhook fulfillment using raw Express request bodies, Stripe CLI local forwarding, signature verification, and Prisma order payment updates.
+- Added customer gold redemption at checkout with frontend validation, backend normalization, payment amount reduction, and reward-history redemption direction.
+- Built payment-state separation between order workflow status and payment fulfillment status so paid, pending, completed, cancelled, and loyalty logic can be managed safely.
 - Built a protected admin Management Utilities hub with scalable utility cards and role-gated navigation for admin workflows.
 - Implemented an admin Account Management page with user search, verification/status badges, privilege changes, and suspend/restore account controls.
 - Added admin-only account APIs for user listing, role updates, and soft suspension using Express middleware, Prisma, and PostgreSQL.
