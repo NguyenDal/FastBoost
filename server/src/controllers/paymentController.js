@@ -124,6 +124,89 @@ const createCheckoutSession = async (req, res) => {
   }
 };
 
+const handleStripeWebhook = async (req, res) => {
+  const signature = req.headers["stripe-signature"];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error("Missing STRIPE_WEBHOOK_SECRET in environment variables");
+    return res.status(500).send("Webhook secret not configured");
+  }
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+  } catch (error) {
+    console.error("Stripe webhook signature verification failed:", error.message);
+    return res.status(400).send(`Webhook Error: ${error.message}`);
+  }
+
+  try {
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+
+      const orderId = session.metadata?.orderId;
+      const paymentIntentId =
+        typeof session.payment_intent === "string"
+          ? session.payment_intent
+          : session.payment_intent?.id || null;
+
+      if (!orderId) {
+        console.warn("Stripe checkout.session.completed missing orderId metadata");
+        return res.json({ received: true });
+      }
+
+      const updated = await prisma.order.updateMany({
+        where: {
+          id: orderId,
+          stripeCheckoutSessionId: session.id,
+          paymentStatus: {
+            not: "PAID",
+          },
+        },
+        data: {
+          paymentStatus: "PAID",
+          stripePaymentIntentId: paymentIntentId,
+          paidAt: new Date(),
+          amountCents: session.amount_total || undefined,
+          currency: session.currency || "cad",
+        },
+      });
+
+      console.log(
+        `Stripe payment completed for order ${orderId}. Updated rows: ${updated.count}`
+      );
+    }
+
+    if (event.type === "checkout.session.expired") {
+      const session = event.data.object;
+      const orderId = session.metadata?.orderId;
+
+      if (orderId) {
+        await prisma.order.updateMany({
+          where: {
+            id: orderId,
+            stripeCheckoutSessionId: session.id,
+            paymentStatus: "PENDING",
+          },
+          data: {
+            paymentStatus: "CANCELLED",
+          },
+        });
+
+        console.log(`Stripe checkout expired for order ${orderId}`);
+      }
+    }
+
+    return res.json({ received: true });
+  } catch (error) {
+    console.error("Stripe webhook handling error:", error);
+    return res.status(500).send("Webhook handler failed");
+  }
+};
+
 module.exports = {
   createCheckoutSession,
+  handleStripeWebhook,
 };
