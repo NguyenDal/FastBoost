@@ -169,6 +169,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   paidAt: 'paidAt',
   currency: 'currency',
   amountCents: 'amountCents',
+  goldRedeemed: 'goldRedeemed',
+  goldDiscountCents: 'goldDiscountCents',
+  cashAmountCents: 'cashAmountCents',
   boostType: 'boostType',
   playMode: 'playMode',
   region: 'region',
@@ -340,7 +343,8 @@ exports.RewardType = exports.$Enums.RewardType = {
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
   PROMO: 'PROMO',
-  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS'
+  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS',
+  ORDER_REDEMPTION: 'ORDER_REDEMPTION'
 };
 
 exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {

@@ -79,6 +79,10 @@ model Order {
   currency                String        @default("cad")
   amountCents             Int?
 
+  goldRedeemed      Int  @default(0)
+  goldDiscountCents Int  @default(0)
+  cashAmountCents   Int?
+
   boostType String
   playMode  String?
   region    String?
@@ -163,6 +167,7 @@ enum RewardType {
   TOP_UP_BONUS
   PROMO
   LOYALTY_TIER_BONUS
+  ORDER_REDEMPTION
 }
 
 enum AssignmentRequestStatus {
