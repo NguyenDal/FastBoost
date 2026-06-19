@@ -1,5 +1,63 @@
 /* Match page: chat and assigned booster UI */
 
+.order-page-shell {
+  position: relative;
+  min-height: 100vh;
+  color: #f3f4f6;
+  background: #050915;
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+.order-page-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: scale(1.03);
+  filter: brightness(0.48) saturate(1.05);
+  pointer-events: none;
+}
+
+.order-page-lol::before {
+  background-image: url("https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg");
+}
+
+.order-page-tft::before {
+  background-image: url("https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg");
+}
+
+.order-page-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(124, 58, 237, 0.20), transparent 34%),
+    radial-gradient(circle at 12% 28%, rgba(14, 165, 233, 0.08), transparent 30%),
+    linear-gradient(
+      180deg,
+      rgba(3, 7, 18, 0.72) 0%,
+      rgba(3, 7, 18, 0.80) 42%,
+      rgba(3, 7, 18, 0.90) 100%
+    );
+}
+
+.order-page-shell .topbar,
+.order-page-container {
+  position: relative;
+  z-index: 2;
+}
+
+.order-page-container {
+  width: min(100% - 48px, 1360px);
+  margin: 0 auto;
+  padding: 34px 0 70px;
+}
+
 .match-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
@@ -907,4 +965,300 @@
 .login-info-save-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.match-loading-page {
+  display: grid;
+  gap: 18px;
+}
+
+.match-loading-hero {
+  min-height: 150px;
+  padding: 28px;
+  border-radius: 24px;
+}
+
+.match-loading-tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.match-loading-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.match-loading-main,
+.match-loading-sidebar {
+  display: grid;
+  gap: 20px;
+}
+
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(700px 260px at 100% 0%, rgba(124, 58, 237, 0.06), transparent 60%),
+    linear-gradient(180deg, rgba(9, 14, 34, 0.76), rgba(6, 10, 26, 0.82));
+  border: 1px solid rgba(180, 190, 255, 0.14);
+  border-radius: 24px;
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.skeleton-card::after,
+.skeleton-line::after,
+.skeleton-avatar::after,
+.skeleton-pill::after,
+.skeleton-bubble::after,
+.skeleton-input::after,
+.skeleton-circle-btn::after,
+.skeleton-option-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-110%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.075),
+    transparent
+  );
+  animation: skeletonSweep 1.45s ease-in-out infinite;
+}
+
+.skeleton-line,
+.skeleton-avatar,
+.skeleton-pill,
+.skeleton-bubble,
+.skeleton-input,
+.skeleton-circle-btn,
+.skeleton-option-pill {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.skeleton-eyebrow {
+  width: 180px;
+  height: 10px;
+  margin-bottom: 22px;
+}
+
+.skeleton-title {
+  width: min(430px, 70%);
+  height: 42px;
+  margin-bottom: 18px;
+}
+
+.skeleton-subtitle {
+  width: min(620px, 82%);
+  height: 16px;
+}
+
+.skeleton-section-title {
+  width: 180px;
+  height: 20px;
+  margin-bottom: 18px;
+}
+
+.skeleton-name {
+  width: 150px;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-name-wide {
+  width: 190px;
+  height: 18px;
+  margin: 16px auto 10px;
+}
+
+.skeleton-small {
+  width: 220px;
+  height: 12px;
+}
+
+.skeleton-small-wide {
+  width: 80%;
+  height: 12px;
+  margin: 0 auto 10px;
+}
+
+.skeleton-small-wide-2 {
+  width: 65%;
+  height: 12px;
+  margin: 0 auto;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-avatar-sm {
+  width: 38px;
+  height: 38px;
+}
+
+.skeleton-avatar-lg {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto;
+}
+
+.skeleton-pill {
+  width: 130px;
+  height: 42px;
+  border-radius: 999px;
+}
+
+.skeleton-pill-short {
+  width: 110px;
+}
+
+.skeleton-pill-status {
+  width: 150px;
+  margin-left: auto;
+}
+
+.match-loading-chat {
+  min-height: 520px;
+  padding: 24px;
+  border-radius: 24px;
+}
+
+.match-loading-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.match-loading-message {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.skeleton-message-right {
+  justify-content: flex-end;
+}
+
+.skeleton-bubble {
+  width: min(420px, 70%);
+  min-height: 74px;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.skeleton-bubble-right {
+  width: min(340px, 58%);
+}
+
+.skeleton-bubble-line-lg,
+.skeleton-bubble-line-md,
+.skeleton-bubble-line-sm {
+  height: 11px;
+  margin-bottom: 10px;
+}
+
+.skeleton-bubble-line-lg {
+  width: 86%;
+}
+
+.skeleton-bubble-line-md {
+  width: 66%;
+}
+
+.skeleton-bubble-line-sm {
+  width: 42%;
+}
+
+.match-loading-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  margin-top: 28px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(8, 12, 27, 0.72);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+}
+
+.skeleton-circle-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-input {
+  flex: 1;
+  height: 36px;
+  border-radius: 999px;
+}
+
+.match-loading-options,
+.match-loading-side-card {
+  padding: 22px;
+}
+
+.match-loading-option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.skeleton-option-pill {
+  height: 58px;
+  border-radius: 999px;
+}
+
+@keyframes skeletonSweep {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  55%,
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+@media (max-width: 980px) {
+  .match-loading-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .match-loading-option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .match-loading-hero,
+  .match-loading-chat,
+  .match-loading-options,
+  .match-loading-side-card {
+    padding: 18px;
+  }
+
+  .skeleton-title {
+    width: 88%;
+    height: 34px;
+  }
 }
