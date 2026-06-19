@@ -72,6 +72,17 @@ model Order {
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
+  paymentStatus           PaymentStatus @default(PENDING)
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId   String?
+  paidAt                  DateTime?
+  currency                String        @default("cad")
+  amountCents             Int?
+
+  goldRedeemed      Int  @default(0)
+  goldDiscountCents Int  @default(0)
+  cashAmountCents   Int?
+
   boostType String
   playMode  String?
   region    String?
@@ -156,6 +167,7 @@ enum RewardType {
   TOP_UP_BONUS
   PROMO
   LOYALTY_TIER_BONUS
+  ORDER_REDEMPTION
 }
 
 enum AssignmentRequestStatus {
@@ -275,6 +287,14 @@ enum OrderStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
   CANCELLED
 }
 

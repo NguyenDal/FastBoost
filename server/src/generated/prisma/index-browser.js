@@ -163,6 +163,15 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  paymentStatus: 'paymentStatus',
+  stripeCheckoutSessionId: 'stripeCheckoutSessionId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  paidAt: 'paidAt',
+  currency: 'currency',
+  amountCents: 'amountCents',
+  goldRedeemed: 'goldRedeemed',
+  goldDiscountCents: 'goldDiscountCents',
+  cashAmountCents: 'cashAmountCents',
   boostType: 'boostType',
   playMode: 'playMode',
   region: 'region',
@@ -321,12 +330,21 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.RewardType = exports.$Enums.RewardType = {
   REFERRAL_INVITER: 'REFERRAL_INVITER',
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
   PROMO: 'PROMO',
-  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS'
+  LOYALTY_TIER_BONUS: 'LOYALTY_TIER_BONUS',
+  ORDER_REDEMPTION: 'ORDER_REDEMPTION'
 };
 
 exports.AssignmentRequestStatus = exports.$Enums.AssignmentRequestStatus = {

@@ -11,10 +11,20 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const loyaltyRoutes = require("./routes/loyaltyRoutes");
 const referralRoutes = require("./routes/referralRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const { handleStripeWebhook } = require("./controllers/paymentController");
 
 const app = express();
 
 app.use(cors());
+
+// Stripe webhook must use raw body and must be mounted before express.json()
+app.post(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -35,5 +45,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralRoutes);
 app.use("/api/admin", adminUserRoutes);
+app.use("/api/payments", paymentRoutes);
 
 module.exports = app;

@@ -24,3 +24,22 @@ export async function updateOrderLoginInfo(orderId, payload) {
 
     return data.order;
 }
+
+export async function createCheckoutSession(orderId, goldToUse = 0) {
+  const res = await fetch(`${API_BASE_URL}/payments/create-checkout-session`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      orderId,
+      goldToUse,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.message || "Failed to create checkout session");
+  }
+
+  return data;
+}

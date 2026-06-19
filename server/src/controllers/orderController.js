@@ -261,6 +261,10 @@ const createOrder = async (req, res) => {
                 basePrice: Number(basePrice || 0),
                 addonPrice: Number(addonPrice || 0),
                 totalPrice: Number(totalPrice || 0),
+
+                paymentStatus: "PENDING",
+                currency: "cad",
+                amountCents: Math.round(Number(totalPrice || 0) * 100),
             },
         });
 

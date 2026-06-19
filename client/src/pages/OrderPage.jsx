@@ -1,3 +1,4 @@
+import { createCheckoutSession } from "../api/orders";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -87,6 +88,40 @@ function OrderPage() {
     highMMRDuo: false,
     championPreferenceTier: "4+",
   });
+
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [availableGold, setAvailableGold] = useState(0);
+  const [goldToUse, setGoldToUse] = useState(0);
+
+  useEffect(() => {
+    const loadGold = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:5000/api/loyalty/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        const totalGold =
+          data?.totalGold ??
+          data?.loyalty?.totalGold ??
+          data?.summary?.totalGold ??
+          data?.accountProgress?.totalGold ??
+          0;
+
+        setAvailableGold(Math.max(0, Number(totalGold || 0)));
+      } catch (error) {
+        console.error("Failed to load available gold:", error);
+      }
+    };
+
+    loadGold();
+  }, [currentUser]);
 
   const [isChampionPanelOpen, setIsChampionPanelOpen] = useState(false);
   const [championPreferenceEnabled, setChampionPreferenceEnabled] = useState(false);
@@ -367,6 +402,43 @@ function OrderPage() {
   ]);
 
   const totalPrice = (basePrice + addonPrice).toFixed(2);
+
+  const totalPriceNumber = Number(totalPrice || 0);
+  const totalPriceCents = Math.round(totalPriceNumber * 100);
+
+  // 1 gold = $0.10 = 10 cents
+  const maxGoldByOrder = Math.floor(totalPriceCents / 10);
+
+  const goldInputText = String(goldToUse ?? "").trim();
+
+  const isGoldEmpty = goldInputText === "";
+  const isGoldNumeric = isGoldEmpty || /^\d+$/.test(goldInputText);
+
+  const enteredGoldToUse = isGoldNumeric && !isGoldEmpty
+    ? Number(goldInputText)
+    : 0;
+
+  const isGoldNegative = false; // text regex blocks minus signs
+  const isGoldNotWholeNumber = !isGoldNumeric;
+  const isGoldOverAvailable = enteredGoldToUse > availableGold;
+  const isGoldOverOrderTotal = enteredGoldToUse > maxGoldByOrder;
+
+  const isGoldInputInvalid =
+    isGoldNotWholeNumber ||
+    isGoldOverAvailable ||
+    isGoldOverOrderTotal;
+
+  const safeGoldToUse = isGoldInputInvalid ? 0 : enteredGoldToUse;
+  const goldDiscount = safeGoldToUse * 0.1;
+  const finalPrice = Math.max(0, totalPriceNumber - goldDiscount).toFixed(2);
+
+  const goldInputMessage = isGoldNotWholeNumber
+    ? "Please enter a whole number of gold."
+    : isGoldOverAvailable
+      ? `You only have ${availableGold} gold available.`
+      : isGoldOverOrderTotal
+        ? `You can only use up to ${maxGoldByOrder} gold for this order.`
+        : "";
 
   const coinCount = Math.floor(Number(totalPrice));
   const coinValue = (coinCount * 0.1).toFixed(2);
@@ -699,6 +771,11 @@ function OrderPage() {
         return;
       }
 
+      if (isGoldInputInvalid) {
+        setSubmitError(goldInputMessage || "Please enter a valid gold amount.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -780,13 +857,27 @@ function OrderPage() {
         orderGameMode
       );
 
-      navigate(`/match/${data.order.id}`, {
-        state: {
-          gameMode: orderGameMode,
-        },
-      });
+      setPaymentLoading(true);
+
+      const checkout = await createCheckoutSession(
+        data.order.id,
+        safeGoldToUse
+      );
+
+      if (checkout.paidWithGoldOnly && checkout.redirectUrl) {
+        window.location.href = checkout.redirectUrl;
+        return;
+      }
+
+      if (!checkout.checkoutUrl) {
+        throw new Error("Checkout URL was not returned");
+      }
+
+      window.location.href = checkout.checkoutUrl;
     } catch (error) {
       setSubmitError(error.message || "Could not create order");
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -2035,6 +2126,51 @@ function OrderPage() {
               🪙 10 gold = $1.00 | Earn gold with every order
             </p>
 
+            <div
+              className={`summary-gold-redemption-card ${isGoldInputInvalid ? "summary-gold-redemption-card-error" : ""
+                }`}
+            >
+              <div className="summary-gold-redemption-header">
+                <span>Use your gold</span>
+                <strong>{availableGold} available</strong>
+              </div>
+
+              <div className="summary-gold-input-wrap">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={goldToUse}
+                  onChange={(event) => setGoldToUse(event.target.value)}
+                  className={`summary-gold-input ${isGoldInputInvalid ? "summary-gold-input-error" : ""
+                    }`}
+                  placeholder="0"
+                />
+
+                <button
+                  type="button"
+                  className="summary-gold-max-btn"
+                  onClick={() => setGoldToUse(Math.min(availableGold, maxGoldByOrder))}
+                >
+                  Max
+                </button>
+              </div>
+
+              <div className="summary-gold-redemption-row">
+                <span>{enteredGoldToUse || 0} gold entered</span>
+                <strong>
+                  -${isGoldInputInvalid ? "0.00" : goldDiscount.toFixed(2)}
+                </strong>
+              </div>
+
+              {goldInputMessage && (
+                <p className="summary-gold-error-text">{goldInputMessage}</p>
+              )}
+
+              <p className="summary-coins-footnote">
+                Gold is spent only after payment succeeds.
+              </p>
+            </div>
+
             {isInvalidRankPath ? (
               <div className="price-warning-box price-warning-box-blocking">
                 <p className="price-warning-text">
@@ -2046,14 +2182,18 @@ function OrderPage() {
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
                     <span>Total Price</span>
-                    <strong>${totalPrice}</strong>
+                    <strong>${finalPrice}</strong>
                   </div>
                 </div>
 
                 {submitError && <p className="error-message">{submitError}</p>}
 
-                <button type="submit" className="primary-btn order-submit-btn">
-                  Continue
+                <button
+                  type="submit"
+                  className="primary-btn order-submit-btn"
+                  disabled={paymentLoading || isGoldInputInvalid}
+                >
+                  {paymentLoading ? "Preparing secure payment..." : "Continue to Secure Payment"}
                 </button>
               </>
             )}
