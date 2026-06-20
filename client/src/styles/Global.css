@@ -37,7 +37,8 @@ button {
   top: 0;
   z-index: 1000;
   width: 100%;
-  min-height: 72px;
+  height: 76px;
+  min-height: 76px;
   padding: 12px 28px;
   display: flex;
   justify-content: space-between;
@@ -213,7 +214,7 @@ button {
 }
 
 .nav-cta {
-  min-height: 40px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -365,6 +366,9 @@ button {
 /* Profile menu (Navbar) */
 .profile-menu-wrap {
   position: relative;
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Avatar + hover-username pill */
@@ -1310,6 +1314,8 @@ button {
 /* Responsive tweaks shared */
 @media (max-width: 900px) {
   .topbar {
+    height: auto;
+    min-height: 76px;
     align-items: flex-start;
     padding: 12px 18px;
   }
