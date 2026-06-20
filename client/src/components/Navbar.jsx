@@ -660,24 +660,30 @@ function Navbar({
                                     </button>
                                 )}
 
+                                {effectiveCurrentUser?.role === "PROVIDER" && (
+                                    <button
+                                        className="profile-menu-item profile-menu-row"
+                                        role="menuitem"
+                                        onClick={() => {
+                                            effectiveSetShowProfileMenu(false);
+                                            navigate("/provider/orders");
+                                        }}
+                                    >
+                                        <ProfileMenuIcon type="orders" />
+                                        <span>Assigned Orders</span>
+                                    </button>
+                                )}
+
                                 <button
                                     className="profile-menu-item profile-menu-row"
                                     role="menuitem"
                                     onClick={() => {
                                         effectiveSetShowProfileMenu(false);
-                                        navigate(
-                                            effectiveCurrentUser?.role === "PROVIDER"
-                                                ? "/provider/orders"
-                                                : "/account/orders"
-                                        );
+                                        navigate("/account/orders");
                                     }}
                                 >
                                     <ProfileMenuIcon type="orders" />
-                                    <span>
-                                        {effectiveCurrentUser?.role === "PROVIDER"
-                                            ? "Assigned Orders"
-                                            : "Orders"}
-                                    </span>
+                                    <span>Orders</span>
                                 </button>
 
                                 <button

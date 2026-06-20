@@ -125,9 +125,7 @@ export default function DashboardPage() {
             </div>
 
             {loading ? (
-                <div className="dashboard-card dashboard-loading-card">
-                    Loading dashboard...
-                </div>
+                <DashboardSkeleton />
             ) : error ? (
                 <div className="dashboard-card dashboard-error-card">
                     {error}
@@ -271,6 +269,131 @@ export default function DashboardPage() {
                 </>
             )}
         </>
+    );
+}
+
+function DashboardSkeleton() {
+    return (
+        <>
+            <section className="dashboard-grid dashboard-grid-top">
+                <DashboardListSkeleton />
+                <DashboardListSkeleton />
+            </section>
+
+            <section className="dashboard-grid dashboard-grid-bottom">
+                <DashboardLoyaltySkeleton />
+                <DashboardReferralSkeleton />
+            </section>
+        </>
+    );
+}
+
+function DashboardListSkeleton() {
+    return (
+        <section className="dashboard-card dashboard-list-card dashboard-skeleton-card">
+            <div className="dashboard-card-header">
+                <div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
+                    <div className="dashboard-skeleton-line dashboard-skeleton-title" />
+                </div>
+
+                <div className="dashboard-skeleton-pill" />
+            </div>
+
+            <div className="dashboard-skeleton-list">
+                <div className="dashboard-skeleton-item">
+                    <div>
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text" />
+                    </div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
+                </div>
+
+                <div className="dashboard-skeleton-item">
+                    <div>
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text short" />
+                    </div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
+                </div>
+
+                <div className="dashboard-skeleton-item">
+                    <div>
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text" />
+                    </div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function DashboardLoyaltySkeleton() {
+    return (
+        <section className="dashboard-card dashboard-loyalty-card dashboard-skeleton-card">
+            <div className="dashboard-card-header">
+                <div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
+                    <div className="dashboard-skeleton-line dashboard-skeleton-title wide" />
+                    <div className="dashboard-skeleton-line dashboard-skeleton-subtitle" />
+                </div>
+
+                <div className="dashboard-skeleton-tier-badge" />
+            </div>
+
+            <div className="dashboard-skeleton-track" />
+
+            <div className="dashboard-tier-row">
+                {Array.from({ length: 5 }).map((_, index) => (
+                    <div className="dashboard-tier-step dashboard-skeleton-tier-step" key={index}>
+                        <div className="dashboard-skeleton-rank-icon" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-name" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-small" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-small short" />
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+function DashboardReferralSkeleton() {
+    return (
+        <section className="dashboard-card dashboard-referral-card dashboard-skeleton-card">
+            <div className="dashboard-card-header">
+                <div>
+                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
+                    <div className="dashboard-skeleton-line dashboard-skeleton-title wide" />
+                    <div className="dashboard-skeleton-line dashboard-skeleton-subtitle" />
+                </div>
+
+                <div className="dashboard-skeleton-referral-count" />
+            </div>
+
+            <div className="dashboard-referral-conditions">
+                <div className="dashboard-skeleton-condition">
+                    <div className="dashboard-skeleton-circle" />
+                    <div>
+                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-title" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-text" />
+                    </div>
+                </div>
+
+                <div className="dashboard-skeleton-condition">
+                    <div className="dashboard-skeleton-circle" />
+                    <div>
+                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-title" />
+                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-text short" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="dashboard-skeleton-referral-box">
+                <div className="dashboard-skeleton-line dashboard-skeleton-referral-url" />
+                <div className="dashboard-skeleton-copy-button" />
+            </div>
+        </section>
     );
 }
 

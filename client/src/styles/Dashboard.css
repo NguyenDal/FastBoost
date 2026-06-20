@@ -513,6 +513,220 @@
     border-color: rgba(248, 113, 113, 0.25);
 }
 
+.dashboard-skeleton-card {
+    overflow: hidden;
+    position: relative;
+}
+
+.dashboard-skeleton-line,
+.dashboard-skeleton-pill,
+.dashboard-skeleton-tier-badge,
+.dashboard-skeleton-track,
+.dashboard-skeleton-rank-icon,
+.dashboard-skeleton-referral-count,
+.dashboard-skeleton-circle,
+.dashboard-skeleton-copy-button {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.055) 0%,
+        rgba(255, 255, 255, 0.105) 42%,
+        rgba(255, 255, 255, 0.055) 78%
+    );
+    background-size: 220% 100%;
+    animation: dashboardSkeletonSweep 1.25s ease-in-out infinite;
+}
+
+.dashboard-skeleton-line {
+    height: 12px;
+    border-radius: 999px;
+}
+
+.dashboard-skeleton-eyebrow {
+    width: 92px;
+    height: 11px;
+    margin-bottom: 12px;
+}
+
+.dashboard-skeleton-title {
+    width: 180px;
+    height: 23px;
+}
+
+.dashboard-skeleton-title.wide {
+    width: 240px;
+}
+
+.dashboard-skeleton-subtitle {
+    width: 320px;
+    max-width: 100%;
+    height: 13px;
+    margin-top: 13px;
+}
+
+.dashboard-skeleton-pill {
+    width: 38px;
+    height: 28px;
+    border-radius: 999px;
+}
+
+.dashboard-skeleton-list {
+    display: grid;
+    gap: 10px;
+}
+
+.dashboard-skeleton-item {
+    min-height: 72px;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 13px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.026);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.dashboard-skeleton-item > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-skeleton-item-title {
+    width: 48%;
+    height: 14px;
+}
+
+.dashboard-skeleton-item-text {
+    width: 82%;
+    height: 12px;
+    margin-top: 10px;
+}
+
+.dashboard-skeleton-item-text.short {
+    width: 58%;
+}
+
+.dashboard-skeleton-time {
+    width: 112px;
+    height: 12px;
+    margin-top: 2px;
+}
+
+.dashboard-skeleton-tier-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+}
+
+.dashboard-skeleton-track {
+    height: 15px;
+    border-radius: 999px;
+    margin-top: 4px;
+}
+
+.dashboard-skeleton-tier-step {
+    opacity: 1;
+}
+
+.dashboard-skeleton-rank-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.dashboard-skeleton-tier-name {
+    width: 70%;
+    height: 14px;
+}
+
+.dashboard-skeleton-tier-small {
+    width: 88%;
+    height: 11px;
+    margin-top: 10px;
+}
+
+.dashboard-skeleton-tier-small.short {
+    width: 64%;
+}
+
+.dashboard-skeleton-referral-count {
+    width: 82px;
+    height: 72px;
+    border-radius: 16px;
+}
+
+.dashboard-skeleton-condition {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.026);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.dashboard-skeleton-condition > div:last-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-skeleton-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+}
+
+.dashboard-skeleton-condition-title {
+    width: 52%;
+    height: 13px;
+}
+
+.dashboard-skeleton-condition-text {
+    width: 86%;
+    height: 11px;
+    margin-top: 10px;
+}
+
+.dashboard-skeleton-condition-text.short {
+    width: 62%;
+}
+
+.dashboard-skeleton-referral-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: rgba(255, 255, 255, 0.026);
+}
+
+.dashboard-skeleton-referral-url {
+    flex: 1;
+    height: 13px;
+}
+
+.dashboard-skeleton-copy-button {
+    width: 66px;
+    height: 36px;
+    border-radius: 12px;
+}
+
+@keyframes dashboardSkeletonSweep {
+    0% {
+        background-position: 120% 0;
+    }
+
+    100% {
+        background-position: -120% 0;
+    }
+}
+
 .dashboard-embedded-page {
     width: 100%;
 }
