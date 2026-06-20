@@ -56,6 +56,223 @@
   padding: 34px 0 70px;
 }
 
+/* Order page skeleton loading */
+.order-skeleton-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.order-skeleton-line,
+.order-skeleton-pill,
+.order-skeleton-circle,
+.order-skeleton-icon,
+.order-skeleton-option,
+.order-skeleton-field,
+.order-skeleton-summary-row,
+.order-skeleton-total,
+.order-skeleton-button {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg,
+      rgba(79, 200, 255, 0.08) 0%,
+      rgba(167, 139, 250, 0.16) 42%,
+      rgba(79, 200, 255, 0.08) 78%);
+  background-size: 220% 100%;
+  animation: orderSkeletonShimmer 1.35s ease-in-out infinite;
+  border: 1px solid rgba(167, 139, 250, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.order-skeleton-kicker {
+  width: 140px;
+  height: 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.order-skeleton-title {
+  width: min(560px, 70vw);
+  height: 54px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+}
+
+.order-skeleton-subtitle {
+  width: min(460px, 62vw);
+  height: 18px;
+  border-radius: 999px;
+}
+
+.order-skeleton-badges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.order-skeleton-pill {
+  width: 132px;
+  height: 42px;
+  border-radius: 999px;
+}
+
+.order-skeleton-panel,
+.order-skeleton-summary {
+  pointer-events: none;
+}
+
+.order-skeleton-card-large {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  margin-bottom: 22px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), transparent 36%),
+    rgba(8, 13, 35, 0.72);
+  border: 1px solid rgba(167, 139, 250, 0.12);
+}
+
+.order-skeleton-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.order-skeleton-content {
+  flex: 1;
+}
+
+.order-skeleton-card-title {
+  width: 48%;
+  height: 24px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.order-skeleton-card-text {
+  width: 72%;
+  height: 15px;
+  border-radius: 999px;
+}
+
+.order-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.order-skeleton-option {
+  min-height: 116px;
+  border-radius: 18px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(17, 22, 47, 0.88), rgba(8, 12, 30, 0.88));
+}
+
+.order-skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  margin: 0 auto 14px;
+}
+
+.order-skeleton-option-text {
+  width: 70%;
+  height: 14px;
+  border-radius: 999px;
+  margin: 0 auto;
+}
+
+.order-skeleton-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.order-skeleton-field {
+  height: 56px;
+  border-radius: 16px;
+}
+
+.order-skeleton-field.wide {
+  grid-column: 1 / -1;
+}
+
+.order-skeleton-summary-title {
+  width: 62%;
+  height: 26px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+
+.order-skeleton-summary-row {
+  height: 48px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+
+.order-skeleton-divider {
+  height: 1px;
+  margin: 20px 0;
+  background: rgba(167, 139, 250, 0.14);
+}
+
+.order-skeleton-total {
+  height: 70px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+
+.order-skeleton-button {
+  height: 52px;
+  border-radius: 999px;
+}
+
+@keyframes orderSkeletonShimmer {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@media (max-width: 980px) {
+  .order-skeleton-header {
+    flex-direction: column;
+  }
+
+  .order-skeleton-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .order-skeleton-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .order-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-skeleton-title {
+    height: 42px;
+  }
+
+  .order-skeleton-card-large {
+    align-items: flex-start;
+  }
+}
+
 .order-page-topbar {
   display: flex;
   align-items: center;
