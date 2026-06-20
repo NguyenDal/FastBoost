@@ -1761,11 +1761,13 @@
 .master-lp-input::-webkit-outer-spin-button,
 .master-lp-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 
 .master-lp-input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .summary-gold-redemption-card {
