@@ -45,24 +45,36 @@ async function sendTrustpilotReviewInvite(order) {
 
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
 
+    const trustpilotPayload = {
+        recipientName: customerName,
+        recipientEmail: customerEmail,
+        referenceId: order.id,
+    };
+
     await createTransporter().sendMail({
         from,
         to: process.env.TRUSTPILOT_AFS_EMAIL,
-        subject: `Trustpilot review invitation for FastBoost order #${shortOrderId}`,
+        subject: `FastBoost completed order #${shortOrderId}`,
         text: [
-            `Customer Name: ${customerName}`,
-            `Customer Email: ${customerEmail}`,
+            `FastBoost completed order #${shortOrderId}`,
+            `Customer: ${customerName}`,
+            `Email: ${customerEmail}`,
             `Reference ID: ${order.id}`,
             `Service: ${serviceTitle}`,
             `Order Total: $${Number(order.totalPrice || 0).toFixed(2)} CAD`,
         ].join("\n"),
         html: `
-            <p><strong>Customer Name:</strong> ${customerName}</p>
-            <p><strong>Customer Email:</strong> ${customerEmail}</p>
-            <p><strong>Reference ID:</strong> ${order.id}</p>
-            <p><strong>Service:</strong> ${serviceTitle}</p>
-            <p><strong>Order Total:</strong> $${Number(order.totalPrice || 0).toFixed(2)} CAD</p>
-        `,
+        <p>FastBoost completed order #${shortOrderId}</p>
+        <p><strong>Customer:</strong> ${customerName}</p>
+        <p><strong>Email:</strong> ${customerEmail}</p>
+        <p><strong>Reference ID:</strong> ${order.id}</p>
+        <p><strong>Service:</strong> ${serviceTitle}</p>
+        <p><strong>Order Total:</strong> $${Number(order.totalPrice || 0).toFixed(2)} CAD</p>
+
+        <script type="application/json+trustpilot">
+            ${JSON.stringify(trustpilotPayload)}
+        </script>
+    `,
     });
 
     return true;
