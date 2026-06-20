@@ -16,8 +16,6 @@ function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { referralCode } = useParams();
-  const [healthMessage, setHealthMessage] = useState("Checking backend...");
-  const [healthError, setHealthError] = useState("");
 
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -243,19 +241,6 @@ function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const healthResponse = await fetch("http://localhost:5000/api/health");
-
-        if (!healthResponse.ok) {
-          throw new Error("Health check failed");
-        }
-
-        const healthData = await healthResponse.json();
-        setHealthMessage(healthData.message || "Backend is running");
-      } catch (error) {
-        setHealthError("Could not connect to backend");
-      }
-
-      try {
         const servicesResponse = await fetch("http://localhost:5000/api/services");
 
         if (!servicesResponse.ok) {
@@ -474,6 +459,7 @@ function HomePage() {
     };
 
     localStorage.setItem("token", token || "logged-in");
+    sessionStorage.removeItem("fastboost:session-expired-shown");
     localStorage.setItem("user", JSON.stringify(loggedInUser));
 
     setCurrentUser(loggedInUser);
@@ -895,20 +881,6 @@ function HomePage() {
               >
                 {selectedHomepageUpdate.buttonText}
               </button>
-            </div>
-          </div>
-        </section>
-
-        <section id="status" className="content-section page-content">
-          <div className="status-panel">
-            <div className="status-dot" />
-            <div>
-              <p className="status-title">Backend Status</p>
-              {healthError ? (
-                <p className="status-error">{healthError}</p>
-              ) : (
-                <p className="status-text">{healthMessage}</p>
-              )}
             </div>
           </div>
         </section>

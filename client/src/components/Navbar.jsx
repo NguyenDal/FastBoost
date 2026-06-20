@@ -12,10 +12,12 @@ import {
 } from "../api/assignmentRequests";
 import {
     clearExpiredSession,
+    clearLoggedOutSession,
     getStoredUser,
     hasValidSession,
     notifyAuthChanged,
     notifyUnreadChanged,
+    scheduleSessionExpiryCheck,
 } from "../utils/authSession";
 
 function Navbar({
@@ -58,13 +60,23 @@ function Navbar({
     const [panelAnimIn, setPanelAnimIn] = useState(false); // add 'open' class after mount for smooth slide-in
 
     useEffect(() => {
+        let expiryTimerId = scheduleSessionExpiryCheck();
+
+        const resetExpiryTimer = () => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+            }
+
+            expiryTimerId = scheduleSessionExpiryCheck();
+        };
+
         const syncNavbarSession = async () => {
+            const tokenBeforeCheck = localStorage.getItem("token");
             const tokenIsValid = hasValidSession();
 
             if (!tokenIsValid) {
-                clearExpiredSession({
-                    showExpiredModal: true,
-                });
+                // If there was no token before checking, this is a normal logged-out state,
+                // not an expired session.
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
                 setLocalShowProfileMenu(false);
@@ -75,11 +87,19 @@ function Navbar({
                 localStorage.setItem("unreadNotifications", "0");
                 localStorage.setItem("unreadMessages", "0");
                 setOpenPanel(null);
+
+                // Only expired-token logic should show the modal.
+                // hasValidSession() already calls clearExpiredSession() when token exists but expired.
+                if (!tokenBeforeCheck) {
+                    return;
+                }
+
                 return;
             }
 
             setLocalHasSession(true);
             setLocalCurrentUser(getStoredUser());
+            resetExpiryTimer();
 
             const token = localStorage.getItem("token");
             const cached = getStoredUser();
@@ -122,6 +142,11 @@ function Navbar({
         window.addEventListener("unread:update", syncCounts);
 
         const handleAuthChanged = (event) => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+                expiryTimerId = null;
+            }
+
             if (event.detail?.loggedOut) {
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
@@ -139,6 +164,7 @@ function Navbar({
             if (updatedUser) {
                 setLocalHasSession(true);
                 setLocalCurrentUser(updatedUser);
+                expiryTimerId = scheduleSessionExpiryCheck();
                 return;
             }
 
@@ -156,6 +182,10 @@ function Navbar({
         window.addEventListener("profile-image:uploading", handleProfileImageUploading);
 
         return () => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+            }
+
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
             window.removeEventListener("auth:changed", handleAuthChanged);
@@ -187,24 +217,38 @@ function Navbar({
         setShowProfileMenu || setLocalShowProfileMenu;
 
     const onLogout = () => {
-        if (handleLogout) {
-            try { handleLogout(); } catch { }
-        }
+        clearLoggedOutSession();
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
         setLocalHasSession(false);
         setLocalCurrentUser(null);
         setLocalShowProfileMenu(false);
-        // Notify other parts of the app and redirect away from protected pages
-        notifyAuthChanged({ loggedOut: true });
-        notifyUnreadChanged();
+        setNotifications([]);
+        setMessageNotifications([]);
+        setUnreadNotifications(0);
+        setUnreadMessages(0);
+        setOpenPanel(null);
+
         navigate("/", { replace: true });
     };
 
     const loadNotifications = async () => {
+        const tokenBeforeCheck = localStorage.getItem("token");
+
         if (!hasValidSession()) {
-            clearExpiredSession();
+            // Do not show expired popup if there was no token.
+            // That means the user is simply logged out.
+            if (!tokenBeforeCheck) {
+                setNotifications([]);
+                setMessageNotifications([]);
+                setUnreadNotifications(0);
+                setUnreadMessages(0);
+                setLocalHasSession(false);
+                setLocalCurrentUser(null);
+                localStorage.setItem("unreadNotifications", "0");
+                localStorage.setItem("unreadMessages", "0");
+                return [];
+            }
+
             setNotifications([]);
             setMessageNotifications([]);
             setUnreadNotifications(0);
@@ -213,6 +257,7 @@ function Navbar({
             setLocalCurrentUser(null);
             localStorage.setItem("unreadNotifications", "0");
             localStorage.setItem("unreadMessages", "0");
+            navigate("/", { replace: true });
             return [];
         }
 
@@ -384,24 +429,68 @@ function Navbar({
 
     return (
         <header className="topbar">
-            <div className="brand">
-                <Link to="/" className="brand-link">
-                    <div className="brand-icon brand-logo-image-wrap">
-                        <CleanIcon
-                            src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
-                            alt="FastBoost logo"
-                            className="brand-logo-image"
-                        />
-                    </div>
+            <div className="brand-zone">
+                <div className="brand">
+                    <Link to="/" className="brand-link">
+                        <div className="brand-icon brand-logo-image-wrap">
+                            <CleanIcon
+                                src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
+                                alt="FastBoost logo"
+                                className="brand-logo-image"
+                            />
+                        </div>
 
-                    <div>
-                        <p className="brand-title">FastBoost</p>
-                        <p className="brand-subtitle">League Services Platform</p>
-                    </div>
-                </Link>
+                        <div>
+                            <p className="brand-title">FastBoost</p>
+                            <p className="brand-subtitle">League Services Platform</p>
+                        </div>
+                    </Link>
+                </div>
+
+                <button
+                    type="button"
+                    className="nav-pill nav-online-pill"
+                    onClick={() => navigate("/boosters")}
+                >
+                    <span className="nav-online-dot" />
+                    <span>133 Boosters</span>
+                </button>
             </div>
 
             <nav className="nav">
+                <button
+                    type="button"
+                    className="nav-pill nav-review-pill"
+                    onClick={() => navigate("/reviews")}
+                >
+                    <span className="nav-pill-icon">★</span>
+                    <span>Reviews</span>
+                </button>
+
+                <button
+                    type="button"
+                    className="nav-pill nav-contact-pill"
+                    onClick={() => navigate("/contact")}
+                >
+                    <span className="nav-pill-icon nav-message-icon" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M21 12.5a7.5 7.5 0 0 1-7.5 7.5H8l-5 3v-6.5A7.5 7.5 0 0 1 10.5 5h3A7.5 7.5 0 0 1 21 12.5Z"
+                                stroke="currentColor"
+                                strokeWidth="1.9"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                            <path
+                                d="M8 11h8M8 14h5"
+                                stroke="currentColor"
+                                strokeWidth="1.9"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                    </span>
+                    <span>Contact</span>
+                </button>
 
                 {!effectiveHasSession ? (
                     <button

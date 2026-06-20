@@ -45,6 +45,14 @@ export function notifyUnreadChanged() {
 
 export function notifySessionExpired() {
   try {
+    const alreadyShown = sessionStorage.getItem("fastboost:session-expired-shown");
+
+    if (alreadyShown === "true") {
+      return;
+    }
+
+    sessionStorage.setItem("fastboost:session-expired-shown", "true");
+
     window.dispatchEvent(
       new CustomEvent("session:expired", {
         detail: {
@@ -79,11 +87,65 @@ export function clearLoggedOutSession() {
   localStorage.removeItem("unreadMessages");
   localStorage.removeItem("unreadNotifications");
 
+  sessionStorage.removeItem("fastboost:session-expired-shown");
+
   notifyAuthChanged({
     loggedOut: true,
+    manualLogout: true,
   });
 
   notifyUnreadChanged();
+}
+
+export function getTokenExpiryTime(token) {
+  if (!token) return null;
+
+  try {
+    const payloadBase64 = token.split(".")[1];
+
+    if (!payloadBase64) return null;
+
+    const payload = JSON.parse(atob(payloadBase64));
+    const exp = payload?.exp;
+
+    if (!exp) return null;
+
+    return exp * 1000;
+  } catch {
+    return null;
+  }
+}
+
+export function scheduleSessionExpiryCheck() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return null;
+  }
+
+  const expiryTime = getTokenExpiryTime(token);
+
+  if (!expiryTime) {
+    return null;
+  }
+
+  const delay = expiryTime - Date.now();
+
+  if (delay <= 0) {
+    clearExpiredSession({
+      showExpiredModal: true,
+    });
+
+    return null;
+  }
+
+  const timerId = window.setTimeout(() => {
+    clearExpiredSession({
+      showExpiredModal: true,
+    });
+  }, delay);
+
+  return timerId;
 }
 
 export function hasValidSession() {
