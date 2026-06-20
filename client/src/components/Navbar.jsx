@@ -12,10 +12,12 @@ import {
 } from "../api/assignmentRequests";
 import {
     clearExpiredSession,
+    clearLoggedOutSession,
     getStoredUser,
     hasValidSession,
     notifyAuthChanged,
     notifyUnreadChanged,
+    scheduleSessionExpiryCheck,
 } from "../utils/authSession";
 
 function Navbar({
@@ -58,13 +60,23 @@ function Navbar({
     const [panelAnimIn, setPanelAnimIn] = useState(false); // add 'open' class after mount for smooth slide-in
 
     useEffect(() => {
+        let expiryTimerId = scheduleSessionExpiryCheck();
+
+        const resetExpiryTimer = () => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+            }
+
+            expiryTimerId = scheduleSessionExpiryCheck();
+        };
+
         const syncNavbarSession = async () => {
+            const tokenBeforeCheck = localStorage.getItem("token");
             const tokenIsValid = hasValidSession();
 
             if (!tokenIsValid) {
-                clearExpiredSession({
-                    showExpiredModal: true,
-                });
+                // If there was no token before checking, this is a normal logged-out state,
+                // not an expired session.
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
                 setLocalShowProfileMenu(false);
@@ -75,11 +87,19 @@ function Navbar({
                 localStorage.setItem("unreadNotifications", "0");
                 localStorage.setItem("unreadMessages", "0");
                 setOpenPanel(null);
+
+                // Only expired-token logic should show the modal.
+                // hasValidSession() already calls clearExpiredSession() when token exists but expired.
+                if (!tokenBeforeCheck) {
+                    return;
+                }
+
                 return;
             }
 
             setLocalHasSession(true);
             setLocalCurrentUser(getStoredUser());
+            resetExpiryTimer();
 
             const token = localStorage.getItem("token");
             const cached = getStoredUser();
@@ -122,6 +142,11 @@ function Navbar({
         window.addEventListener("unread:update", syncCounts);
 
         const handleAuthChanged = (event) => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+                expiryTimerId = null;
+            }
+
             if (event.detail?.loggedOut) {
                 setLocalHasSession(false);
                 setLocalCurrentUser(null);
@@ -139,6 +164,7 @@ function Navbar({
             if (updatedUser) {
                 setLocalHasSession(true);
                 setLocalCurrentUser(updatedUser);
+                expiryTimerId = scheduleSessionExpiryCheck();
                 return;
             }
 
@@ -156,6 +182,10 @@ function Navbar({
         window.addEventListener("profile-image:uploading", handleProfileImageUploading);
 
         return () => {
+            if (expiryTimerId) {
+                window.clearTimeout(expiryTimerId);
+            }
+
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
             window.removeEventListener("auth:changed", handleAuthChanged);
@@ -187,24 +217,38 @@ function Navbar({
         setShowProfileMenu || setLocalShowProfileMenu;
 
     const onLogout = () => {
-        if (handleLogout) {
-            try { handleLogout(); } catch { }
-        }
+        clearLoggedOutSession();
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
         setLocalHasSession(false);
         setLocalCurrentUser(null);
         setLocalShowProfileMenu(false);
-        // Notify other parts of the app and redirect away from protected pages
-        notifyAuthChanged({ loggedOut: true });
-        notifyUnreadChanged();
+        setNotifications([]);
+        setMessageNotifications([]);
+        setUnreadNotifications(0);
+        setUnreadMessages(0);
+        setOpenPanel(null);
+
         navigate("/", { replace: true });
     };
 
     const loadNotifications = async () => {
+        const tokenBeforeCheck = localStorage.getItem("token");
+
         if (!hasValidSession()) {
-            clearExpiredSession();
+            // Do not show expired popup if there was no token.
+            // That means the user is simply logged out.
+            if (!tokenBeforeCheck) {
+                setNotifications([]);
+                setMessageNotifications([]);
+                setUnreadNotifications(0);
+                setUnreadMessages(0);
+                setLocalHasSession(false);
+                setLocalCurrentUser(null);
+                localStorage.setItem("unreadNotifications", "0");
+                localStorage.setItem("unreadMessages", "0");
+                return [];
+            }
+
             setNotifications([]);
             setMessageNotifications([]);
             setUnreadNotifications(0);
@@ -213,6 +257,7 @@ function Navbar({
             setLocalCurrentUser(null);
             localStorage.setItem("unreadNotifications", "0");
             localStorage.setItem("unreadMessages", "0");
+            navigate("/", { replace: true });
             return [];
         }
 

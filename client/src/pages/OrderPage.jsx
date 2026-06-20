@@ -663,6 +663,7 @@ function OrderPage() {
     const loggedInUser = { email, profileImage, role };
 
     localStorage.setItem("token", token || "logged-in");
+    sessionStorage.removeItem("fastboost:session-expired-shown");
     localStorage.setItem("user", JSON.stringify(loggedInUser));
     setCurrentUser(loggedInUser);
 

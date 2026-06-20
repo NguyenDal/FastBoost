@@ -39,6 +39,7 @@ function LoginPage() {
       }
 
       localStorage.setItem("token", data.token);
+      sessionStorage.removeItem("fastboost:session-expired-shown");
       localStorage.setItem("user", JSON.stringify(data.user || {}));
 
       setMessage("Login successful");
