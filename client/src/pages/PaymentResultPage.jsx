@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import OrderPage from "./OrderPage";
-import { verifyCheckoutSession } from "../api/orders";
+import {
+  verifyCheckoutSession,
+  deleteUnpaidCheckoutOrder,
+} from "../api/orders";
 import "../styles/PaymentResultPage.css";
 
 function PaymentResultPage({ type }) {
@@ -18,6 +21,33 @@ function PaymentResultPage({ type }) {
   const params = useMemo(() => {
     return new URLSearchParams(location.search);
   }, [location.search]);
+
+  useEffect(() => {
+    if (type !== "cancelled") return;
+
+    const orderId = params.get("orderId");
+    if (!orderId) return;
+
+    let cancelled = false;
+
+    async function cleanupCancelledCheckout() {
+      try {
+        await deleteUnpaidCheckoutOrder(orderId);
+
+        if (cancelled) return;
+
+        console.log("Cancelled unpaid checkout order cleaned:", orderId);
+      } catch (error) {
+        console.error("Failed to clean cancelled checkout order:", error);
+      }
+    }
+
+    cleanupCancelledCheckout();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [type, params]);
 
   useEffect(() => {
     let cancelled = false;
@@ -125,13 +155,12 @@ function PaymentResultPage({ type }) {
 
       <div className="payment-result-floating-layer">
         <div
-          className={`payment-result-modal ${
-            confirmedSuccess
-              ? "payment-result-success"
-              : isSuccess
+          className={`payment-result-modal ${confirmedSuccess
+            ? "payment-result-success"
+            : isSuccess
               ? "payment-result-review"
               : "payment-result-cancelled"
-          }`}
+            }`}
         >
           <div className="payment-result-orb" aria-hidden>
             {state.loading ? (
@@ -162,31 +191,31 @@ function PaymentResultPage({ type }) {
             {state.loading
               ? "Verifying Payment"
               : confirmedSuccess
-              ? "Payment Successful"
-              : showNeedsReview
-              ? "Payment Needs Review"
-              : "Payment Cancelled"}
+                ? "Payment Successful"
+                : showNeedsReview
+                  ? "Payment Needs Review"
+                  : "Payment Cancelled"}
           </p>
 
           <h2>
             {state.loading
               ? "Confirming your order..."
               : confirmedSuccess
-              ? "Order confirmed"
-              : showNeedsReview
-              ? "We could not confirm the payment yet"
-              : "Checkout was cancelled"}
+                ? "Order confirmed"
+                : showNeedsReview
+                  ? "We could not confirm the payment yet"
+                  : "Checkout was cancelled"}
           </h2>
 
           <p className="payment-result-text">
             {state.loading
               ? "Please wait while FastBoost confirms your payment with Stripe."
               : confirmedSuccess
-              ? "Your order is ready. Transferring you to the Match Page..."
-              : showNeedsReview
-              ? state.error ||
-                "The payment was not marked as paid yet. Please check your orders."
-              : "No payment was taken. You can adjust your order and try again."}
+                ? "Your order is ready. Transferring you to the Match Page..."
+                : showNeedsReview
+                  ? state.error ||
+                  "The payment was not marked as paid yet. Please check your orders."
+                  : "No payment was taken. You can adjust your order and try again."}
           </p>
 
           {!confirmedSuccess && !state.loading && (

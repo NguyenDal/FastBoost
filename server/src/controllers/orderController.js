@@ -289,6 +289,7 @@ const getMyOrders = async (req, res) => {
         const orders = await prisma.order.findMany({
             where: {
                 customerId: req.user.id || req.user.userId,
+                paymentStatus: "PAID",
             },
             include: {
                 service: true,
@@ -505,11 +506,105 @@ const getOrderById = async (req, res) => {
     }
 };
 
+const deleteUnpaidCheckoutOrder = async (req, res) => {
+    try {
+        const userId = req.user.id || req.user.userId;
+        const { id } = req.params;
+
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token",
+            });
+        }
+
+        const order = await prisma.order.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                customerId: true,
+                status: true,
+                paymentStatus: true,
+                paidAt: true,
+                stripePaymentIntentId: true,
+            },
+        });
+
+        if (!order) {
+            return res.json({
+                ok: true,
+                deleted: false,
+                message: "Unpaid checkout order already removed.",
+            });
+        }
+
+        if (String(order.customerId) !== String(userId)) {
+            return res.status(403).json({
+                ok: false,
+                message: "You can only remove your own unpaid checkout order.",
+            });
+        }
+
+        const isPaid =
+            order.paymentStatus === "PAID" ||
+            Boolean(order.paidAt) ||
+            Boolean(order.stripePaymentIntentId);
+
+        if (isPaid) {
+            return res.status(400).json({
+                ok: false,
+                deleted: false,
+                message: "Paid orders cannot be removed.",
+            });
+        }
+
+        const canDeleteStatus = ["PENDING", "CANCELLED"].includes(order.status);
+
+        if (!canDeleteStatus) {
+            return res.status(400).json({
+                ok: false,
+                deleted: false,
+                message: "Only pending or cancelled unpaid checkout orders can be removed.",
+            });
+        }
+
+        const deleteResult = await prisma.order.deleteMany({
+            where: {
+                id: order.id,
+                customerId: order.customerId,
+                paymentStatus: {
+                    not: "PAID",
+                },
+                paidAt: null,
+                stripePaymentIntentId: null,
+            },
+        });
+
+        return res.json({
+            ok: true,
+            deleted: deleteResult.count > 0,
+            message:
+                deleteResult.count > 0
+                    ? "Unpaid checkout order removed."
+                    : "Unpaid checkout order already removed or not eligible for removal.",
+        });
+    } catch (error) {
+        console.error("deleteUnpaidCheckoutOrder error:", error);
+
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to remove unpaid checkout order.",
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     createOrder,
     getMyOrders,
     getOrderById,
     updateOrderLoginInfo,
+    deleteUnpaidCheckoutOrder,
 };
 
 // Admin: list all orders with filters/pagination
@@ -521,7 +616,14 @@ module.exports.listAllOrders = async (req, res) => {
         const serviceId = req.query.serviceId;
         const q = (req.query.q || "").toString().trim();
 
-        const where = {};
+        const includeUnpaidCheckout = req.query.includeUnpaidCheckout === "true";
+
+        const where = includeUnpaidCheckout
+            ? {}
+            : {
+                paymentStatus: "PAID",
+            };
+
         if (status === "CURRENT") {
             where.status = {
                 in: ["PENDING", "IN_PROGRESS"],

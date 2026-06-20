@@ -66,3 +66,18 @@ export async function verifyCheckoutSession({ sessionId, orderId }) {
 
   return data;
 }
+
+export async function deleteUnpaidCheckoutOrder(orderId) {
+  const res = await fetch(`${API_BASE_URL}/orders/unpaid-checkout/${orderId}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.message || "Failed to remove unpaid checkout order");
+  }
+
+  return data;
+}
