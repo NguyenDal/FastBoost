@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
 import "../styles/Dashboard.css";
@@ -64,9 +64,6 @@ export default function DashboardPage() {
         .filter((item) => !item.read && item.type === "CHAT_MESSAGE")
         .slice(0, 5);
 
-    const role = user?.role || "CUSTOMER";
-    const ordersPath = role === "PROVIDER" ? "/provider/orders" : "/account/orders";
-
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
     const totalGold = Number(loyalty?.totalGold || 0);
     const referralLink = loyalty?.referralLink || "";
@@ -116,6 +113,10 @@ export default function DashboardPage() {
         }
     };
 
+    const openLoyaltyPage = () => {
+        navigate("/account/loyalty");
+    };
+
     return (
         <>
             <div className="dashboard-title-row">
@@ -152,14 +153,9 @@ export default function DashboardPage() {
                     </section>
 
                     <section className="dashboard-grid dashboard-grid-bottom">
-                        <section
+                        <Link
+                            to="/account/loyalty"
                             className={`dashboard-card dashboard-loyalty-card dashboard-loyalty-${tierInfo.key}`}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => navigate("/account/loyalty")}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter") navigate("/account/loyalty");
-                            }}
                         >
                             <div className="dashboard-card-header">
                                 <div>
@@ -209,7 +205,7 @@ export default function DashboardPage() {
                                     </div>
                                 ))}
                             </div>
-                        </section>
+                        </Link>
 
                         <section className={`dashboard-card dashboard-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
                             <div className="dashboard-card-header">

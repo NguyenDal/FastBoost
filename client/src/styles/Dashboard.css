@@ -221,6 +221,9 @@
 .dashboard-loyalty-card {
     cursor: pointer;
     min-height: 356px;
+    display: block;
+    color: inherit;
+    text-decoration: none;
 }
 
 .dashboard-loyalty-card:hover {
