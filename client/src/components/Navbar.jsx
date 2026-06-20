@@ -458,14 +458,16 @@ function Navbar({
             </div>
 
             <nav className="nav">
-                <button
-                    type="button"
-                    className="nav-pill nav-review-pill"
-                    onClick={() => navigate("/reviews")}
+                <a
+                    href="https://www.trustpilot.com/review/fastboost.gg"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nav-pill nav-trustpilot-link-pill"
+                    aria-label="View FastBoost reviews on Trustpilot"
                 >
-                    <span className="nav-pill-icon">★</span>
+                    <span className="nav-trustpilot-star">★</span>
                     <span>Reviews</span>
-                </button>
+                </a>
 
                 <button
                     type="button"
