@@ -429,24 +429,68 @@ function Navbar({
 
     return (
         <header className="topbar">
-            <div className="brand">
-                <Link to="/" className="brand-link">
-                    <div className="brand-icon brand-logo-image-wrap">
-                        <CleanIcon
-                            src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
-                            alt="FastBoost logo"
-                            className="brand-logo-image"
-                        />
-                    </div>
+            <div className="brand-zone">
+                <div className="brand">
+                    <Link to="/" className="brand-link">
+                        <div className="brand-icon brand-logo-image-wrap">
+                            <CleanIcon
+                                src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png"
+                                alt="FastBoost logo"
+                                className="brand-logo-image"
+                            />
+                        </div>
 
-                    <div>
-                        <p className="brand-title">FastBoost</p>
-                        <p className="brand-subtitle">League Services Platform</p>
-                    </div>
-                </Link>
+                        <div>
+                            <p className="brand-title">FastBoost</p>
+                            <p className="brand-subtitle">League Services Platform</p>
+                        </div>
+                    </Link>
+                </div>
+
+                <button
+                    type="button"
+                    className="nav-pill nav-online-pill"
+                    onClick={() => navigate("/boosters")}
+                >
+                    <span className="nav-online-dot" />
+                    <span>133 Boosters</span>
+                </button>
             </div>
 
             <nav className="nav">
+                <button
+                    type="button"
+                    className="nav-pill nav-review-pill"
+                    onClick={() => navigate("/reviews")}
+                >
+                    <span className="nav-pill-icon">★</span>
+                    <span>Reviews</span>
+                </button>
+
+                <button
+                    type="button"
+                    className="nav-pill nav-contact-pill"
+                    onClick={() => navigate("/contact")}
+                >
+                    <span className="nav-pill-icon nav-message-icon" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M21 12.5a7.5 7.5 0 0 1-7.5 7.5H8l-5 3v-6.5A7.5 7.5 0 0 1 10.5 5h3A7.5 7.5 0 0 1 21 12.5Z"
+                                stroke="currentColor"
+                                strokeWidth="1.9"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                            <path
+                                d="M8 11h8M8 14h5"
+                                stroke="currentColor"
+                                strokeWidth="1.9"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                    </span>
+                    <span>Contact</span>
+                </button>
 
                 {!effectiveHasSession ? (
                     <button

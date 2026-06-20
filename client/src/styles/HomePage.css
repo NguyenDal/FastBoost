@@ -228,41 +228,6 @@
   transition: opacity 0.2s ease;
 }
 
-/* Status panel */
-.status-panel {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.96), rgba(11, 18, 32, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.status-dot {
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.14);
-  flex-shrink: 0;
-}
-
-.status-title {
-  margin: 0;
-  color: #9ca3af;
-  font-size: 0.86rem;
-}
-
-.status-text,
-.status-error {
-  margin: 4px 0 0;
-}
-
-.status-error {
-  color: #f87171;
-}
-
 /* Hover service grid/cards */
 /* Service grid/cards */
 .hover-service-grid {
