@@ -43,3 +43,26 @@ export async function createCheckoutSession(orderId, goldToUse = 0) {
 
   return data;
 }
+
+export async function verifyCheckoutSession({ sessionId, orderId }) {
+  const params = new URLSearchParams();
+
+  if (sessionId) params.set("sessionId", sessionId);
+  if (orderId) params.set("orderId", orderId);
+
+  const res = await fetch(
+    `${API_BASE_URL}/payments/verify-checkout-session?${params.toString()}`,
+    {
+      method: "GET",
+      headers: authHeaders(),
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.message || "Failed to verify payment");
+  }
+
+  return data;
+}

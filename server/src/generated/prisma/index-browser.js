@@ -167,6 +167,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   stripeCheckoutSessionId: 'stripeCheckoutSessionId',
   stripePaymentIntentId: 'stripePaymentIntentId',
   paidAt: 'paidAt',
+  trustpilotReviewSentAt: 'trustpilotReviewSentAt',
   currency: 'currency',
   amountCents: 'amountCents',
   goldRedeemed: 'goldRedeemed',

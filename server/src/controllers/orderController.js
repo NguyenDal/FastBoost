@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 
 const {
     encryptOrderPassword,
@@ -631,6 +632,8 @@ module.exports.updateOrderStatus = async (req, res) => {
                 id: true,
                 customerId: true,
                 status: true,
+                paymentStatus: true,
+                trustpilotReviewSentAt: true,
             },
         });
 
@@ -685,8 +688,28 @@ module.exports.updateOrderStatus = async (req, res) => {
             removedBonuses: [],
         };
 
-        if (existingOrder.status !== status) {
-            loyaltyBonusSync = await syncLoyaltyTierBonuses(existingOrder.customerId);
+        if (
+            status === "COMPLETED" &&
+            existingOrder.status !== "COMPLETED" &&
+            existingOrder.paymentStatus === "PAID" &&
+            !existingOrder.trustpilotReviewSentAt
+        ) {
+            try {
+                const sent = await sendTrustpilotReviewInvite(updated);
+
+                if (sent) {
+                    await prisma.order.update({
+                        where: { id },
+                        data: {
+                            trustpilotReviewSentAt: new Date(),
+                        },
+                    });
+
+                    updated.trustpilotReviewSentAt = new Date();
+                }
+            } catch (emailError) {
+                console.error("Trustpilot review invite error:", emailError);
+            }
         }
 
         return res.json({
@@ -1070,6 +1093,8 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
                 id: true,
                 customerId: true,
                 status: true,
+                paymentStatus: true,
+                trustpilotReviewSentAt: true,
             },
         });
 
@@ -1126,8 +1151,27 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             removedBonuses: [],
         };
 
-        if (existingOrder.status !== "COMPLETED") {
-            loyaltyBonusSync = await syncLoyaltyTierBonuses(existingOrder.customerId);
+        if (
+            existingOrder.status !== "COMPLETED" &&
+            existingOrder.paymentStatus === "PAID" &&
+            !existingOrder.trustpilotReviewSentAt
+        ) {
+            try {
+                const sent = await sendTrustpilotReviewInvite(updated);
+
+                if (sent) {
+                    await prisma.order.update({
+                        where: { id: orderId },
+                        data: {
+                            trustpilotReviewSentAt: new Date(),
+                        },
+                    });
+
+                    updated.trustpilotReviewSentAt = new Date();
+                }
+            } catch (emailError) {
+                console.error("Trustpilot review invite error:", emailError);
+            }
         }
         return res.json({
             ok: true,

@@ -145,6 +145,8 @@ const createCheckoutSession = async (req, res) => {
             });
         }
 
+        const clientUrl = getClientUrl();
+
         if (cashAmountCents <= 0) {
             await prisma.$transaction([
                 prisma.order.update({
@@ -181,11 +183,9 @@ const createCheckoutSession = async (req, res) => {
                 ok: true,
                 paidWithGoldOnly: true,
                 orderId: order.id,
-                redirectUrl: `${clientUrl}/payment/success?orderId=${order.id}&gold=1`,
+                redirectUrl: `${clientUrl}/payment/success/${order.serviceId}?orderId=${order.id}&gold=1`,
             });
         }
-
-        const clientUrl = getClientUrl();
 
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
@@ -214,8 +214,8 @@ const createCheckoutSession = async (req, res) => {
                 goldDiscountCents: String(goldDiscountCents),
                 cashAmountCents: String(cashAmountCents),
             },
-            success_url: `${clientUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${clientUrl}/payment/cancelled?orderId=${order.id}`,
+            success_url: `${clientUrl}/payment/success/${order.serviceId}?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${clientUrl}/payment/cancelled/${order.serviceId}?orderId=${order.id}`,
         });
 
         await prisma.order.update({
@@ -241,6 +241,68 @@ const createCheckoutSession = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "Failed to create checkout session",
+            error: error.message,
+        });
+    }
+};
+
+const verifyCheckoutSession = async (req, res) => {
+    try {
+        const userId = getUserId(req);
+        const { sessionId, orderId } = req.query || {};
+
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: "Invalid user token",
+            });
+        }
+
+        if (!sessionId && !orderId) {
+            return res.status(400).json({
+                ok: false,
+                message: "sessionId or orderId is required",
+            });
+        }
+
+        const order = await prisma.order.findFirst({
+            where: {
+                customerId: userId,
+                ...(sessionId
+                    ? { stripeCheckoutSessionId: sessionId }
+                    : { id: orderId }),
+            },
+            select: {
+                id: true,
+                customerId: true,
+                paymentStatus: true,
+                status: true,
+                paidAt: true,
+                stripeCheckoutSessionId: true,
+            },
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                ok: false,
+                message: "Order not found",
+            });
+        }
+
+        return res.json({
+            ok: true,
+            orderId: order.id,
+            paymentStatus: order.paymentStatus,
+            paid: order.paymentStatus === "PAID",
+            orderStatus: order.status,
+            paidAt: order.paidAt,
+        });
+    } catch (error) {
+        console.error("verifyCheckoutSession error:", error);
+
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to verify checkout session",
             error: error.message,
         });
     }
@@ -331,9 +393,7 @@ const handleStripeWebhook = async (req, res) => {
                     : []),
             ]);
 
-            console.log(
-                `Stripe payment completed for order ${orderId}. Updated rows: ${updated.count}`
-            );
+            console.log(`Stripe payment completed for order ${orderId}.`);
         }
 
         if (event.type === "checkout.session.expired") {
@@ -365,5 +425,6 @@ const handleStripeWebhook = async (req, res) => {
 
 module.exports = {
     createCheckoutSession,
+    verifyCheckoutSession,
     handleStripeWebhook,
 };
