@@ -76,6 +76,7 @@ model Order {
   stripeCheckoutSessionId String?       @unique
   stripePaymentIntentId   String?
   paidAt                  DateTime?
+  trustpilotReviewSentAt  DateTime?
   currency                String        @default("cad")
   amountCents             Int?
 

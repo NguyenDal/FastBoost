@@ -458,14 +458,16 @@ function Navbar({
             </div>
 
             <nav className="nav">
-                <button
-                    type="button"
-                    className="nav-pill nav-review-pill"
-                    onClick={() => navigate("/reviews")}
+                <a
+                    href="https://www.trustpilot.com/review/fastboost.gg"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nav-pill nav-trustpilot-link-pill"
+                    aria-label="View FastBoost reviews on Trustpilot"
                 >
-                    <span className="nav-pill-icon">★</span>
+                    <span className="nav-trustpilot-star">★</span>
                     <span>Reviews</span>
-                </button>
+                </a>
 
                 <button
                     type="button"
@@ -658,24 +660,30 @@ function Navbar({
                                     </button>
                                 )}
 
+                                {effectiveCurrentUser?.role === "PROVIDER" && (
+                                    <button
+                                        className="profile-menu-item profile-menu-row"
+                                        role="menuitem"
+                                        onClick={() => {
+                                            effectiveSetShowProfileMenu(false);
+                                            navigate("/provider/orders");
+                                        }}
+                                    >
+                                        <ProfileMenuIcon type="orders" />
+                                        <span>Assigned Orders</span>
+                                    </button>
+                                )}
+
                                 <button
                                     className="profile-menu-item profile-menu-row"
                                     role="menuitem"
                                     onClick={() => {
                                         effectiveSetShowProfileMenu(false);
-                                        navigate(
-                                            effectiveCurrentUser?.role === "PROVIDER"
-                                                ? "/provider/orders"
-                                                : "/account/orders"
-                                        );
+                                        navigate("/account/orders");
                                     }}
                                 >
                                     <ProfileMenuIcon type="orders" />
-                                    <span>
-                                        {effectiveCurrentUser?.role === "PROVIDER"
-                                            ? "Assigned Orders"
-                                            : "Orders"}
-                                    </span>
+                                    <span>Orders</span>
                                 </button>
 
                                 <button

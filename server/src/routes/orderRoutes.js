@@ -13,6 +13,7 @@ const {
   providerCompleteAssignedOrder,
   providerLeaveAssignedOrder,
   updateOrderLoginInfo,
+  deleteUnpaidCheckoutOrder,
 } = require("../controllers/orderController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -44,6 +45,8 @@ router.delete("/:id/provider-leave", protect, providerLeaveAssignedOrder);
 // Customer: update login info from MatchPage
 router.patch("/:id/login-info", protect, updateOrderLoginInfo);
 
+// Customer: remove unpaid checkout order after cancelled Stripe checkout
+router.delete("/unpaid-checkout/:id", protect, deleteUnpaidCheckoutOrder);
 router.get("/:id", protect, getOrderById);
 
 module.exports = router;

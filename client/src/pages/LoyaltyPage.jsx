@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { getMyLoyalty } from "../api/loyalty";
 import "../styles/Loyalty.css";
 
-function useCustomerGuard() {
+function useLoyaltyGuard() {
     const navigate = useNavigate();
     const [hasAccess, setHasAccess] = useState(false);
 
@@ -21,10 +21,10 @@ function useCustomerGuard() {
             try {
                 const user = JSON.parse(userRaw);
 
-                if (user?.role !== "CUSTOMER" && user?.role !== "ADMIN") {
-                    navigate("/", { replace: true });
-                } else {
+                if (["CUSTOMER", "PROVIDER", "ADMIN"].includes(user?.role)) {
                     setHasAccess(true);
+                } else {
+                    navigate("/", { replace: true });
                 }
             } catch {
                 navigate("/", { replace: true });
@@ -48,7 +48,7 @@ function useCustomerGuard() {
 }
 
 export default function LoyaltyPage() {
-    const hasAccess = useCustomerGuard();
+    const hasAccess = useLoyaltyGuard();
 
     const [loyalty, setLoyalty] = useState(null);
     const [loading, setLoading] = useState(true);

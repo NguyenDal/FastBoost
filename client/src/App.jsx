@@ -19,6 +19,7 @@ import AdminAccountsPage from "./pages/AdminAccountsPage";
 import DashboardPage from "./pages/DashboardPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
+import PaymentResultPage from "./pages/PaymentResultPage";
 
 import {
   clearExpiredSession,
@@ -91,6 +92,24 @@ function App() {
         <Route path="/order/:serviceId" element={<OrderPage />} />
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        <Route
+          path="/payment/success/:serviceId"
+          element={
+            <ProtectedRoute>
+              <PaymentResultPage type="success" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/payment/cancelled/:serviceId"
+          element={
+            <ProtectedRoute>
+              <PaymentResultPage type="cancelled" />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/match/:orderId"

@@ -174,9 +174,10 @@ Password/security decisions:
 - Stripe Webhooks
 - Stripe CLI for local webhook forwarding
 
-### Email
+### Email / Reviews
 - Nodemailer
 - Gmail SMTP App Password
+- Trustpilot Automatic Feedback Service (AFS)
 
 ### Assets and security services
 - AWS S3 for public website/rank assets and uploaded profile pictures
@@ -302,16 +303,18 @@ socket.on("chat:message", (m) => console.log("msg", m));
 
 ### Orders
 - `POST /api/orders` — create order
-- `GET /api/orders/my` — customer order list
+- `GET /api/orders/my` — customer order list; customer-facing list shows paid orders only
 - `GET /api/orders/:id` — order detail with access control
+- `DELETE /api/orders/unpaid-checkout/:id` — customer cleanup endpoint for unpaid cancelled Stripe checkout attempts
 - `PATCH /api/orders/:id/login-info` — customer updates in-game name/password from MatchPage
 
 ### Payments
 - `POST /api/payments/create-checkout-session` — create a Stripe Checkout Session for an authenticated customer order, with optional gold redemption
+- `GET /api/payments/verify-checkout-session` — verify Stripe Checkout/order payment status after success redirect before navigating to MatchPage
 - `POST /api/payments/webhook` — Stripe webhook endpoint for payment fulfillment; must use raw request body before `express.json()`
 
 ### Admin orders
-- `GET /api/orders/admin` — list all orders with filters
+- `GET /api/orders/admin` — list admin orders with filters; hides unpaid checkout attempts by default unless `includeUnpaidCheckout=true`
 - `GET /api/orders/admin/:id` — admin order detail
 - `PATCH /api/orders/admin/:id/status` — admin status update/override
 - `GET /api/orders/:id/assignments` — list assigned boosters
@@ -372,6 +375,8 @@ SMTP_SECURE="false"
 SMTP_USER="your_email_here"
 SMTP_PASS="your_google_app_password"
 SMTP_FROM="FastBoost <your_email_here>"
+
+TRUSTPILOT_AFS_EMAIL="fastboost.gg+your_code@invite.trustpilot.com"
 
 AWS_REGION="ca-central-1"
 ORDER_PASSWORD_KMS_KEY_ID="alias/fastboost-order-passwords"
@@ -439,6 +444,9 @@ When `stripe listen` starts, copy the shown `whsec_...` value into `server/.env`
 - Gold should only be permanently spent after payment succeeds.
 - Backend must always validate `orderId`, customer ownership, payment status, amount, and gold use.
 - Do not expose `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the frontend.
+- Customer and admin order lists should hide unpaid checkout attempts by default.
+- Cancelled unpaid checkout attempts are deleted through `DELETE /api/orders/unpaid-checkout/:id`.
+- Abandoned unpaid checkout attempts older than 24 hours are cleaned automatically by the backend cleanup utility.
 
 ### Gold redemption rule
 ```text
@@ -480,6 +488,22 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- payment result overlay added/directed so Stripe success/cancel redirects show animated popups over the OrderPage background instead of a blank page
+- success popup verifies payment/session state before navigating to MatchPage
+- cancelled popup keeps customers on the order page and silently cleans the unpaid checkout attempt
+- `GET /api/payments/verify-checkout-session` added/directed for frontend payment verification
+- unpaid checkout cleanup endpoint added/directed at `DELETE /api/orders/unpaid-checkout/:id`
+- customer order history now hides unpaid checkout attempts and only shows paid orders
+- admin order management now hides unpaid checkout attempts by default, with optional `includeUnpaidCheckout=true` direction for debugging/inspection
+- unpaid checkout cleanup hardened with paid-order protection and idempotent `deleteMany`
+- backend cleanup utility added/directed to delete abandoned unpaid pending checkout attempts older than 24 hours
+- server startup cleanup direction added so unpaid checkout cleanup runs once on boot and then hourly
+- Trustpilot AFS email variable added/directed with `TRUSTPILOT_AFS_EMAIL`
+- Trustpilot review invite utility added/directed through Nodemailer
+- `trustpilotReviewSentAt` added/directed to prevent duplicate review invitations
+- Trustpilot review invite trigger added/directed for both admin-complete and provider-complete order paths
+- Trustpilot navbar widget attempt replaced with a clean FastBoost-style Reviews link to the public Trustpilot profile
+- online boosters navbar pill spacing adjusted to avoid crowding the dashboard/sidebar vertical line
 - Stripe sandbox account setup completed for FastBoost payment testing
 - Stripe SDK installed/configured in the Express backend
 - payment fields added/directed for orders, including payment status, Stripe session/payment intent IDs, paid timestamp, currency, amount cents, cash amount cents, redeemed gold, and gold discount cents
@@ -740,8 +764,8 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
-- final frontend payment-success and payment-cancelled page polish
-- final customer order / admin order / provider order visibility rules for unpaid vs paid orders
+- final end-to-end testing for unpaid checkout cleanup across cancel, back-button, closed-tab, and Stripe webhook timing cases
+- final Trustpilot AFS invite testing after real/completed paid orders
 - final testing for gold redemption edge cases, including partial-gold, full-gold, invalid gold, and webhook retry/idempotency behavior
 - final refund/cancellation handling direction for Stripe and gold redemption reversal
 - final shared dashboard layout testing across Dashboard, My Orders, and Change Password
@@ -760,6 +784,29 @@ npx prisma studio
 
 ## Next steps (recommended)
 
+1. Test cancelled Stripe checkout cleanup:
+   - create an order from the frontend
+   - click Continue to Secure Payment
+   - cancel/back out from Stripe Checkout
+   - confirm `/payment/cancelled/:serviceId?orderId=...` shows the animated cancelled popup over the OrderPage
+   - confirm browser Network shows `DELETE /api/orders/unpaid-checkout/:id`
+   - confirm Prisma no longer has that unpaid order
+   - confirm Customer My Orders does not show unpaid checkout attempts
+   - confirm Admin Orders does not show unpaid checkout attempts by default
+2. Test duplicate cleanup safety:
+   - cancel Stripe checkout in local React dev mode
+   - confirm duplicate cleanup calls do not crash
+   - expected behavior is one deletion and any later duplicate request returning safely
+3. Test abandoned checkout cleanup:
+   - create an unpaid pending order by starting checkout and closing the tab
+   - temporarily lower the cleanup cutoff during local testing if needed
+   - confirm `cleanupOldUnpaidOrders()` removes only unpaid pending orders and never removes paid orders
+4. Test Trustpilot review invite flow:
+   - complete a paid order as admin
+   - complete a paid assigned order as provider
+   - confirm `trustpilotReviewSentAt` is filled after one successful send
+   - confirm repeated completion/status updates do not send duplicate invites
+   - confirm unpaid completed test orders do not send Trustpilot invites
 1. Test Stripe payment flow end-to-end:
    - start backend with `npm run dev`
    - start Stripe CLI with `stripe listen --forward-to localhost:5000/api/payments/webhook`
@@ -921,6 +968,10 @@ npx prisma studio
 
 ## Website highlights
 
+- Added a payment result overlay flow that keeps the customer on the order page during Stripe success/cancel redirects, verifies payment before MatchPage navigation, and shows polished animated feedback.
+- Implemented unpaid checkout cleanup so cancelled Stripe attempts are hidden from customer/admin order lists and deleted safely without risking paid orders.
+- Added scheduled backend cleanup for abandoned unpaid checkout attempts while keeping paid orders protected.
+- Integrated Trustpilot AFS review-invite direction for paid completed orders and added a clean navbar Reviews link to the public Trustpilot profile.
 - Integrated Stripe Checkout into a React/Express marketplace flow with authenticated Checkout Session creation, dynamic order pricing, and Stripe-hosted payment redirects.
 - Implemented secure Stripe webhook fulfillment using raw Express request bodies, Stripe CLI local forwarding, signature verification, and Prisma order payment updates.
 - Added customer gold redemption at checkout with frontend validation, backend normalization, payment amount reduction, and reward-history redemption direction.

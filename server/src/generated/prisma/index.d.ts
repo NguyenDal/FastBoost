@@ -6058,6 +6058,7 @@ export namespace Prisma {
     stripeCheckoutSessionId: string | null
     stripePaymentIntentId: string | null
     paidAt: Date | null
+    trustpilotReviewSentAt: Date | null
     currency: string | null
     amountCents: number | null
     goldRedeemed: number | null
@@ -6108,6 +6109,7 @@ export namespace Prisma {
     stripeCheckoutSessionId: string | null
     stripePaymentIntentId: string | null
     paidAt: Date | null
+    trustpilotReviewSentAt: Date | null
     currency: string | null
     amountCents: number | null
     goldRedeemed: number | null
@@ -6158,6 +6160,7 @@ export namespace Prisma {
     stripeCheckoutSessionId: number
     stripePaymentIntentId: number
     paidAt: number
+    trustpilotReviewSentAt: number
     currency: number
     amountCents: number
     goldRedeemed: number
@@ -6241,6 +6244,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: true
     stripePaymentIntentId?: true
     paidAt?: true
+    trustpilotReviewSentAt?: true
     currency?: true
     amountCents?: true
     goldRedeemed?: true
@@ -6291,6 +6295,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: true
     stripePaymentIntentId?: true
     paidAt?: true
+    trustpilotReviewSentAt?: true
     currency?: true
     amountCents?: true
     goldRedeemed?: true
@@ -6341,6 +6346,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: true
     stripePaymentIntentId?: true
     paidAt?: true
+    trustpilotReviewSentAt?: true
     currency?: true
     amountCents?: true
     goldRedeemed?: true
@@ -6479,6 +6485,7 @@ export namespace Prisma {
     stripeCheckoutSessionId: string | null
     stripePaymentIntentId: string | null
     paidAt: Date | null
+    trustpilotReviewSentAt: Date | null
     currency: string
     amountCents: number | null
     goldRedeemed: number
@@ -6549,6 +6556,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: boolean
     stripePaymentIntentId?: boolean
     paidAt?: boolean
+    trustpilotReviewSentAt?: boolean
     currency?: boolean
     amountCents?: boolean
     goldRedeemed?: boolean
@@ -6606,6 +6614,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: boolean
     stripePaymentIntentId?: boolean
     paidAt?: boolean
+    trustpilotReviewSentAt?: boolean
     currency?: boolean
     amountCents?: boolean
     goldRedeemed?: boolean
@@ -6659,6 +6668,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: boolean
     stripePaymentIntentId?: boolean
     paidAt?: boolean
+    trustpilotReviewSentAt?: boolean
     currency?: boolean
     amountCents?: boolean
     goldRedeemed?: boolean
@@ -6712,6 +6722,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: boolean
     stripePaymentIntentId?: boolean
     paidAt?: boolean
+    trustpilotReviewSentAt?: boolean
     currency?: boolean
     amountCents?: boolean
     goldRedeemed?: boolean
@@ -6752,7 +6763,7 @@ export namespace Prisma {
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -6790,6 +6801,7 @@ export namespace Prisma {
       stripeCheckoutSessionId: string | null
       stripePaymentIntentId: string | null
       paidAt: Date | null
+      trustpilotReviewSentAt: Date | null
       currency: string
       amountCents: number | null
       goldRedeemed: number
@@ -7266,6 +7278,7 @@ export namespace Prisma {
     readonly stripeCheckoutSessionId: FieldRef<"Order", 'String'>
     readonly stripePaymentIntentId: FieldRef<"Order", 'String'>
     readonly paidAt: FieldRef<"Order", 'DateTime'>
+    readonly trustpilotReviewSentAt: FieldRef<"Order", 'DateTime'>
     readonly currency: FieldRef<"Order", 'String'>
     readonly amountCents: FieldRef<"Order", 'Int'>
     readonly goldRedeemed: FieldRef<"Order", 'Int'>
@@ -17743,6 +17756,7 @@ export namespace Prisma {
     stripeCheckoutSessionId: 'stripeCheckoutSessionId',
     stripePaymentIntentId: 'stripePaymentIntentId',
     paidAt: 'paidAt',
+    trustpilotReviewSentAt: 'trustpilotReviewSentAt',
     currency: 'currency',
     amountCents: 'amountCents',
     goldRedeemed: 'goldRedeemed',
@@ -18397,6 +18411,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: StringNullableFilter<"Order"> | string | null
     stripePaymentIntentId?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    trustpilotReviewSentAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currency?: StringFilter<"Order"> | string
     amountCents?: IntNullableFilter<"Order"> | number | null
     goldRedeemed?: IntFilter<"Order"> | number
@@ -18453,6 +18468,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: SortOrderInput | SortOrder
     stripePaymentIntentId?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
+    trustpilotReviewSentAt?: SortOrderInput | SortOrder
     currency?: SortOrder
     amountCents?: SortOrderInput | SortOrder
     goldRedeemed?: SortOrder
@@ -18512,6 +18528,7 @@ export namespace Prisma {
     paymentStatus?: EnumPaymentStatusFilter<"Order"> | $Enums.PaymentStatus
     stripePaymentIntentId?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    trustpilotReviewSentAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currency?: StringFilter<"Order"> | string
     amountCents?: IntNullableFilter<"Order"> | number | null
     goldRedeemed?: IntFilter<"Order"> | number
@@ -18568,6 +18585,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: SortOrderInput | SortOrder
     stripePaymentIntentId?: SortOrderInput | SortOrder
     paidAt?: SortOrderInput | SortOrder
+    trustpilotReviewSentAt?: SortOrderInput | SortOrder
     currency?: SortOrder
     amountCents?: SortOrderInput | SortOrder
     goldRedeemed?: SortOrder
@@ -18627,6 +18645,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     stripePaymentIntentId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paidAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    trustpilotReviewSentAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     currency?: StringWithAggregatesFilter<"Order"> | string
     amountCents?: IntNullableWithAggregatesFilter<"Order"> | number | null
     goldRedeemed?: IntWithAggregatesFilter<"Order"> | number
@@ -19564,6 +19583,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -19620,6 +19640,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -19672,6 +19693,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -19728,6 +19750,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -19782,6 +19805,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -19831,6 +19855,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -19882,6 +19907,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -20968,6 +20994,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: SortOrder
     stripePaymentIntentId?: SortOrder
     paidAt?: SortOrder
+    trustpilotReviewSentAt?: SortOrder
     currency?: SortOrder
     amountCents?: SortOrder
     goldRedeemed?: SortOrder
@@ -21034,6 +21061,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: SortOrder
     stripePaymentIntentId?: SortOrder
     paidAt?: SortOrder
+    trustpilotReviewSentAt?: SortOrder
     currency?: SortOrder
     amountCents?: SortOrder
     goldRedeemed?: SortOrder
@@ -21084,6 +21112,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: SortOrder
     stripePaymentIntentId?: SortOrder
     paidAt?: SortOrder
+    trustpilotReviewSentAt?: SortOrder
     currency?: SortOrder
     amountCents?: SortOrder
     goldRedeemed?: SortOrder
@@ -23032,6 +23061,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -23086,6 +23116,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -23563,6 +23594,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: StringNullableFilter<"Order"> | string | null
     stripePaymentIntentId?: StringNullableFilter<"Order"> | string | null
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    trustpilotReviewSentAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     currency?: StringFilter<"Order"> | string
     amountCents?: IntNullableFilter<"Order"> | number | null
     goldRedeemed?: IntFilter<"Order"> | number
@@ -24109,6 +24141,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -24163,6 +24196,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -24543,6 +24577,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -24598,6 +24633,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -24722,6 +24758,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -24777,6 +24814,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -25011,6 +25049,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -25066,6 +25105,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -25247,6 +25287,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -25302,6 +25343,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -25479,6 +25521,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -25534,6 +25577,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -25651,6 +25695,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -25706,6 +25751,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -26494,6 +26540,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -26635,6 +26682,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -26689,6 +26737,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -26742,6 +26791,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -27092,6 +27142,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: string | null
     stripePaymentIntentId?: string | null
     paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
     currency?: string
     amountCents?: number | null
     goldRedeemed?: number
@@ -27141,6 +27192,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -27195,6 +27247,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number
@@ -27248,6 +27301,7 @@ export namespace Prisma {
     stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
     stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currency?: StringFieldUpdateOperationsInput | string
     amountCents?: NullableIntFieldUpdateOperationsInput | number | null
     goldRedeemed?: IntFieldUpdateOperationsInput | number

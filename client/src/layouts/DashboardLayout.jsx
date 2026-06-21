@@ -5,17 +5,6 @@ import "../styles/Dashboard.css";
 export default function DashboardLayout() {
     const location = useLocation();
 
-    const user = (() => {
-        try {
-            return JSON.parse(localStorage.getItem("user") || "null");
-        } catch {
-            return null;
-        }
-    })();
-
-    const role = user?.role || "CUSTOMER";
-    const ordersPath = role === "PROVIDER" ? "/provider/orders" : "/account/orders";
-
     return (
         <div className="dashboard-shell dashboard-with-sidebar">
             <Navbar />
@@ -32,8 +21,8 @@ export default function DashboardLayout() {
                         </Link>
 
                         <Link
-                            to={ordersPath}
-                            className={location.pathname.includes("/orders") ? "active" : ""}
+                            to="/account/orders"
+                            className={location.pathname === "/account/orders" ? "active" : ""}
                         >
                             <OrdersIcon />
                             <span>My Orders</span>
