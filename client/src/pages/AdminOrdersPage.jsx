@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { adminListOrders } from "../api/admin";
 import "../styles/Admin.css";
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 
 function useAdminGuard() {
     const navigate = useNavigate();
@@ -127,7 +128,7 @@ export default function AdminOrdersPage() {
                 </div>
 
                 {loading ? (
-                    <p>Loading…</p>
+                    <GenericPageSkeleton />
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : (

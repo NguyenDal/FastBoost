@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
+import {
+    Skeleton,
+    SkeletonButton,
+    SkeletonCircle,
+} from "../components/Skeleton";
 import "../styles/Dashboard.css";
 
 export default function DashboardPage() {
@@ -289,37 +294,26 @@ function DashboardListSkeleton() {
         <section className="dashboard-card dashboard-list-card dashboard-skeleton-card">
             <div className="dashboard-card-header">
                 <div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
-                    <div className="dashboard-skeleton-line dashboard-skeleton-title" />
+                    <Skeleton width={92} height={12} className="dashboard-skeleton-eyebrow" />
+                    <div style={{ height: 10 }} />
+                    <Skeleton width={190} height={24} radius={999} />
                 </div>
 
-                <div className="dashboard-skeleton-pill" />
+                <Skeleton width={42} height={32} radius={999} />
             </div>
 
             <div className="dashboard-skeleton-list">
-                <div className="dashboard-skeleton-item">
-                    <div>
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text" />
-                    </div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
-                </div>
+                {Array.from({ length: 3 }).map((_, index) => (
+                    <div className="dashboard-skeleton-item" key={index}>
+                        <div>
+                            <Skeleton width={index === 1 ? "62%" : "76%"} height={15} />
+                            <div style={{ height: 9 }} />
+                            <Skeleton width={index === 1 ? "54%" : "84%"} height={13} />
+                        </div>
 
-                <div className="dashboard-skeleton-item">
-                    <div>
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text short" />
+                        <Skeleton width={78} height={12} />
                     </div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
-                </div>
-
-                <div className="dashboard-skeleton-item">
-                    <div>
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-title" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-item-text" />
-                    </div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-time" />
-                </div>
+                ))}
             </div>
         </section>
     );
@@ -330,23 +324,29 @@ function DashboardLoyaltySkeleton() {
         <section className="dashboard-card dashboard-loyalty-card dashboard-skeleton-card">
             <div className="dashboard-card-header">
                 <div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
-                    <div className="dashboard-skeleton-line dashboard-skeleton-title wide" />
-                    <div className="dashboard-skeleton-line dashboard-skeleton-subtitle" />
+                    <Skeleton width={150} height={12} />
+                    <div style={{ height: 10 }} />
+                    <Skeleton width={220} height={26} />
+                    <div style={{ height: 12 }} />
+                    <Skeleton width={320} height={14} />
                 </div>
 
-                <div className="dashboard-skeleton-tier-badge" />
+                <SkeletonCircle size={58} />
             </div>
 
-            <div className="dashboard-skeleton-track" />
+            <div style={{ height: 22 }} />
+
+            <Skeleton width="100%" height={14} radius={999} />
+
+            <div style={{ height: 22 }} />
 
             <div className="dashboard-tier-row">
                 {Array.from({ length: 5 }).map((_, index) => (
                     <div className="dashboard-tier-step dashboard-skeleton-tier-step" key={index}>
-                        <div className="dashboard-skeleton-rank-icon" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-name" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-small" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-tier-small short" />
+                        <SkeletonCircle size={34} />
+                        <Skeleton width="70%" height={14} />
+                        <Skeleton width="82%" height={11} />
+                        <Skeleton width={index === 0 ? "50%" : "68%"} height={11} />
                     </div>
                 ))}
             </div>
@@ -359,35 +359,33 @@ function DashboardReferralSkeleton() {
         <section className="dashboard-card dashboard-referral-card dashboard-skeleton-card">
             <div className="dashboard-card-header">
                 <div>
-                    <div className="dashboard-skeleton-line dashboard-skeleton-eyebrow" />
-                    <div className="dashboard-skeleton-line dashboard-skeleton-title wide" />
-                    <div className="dashboard-skeleton-line dashboard-skeleton-subtitle" />
+                    <Skeleton width={112} height={12} />
+                    <div style={{ height: 10 }} />
+                    <Skeleton width={250} height={26} />
+                    <div style={{ height: 12 }} />
+                    <Skeleton width={360} height={14} />
                 </div>
 
-                <div className="dashboard-skeleton-referral-count" />
+                <Skeleton width={72} height={58} radius={18} />
             </div>
 
             <div className="dashboard-referral-conditions">
-                <div className="dashboard-skeleton-condition">
-                    <div className="dashboard-skeleton-circle" />
-                    <div>
-                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-title" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-text" />
-                    </div>
-                </div>
+                {Array.from({ length: 2 }).map((_, index) => (
+                    <div className="dashboard-skeleton-condition" key={index}>
+                        <SkeletonCircle size={30} />
 
-                <div className="dashboard-skeleton-condition">
-                    <div className="dashboard-skeleton-circle" />
-                    <div>
-                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-title" />
-                        <div className="dashboard-skeleton-line dashboard-skeleton-condition-text short" />
+                        <div>
+                            <Skeleton width={index === 0 ? 210 : 170} height={14} />
+                            <div style={{ height: 9 }} />
+                            <Skeleton width={index === 0 ? 300 : 245} height={12} />
+                        </div>
                     </div>
-                </div>
+                ))}
             </div>
 
             <div className="dashboard-skeleton-referral-box">
-                <div className="dashboard-skeleton-line dashboard-skeleton-referral-url" />
-                <div className="dashboard-skeleton-copy-button" />
+                <Skeleton width="72%" height={15} />
+                <SkeletonButton width={82} />
             </div>
         </section>
     );

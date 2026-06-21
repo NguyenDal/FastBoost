@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
     adminListUsers,
     adminUpdateUserRole,
@@ -383,7 +384,7 @@ export default function AdminAccountsPage() {
                 {success && <p className="admin-feedback admin-feedback-success">{success}</p>}
 
                 {loading ? (
-                    <p className="muted-text">Loading users...</p>
+                    <GenericPageSkeleton />
                 ) : (
                     <div className="admin-table-wrap premium-table-wrap">
                         <table className="admin-table account-table">

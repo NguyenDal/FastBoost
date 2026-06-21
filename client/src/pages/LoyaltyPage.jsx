@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 import { getMyLoyalty } from "../api/loyalty";
 import "../styles/Loyalty.css";
 
@@ -150,7 +151,7 @@ export default function LoyaltyPage() {
 
             <div className="loyalty-page-container">
                 {loading ? (
-                    <p className="loyalty-muted">Loading loyalty rewards...</p>
+                    <GenericPageSkeleton />
                 ) : error ? (
                     <p className="loyalty-error">{error}</p>
                 ) : (

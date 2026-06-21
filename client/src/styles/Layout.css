@@ -1,0 +1,145 @@
+/* Shared layout shells and session-expired modal */
+.order-page-shell {
+  position: relative;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(5, 10, 35, 0.95), rgba(3, 7, 24, 0.98)),
+    url("https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+  color: #f3f4f6;
+}
+
+.order-page-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(81, 88, 255, 0.2), transparent 28%),
+    linear-gradient(to right, rgba(4, 8, 28, 0.88), rgba(4, 8, 28, 0.7));
+  pointer-events: none;
+}
+
+.order-page-container {
+  position: relative;
+  z-index: 1;
+  width: min(1360px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.session-expired-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 8, 14, 0.72);
+  backdrop-filter: blur(8px);
+  animation: sessionExpiredFadeIn 0.18s ease forwards;
+}
+
+.session-expired-modal {
+  width: min(440px, 100%);
+  padding: 28px;
+  border-radius: 26px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(520px 220px at 50% 0%, rgba(124, 58, 237, 0.22), transparent 58%),
+    radial-gradient(420px 220px at 100% 20%, rgba(225, 29, 72, 0.14), transparent 62%),
+    rgba(13, 18, 30, 0.98);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+  animation: sessionExpiredPopIn 0.22s ease forwards;
+}
+
+.session-expired-icon {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  color: #c4b5fd;
+  background:
+    radial-gradient(circle, rgba(124, 58, 237, 0.22), rgba(124, 58, 237, 0.05));
+  border: 1px solid rgba(196, 181, 253, 0.28);
+  box-shadow: 0 0 34px rgba(124, 58, 237, 0.16);
+}
+
+.session-expired-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+.session-expired-eyebrow {
+  margin: 0 0 8px;
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.session-expired-modal h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.session-expired-text {
+  margin: 12px 0 0;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.session-expired-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.session-expired-actions button {
+  min-height: 46px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 850;
+  border: none;
+  transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
+}
+
+.session-expired-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.session-expired-secondary {
+  color: #e5e7eb;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.session-expired-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.session-expired-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #6d5dfc, #8b5cf6);
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.20);
+}
+
+.session-expired-primary:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 520px) {
+  .session-expired-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .session-expired-modal {
+    padding: 24px;
+    border-radius: 22px;
+  }
+}

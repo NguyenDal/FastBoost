@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { customerListMyOrders } from "../api/customerOrders";
 import "../styles/Admin.css";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 
 function getStoredUser() {
     try {
@@ -140,7 +141,7 @@ export default function CustomerOrdersPage() {
             </div>
 
             {loading ? (
-                <p className="muted-text">Loading your orders...</p>
+                <GenericPageSkeleton />
             ) : error ? (
                 <p style={{ color: "#ef4444" }}>{error}</p>
             ) : (

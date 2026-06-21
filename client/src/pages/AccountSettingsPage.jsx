@@ -596,7 +596,7 @@ export default function AccountSettingsPage() {
                 </section>
 
                 {loading ? (
-                    <p className="account-settings-muted">Loading account settings...</p>
+                    <GenericPageSkeleton />
                 ) : (
                     <div className="account-settings-grid">
                         <section className="account-settings-card">

@@ -9,6 +9,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import CleanIcon from "../components/CleanIcon";
+import { CardGridSkeleton } from "../components/PageSkeletons";
 import { API_BASE_URL } from "../api/config";
 import "../styles/HomePage.css";
 
@@ -781,7 +782,7 @@ function HomePage() {
               </p>
             </div>
 
-            {servicesLoading && <p className="info-message">Loading services...</p>}
+            {servicesLoading && <CardGridSkeleton count={3} />}
             {servicesError && <p className="error-message">{servicesError}</p>}
 
             {!servicesLoading && !servicesError && featuredServices.length === 0 && (
