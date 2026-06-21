@@ -8,99 +8,53 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Stripe Checkout payment flow, webhook fulfillment, and gold redemption UI
+### Latest session update — Global skeleton loading system, contact support polish, and CSS cleanup
 
-#### Stripe account and sandbox setup
-- Created/entered the Stripe sandbox account for FastBoost.
-- Selected non-recurring payments and dashboard-based setup for the current implementation path.
-- Added Stripe test API configuration to the backend environment.
-- Installed and configured Stripe SDK support in the Express backend.
-- Confirmed Stripe Checkout Sessions can be created from the FastBoost backend using the test secret key.
+#### Global Facebook-style skeleton loading system
+- Added a reusable global skeleton loading system so FastBoost pages do not need separate page-specific shimmer effects.
+- Added/directed shared skeleton component files:
+  - `client/src/components/Skeleton.jsx`
+  - `client/src/components/PageSkeletons.jsx`
+- Added/directed shared skeleton styling:
+  - `client/src/styles/Skeleton.css`
+- `Skeleton.css` now owns the shared Facebook-style shimmer effect used across the app.
+- The global skeleton effect preserves the same visual style previously used on the OrderPage and MatchPage cards, including the blue/purple shimmer, timing, and movement direction.
+- `main.jsx` should import the shared skeleton stylesheet globally:
+  - `import "./styles/Skeleton.css";`
 
-#### Payment database fields and order payment state
-- Added payment tracking direction to `Order` so order fulfillment can be separated from payment fulfillment.
-- Added/directed fields for:
-  - `paymentStatus`
-  - `stripeCheckoutSessionId`
-  - `stripePaymentIntentId`
-  - `paidAt`
-  - `currency`
-  - `amountCents`
-  - `cashAmountCents`
-  - `goldRedeemed`
-  - `goldDiscountCents`
-- Added/directed `PaymentStatus` enum:
-  - `PENDING`
-  - `PAID`
-  - `FAILED`
-  - `REFUNDED`
-  - `CANCELLED`
-- Added/directed `ORDER_REDEMPTION` as a `RewardType` for gold spent on orders.
-- Updated order creation direction so new orders store payment-ready amount data while keeping the existing order lifecycle intact.
+#### Pages converted to the global loading effect
+- Dashboard loading state converted to use the shared skeleton components.
+- OrderPage loading state converted to use `TwoColumnPageSkeleton`.
+- MatchPage loading state converted to use the shared skeleton components while preserving its chat/order-detail loading layout.
+- All currently implemented page loading states now use the shared global skeleton effect instead of separate custom shimmer animations.
 
-#### Stripe Checkout backend integration
-- Added backend Stripe client helper:
-  - `server/src/utils/stripeClient.js`
-- Added payment controller direction:
-  - `server/src/controllers/paymentController.js`
-- Added payment route direction:
-  - `server/src/routes/paymentRoutes.js`
-- Added checkout session endpoint:
-  - `POST /api/payments/create-checkout-session`
-- Checkout Session creation now:
-  - validates authenticated customer ownership of the order
-  - blocks payment attempts for already-paid orders
-  - creates a Stripe Checkout Session with dynamic line item pricing from the FastBoost order
-  - stores the Stripe Checkout Session ID on the order
-  - redirects customers to Stripe-hosted Checkout
-- Verified the checkout URL returns successfully from Postman and opens Stripe test checkout.
+#### CSS cleanup after global skeleton migration
+- Cleaned dashboard-specific skeleton CSS after moving the effect to `Skeleton.css`.
+- Cleaned order-page-specific skeleton CSS after moving the effect to `Skeleton.css`.
+- Cleaned match-page-specific skeleton CSS after moving the effect to `Skeleton.css`.
+- New cleaned CSS files produced/directed for replacement:
+  - `client/src/styles/Dashboard.css` from `Dashboard.cleaned.css`
+  - `client/src/styles/OrderPage.css` from `OrderPage.cleaned.css`
+  - `client/src/styles/MatchPage.css` from `MatchPage.cleaned.css`
+- MatchPage component cleanup produced/directed for replacement:
+  - `client/src/pages/MatchPage.jsx` from `MatchPage.cleaned.jsx`
+- Page CSS files now keep only layout/page-specific styles. The actual skeleton shimmer effect should remain only in `client/src/styles/Skeleton.css`.
 
-#### Stripe webhook fulfillment
-- Added Stripe webhook route direction:
-  - `POST /api/payments/webhook`
-- Mounted the webhook route before `express.json()` using `express.raw({ type: "application/json" })` because Stripe signature verification requires the raw request body.
-- Installed and configured Stripe CLI locally for webhook forwarding.
-- Added local webhook forwarding command:
-  - `stripe listen --forward-to localhost:5000/api/payments/webhook`
-- Added `STRIPE_WEBHOOK_SECRET` to backend environment direction.
-- Verified successful local webhook delivery after resolving Stripe CLI and webhook-secret setup.
-- Confirmed paid test checkout updates the database correctly:
-  - `paymentStatus = PAID`
-  - `paidAt` filled
-  - `stripePaymentIntentId` saved
-  - `stripeCheckoutSessionId` saved
-
-#### Frontend payment redirect flow
-- Updated the order page flow direction so `Continue` no longer sends the customer directly to MatchPage after order creation.
-- New intended flow:
-  - customer configures order
-  - frontend creates FastBoost order through `POST /api/orders`
-  - frontend calls `POST /api/payments/create-checkout-session`
-  - frontend redirects to Stripe Checkout using `checkoutUrl`
-  - Stripe webhook marks the order as paid
-  - customer returns to `/payment/success`
-- Added frontend API helper direction:
-  - `createCheckoutSession(orderId, goldToUse)`
-- Updated order submit button direction to show payment preparation state:
-  - `Preparing secure payment...`
-  - `Continue to Secure Payment`
-
-#### Gold redemption during checkout
-- Added gold redemption direction to the checkout summary.
-- Customers can choose how much gold they want to apply before going to Stripe.
-- Final rule selected:
-  - `1 gold = $0.10`
-  - customers can use any whole-number amount of gold, not only multiples of 10
-- Added frontend validation so the gold field highlights red and blocks submit when:
-  - the value is not a whole number
-  - the value is negative
-  - the customer enters more gold than they own
-  - the customer enters more gold than the order total can cover
-- Changed the gold input from browser-native `type="number"` behavior to a custom styled text/numeric input so the browser spinner and native validation popup do not appear.
-- Added CSS direction to remove number input spinner UI where number inputs are still used.
-- Added backend validation/normalization direction so gold cannot be abused from frontend edits.
-- Gold is only permanently spent after payment succeeds through Stripe webhook, not just when the checkout session is created.
-- Gold-only orders are directed to mark as paid without Stripe redirect when gold fully covers the order.
+#### Contact page support flow polish
+- Navbar Contact button direction routes to `/contact`.
+- Contact page direction uses two cards:
+  - Send Email
+  - Live Chat / Coming Soon
+- Send Email reveals the built-in email form with a smooth swipe-down animation.
+- Clicking Live Chat hides the email form with a swipe-up animation because live support chat will be implemented later.
+- Contact email success changed from plain success text to an animated confirmation popup with a mail/check visual.
+- Static aurora/glow background direction added for the contact success popup so the glow no longer spins in circles.
+- Contact-related frontend/backend files directed:
+  - `client/src/pages/ContactPage.jsx`
+  - `client/src/styles/ContactPage.css`
+  - `client/src/api/contact.js`
+  - `server/src/controllers/contactController.js`
+  - `server/src/routes/contactRoutes.js`
 
 ---
 ## Project concept
@@ -205,7 +159,10 @@ The frontend styles are split so shared rules are separated from page-specific r
 - [client/src/styles/Navbar.css](client/src/styles/Navbar.css) contains the top navigation, brand area, profile menu, quick tiles, side panels, and notification/message drawer styles.
 - [client/src/styles/Auth.css](client/src/styles/Auth.css) contains auth modal layouts, form controls, success/error states, and password-reset flows.
 - [client/src/styles/Layout.css](client/src/styles/Layout.css) contains shell layouts such as order page containers and the session-expired modal.
-- Page-specific styles remain in files such as [client/src/styles/HomePage.css](client/src/styles/HomePage.css), [client/src/styles/Dashboard.css](client/src/styles/Dashboard.css), and [client/src/styles/OrderPage.css](client/src/styles/OrderPage.css).
+- [client/src/styles/Skeleton.css](client/src/styles/Skeleton.css) contains the shared global Facebook-style skeleton shimmer effect used by Dashboard, OrderPage, MatchPage, and future loading states.
+- [client/src/components/Skeleton.jsx](client/src/components/Skeleton.jsx) contains reusable skeleton primitives such as `Skeleton`, `SkeletonCircle`, `SkeletonCard`, `SkeletonButton`, and `SkeletonField`.
+- [client/src/components/PageSkeletons.jsx](client/src/components/PageSkeletons.jsx) contains shared page-level skeleton layouts such as `TwoColumnPageSkeleton`.
+- Page-specific styles remain in files such as [client/src/styles/HomePage.css](client/src/styles/HomePage.css), [client/src/styles/Dashboard.css](client/src/styles/Dashboard.css), [client/src/styles/OrderPage.css](client/src/styles/OrderPage.css), [client/src/styles/MatchPage.css](client/src/styles/MatchPage.css), and [client/src/styles/ContactPage.css](client/src/styles/ContactPage.css).
 
 ---
 
@@ -500,6 +457,15 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- global Facebook-style skeleton loading system added with shared `Skeleton.jsx`, `PageSkeletons.jsx`, and `Skeleton.css`
+- Dashboard, OrderPage, and MatchPage loading states converted to use the global skeleton effect
+- all currently implemented page loading states now share the same skeleton shimmer instead of separate page-specific shimmer implementations
+- `Dashboard.css`, `OrderPage.css`, and `MatchPage.css` cleaned so skeleton shimmer lives only in `Skeleton.css`
+- cleaned replacement files produced/directed: `Dashboard.cleaned.css`, `OrderPage.cleaned.css`, `MatchPage.cleaned.css`, and `MatchPage.cleaned.jsx`
+- Contact page direction added from navbar with Send Email and Live Chat / Coming Soon cards
+- Send Email form swipe-down/swipe-up animation added/directed for contact option switching
+- animated contact email success popup added/directed with mail/check visual instead of plain success text
+- contact success popup glow changed to static aurora instead of spinning background
 - payment result overlay added/directed so Stripe success/cancel redirects show animated popups over the OrderPage background instead of a blank page
 - success popup verifies payment/session state before navigating to MatchPage
 - cancelled popup keeps customers on the order page and silently cleans the unpaid checkout attempt
@@ -776,6 +742,8 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
+- final browser verification for the global skeleton migration after replacing cleaned CSS/JSX files
+- final check that no old page-specific skeleton shimmer classes remain referenced in active JSX
 - final end-to-end testing for unpaid checkout cleanup across cancel, back-button, closed-tab, and Stripe webhook timing cases
 - final Trustpilot AFS invite testing after real/completed paid orders
 - final testing for gold redemption edge cases, including partial-gold, full-gold, invalid gold, and webhook retry/idempotency behavior
@@ -980,6 +948,9 @@ npx prisma studio
 
 ## Website highlights
 
+- Added a shared global Facebook-style skeleton loading system with reusable React skeleton primitives and page-level loading layouts, keeping the same visual shimmer previously used on OrderPage and MatchPage.
+- Migrated Dashboard, OrderPage, and MatchPage loading states to the global skeleton system and cleaned page CSS so the shimmer effect is centralized in `Skeleton.css`.
+- Added a polished Contact support flow with Send Email / Live Chat cards, swipe-down email form animation, and an animated mail/check success confirmation popup.
 - Added a payment result overlay flow that keeps the customer on the order page during Stripe success/cancel redirects, verifies payment before MatchPage navigation, and shows polished animated feedback.
 - Implemented unpaid checkout cleanup so cancelled Stripe attempts are hidden from customer/admin order lists and deleted safely without risking paid orders.
 - Added scheduled backend cleanup for abandoned unpaid checkout attempts while keeping paid orders protected.
