@@ -195,6 +195,18 @@ gaming-services-platform/
   README.md
 ```
 
+## Frontend styling structure
+
+The frontend styles are split so shared rules are separated from page-specific rules.
+
+- [client/src/main.jsx](client/src/main.jsx) imports the shared CSS entry files.
+- [client/src/styles/Global.css](client/src/styles/Global.css) contains global defaults, base element styling, and reusable keyframes.
+- [client/src/styles/Shared.css](client/src/styles/Shared.css) contains shared layout utilities, section headers, buttons, tags, and common card/button helpers.
+- [client/src/styles/Navbar.css](client/src/styles/Navbar.css) contains the top navigation, brand area, profile menu, quick tiles, side panels, and notification/message drawer styles.
+- [client/src/styles/Auth.css](client/src/styles/Auth.css) contains auth modal layouts, form controls, success/error states, and password-reset flows.
+- [client/src/styles/Layout.css](client/src/styles/Layout.css) contains shell layouts such as order page containers and the session-expired modal.
+- Page-specific styles remain in files such as [client/src/styles/HomePage.css](client/src/styles/HomePage.css), [client/src/styles/Dashboard.css](client/src/styles/Dashboard.css), and [client/src/styles/OrderPage.css](client/src/styles/OrderPage.css).
+
 ---
 
 ## How to run the project (local)
