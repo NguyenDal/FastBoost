@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CardGridSkeleton } from "../components/PageSkeletons";
 import { getServices } from "../api/services";
 
 export default function ServicesPage() {
@@ -22,7 +23,11 @@ export default function ServicesPage() {
   }, []);
 
   if (loading) {
-    return <div style={{ padding: "2rem" }}>Loading services...</div>;
+    return (
+      <div style={{ padding: "2rem" }}>
+        <CardGridSkeleton count={6} />
+      </div>
+    );
   }
 
   if (error) {

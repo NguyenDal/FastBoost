@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 import { providerListAssignedOrders } from "../api/providerOrders";
 import "../styles/Admin.css";
 
@@ -153,7 +154,7 @@ export default function ProviderOrdersPage() {
                 </div>
 
                 {loading ? (
-                    <p className="muted-text">Loading assigned orders...</p>
+                    <GenericPageSkeleton />
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : (

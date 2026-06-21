@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
     providerCompleteOrder,
     providerGetOrder,
@@ -121,7 +122,7 @@ export default function ProviderOrderDetailsPage() {
 
             <div className="page-container">
                 {loading ? (
-                    <p className="muted-text">Loading order details...</p>
+                    <GenericPageSkeleton />
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : order ? (

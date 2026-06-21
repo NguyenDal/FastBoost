@@ -15,6 +15,7 @@ import {
 } from "../api/assignmentRequests";
 
 import Navbar from "../components/Navbar";
+import { GenericPageSkeleton } from "../components/PageSkeletons";
 import "../styles/Admin.css";
 
 function useAdminGuard() {
@@ -241,7 +242,7 @@ export default function AdminOrderDetailsPage() {
             <div className="page-container">
 
                 {loading ? (
-                    <p>Loading…</p>
+                    <GenericPageSkeleton />
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : order ? (
