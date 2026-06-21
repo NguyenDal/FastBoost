@@ -1,6 +1,7 @@
 import { createCheckoutSession } from "../api/orders";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
@@ -903,60 +904,7 @@ function OrderPage() {
           handleLogout={handleLogout}
         />
 
-        <main className="order-page-container">
-          <div className="order-skeleton-header">
-            <div>
-              <div className="order-skeleton-line order-skeleton-kicker" />
-              <div className="order-skeleton-line order-skeleton-title" />
-              <div className="order-skeleton-line order-skeleton-subtitle" />
-            </div>
-
-            <div className="order-skeleton-badges">
-              <div className="order-skeleton-pill" />
-              <div className="order-skeleton-pill" />
-            </div>
-          </div>
-
-          <div className="order-layout">
-            <section className="order-form-panel order-skeleton-panel">
-              <div className="order-skeleton-card-large">
-                <div className="order-skeleton-circle" />
-                <div className="order-skeleton-content">
-                  <div className="order-skeleton-line order-skeleton-card-title" />
-                  <div className="order-skeleton-line order-skeleton-card-text" />
-                </div>
-              </div>
-
-              <div className="order-skeleton-grid">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <div className="order-skeleton-option" key={index}>
-                    <div className="order-skeleton-icon" />
-                    <div className="order-skeleton-line order-skeleton-option-text" />
-                  </div>
-                ))}
-              </div>
-
-              <div className="order-skeleton-fields">
-                <div className="order-skeleton-field" />
-                <div className="order-skeleton-field" />
-                <div className="order-skeleton-field wide" />
-              </div>
-            </section>
-
-            <aside className="order-summary-panel order-skeleton-summary">
-              <div className="order-skeleton-line order-skeleton-summary-title" />
-
-              <div className="order-skeleton-summary-row" />
-              <div className="order-skeleton-summary-row" />
-              <div className="order-skeleton-summary-row" />
-
-              <div className="order-skeleton-divider" />
-
-              <div className="order-skeleton-total" />
-              <div className="order-skeleton-button" />
-            </aside>
-          </div>
-        </main>
+        <TwoColumnPageSkeleton />
       </div>
     );
   }

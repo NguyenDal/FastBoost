@@ -8,6 +8,8 @@ import "./styles/Shared.css";
 import "./styles/Navbar.css";
 import "./styles/Auth.css";
 import "./styles/Layout.css";
+import "./styles/ContactPage.css";
+import "./styles/Skeleton.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

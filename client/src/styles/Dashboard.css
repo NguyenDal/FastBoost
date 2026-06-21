@@ -531,12 +531,10 @@
 .dashboard-skeleton-copy-button {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.055) 0%,
-        rgba(255, 255, 255, 0.105) 42%,
-        rgba(255, 255, 255, 0.055) 78%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.055) 0%,
+            rgba(255, 255, 255, 0.105) 42%,
+            rgba(255, 255, 255, 0.055) 78%);
     background-size: 220% 100%;
     animation: dashboardSkeletonSweep 1.25s ease-in-out infinite;
 }
@@ -591,7 +589,7 @@
     border: 1px solid rgba(255, 255, 255, 0.065);
 }
 
-.dashboard-skeleton-item > div:first-child {
+.dashboard-skeleton-item>div:first-child {
     flex: 1;
     min-width: 0;
 }
@@ -671,7 +669,7 @@
     border: 1px solid rgba(255, 255, 255, 0.065);
 }
 
-.dashboard-skeleton-condition > div:last-child {
+.dashboard-skeleton-condition>div:last-child {
     flex: 1;
     min-width: 0;
 }
@@ -788,4 +786,70 @@
         flex-direction: column;
         align-items: stretch;
     }
+}
+
+/* Global skeleton layout helpers for DashboardPage */
+/* The shimmer effect itself comes from Skeleton.css through .fb-skeleton. */
+
+.dashboard-skeleton-card {
+    pointer-events: none;
+}
+
+.dashboard-skeleton-list {
+    display: grid;
+    gap: 10px;
+}
+
+.dashboard-skeleton-item {
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 13px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.026);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.dashboard-skeleton-item>div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-skeleton-tier-step {
+    opacity: 1;
+    pointer-events: none;
+}
+
+.dashboard-skeleton-tier-step .fb-skeleton {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dashboard-skeleton-condition {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.026);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.dashboard-skeleton-condition>div:last-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-skeleton-referral-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: rgba(255, 255, 255, 0.026);
 }
