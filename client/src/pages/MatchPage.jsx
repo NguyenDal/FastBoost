@@ -11,6 +11,8 @@ import {
     getOrderConversation,
     getConversationMessages,
     sendConversationMessage,
+    uploadConversationAttachment,
+    getMessageAttachmentViewUrl,
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
 
@@ -27,6 +29,9 @@ function MatchPage() {
     const [conversation, setConversation] = useState(null);
     const [chatLoading, setChatLoading] = useState(true);
     const [chatError, setChatError] = useState("");
+    const [attachmentUploading, setAttachmentUploading] = useState(false);
+    const [attachmentError, setAttachmentError] = useState("");
+    const attachmentInputRef = useRef(null);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
     const [authMessage, setAuthMessage] = useState("");
@@ -423,6 +428,11 @@ function MatchPage() {
                                 senderRole,
                                 senderUser: msg.sender,
                                 text: msg.content || msg.text || msg.body || msg.message || "",
+                                attachmentKey: msg.attachmentKey,
+                                attachmentUrl: msg.attachmentUrl,
+                                attachmentName: msg.attachmentName,
+                                attachmentMimeType: msg.attachmentMimeType,
+                                attachmentSize: msg.attachmentSize,
                                 createdAt: msg.createdAt,
                                 timestamp: formatChatTime(msg.createdAt),
                                 senderName: getSenderDisplayName(msg.sender),
@@ -529,6 +539,106 @@ function MatchPage() {
             setLoginInfoError(error.message || "Failed to save login info");
         } finally {
             setLoginInfoSaving(false);
+        }
+    };
+
+    const handlePickAttachment = () => {
+        if (!chatEnabled || attachmentUploading) return;
+        attachmentInputRef.current?.click();
+    };
+
+    const handleAttachmentSelected = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+
+        if (!file || !chatEnabled || !conversation?.id) return;
+
+        const maxSize = 10 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            setAttachmentError("File is too large. Maximum size is 10 MB.");
+            return;
+        }
+
+        try {
+            setAttachmentUploading(true);
+            setAttachmentError("");
+
+            const now = new Date();
+
+            const tempMessage = {
+                id: `uploading-${Date.now()}`,
+                sender: "mine",
+                isMine: true,
+                senderId: getCurrentUserId(effectiveUser),
+                senderRole: effectiveUser?.role,
+                senderUser: effectiveUser,
+                senderAvatar: getSenderAvatar(effectiveUser),
+                senderName: "You",
+                text: `Uploading ${file.name}...`,
+                attachmentName: file.name,
+                attachmentMimeType: file.type || "application/octet-stream",
+                attachmentSize: file.size,
+                isUploadingAttachment: true,
+                createdAt: now.toISOString(),
+                timestamp: formatChatTime(now),
+            };
+
+            shouldScrollAfterSendRef.current = true;
+            setMessages((prev) => [...prev, tempMessage]);
+
+            const savedMessage = await uploadConversationAttachment(conversation.id, file);
+
+            setMessages((prev) =>
+                prev.map((msg) =>
+                    msg.id === tempMessage.id
+                        ? {
+                            id: savedMessage.id,
+                            sender: "mine",
+                            isMine: true,
+                            senderId: savedMessage.senderId,
+                            senderRole: savedMessage.sender?.role,
+                            senderUser: savedMessage.sender || effectiveUser,
+                            senderName: "You",
+                            senderAvatar: getSenderAvatar(savedMessage.sender || effectiveUser),
+                            text: savedMessage.content || `Sent ${file.name}`,
+                            attachmentKey: savedMessage.attachmentKey,
+                            attachmentUrl: savedMessage.attachmentUrl,
+                            attachmentName: savedMessage.attachmentName,
+                            attachmentMimeType: savedMessage.attachmentMimeType,
+                            attachmentSize: savedMessage.attachmentSize,
+                            createdAt: savedMessage.createdAt || now.toISOString(),
+                            timestamp: formatChatTime(savedMessage.createdAt || now),
+                        }
+                        : msg
+                )
+            );
+        } catch (error) {
+            setAttachmentError(error.message || "Failed to upload file.");
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: `upload-error-${Date.now()}`,
+                    sender: "system",
+                    text: error.message || "File failed to upload.",
+                    timestamp: formatChatTime(new Date()),
+                    createdAt: new Date().toISOString(),
+                },
+            ]);
+        } finally {
+            setAttachmentUploading(false);
+        }
+    };
+
+    const handleOpenAttachment = async (message) => {
+        if (!message?.id || !message?.attachmentKey) return;
+
+        try {
+            const viewUrl = await getMessageAttachmentViewUrl(message.id);
+            window.open(viewUrl, "_blank", "noopener,noreferrer");
+        } catch (error) {
+            setAttachmentError(error.message || "Failed to open attachment.");
         }
     };
 
@@ -762,7 +872,14 @@ function MatchPage() {
                                                             </span>
                                                         </div>
 
-                                                        <p>{message.text}</p>
+                                                        {message.attachmentName ? (
+                                                            <ChatAttachmentCard
+                                                                message={message}
+                                                                onOpen={() => handleOpenAttachment(message)}
+                                                            />
+                                                        ) : (
+                                                            <p>{message.text}</p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -787,12 +904,20 @@ function MatchPage() {
                                 className={`chat-composer ${!chatEnabled ? "chat-composer-disabled" : ""}`}
                                 onSubmit={handleSendMessage}
                             >
+                                <input
+                                    ref={attachmentInputRef}
+                                    type="file"
+                                    className="chat-attachment-input"
+                                    onChange={handleAttachmentSelected}
+                                />
+
                                 <button
                                     type="button"
-                                    className="chat-attach-btn"
+                                    className={`chat-attach-btn ${attachmentUploading ? "chat-attach-btn-uploading" : ""}`}
                                     aria-label="Attach file"
-                                    title="Attachment coming soon"
-                                    disabled={!chatEnabled}
+                                    title={attachmentUploading ? "Uploading file..." : "Attach file"}
+                                    disabled={!chatEnabled || attachmentUploading}
+                                    onClick={handlePickAttachment}
                                 >
                                     <AttachIcon />
                                 </button>
@@ -820,6 +945,9 @@ function MatchPage() {
                                     <SendIcon />
                                 </button>
                             </form>
+                            {attachmentError && (
+                                <p className="chat-attachment-error">{attachmentError}</p>
+                            )}
                         </div>
 
                         <div className="match-options-card order-extras-card">
@@ -1193,6 +1321,79 @@ function MatchPageSkeleton() {
             </div>
         </div>
     );
+}
+
+function ChatAttachmentCard({ message, onOpen }) {
+    const fileName = message.attachmentName || "Attachment";
+    const fileType = getAttachmentLabel(message.attachmentMimeType, fileName);
+    const fileSize = formatFileSize(message.attachmentSize);
+    const isUploading = message.isUploadingAttachment;
+
+    return (
+        <button
+            type="button"
+            className={`chat-file-card ${isUploading ? "chat-file-uploading" : ""}`}
+            onClick={isUploading ? undefined : onOpen}
+            disabled={isUploading}
+        >
+            <span className={`chat-file-icon chat-file-icon-${fileType.toLowerCase()}`}>
+                {getAttachmentIcon(fileType)}
+            </span>
+
+            <span className="chat-file-info">
+                <strong className="chat-file-name">{fileName}</strong>
+                <small className="chat-file-meta">
+                    {isUploading ? "Uploading..." : `${fileType}${fileSize ? ` • ${fileSize}` : ""}`}
+                </small>
+            </span>
+
+            <span className="chat-file-action">
+                {isUploading ? "..." : "Open"}
+            </span>
+        </button>
+    );
+}
+
+function getAttachmentLabel(mimeType = "", fileName = "") {
+    const lowerName = String(fileName).toLowerCase();
+
+    if (mimeType.startsWith("image/")) return "Image";
+    if (mimeType.includes("pdf") || lowerName.endsWith(".pdf")) return "PDF";
+    if (mimeType.includes("word") || lowerName.endsWith(".doc") || lowerName.endsWith(".docx")) return "Word";
+    if (mimeType.includes("excel") || lowerName.endsWith(".xls") || lowerName.endsWith(".xlsx")) return "Excel";
+    if (lowerName.endsWith(".zip") || lowerName.endsWith(".rar") || lowerName.endsWith(".7z")) return "Zip";
+    if (mimeType.includes("text") || lowerName.endsWith(".txt")) return "Text";
+
+    return "File";
+}
+
+function getAttachmentIcon(fileType) {
+    const normalized = String(fileType || "").toLowerCase();
+
+    if (normalized === "pdf") return "PDF";
+    if (normalized === "word") return "DOC";
+    if (normalized === "excel") return "XLS";
+    if (normalized === "image") return "IMG";
+    if (normalized === "zip") return "ZIP";
+    if (normalized === "text") return "TXT";
+
+    return "FILE";
+}
+
+function formatFileSize(size) {
+    const bytes = Number(size || 0);
+
+    if (!bytes) return "";
+
+    if (bytes < 1024) return `${bytes} B`;
+
+    const kb = bytes / 1024;
+
+    if (kb < 1024) return `${kb.toFixed(kb >= 100 ? 0 : 1)} KB`;
+
+    const mb = kb / 1024;
+
+    return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
 }
 
 function getOrderTitle(order) {

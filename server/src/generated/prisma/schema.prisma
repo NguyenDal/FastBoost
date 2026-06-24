@@ -225,13 +225,20 @@ model Message {
   id             String   @id @default(cuid())
   conversationId String
   senderId       String
-  content        String
+  content        String   @default("")
   createdAt      DateTime @default(now())
+
+  attachmentKey      String?
+  attachmentUrl      String?
+  attachmentName     String?
+  attachmentMimeType String?
+  attachmentSize     Int?
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation(fields: [senderId], references: [id])
 
   @@index([conversationId, createdAt])
+  @@index([attachmentKey])
 }
 
 model PasswordResetToken {
