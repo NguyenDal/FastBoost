@@ -1396,33 +1396,125 @@
   font-size: 0.88rem;
 }
 
+/* Message stack: sender/time sits outside the bubble */
+.chat-message-stack {
+  max-width: 78%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.chat-message-stack-mine {
+  align-items: flex-end;
+}
+
+.chat-message-stack-other {
+  align-items: flex-start;
+}
+
+.chat-message-meta {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.chat-message-stack-mine .chat-message-meta {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.chat-message-stack-other .chat-message-meta {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.chat-message-meta .chat-sender {
+  display: inline-flex;
+  align-items: baseline;
+  color: #7dd3fc;
+  font-size: 0.84rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.chat-message-meta .chat-timestamp {
+  display: inline-flex;
+  align-items: baseline;
+  color: rgba(203, 213, 225, 0.62);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  position: relative;
+  top: 0.5px;
+}
+
+.chat-message-stack-mine .chat-file-card,
+.chat-message-stack-mine .chat-message {
+  align-self: flex-end;
+}
+
+.chat-message-stack-other .chat-file-card,
+.chat-message-stack-other .chat-message {
+  align-self: flex-start;
+}
+
+/* Normal text messages still use a real bubble */
+.chat-message-stack .chat-message {
+  max-width: 100%;
+}
+
+.chat-message-stack .chat-message-top {
+  display: none;
+}
+
+/* File uploads are not wrapped by .chat-message anymore */
 .chat-file-card {
-  width: min(340px, 100%);
+  width: min(360px, 100%);
+  max-width: 100%;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.20);
-  border-radius: 16px;
-  padding: 10px 12px;
+  border-radius: 18px;
+  padding: 11px 13px;
   color: inherit;
   text-align: left;
   cursor: pointer;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
-    rgba(2, 6, 23, 0.24);
+    rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.22);
   transition:
     transform 0.16s ease,
     border-color 0.16s ease,
     background 0.16s ease;
 }
 
+.chat-file-card-mine {
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.14), rgba(12, 18, 40, 0.88)),
+    rgba(12, 18, 40, 0.96);
+  border-color: rgba(59, 130, 246, 0.44);
+}
+
+.chat-file-card-other {
+  background:
+    linear-gradient(180deg, rgba(148, 163, 184, 0.10), rgba(12, 18, 40, 0.90)),
+    rgba(12, 18, 40, 0.96);
+  border-color: rgba(148, 163, 184, 0.30);
+}
+
 .chat-file-card:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: rgba(168, 85, 247, 0.42);
+  border-color: rgba(168, 85, 247, 0.48);
   background:
-    linear-gradient(180deg, rgba(168, 85, 247, 0.10), rgba(255, 255, 255, 0.025)),
-    rgba(2, 6, 23, 0.30);
+    linear-gradient(180deg, rgba(168, 85, 247, 0.12), rgba(255, 255, 255, 0.025)),
+    rgba(2, 6, 23, 0.38);
 }
 
 .chat-file-card:disabled {
@@ -1496,11 +1588,11 @@
 }
 
 .chat-file-action {
-  padding: 6px 9px;
+  padding: 6px 10px;
   border-radius: 999px;
   color: #c4b5fd;
-  background: rgba(168, 85, 247, 0.10);
-  border: 1px solid rgba(168, 85, 247, 0.18);
+  background: rgba(168, 85, 247, 0.13);
+  border: 1px solid rgba(168, 85, 247, 0.22);
   font-size: 0.76rem;
   font-weight: 900;
 }
@@ -1516,20 +1608,51 @@
 
 .chat-file-uploading .chat-file-icon::after {
   content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
   width: 19px;
   height: 19px;
   border-radius: 999px;
   border: 2px solid rgba(255, 255, 255, 0.22);
   border-top-color: #ffffff;
-  animation: spinDemo 0.8s linear infinite;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  animation: chatFileSpinner 0.8s linear infinite;
+}
+
+@keyframes chatFileSpinner {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @media (max-width: 640px) {
+  .chat-message-stack {
+    max-width: 86%;
+  }
+
   .chat-file-card {
-    width: 100%;
+    width: min(330px, 100%);
     grid-template-columns: 42px minmax(0, 1fr);
   }
 
+  .chat-file-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .chat-file-action {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
   .chat-file-icon {
     width: 42px;
     height: 42px;

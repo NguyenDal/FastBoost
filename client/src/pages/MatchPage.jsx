@@ -859,28 +859,41 @@ function MatchPage() {
                                                         </div>
                                                     )}
 
-                                                    <div
-                                                        className={`chat-message ${isMine ? "chat-message-mine" : isSystem ? "chat-message-system" : "chat-message-other"}`}
-                                                    >
-                                                        <div className="chat-message-top">
-                                                            <span className="chat-sender">
-                                                                {getMessageSenderName(message, matchedBooster)}
-                                                            </span>
-
-                                                            <span className="chat-timestamp">
-                                                                {message.timestamp || "3:37 PM"}
-                                                            </span>
-                                                        </div>
-
-                                                        {message.attachmentName ? (
-                                                            <ChatAttachmentCard
-                                                                message={message}
-                                                                onOpen={() => handleOpenAttachment(message)}
-                                                            />
-                                                        ) : (
+                                                    {isSystem ? (
+                                                        <div className="chat-message chat-message-system">
                                                             <p>{message.text}</p>
-                                                        )}
-                                                    </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div
+                                                            className={`chat-message-stack ${isMine ? "chat-message-stack-mine" : "chat-message-stack-other"
+                                                                }`}
+                                                        >
+                                                            <div className="chat-message-meta">
+                                                                <span className="chat-sender">
+                                                                    {getMessageSenderName(message, matchedBooster)}
+                                                                </span>
+
+                                                                <span className="chat-timestamp">
+                                                                    {message.timestamp || "3:37 PM"}
+                                                                </span>
+                                                            </div>
+
+                                                            {message.attachmentName ? (
+                                                                <ChatAttachmentCard
+                                                                    message={message}
+                                                                    isMine={isMine}
+                                                                    onOpen={() => handleOpenAttachment(message)}
+                                                                />
+                                                            ) : (
+                                                                <div
+                                                                    className={`chat-message ${isMine ? "chat-message-mine" : "chat-message-other"
+                                                                        }`}
+                                                                >
+                                                                    <p>{message.text}</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -1323,7 +1336,7 @@ function MatchPageSkeleton() {
     );
 }
 
-function ChatAttachmentCard({ message, onOpen }) {
+function ChatAttachmentCard({ message, isMine = false, onOpen }) {
     const fileName = message.attachmentName || "Attachment";
     const fileType = getAttachmentLabel(message.attachmentMimeType, fileName);
     const fileSize = formatFileSize(message.attachmentSize);
@@ -1332,7 +1345,8 @@ function ChatAttachmentCard({ message, onOpen }) {
     return (
         <button
             type="button"
-            className={`chat-file-card ${isUploading ? "chat-file-uploading" : ""}`}
+            className={`chat-file-card ${isMine ? "chat-file-card-mine" : "chat-file-card-other"
+                } ${isUploading ? "chat-file-uploading" : ""}`}
             onClick={isUploading ? undefined : onOpen}
             disabled={isUploading}
         >
