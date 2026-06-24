@@ -8,53 +8,94 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Global skeleton loading system, contact support polish, and CSS cleanup
+### Latest session update — MatchPage chat attachments, S3 permissions, and Messenger-style chat UI
 
-#### Global Facebook-style skeleton loading system
-- Added a reusable global skeleton loading system so FastBoost pages do not need separate page-specific shimmer effects.
-- Added/directed shared skeleton component files:
+#### MatchPage chat attachment upload
+- Implemented MatchPage file/document upload through the existing chat composer attach button.
+- Uploaded files now appear in the chat as modern Messenger/Instagram-style file cards showing:
+  - file name
+  - file type label such as `IMG`, `PDF`, `DOC`, `XLS`, `TXT`, `ZIP`, or `FILE`
+  - file size
+  - Open action
+  - uploading state while the file is being sent
+- Chat attachments are stored in AWS S3 under:
+  - `chat-attachments/<conversationId>/<userId>/<timestamp-random>.<ext>`
+- Message metadata is stored in PostgreSQL through Prisma instead of storing file bytes in the database.
+- Message attachment fields added/directed on `Message`:
+  - `attachmentKey`
+  - `attachmentUrl`
+  - `attachmentName`
+  - `attachmentMimeType`
+  - `attachmentSize`
+- Existing `Message.content` now supports attachment messages with fallback text such as `Sent an attachment: filename`.
+- Anyone who is authorized inside the order conversation can upload and view attachments:
+  - order customer
+  - assigned provider/booster
+  - admin
+- Attachment access keeps using existing order/conversation access control through `canAccessOrder`.
+
+#### Chat attachment backend/API
+- Added/directed new protected chat attachment routes:
+  - `POST /api/chats/conversations/:conversationId/attachments`
+  - `GET /api/chats/messages/:messageId/attachment`
+- Added/directed `multer` memory upload handling for chat attachments.
+- Chat attachment upload route creates a normal chat message with attachment metadata.
+- Attachment open/view route verifies access first, then returns a temporary signed S3 URL.
+- Added/directed S3 helpers:
+  - `uploadChatAttachmentToS3`
+  - `createChatAttachmentSignedUrl`
+- Added `@aws-sdk/s3-request-presigner` direction for signed attachment URLs.
+- File upload helper added/directed in frontend chat API:
+  - `uploadConversationAttachment(conversationId, file)`
+  - `getMessageAttachmentViewUrl(messageId)`
+- Chat upload uses `FormData`, so the frontend avoids forcing `Content-Type: application/json` for file uploads.
+
+#### S3/IAM permissions for chat attachments
+- AWS IAM inline policy needed to allow the backend IAM user to upload and read chat attachments.
+- Updated/directed S3 permissions for:
+  - `arn:aws:s3:::fastboost-assets/profiles/*`
+  - `arn:aws:s3:::fastboost-assets/chat-attachments/*`
+- Required S3 actions:
+  - `s3:PutObject`
+  - `s3:GetObject`
+- The `AccessDenied: s3:PutObject` issue was identified as missing permission for the new `chat-attachments/*` path, not a frontend or Prisma issue.
+- Existing profile picture upload flow remains separate and still uses `profiles/*`.
+
+#### MatchPage chat UI polish
+- File attachment cards no longer sit inside an extra chat bubble.
+- Sender name and time were moved outside the chat bubble, above both:
+  - normal text message bubbles
+  - file attachment cards
+- Normal text messages still keep their bubble styling.
+- System messages stay centered as system bubbles.
+- File cards now align directly under the sender/time meta row.
+- Meta row alignment improved using baseline alignment so names and timestamps appear straight.
+- Upload spinner inside file icon square was centered using an absolute-positioned spinner and dedicated keyframe:
+  - `chatFileSpinner`
+- Cleaned duplicate MatchPage attachment CSS direction:
+  - keep the later file-card block under `/* File uploads are not wrapped by .chat-message anymore */`
+  - delete the earlier duplicate `.chat-file-card` group
+  - keep only one mobile `@media (max-width: 640px)` block for file cards/message stack
+
+#### Related files changed/directed
+- Prisma:
+  - `server/prisma/schema.prisma`
+- Backend:
+  - `server/src/routes/chatRoutes.js`
+  - `server/src/controllers/chatController.js`
+  - `server/src/utils/s3Upload.js`
+- Frontend:
+  - `client/src/api/chats.js`
+  - `client/src/pages/MatchPage.jsx`
+  - `client/src/styles/MatchPage.css`
+
+#### Previous latest work retained
+- Global skeleton loading system remains active through:
   - `client/src/components/Skeleton.jsx`
   - `client/src/components/PageSkeletons.jsx`
-- Added/directed shared skeleton styling:
   - `client/src/styles/Skeleton.css`
-- `Skeleton.css` now owns the shared Facebook-style shimmer effect used across the app.
-- The global skeleton effect preserves the same visual style previously used on the OrderPage and MatchPage cards, including the blue/purple shimmer, timing, and movement direction.
-- `main.jsx` should import the shared skeleton stylesheet globally:
-  - `import "./styles/Skeleton.css";`
-
-#### Pages converted to the global loading effect
-- Dashboard loading state converted to use the shared skeleton components.
-- OrderPage loading state converted to use `TwoColumnPageSkeleton`.
-- MatchPage loading state converted to use the shared skeleton components while preserving its chat/order-detail loading layout.
-- All currently implemented page loading states now use the shared global skeleton effect instead of separate custom shimmer animations.
-
-#### CSS cleanup after global skeleton migration
-- Cleaned dashboard-specific skeleton CSS after moving the effect to `Skeleton.css`.
-- Cleaned order-page-specific skeleton CSS after moving the effect to `Skeleton.css`.
-- Cleaned match-page-specific skeleton CSS after moving the effect to `Skeleton.css`.
-- New cleaned CSS files produced/directed for replacement:
-  - `client/src/styles/Dashboard.css` from `Dashboard.cleaned.css`
-  - `client/src/styles/OrderPage.css` from `OrderPage.cleaned.css`
-  - `client/src/styles/MatchPage.css` from `MatchPage.cleaned.css`
-- MatchPage component cleanup produced/directed for replacement:
-  - `client/src/pages/MatchPage.jsx` from `MatchPage.cleaned.jsx`
-- Page CSS files now keep only layout/page-specific styles. The actual skeleton shimmer effect should remain only in `client/src/styles/Skeleton.css`.
-
-#### Contact page support flow polish
-- Navbar Contact button direction routes to `/contact`.
-- Contact page direction uses two cards:
-  - Send Email
-  - Live Chat / Coming Soon
-- Send Email reveals the built-in email form with a smooth swipe-down animation.
-- Clicking Live Chat hides the email form with a swipe-up animation because live support chat will be implemented later.
-- Contact email success changed from plain success text to an animated confirmation popup with a mail/check visual.
-- Static aurora/glow background direction added for the contact success popup so the glow no longer spins in circles.
-- Contact-related frontend/backend files directed:
-  - `client/src/pages/ContactPage.jsx`
-  - `client/src/styles/ContactPage.css`
-  - `client/src/api/contact.js`
-  - `server/src/controllers/contactController.js`
-  - `server/src/routes/contactRoutes.js`
+- Dashboard, OrderPage, and MatchPage loading states already use the shared Facebook-style global skeleton effect.
+- Contact page support flow remains implemented with Send Email / Live Chat cards, swipe animation, and animated mail/check success popup.
 
 ---
 ## Project concept
@@ -320,6 +361,8 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/chats/orders/:orderId` — ensure/get conversation for an order; returns participants
 - `GET /api/chats/conversations/:conversationId/messages?limit=20&cursor=<id>` — paginated history
 - `POST /api/chats/conversations/:conversationId/messages` — post a message through REST fallback
+- `POST /api/chats/conversations/:conversationId/attachments` — upload a chat attachment and create an attachment message
+- `GET /api/chats/messages/:messageId/attachment` — verify access and return a temporary signed S3 URL for opening the attachment
 
 ---
 
@@ -356,6 +399,12 @@ AWS_S3_ASSETS_BUCKET="fastboost-assets"
 AWS_ACCESS_KEY_ID="your_local_dev_access_key"
 AWS_SECRET_ACCESS_KEY="your_local_dev_secret_key"
 ```
+
+Chat attachment S3 permission note:
+- The backend IAM user/role needs `s3:PutObject` and `s3:GetObject` on:
+  - `arn:aws:s3:::fastboost-assets/profiles/*`
+  - `arn:aws:s3:::fastboost-assets/chat-attachments/*`
+- Chat attachment viewing uses temporary signed S3 URLs generated by the backend.
 
 ✅ Do **not** commit `.env` to GitHub.
 
@@ -457,6 +506,14 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- MatchPage chat attachment upload implemented with S3-backed file storage and Prisma message metadata
+- chat files now render as Messenger/Instagram-style attachment cards with file name, type, size, uploading state, and Open action
+- sender name and timestamp moved above chat bubbles/file cards for a cleaner modern messaging layout
+- file upload cards no longer sit inside an extra chat bubble, while normal text messages keep their bubble styling
+- chat attachment open/view flow uses backend access checks and temporary signed S3 URLs
+- IAM/S3 permission issue for `chat-attachments/*` identified and fixed/directed with `s3:PutObject` and `s3:GetObject`
+- MatchPage attachment spinner centered inside the file icon square
+- duplicate MatchPage attachment CSS cleanup completed/directed
 - global Facebook-style skeleton loading system added with shared `Skeleton.jsx`, `PageSkeletons.jsx`, and `Skeleton.css`
 - Dashboard, OrderPage, and MatchPage loading states converted to use the global skeleton effect
 - all currently implemented page loading states now share the same skeleton shimmer instead of separate page-specific shimmer implementations
@@ -764,6 +821,25 @@ npx prisma studio
 
 ## Next steps (recommended)
 
+1. Test MatchPage chat attachment upload end-to-end:
+   - login as a customer on an order MatchPage
+   - upload an image, PDF, and another document type through the attach button
+   - confirm the file card appears immediately with an uploading state
+   - confirm the saved message shows file name, type, size, and Open action
+   - click Open and confirm the backend returns a signed URL and the file opens in a new tab
+   - login as assigned provider/admin and confirm authorized participants can also open the file
+   - confirm unrelated users cannot access the attachment endpoint
+2. Test MatchPage chat UI polish:
+   - confirm sender name and timestamp align on one straight baseline
+   - confirm normal text messages still use bubbles
+   - confirm file cards do not have an extra outer bubble
+   - confirm system messages remain centered
+   - confirm upload spinner is centered inside the file icon square
+3. Test S3/IAM permissions:
+   - confirm uploads work for `chat-attachments/*`
+   - confirm profile image uploads still work for `profiles/*`
+   - confirm production IAM policy is least privilege and scoped to only the required S3 paths
+
 1. Test cancelled Stripe checkout cleanup:
    - create an order from the frontend
    - click Continue to Secure Payment
@@ -948,6 +1024,9 @@ npx prisma studio
 
 ## Website highlights
 
+- Added S3-backed MatchPage chat attachments with secure backend upload, Prisma message metadata, signed file-view URLs, and role-based conversation access checks.
+- Upgraded chat UI to modern Messenger/Instagram-style layout where sender/time sits above each message, normal text keeps bubbles, and uploaded files render as clean standalone file cards.
+- Fixed chat attachment uploading UX with temporary uploading messages, centered spinner animation, file type badges, file size labels, and Open actions for authorized participants.
 - Added a shared global Facebook-style skeleton loading system with reusable React skeleton primitives and page-level loading layouts, keeping the same visual shimmer previously used on OrderPage and MatchPage.
 - Migrated Dashboard, OrderPage, and MatchPage loading states to the global skeleton system and cleaned page CSS so the shimmer effect is centralized in `Skeleton.css`.
 - Added a polished Contact support flow with Send Email / Live Chat cards, swipe-down email form animation, and an animated mail/check success confirmation popup.
