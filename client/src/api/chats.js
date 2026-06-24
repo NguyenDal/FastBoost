@@ -9,6 +9,14 @@ function authHeaders() {
   };
 }
 
+function authOnlyHeaders() {
+  const token = localStorage.getItem("token");
+
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
@@ -44,4 +52,28 @@ export async function sendConversationMessage(conversationId, text) {
   });
 
   return data.message;
+}
+
+export async function uploadConversationAttachment(conversationId, file) {
+  const formData = new FormData();
+  formData.append("attachment", file);
+
+  const res = await fetch(`${API_BASE_URL}/chats/conversations/${conversationId}/attachments`, {
+    method: "POST",
+    headers: authOnlyHeaders(),
+    body: formData,
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.message || "Failed to upload attachment");
+  }
+
+  return data.message;
+}
+
+export async function getMessageAttachmentViewUrl(messageId) {
+  const data = await request(`/chats/messages/${messageId}/attachment`);
+  return data.viewUrl;
 }

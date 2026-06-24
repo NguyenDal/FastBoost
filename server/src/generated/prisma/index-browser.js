@@ -258,7 +258,12 @@ exports.Prisma.MessageScalarFieldEnum = {
   conversationId: 'conversationId',
   senderId: 'senderId',
   content: 'content',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  attachmentKey: 'attachmentKey',
+  attachmentUrl: 'attachmentUrl',
+  attachmentName: 'attachmentName',
+  attachmentMimeType: 'attachmentMimeType',
+  attachmentSize: 'attachmentSize'
 };
 
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {

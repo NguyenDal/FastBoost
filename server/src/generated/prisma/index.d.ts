@@ -13332,8 +13332,18 @@ export namespace Prisma {
 
   export type AggregateMessage = {
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
+  }
+
+  export type MessageAvgAggregateOutputType = {
+    attachmentSize: number | null
+  }
+
+  export type MessageSumAggregateOutputType = {
+    attachmentSize: number | null
   }
 
   export type MessageMinAggregateOutputType = {
@@ -13342,6 +13352,11 @@ export namespace Prisma {
     senderId: string | null
     content: string | null
     createdAt: Date | null
+    attachmentKey: string | null
+    attachmentUrl: string | null
+    attachmentName: string | null
+    attachmentMimeType: string | null
+    attachmentSize: number | null
   }
 
   export type MessageMaxAggregateOutputType = {
@@ -13350,6 +13365,11 @@ export namespace Prisma {
     senderId: string | null
     content: string | null
     createdAt: Date | null
+    attachmentKey: string | null
+    attachmentUrl: string | null
+    attachmentName: string | null
+    attachmentMimeType: string | null
+    attachmentSize: number | null
   }
 
   export type MessageCountAggregateOutputType = {
@@ -13358,9 +13378,22 @@ export namespace Prisma {
     senderId: number
     content: number
     createdAt: number
+    attachmentKey: number
+    attachmentUrl: number
+    attachmentName: number
+    attachmentMimeType: number
+    attachmentSize: number
     _all: number
   }
 
+
+  export type MessageAvgAggregateInputType = {
+    attachmentSize?: true
+  }
+
+  export type MessageSumAggregateInputType = {
+    attachmentSize?: true
+  }
 
   export type MessageMinAggregateInputType = {
     id?: true
@@ -13368,6 +13401,11 @@ export namespace Prisma {
     senderId?: true
     content?: true
     createdAt?: true
+    attachmentKey?: true
+    attachmentUrl?: true
+    attachmentName?: true
+    attachmentMimeType?: true
+    attachmentSize?: true
   }
 
   export type MessageMaxAggregateInputType = {
@@ -13376,6 +13414,11 @@ export namespace Prisma {
     senderId?: true
     content?: true
     createdAt?: true
+    attachmentKey?: true
+    attachmentUrl?: true
+    attachmentName?: true
+    attachmentMimeType?: true
+    attachmentSize?: true
   }
 
   export type MessageCountAggregateInputType = {
@@ -13384,6 +13427,11 @@ export namespace Prisma {
     senderId?: true
     content?: true
     createdAt?: true
+    attachmentKey?: true
+    attachmentUrl?: true
+    attachmentName?: true
+    attachmentMimeType?: true
+    attachmentSize?: true
     _all?: true
   }
 
@@ -13425,6 +13473,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: MessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: MessageMinAggregateInputType
@@ -13455,6 +13515,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: MessageCountAggregateInputType | true
+    _avg?: MessageAvgAggregateInputType
+    _sum?: MessageSumAggregateInputType
     _min?: MessageMinAggregateInputType
     _max?: MessageMaxAggregateInputType
   }
@@ -13465,7 +13527,14 @@ export namespace Prisma {
     senderId: string
     content: string
     createdAt: Date
+    attachmentKey: string | null
+    attachmentUrl: string | null
+    attachmentName: string | null
+    attachmentMimeType: string | null
+    attachmentSize: number | null
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
   }
@@ -13490,6 +13559,11 @@ export namespace Prisma {
     senderId?: boolean
     content?: boolean
     createdAt?: boolean
+    attachmentKey?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
+    attachmentMimeType?: boolean
+    attachmentSize?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -13500,6 +13574,11 @@ export namespace Prisma {
     senderId?: boolean
     content?: boolean
     createdAt?: boolean
+    attachmentKey?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
+    attachmentMimeType?: boolean
+    attachmentSize?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -13510,6 +13589,11 @@ export namespace Prisma {
     senderId?: boolean
     content?: boolean
     createdAt?: boolean
+    attachmentKey?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
+    attachmentMimeType?: boolean
+    attachmentSize?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -13520,9 +13604,14 @@ export namespace Prisma {
     senderId?: boolean
     content?: boolean
     createdAt?: boolean
+    attachmentKey?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
+    attachmentMimeType?: boolean
+    attachmentSize?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "senderId" | "content" | "createdAt", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "senderId" | "content" | "createdAt" | "attachmentKey" | "attachmentUrl" | "attachmentName" | "attachmentMimeType" | "attachmentSize", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     sender?: boolean | UserDefaultArgs<ExtArgs>
@@ -13548,6 +13637,11 @@ export namespace Prisma {
       senderId: string
       content: string
       createdAt: Date
+      attachmentKey: string | null
+      attachmentUrl: string | null
+      attachmentName: string | null
+      attachmentMimeType: string | null
+      attachmentSize: number | null
     }, ExtArgs["result"]["message"]>
     composites: {}
   }
@@ -13978,6 +14072,11 @@ export namespace Prisma {
     readonly senderId: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
     readonly createdAt: FieldRef<"Message", 'DateTime'>
+    readonly attachmentKey: FieldRef<"Message", 'String'>
+    readonly attachmentUrl: FieldRef<"Message", 'String'>
+    readonly attachmentName: FieldRef<"Message", 'String'>
+    readonly attachmentMimeType: FieldRef<"Message", 'String'>
+    readonly attachmentSize: FieldRef<"Message", 'Int'>
   }
     
 
@@ -17865,7 +17964,12 @@ export namespace Prisma {
     conversationId: 'conversationId',
     senderId: 'senderId',
     content: 'content',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    attachmentKey: 'attachmentKey',
+    attachmentUrl: 'attachmentUrl',
+    attachmentName: 'attachmentName',
+    attachmentMimeType: 'attachmentMimeType',
+    attachmentSize: 'attachmentSize'
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
@@ -19018,6 +19122,11 @@ export namespace Prisma {
     senderId?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
+    attachmentKey?: StringNullableFilter<"Message"> | string | null
+    attachmentUrl?: StringNullableFilter<"Message"> | string | null
+    attachmentName?: StringNullableFilter<"Message"> | string | null
+    attachmentMimeType?: StringNullableFilter<"Message"> | string | null
+    attachmentSize?: IntNullableFilter<"Message"> | number | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
     sender?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -19028,6 +19137,11 @@ export namespace Prisma {
     senderId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    attachmentKey?: SortOrderInput | SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
+    attachmentMimeType?: SortOrderInput | SortOrder
+    attachmentSize?: SortOrderInput | SortOrder
     conversation?: ConversationOrderByWithRelationInput
     sender?: UserOrderByWithRelationInput
   }
@@ -19041,6 +19155,11 @@ export namespace Prisma {
     senderId?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
+    attachmentKey?: StringNullableFilter<"Message"> | string | null
+    attachmentUrl?: StringNullableFilter<"Message"> | string | null
+    attachmentName?: StringNullableFilter<"Message"> | string | null
+    attachmentMimeType?: StringNullableFilter<"Message"> | string | null
+    attachmentSize?: IntNullableFilter<"Message"> | number | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
     sender?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
@@ -19051,9 +19170,16 @@ export namespace Prisma {
     senderId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    attachmentKey?: SortOrderInput | SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
+    attachmentMimeType?: SortOrderInput | SortOrder
+    attachmentSize?: SortOrderInput | SortOrder
     _count?: MessageCountOrderByAggregateInput
+    _avg?: MessageAvgOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
     _min?: MessageMinOrderByAggregateInput
+    _sum?: MessageSumOrderByAggregateInput
   }
 
   export type MessageScalarWhereWithAggregatesInput = {
@@ -19065,6 +19191,11 @@ export namespace Prisma {
     senderId?: StringWithAggregatesFilter<"Message"> | string
     content?: StringWithAggregatesFilter<"Message"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
+    attachmentKey?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    attachmentUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    attachmentName?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    attachmentMimeType?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    attachmentSize?: IntNullableWithAggregatesFilter<"Message"> | number | null
   }
 
   export type PasswordResetTokenWhereInput = {
@@ -20264,8 +20395,13 @@ export namespace Prisma {
 
   export type MessageCreateInput = {
     id?: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
     conversation: ConversationCreateNestedOneWithoutMessagesInput
     sender: UserCreateNestedOneWithoutSentMessagesInput
   }
@@ -20274,14 +20410,24 @@ export namespace Prisma {
     id?: string
     conversationId: string
     senderId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type MessageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
     sender?: UserUpdateOneRequiredWithoutSentMessagesNestedInput
   }
@@ -20292,20 +20438,35 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageCreateManyInput = {
     id?: string
     conversationId: string
     senderId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type MessageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageUncheckedUpdateManyInput = {
@@ -20314,6 +20475,11 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PasswordResetTokenCreateInput = {
@@ -21483,6 +21649,15 @@ export namespace Prisma {
     senderId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    attachmentKey?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
+    attachmentMimeType?: SortOrder
+    attachmentSize?: SortOrder
+  }
+
+  export type MessageAvgOrderByAggregateInput = {
+    attachmentSize?: SortOrder
   }
 
   export type MessageMaxOrderByAggregateInput = {
@@ -21491,6 +21666,11 @@ export namespace Prisma {
     senderId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    attachmentKey?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
+    attachmentMimeType?: SortOrder
+    attachmentSize?: SortOrder
   }
 
   export type MessageMinOrderByAggregateInput = {
@@ -21499,6 +21679,15 @@ export namespace Prisma {
     senderId?: SortOrder
     content?: SortOrder
     createdAt?: SortOrder
+    attachmentKey?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
+    attachmentMimeType?: SortOrder
+    attachmentSize?: SortOrder
+  }
+
+  export type MessageSumOrderByAggregateInput = {
+    attachmentSize?: SortOrder
   }
 
   export type PasswordResetTokenCountOrderByAggregateInput = {
@@ -23454,16 +23643,26 @@ export namespace Prisma {
 
   export type MessageCreateWithoutSenderInput = {
     id?: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
     conversation: ConversationCreateNestedOneWithoutMessagesInput
   }
 
   export type MessageUncheckedCreateWithoutSenderInput = {
     id?: string
     conversationId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type MessageCreateOrConnectWithoutSenderInput = {
@@ -23934,6 +24133,11 @@ export namespace Prisma {
     senderId?: StringFilter<"Message"> | string
     content?: StringFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
+    attachmentKey?: StringNullableFilter<"Message"> | string | null
+    attachmentUrl?: StringNullableFilter<"Message"> | string | null
+    attachmentName?: StringNullableFilter<"Message"> | string | null
+    attachmentMimeType?: StringNullableFilter<"Message"> | string | null
+    attachmentSize?: IntNullableFilter<"Message"> | number | null
   }
 
   export type AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput = {
@@ -25653,16 +25857,26 @@ export namespace Prisma {
 
   export type MessageCreateWithoutConversationInput = {
     id?: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
     sender: UserCreateNestedOneWithoutSentMessagesInput
   }
 
   export type MessageUncheckedCreateWithoutConversationInput = {
     id?: string
     senderId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type MessageCreateOrConnectWithoutConversationInput = {
@@ -26640,8 +26854,13 @@ export namespace Prisma {
   export type MessageCreateManySenderInput = {
     id?: string
     conversationId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type AssignmentRequestCreateManyBoosterInput = {
@@ -27028,6 +27247,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
   }
 
@@ -27036,6 +27260,11 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageUncheckedUpdateManyWithoutSenderInput = {
@@ -27043,6 +27272,11 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type AssignmentRequestUpdateWithoutBoosterInput = {
@@ -27413,8 +27647,13 @@ export namespace Prisma {
   export type MessageCreateManyConversationInput = {
     id?: string
     senderId: string
-    content: string
+    content?: string
     createdAt?: Date | string
+    attachmentKey?: string | null
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    attachmentMimeType?: string | null
+    attachmentSize?: number | null
   }
 
   export type ConversationParticipantUpdateWithoutConversationInput = {
@@ -27445,6 +27684,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
     sender?: UserUpdateOneRequiredWithoutSentMessagesNestedInput
   }
 
@@ -27453,6 +27697,11 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MessageUncheckedUpdateManyWithoutConversationInput = {
@@ -27460,6 +27709,11 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentKey?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
 
