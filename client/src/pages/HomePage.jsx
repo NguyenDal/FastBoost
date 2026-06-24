@@ -4,7 +4,7 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -54,6 +54,13 @@ function HomePage() {
   const [authSuccess, setAuthSuccess] = useState(false);
   const [authSuccessTitle, setAuthSuccessTitle] = useState("");
   const [authSuccessText, setAuthSuccessText] = useState("");
+
+  const newsFeatureRef = useRef(null);
+
+  const [activeNewsModal, setActiveNewsModal] = useState(null);
+  const [newsModalOrigin, setNewsModalOrigin] = useState(null);
+  const [newsModalClosing, setNewsModalClosing] = useState(false);
+
   const [suspendedModal, setSuspendedModal] = useState({
     open: false,
     reason: "",
@@ -121,6 +128,9 @@ function HomePage() {
       "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
   };
 
+  const fastBoostEventImage =
+    "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=1400&q=80";
+
   const homepageUpdates = [
     {
       title: "Latest Event",
@@ -132,6 +142,18 @@ function HomePage() {
       featureText:
         "FastBoost is starting with League of Legends services first. More games, service options, and customer updates will be added as the platform grows.",
       buttonText: "Show Event",
+      image: fastBoostEventImage,
+      fullTitle: "FastBoost Opening Event",
+      fullSubtitle:
+        "FastBoost is officially opening with a clean, secure, and simple boosting order experience.",
+      fullDescription:
+        "The opening event introduces FastBoost as a gaming services platform focused on League of Legends first. Customers can browse available services, create an order, continue through secure payment, and communicate through the order chat after checkout.",
+      details: [
+        "League of Legends services are available first.",
+        "TFT support is being prepared as the platform grows.",
+        "Orders use a structured checkout and MatchPage flow.",
+        "Customers, providers, and admins can communicate through protected order chat.",
+      ],
     },
     {
       title: "Latest Updates",
@@ -143,6 +165,7 @@ function HomePage() {
       featureText:
         "Follow the newest FastBoost changes, including new service modes, game support, order improvements, and customer account features.",
       buttonText: "Show Updates",
+      image: fastBoostEventImage,
     },
     {
       title: "FAQ / Help",
@@ -154,6 +177,7 @@ function HomePage() {
       featureText:
         "Find answers about order steps, account safety, required information, payment flow, service progress, and how to contact support.",
       buttonText: "Show FAQ",
+      image: fastBoostEventImage,
     },
   ];
 
@@ -309,6 +333,17 @@ function HomePage() {
     return () => clearTimeout(closeTimer);
   }, [selectedGame]);
 
+  useEffect(() => {
+    if (!activeNewsModal) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [activeNewsModal]);
+
   const selectedHomepageUpdate =
     homepageUpdates.find((item) => item.type === selectedUpdateType) ||
     homepageUpdates[0];
@@ -352,19 +387,41 @@ function HomePage() {
   };
 
   const handleHomepageUpdateButtonClick = (type) => {
-    if (type === "event") {
-      alert("Opening event page coming soon.");
+    const update = homepageUpdates.find((item) => item.type === type);
+
+    if (!update) return;
+
+    if (type !== "event") {
+      setSelectedUpdateType(type);
       return;
     }
 
-    if (type === "updates") {
-      alert("Latest updates page coming soon.");
-      return;
-    }
+    const rect = newsFeatureRef.current?.getBoundingClientRect();
 
-    if (type === "faq") {
-      alert("FAQ / Help page coming soon.");
-    }
+    setNewsModalOrigin(
+      rect
+        ? {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        }
+        : null
+    );
+
+    setNewsModalClosing(false);
+    setActiveNewsModal(update);
+  };
+
+  const closeNewsModal = () => {
+    if (newsModalClosing) return;
+
+    setNewsModalClosing(true);
+
+    setTimeout(() => {
+      setActiveNewsModal(null);
+      setNewsModalClosing(false);
+    }, 480);
   };
 
   const handleLoginInputChange = (event) => {
@@ -862,11 +919,11 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="news-feature">
+          <div className="news-feature" ref={newsFeatureRef}>
             <div className="feature-image-wrap">
               <img
-                src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=1400&q=80"
-                alt="FastBoost updates feature"
+                src={selectedHomepageUpdate.image || fastBoostEventImage}
+                alt={selectedHomepageUpdate.featureTitle}
               />
               <div className="feature-overlay" />
             </div>
@@ -885,6 +942,62 @@ function HomePage() {
             </div>
           </div>
         </section>
+        {activeNewsModal && (
+          <div
+            className={`news-event-modal-backdrop ${newsModalClosing ? "news-event-modal-backdrop-closing" : ""}`}
+            onClick={closeNewsModal}
+          >
+            <article
+              className={`news-event-modal ${newsModalClosing ? "news-event-modal-closing" : ""}`}
+              style={{
+                "--news-origin-top": `${newsModalOrigin?.top ?? 120}px`,
+                "--news-origin-left": `${newsModalOrigin?.left ?? 120}px`,
+                "--news-origin-width": `${newsModalOrigin?.width ?? 420}px`,
+                "--news-origin-height": `${newsModalOrigin?.height ?? 420}px`,
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="news-event-close"
+                onClick={closeNewsModal}
+                aria-label="Close event"
+              >
+                ×
+              </button>
+
+              <div className="news-event-hero">
+                <img
+                  src={activeNewsModal.image || fastBoostEventImage}
+                  alt={activeNewsModal.fullTitle || activeNewsModal.featureTitle}
+                />
+                <div className="news-event-hero-overlay" />
+
+                <div className="news-event-hero-content">
+                  <span className="feature-chip">{activeNewsModal.featureTag}</span>
+                  <h2>{activeNewsModal.fullTitle || activeNewsModal.featureTitle}</h2>
+                  <p>{activeNewsModal.fullSubtitle || activeNewsModal.featureText}</p>
+                </div>
+              </div>
+
+              <div className="news-event-body">
+                <p>{activeNewsModal.fullDescription || activeNewsModal.featureText}</p>
+
+                {Array.isArray(activeNewsModal.details) && (
+                  <div className="news-event-detail-grid">
+                    {activeNewsModal.details.map((detail) => (
+                      <div key={detail} className="news-event-detail-card">
+                        <span>✦</span>
+                        <p>{detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+            </article>
+          </div>
+        )}
       </main>
 
       <RegisterPage
