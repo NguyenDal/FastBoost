@@ -60,6 +60,7 @@ function HomePage() {
   const [activeNewsModal, setActiveNewsModal] = useState(null);
   const [newsModalOrigin, setNewsModalOrigin] = useState(null);
   const [newsModalClosing, setNewsModalClosing] = useState(false);
+  const [selectedLaunchGame, setSelectedLaunchGame] = useState("lol");
 
   const [suspendedModal, setSuspendedModal] = useState({
     open: false,
@@ -134,25 +135,55 @@ function HomePage() {
   const homepageUpdates = [
     {
       title: "Latest Event",
-      text: "FastBoost is now open. View our launch event and starter service availability.",
+      text: "FastBoost opening day is here. League of Legends and TFT services are now open.",
       tag: "Event",
       type: "event",
       featureTag: "Opening Event",
-      featureTitle: "Opening Event is now live",
+      featureTitle: "FastBoost Opening Event",
       featureText:
-        "FastBoost is starting with League of Legends services first. More games, service options, and customer updates will be added as the platform grows.",
+        "FastBoost is now opening with League of Legends and Teamfight Tactics services available for customers.",
       buttonText: "Show Event",
       image: fastBoostEventImage,
-      fullTitle: "FastBoost Opening Event",
+      fullTitle: "FastBoost Opening Day",
       fullSubtitle:
-        "FastBoost is officially opening with a clean, secure, and simple boosting order experience.",
+        "League of Legends and Teamfight Tactics services are now open on FastBoost.",
       fullDescription:
-        "The opening event introduces FastBoost as a gaming services platform focused on League of Legends first. Customers can browse available services, create an order, continue through secure payment, and communicate through the order chat after checkout.",
+        "FastBoost is officially opening as a gaming services platform built around a clean order flow, secure checkout, protected order chat, and role-based support for customers, boosters, and admins.",
+      launchGames: {
+        lol: {
+          shortName: "LoL",
+          title: "League of Legends",
+          status: "Now Open",
+          description:
+            "League of Legends services are available on FastBoost from opening day. Customers can choose their service, configure the order, complete checkout, and continue into the protected MatchPage flow.",
+          services: ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"],
+          highlights: [
+            "Built for ranked climb services",
+            "Supports different order types",
+            "Protected order communication",
+            "Secure checkout before match flow",
+          ],
+        },
+        tft: {
+          shortName: "TFT",
+          title: "Teamfight Tactics",
+          status: "Now Open",
+          description:
+            "Teamfight Tactics services are also opening on FastBoost. TFT support gives customers a separate game option while keeping the same clean order and communication experience.",
+          services: ["TFT Rank Boost", "TFT Win Boost", "TFT Placement Boost"],
+          highlights: [
+            "Separate TFT service selection",
+            "Rank, win, and placement support",
+            "Same FastBoost order experience",
+            "More TFT improvements planned",
+          ],
+        },
+      },
       details: [
-        "League of Legends services are available first.",
-        "TFT support is being prepared as the platform grows.",
-        "Orders use a structured checkout and MatchPage flow.",
-        "Customers, providers, and admins can communicate through protected order chat.",
+        "League of Legends services are open.",
+        "Teamfight Tactics services are open.",
+        "Customers can browse services and create orders through the homepage.",
+        "Paid orders continue into a protected MatchPage chat flow.",
       ],
     },
     {
@@ -409,6 +440,7 @@ function HomePage() {
         : null
     );
 
+    setSelectedLaunchGame("lol");
     setNewsModalClosing(false);
     setActiveNewsModal(update);
   };
@@ -981,10 +1013,89 @@ function HomePage() {
               </div>
 
               <div className="news-event-body">
-                <p>{activeNewsModal.fullDescription || activeNewsModal.featureText}</p>
+                <div className="opening-event-intro">
+                  <p>{activeNewsModal.fullDescription || activeNewsModal.featureText}</p>
+                </div>
+
+                {activeNewsModal.launchGames && (
+                  <div className="opening-game-section">
+                    <div className="opening-game-tabs">
+                      {Object.entries(activeNewsModal.launchGames).map(([gameKey, game]) => (
+                        <button
+                          key={gameKey}
+                          type="button"
+                          className={`opening-game-tab ${selectedLaunchGame === gameKey ? "opening-game-tab-active" : ""
+                            }`}
+                          onClick={() => setSelectedLaunchGame(gameKey)}
+                        >
+                          <span>{game.shortName}</span>
+                          <strong>{game.title}</strong>
+                          <small>{game.status}</small>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="opening-game-panel">
+                      <div className="opening-game-panel-main">
+                        <span className="opening-status-pill">
+                          {activeNewsModal.launchGames[selectedLaunchGame].status}
+                        </span>
+
+                        <h3>{activeNewsModal.launchGames[selectedLaunchGame].title}</h3>
+
+                        <p>{activeNewsModal.launchGames[selectedLaunchGame].description}</p>
+                      </div>
+
+                      <div className="opening-services-box">
+                        <span className="opening-box-label">Available Services</span>
+
+                        <div className="opening-service-list">
+                          {activeNewsModal.launchGames[selectedLaunchGame].services.map((service) => (
+                            <span key={service}>{service}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="opening-highlight-grid">
+                        {activeNewsModal.launchGames[selectedLaunchGame].highlights.map((highlight) => (
+                          <div key={highlight} className="opening-highlight-card">
+                            <span>✦</span>
+                            <p>{highlight}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="opening-event-timeline">
+                  <div>
+                    <span>01</span>
+                    <h4>Choose Game</h4>
+                    <p>Select League of Legends or Teamfight Tactics from the homepage.</p>
+                  </div>
+
+                  <div>
+                    <span>02</span>
+                    <h4>Pick Service</h4>
+                    <p>Choose the boost or placement service that matches the customer’s goal.</p>
+                  </div>
+
+                  <div>
+                    <span>03</span>
+                    <h4>Secure Checkout</h4>
+                    <p>Complete the order through the protected payment flow.</p>
+                  </div>
+
+                  <div>
+                    <span>04</span>
+                    <h4>MatchPage Chat</h4>
+                    <p>Continue with order communication, files, and progress updates.</p>
+                  </div>
+                </div>
 
                 {Array.isArray(activeNewsModal.details) && (
-                  <div className="news-event-detail-grid">
+                  <div className="news-event-detail-grid opening-final-grid">
                     {activeNewsModal.details.map((detail) => (
                       <div key={detail} className="news-event-detail-card">
                         <span>✦</span>
@@ -993,7 +1104,6 @@ function HomePage() {
                     ))}
                   </div>
                 )}
-
               </div>
             </article>
           </div>
