@@ -130,7 +130,7 @@ function HomePage() {
   };
 
   const fastBoostEventImage =
-    "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=1400&q=80";
+    "https://fastboost-assets.s3.amazonaws.com/services/opening.png";
 
   const homepageUpdates = [
     {
@@ -146,7 +146,7 @@ function HomePage() {
       image: fastBoostEventImage,
       fullTitle: "FastBoost Opening Day",
       fullSubtitle:
-        "League of Legends and Teamfight Tactics services are now open on FastBoost.",
+        "Our first services are officially live.",
       fullDescription:
         "FastBoost is officially opening as a gaming services platform built around a clean order flow, secure checkout, protected order chat, and role-based support for customers, boosters, and admins.",
       launchGames: {
@@ -155,13 +155,13 @@ function HomePage() {
           title: "League of Legends",
           status: "Now Open",
           description:
-            "League of Legends services are available on FastBoost from opening day. Customers can choose their service, configure the order, complete checkout, and continue into the protected MatchPage flow.",
+            "League of Legends services are now available on FastBoost. Customers can choose a service, place an order, complete checkout, and track progress through their private order page.",
           services: ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"],
           highlights: [
-            "Built for ranked climb services",
-            "Supports different order types",
-            "Protected order communication",
-            "Secure checkout before match flow",
+            "Great for ranked climb goals",
+            "Multiple service options available",
+            "Private order chat",
+            "Secure checkout and simple progress tracking",
           ],
         },
         tft: {
@@ -169,13 +169,13 @@ function HomePage() {
           title: "Teamfight Tactics",
           status: "Now Open",
           description:
-            "Teamfight Tactics services are also opening on FastBoost. TFT support gives customers a separate game option while keeping the same clean order and communication experience.",
+            "Teamfight Tactics services are now available on FastBoost as well. Customers can place orders easily and follow updates through their private order page.",
           services: ["TFT Rank Boost", "TFT Win Boost", "TFT Placement Boost"],
           highlights: [
-            "Separate TFT service selection",
+            "Dedicated TFT service options",
             "Rank, win, and placement support",
-            "Same FastBoost order experience",
-            "More TFT improvements planned",
+            "Simple order and chat experience",
+            "More TFT improvements coming soon",
           ],
         },
       },
@@ -1012,98 +1012,136 @@ function HomePage() {
                 </div>
               </div>
 
-              <div className="news-event-body">
-                <div className="opening-event-intro">
-                  <p>{activeNewsModal.fullDescription || activeNewsModal.featureText}</p>
-                </div>
+              <div className="news-event-body opening-event-body">
+                <section className="opening-top-copy">
+                  <p>
+                    Explore what’s available on launch day.
+                  </p>
+                </section>
 
                 {activeNewsModal.launchGames && (
-                  <div className="opening-game-section">
-                    <div className="opening-game-tabs">
-                      {Object.entries(activeNewsModal.launchGames).map(([gameKey, game]) => (
-                        <button
-                          key={gameKey}
-                          type="button"
-                          className={`opening-game-tab ${selectedLaunchGame === gameKey ? "opening-game-tab-active" : ""
-                            }`}
-                          onClick={() => setSelectedLaunchGame(gameKey)}
-                        >
-                          <span>{game.shortName}</span>
-                          <strong>{game.title}</strong>
-                          <small>{game.status}</small>
-                        </button>
-                      ))}
-                    </div>
+                  <>
+                    <section className="opening-game-showcase">
+                      {Object.entries(activeNewsModal.launchGames).map(([gameKey, game]) => {
+                        const gameImage =
+                          gameKey === "lol"
+                            ? "https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg"
+                            : "https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg";
 
-                    <div className="opening-game-panel">
-                      <div className="opening-game-panel-main">
-                        <span className="opening-status-pill">
-                          {activeNewsModal.launchGames[selectedLaunchGame].status}
-                        </span>
+                        return (
+                          <button
+                            key={gameKey}
+                            type="button"
+                            className={`opening-showcase-card opening-showcase-card-${gameKey} ${selectedLaunchGame === gameKey ? "opening-showcase-card-active" : ""
+                              }`}
+                            onClick={() => setSelectedLaunchGame(gameKey)}
+                          >
+                            <div className="opening-showcase-image">
+                              <img src={gameImage} alt={game.title} />
+                            </div>
 
-                        <h3>{activeNewsModal.launchGames[selectedLaunchGame].title}</h3>
+                            <div className="opening-showcase-content">
+                              <span className="opening-game-code">{game.shortName}</span>
+                              <h3>{game.title}</h3>
+                              <span className="opening-status-pill">{game.status}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </section>
 
-                        <p>{activeNewsModal.launchGames[selectedLaunchGame].description}</p>
+                    <section className={`opening-feature-panel opening-feature-panel-${selectedLaunchGame}`}>
+                      <div className="opening-feature-bg">
+                        <img
+                          src={
+                            selectedLaunchGame === "lol"
+                              ? "https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg"
+                              : "https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg"
+                          }
+                          alt={activeNewsModal.launchGames[selectedLaunchGame].title}
+                        />
                       </div>
 
-                      <div className="opening-services-box">
-                        <span className="opening-box-label">Available Services</span>
+                      <div className="opening-feature-overlay" />
 
-                        <div className="opening-service-list">
-                          {activeNewsModal.launchGames[selectedLaunchGame].services.map((service) => (
-                            <span key={service}>{service}</span>
-                          ))}
+                      <div className="opening-feature-content">
+                        <div className="opening-feature-main">
+                          <h3>{activeNewsModal.launchGames[selectedLaunchGame].title}</h3>
+                          <p>{activeNewsModal.launchGames[selectedLaunchGame].description}</p>
+
+                          <div className="opening-services-box">
+                            <span className="opening-section-mini-title">Available Services</span>
+
+                            <div className="opening-service-icon-grid">
+                              {activeNewsModal.launchGames[selectedLaunchGame].services.map((service) => (
+                                <div key={service} className="opening-service-icon-card">
+                                  <div className="opening-service-icon">
+                                    <CleanIcon
+                                      src={serviceImageMap[service] || fallbackImages[0]}
+                                      alt={`${service} icon`}
+                                    />
+                                  </div>
+                                  <span>{service}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="opening-feature-side">
+                          <span className="opening-section-mini-title">Why Choose FastBoost</span>
+
+                          <div className="opening-benefit-list">
+                            {activeNewsModal.launchGames[selectedLaunchGame].highlights.map((highlight, index) => (
+                              <div key={highlight} className="opening-benefit-item">
+                                <span className="opening-benefit-icon">
+                                  {index === 0 ? "🛡" : index === 1 ? "◇" : index === 2 ? "💬" : "🔒"}
+                                </span>
+                                <p>{highlight}</p>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-
-                      <div className="opening-highlight-grid">
-                        {activeNewsModal.launchGames[selectedLaunchGame].highlights.map((highlight) => (
-                          <div key={highlight} className="opening-highlight-card">
-                            <span>✦</span>
-                            <p>{highlight}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                    </section>
+                  </>
                 )}
 
-                <div className="opening-event-timeline">
-                  <div>
-                    <span>01</span>
-                    <h4>Choose Game</h4>
-                    <p>Select League of Legends or Teamfight Tactics from the homepage.</p>
+                <section className="opening-process-section">
+                  <div className="opening-process-heading">
+                    <span>How It Works</span>
                   </div>
 
-                  <div>
-                    <span>02</span>
-                    <h4>Pick Service</h4>
-                    <p>Choose the boost or placement service that matches the customer’s goal.</p>
-                  </div>
+                  <div className="opening-process-row">
+                    <article className="opening-process-card">
+                      <span className="opening-process-number">01</span>
+                      <div className="opening-process-icon">🎮</div>
+                      <h4>Choose Game</h4>
+                      <p>Select League of Legends or Teamfight Tactics from the homepage.</p>
+                    </article>
 
-                  <div>
-                    <span>03</span>
-                    <h4>Secure Checkout</h4>
-                    <p>Complete the order through the protected payment flow.</p>
-                  </div>
+                    <article className="opening-process-card">
+                      <span className="opening-process-number">02</span>
+                      <div className="opening-process-icon">✦</div>
+                      <h4>Pick Service</h4>
+                      <p>Choose the boost or placement service that matches your goal.</p>
+                    </article>
 
-                  <div>
-                    <span>04</span>
-                    <h4>MatchPage Chat</h4>
-                    <p>Continue with order communication, files, and progress updates.</p>
-                  </div>
-                </div>
+                    <article className="opening-process-card">
+                      <span className="opening-process-number">03</span>
+                      <div className="opening-process-icon">🔐</div>
+                      <h4>Secure Checkout</h4>
+                      <p>Complete the order through the protected payment flow.</p>
+                    </article>
 
-                {Array.isArray(activeNewsModal.details) && (
-                  <div className="news-event-detail-grid opening-final-grid">
-                    {activeNewsModal.details.map((detail) => (
-                      <div key={detail} className="news-event-detail-card">
-                        <span>✦</span>
-                        <p>{detail}</p>
-                      </div>
-                    ))}
+                    <article className="opening-process-card">
+                      <span className="opening-process-number">04</span>
+                      <div className="opening-process-icon">💬</div>
+                      <h4>Track Your Order</h4>
+                      <p>See updates, chat privately, and follow your order progress in one place.</p>
+                    </article>
                   </div>
-                )}
+                </section>
               </div>
             </article>
           </div>
