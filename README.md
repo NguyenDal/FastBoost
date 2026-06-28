@@ -1,4 +1,4 @@
-# Gaming Services Platform (FastBoost)
+# FastBoost
 
 A full-stack portfolio project built with **React**, **Vite**, **Express**, **Prisma**, and **PostgreSQL**.
 
@@ -8,88 +8,55 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — MatchPage chat attachments, S3 permissions, and Messenger-style chat UI
+### Latest session update — Homepage Latest News preview and opening news modal planning
 
-#### MatchPage chat attachment upload
-- Implemented MatchPage file/document upload through the existing chat composer attach button.
-- Uploaded files now appear in the chat as modern Messenger/Instagram-style file cards showing:
-  - file name
-  - file type label such as `IMG`, `PDF`, `DOC`, `XLS`, `TXT`, `ZIP`, or `FILE`
-  - file size
-  - Open action
-  - uploading state while the file is being sent
-- Chat attachments are stored in AWS S3 under:
-  - `chat-attachments/<conversationId>/<userId>/<timestamp-random>.<ext>`
-- Message metadata is stored in PostgreSQL through Prisma instead of storing file bytes in the database.
-- Message attachment fields added/directed on `Message`:
-  - `attachmentKey`
-  - `attachmentUrl`
-  - `attachmentName`
-  - `attachmentMimeType`
-  - `attachmentSize`
-- Existing `Message.content` now supports attachment messages with fallback text such as `Sent an attachment: filename`.
-- Anyone who is authorized inside the order conversation can upload and view attachments:
-  - order customer
-  - assigned provider/booster
-  - admin
-- Attachment access keeps using existing order/conversation access control through `canAccessOrder`.
+#### Homepage Latest News section
+- Added/directed a `View More →` action beside the `FastBoost Updates` title in the homepage Latest News section.
+- The button is placed on the same line as the main section title instead of under the cards, so the section now reads visually as:
+  - `Latest News`
+  - `FastBoost Updates` + `View More →`
+- Current behavior is intentionally temporary:
+  - `View More →` shows a placeholder alert: `Full updates page coming soon.`
+  - Later it should navigate to `/updates` once the full updates page is implemented.
 
-#### Chat attachment backend/API
-- Added/directed new protected chat attachment routes:
-  - `POST /api/chats/conversations/:conversationId/attachments`
-  - `GET /api/chats/messages/:messageId/attachment`
-- Added/directed `multer` memory upload handling for chat attachments.
-- Chat attachment upload route creates a normal chat message with attachment metadata.
-- Attachment open/view route verifies access first, then returns a temporary signed S3 URL.
-- Added/directed S3 helpers:
-  - `uploadChatAttachmentToS3`
-  - `createChatAttachmentSignedUrl`
-- Added `@aws-sdk/s3-request-presigner` direction for signed attachment URLs.
-- File upload helper added/directed in frontend chat API:
-  - `uploadConversationAttachment(conversationId, file)`
-  - `getMessageAttachmentViewUrl(messageId)`
-- Chat upload uses `FormData`, so the frontend avoids forcing `Content-Type: application/json` for file uploads.
+#### Opening event modal progress
+- The opening event modal now uses the S3 opening title image:
+  - `https://fastboost-assets.s3.amazonaws.com/services/opening.png`
+- The opening event hero copy was simplified:
+  - `FastBoost Opening Day`
+  - `Our first services are officially live.`
+- The repeated intro paragraph was reduced to:
+  - `Explore what’s available on launch day.`
+- The LoL/TFT launch cards were simplified by removing repeated service descriptions from the top cards.
+- The selected-game panel still shows detailed game description, available services, and FastBoost benefits.
+- Customer-facing wording was improved:
+  - `MatchPage Chat` changed to `Track Your Order`
+  - order flow wording now focuses on private order chat and progress tracking.
+- The duplicate bottom check row below the process section was removed because it repeated information already shown above.
+- Fixed the missing LoL `services` array issue that caused:
+  - `Cannot read properties of undefined (reading 'map')`
 
-#### S3/IAM permissions for chat attachments
-- AWS IAM inline policy needed to allow the backend IAM user to upload and read chat attachments.
-- Updated/directed S3 permissions for:
-  - `arn:aws:s3:::fastboost-assets/profiles/*`
-  - `arn:aws:s3:::fastboost-assets/chat-attachments/*`
-- Required S3 actions:
-  - `s3:PutObject`
-  - `s3:GetObject`
-- The `AccessDenied: s3:PutObject` issue was identified as missing permission for the new `chat-attachments/*` path, not a frontend or Prisma issue.
-- Existing profile picture upload flow remains separate and still uses `profiles/*`.
-
-#### MatchPage chat UI polish
-- File attachment cards no longer sit inside an extra chat bubble.
-- Sender name and time were moved outside the chat bubble, above both:
-  - normal text message bubbles
-  - file attachment cards
-- Normal text messages still keep their bubble styling.
-- System messages stay centered as system bubbles.
-- File cards now align directly under the sender/time meta row.
-- Meta row alignment improved using baseline alignment so names and timestamps appear straight.
-- Upload spinner inside file icon square was centered using an absolute-positioned spinner and dedicated keyframe:
-  - `chatFileSpinner`
-- Cleaned duplicate MatchPage attachment CSS direction:
-  - keep the later file-card block under `/* File uploads are not wrapped by .chat-message anymore */`
-  - delete the earlier duplicate `.chat-file-card` group
-  - keep only one mobile `@media (max-width: 640px)` block for file cards/message stack
+#### Latest News architecture decision
+- Keep the homepage as a small preview only:
+  - top 3 important/latest posts
+  - `View More →` action
+- Build a full `/updates` page later for all news posts.
+- Later admin backend should manage:
+  - create/edit/delete posts
+  - category/type
+  - hero image
+  - pinned/top-three status
+  - published/draft status
+  - priority/order
+- Profile dropdown and dashboard should not own public updates because guests should be able to see launch news and platform announcements.
 
 #### Related files changed/directed
-- Prisma:
-  - `server/prisma/schema.prisma`
-- Backend:
-  - `server/src/routes/chatRoutes.js`
-  - `server/src/controllers/chatController.js`
-  - `server/src/utils/s3Upload.js`
 - Frontend:
-  - `client/src/api/chats.js`
-  - `client/src/pages/MatchPage.jsx`
-  - `client/src/styles/MatchPage.css`
+  - `client/src/pages/HomePage.jsx`
+  - `client/src/styles/HomePage.css`
 
 #### Previous latest work retained
+- MatchPage chat attachment upload, S3 permissions, and Messenger-style chat UI remain active.
 - Global skeleton loading system remains active through:
   - `client/src/components/Skeleton.jsx`
   - `client/src/components/PageSkeletons.jsx`
@@ -506,6 +473,11 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- homepage Latest News preview updated with a `View More →` action beside `FastBoost Updates`
+- opening event modal uses the S3 opening title image from `services/opening.png`
+- opening event wording simplified and made more customer-friendly
+- duplicate opening event check row removed from the modal
+- opening news architecture decision finalized: homepage top 3 preview now, full `/updates` page later, admin News Management later
 - MatchPage chat attachment upload implemented with S3-backed file storage and Prisma message metadata
 - chat files now render as Messenger/Instagram-style attachment cards with file name, type, size, uploading state, and Open action
 - sender name and timestamp moved above chat bubbles/file cards for a cleaner modern messaging layout

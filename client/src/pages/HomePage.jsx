@@ -918,10 +918,21 @@ function HomePage() {
 
         <section id="updates" className="content-section news-layout page-content">
           <div className="news-left">
-            <div className="section-header left-aligned">
-              <div>
+            <div className="section-header left-aligned news-section-header">
+              <div className="news-section-title-wrap">
                 <p className="section-label">Latest News</p>
-                <h2>FastBoost Updates</h2>
+
+                <div className="news-section-title-row">
+                  <h2>FastBoost Updates</h2>
+
+                  <button
+                    type="button"
+                    className="news-view-more-btn"
+                    onClick={() => alert("Full updates page coming soon.")}
+                  >
+                    View More →
+                  </button>
+                </div>
               </div>
             </div>
 
