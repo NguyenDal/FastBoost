@@ -928,7 +928,7 @@ function HomePage() {
                   <button
                     type="button"
                     className="news-view-more-btn"
-                    onClick={() => alert("Full updates page coming soon.")}
+                    onClick={() => navigate("/updates")}
                   >
                     View More →
                   </button>
