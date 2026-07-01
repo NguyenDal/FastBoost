@@ -8,54 +8,88 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Homepage Latest News preview and opening news modal planning
+### Latest session update — FastBoost Updates page build attempt and handoff
 
-#### Homepage Latest News section
-- Added/directed a `View More →` action beside the `FastBoost Updates` title in the homepage Latest News section.
-- The button is placed on the same line as the main section title instead of under the cards, so the section now reads visually as:
-  - `Latest News`
-  - `FastBoost Updates` + `View More →`
-- Current behavior is intentionally temporary:
-  - `View More →` shows a placeholder alert: `Full updates page coming soon.`
-  - Later it should navigate to `/updates` once the full updates page is implemented.
+#### Full `/updates` page direction
+- Added/directed a public `/updates` page for FastBoost news and platform announcements.
+- Added route direction in `client/src/App.jsx`:
+  - `import UpdatesPage from "./pages/UpdatesPage";`
+  - `<Route path="/updates" element={<UpdatesPage />} />`
+- Added/directed reusable news components and data structure:
+  - `client/src/pages/UpdatesPage.jsx`
+  - `client/src/components/news/NewsModal.jsx`
+  - `client/src/components/news/NewsModalTemplates.jsx`
+  - `client/src/data/newsData.js`
+  - `client/src/styles/News.css`
 
-#### Opening event modal progress
-- The opening event modal now uses the S3 opening title image:
-  - `https://fastboost-assets.s3.amazonaws.com/services/opening.png`
-- The opening event hero copy was simplified:
-  - `FastBoost Opening Day`
-  - `Our first services are officially live.`
-- The repeated intro paragraph was reduced to:
-  - `Explore what’s available on launch day.`
-- The LoL/TFT launch cards were simplified by removing repeated service descriptions from the top cards.
-- The selected-game panel still shows detailed game description, available services, and FastBoost benefits.
-- Customer-facing wording was improved:
-  - `MatchPage Chat` changed to `Track Your Order`
-  - order flow wording now focuses on private order chat and progress tracking.
-- The duplicate bottom check row below the process section was removed because it repeated information already shown above.
-- Fixed the missing LoL `services` array issue that caused:
-  - `Cannot read properties of undefined (reading 'map')`
+#### Updates page intended structure
+- Target layout is based on the provided demo mockup:
+  - compact hero on the upper-left with `Latest News`, `FastBoost Updates`, intro text, and a cyberpunk megaphone asset
+  - category/filter row below the hero
+  - left column with the paginated news list
+  - right column with `News Detail Page Templates` and a 2x2 grid of larger preview cards
+- Admin News Management section is intentionally postponed. Do **not** work on admin news UI/backend yet.
+- Category direction was reduced to four public categories plus All News:
+  - `All News`
+  - `Events`
+  - `Updates`
+  - `Announcements`
+  - `Maintenance`
 
-#### Latest News architecture decision
-- Keep the homepage as a small preview only:
-  - top 3 important/latest posts
-  - `View More →` action
-- Build a full `/updates` page later for all news posts.
-- Later admin backend should manage:
-  - create/edit/delete posts
-  - category/type
-  - hero image
-  - pinned/top-three status
-  - published/draft status
-  - priority/order
-- Profile dropdown and dashboard should not own public updates because guests should be able to see launch news and platform announcements.
+#### News modal direction
+- `NewsModal.jsx` was moved into `client/src/components/news/NewsModal.jsx`.
+- `UpdatesPage.jsx` should import it with:
+  - `import NewsModal from "../components/news/NewsModal";`
+- `NewsModalTemplates.jsx` should be used only inside `NewsModal.jsx`.
+- The modal supports origin-based zoom behavior:
+  - open from clicked card position
+  - close back toward clicked card position
+- Important bug fixes already discovered:
+  - Do not define a second `function NewsModal(...)` inside `UpdatesPage.jsx` if importing `NewsModal`; that causes `Identifier 'NewsModal' has already been declared`.
+  - Do not import `NewsModalTemplates` from `./NewsModalTemplates` inside `UpdatesPage.jsx`; the correct path from the page is `../components/news/NewsModalTemplates`, but the better structure is to let `NewsModal.jsx` import it.
+  - `NewsModalTemplates` needs a null guard: `if (!post) return null;`
+  - `post.modalTemplate || "event"` should be used as a fallback.
+
+#### Megaphone / CleanIcon direction
+- The Updates hero uses a megaphone image from S3:
+  - `https://fastboost-assets.s3.amazonaws.com/services/updates-megaphone.png`
+- `CleanIcon` was imported into `UpdatesPage.jsx` for the hero asset:
+  - `import CleanIcon from "../components/CleanIcon";`
+- Current rendered usage direction:
+  - `<CleanIcon src={UPDATES_HERO_IMAGE} alt="FastBoost updates" className="updates-hero-image" />`
+- The transparent/particle cleanup was difficult because some white particles/glow are part of the generated image pixels, not a removable checkerboard background.
+- Current visual preference from testing:
+  - use a dark/black-edged transparent megaphone
+  - avoid strong glow around the whole horn because it causes transparency detachment
+  - allow only a very subtle shadow/glow if needed
+
+#### Current problem / unresolved state
+- The `/updates` page is not finalized.
+- Main issue: `News.css` accumulated too many repeated override blocks for the same selectors, especially:
+  - `.updates-page`
+  - `.updates-hero`
+  - `.updates-hero-art`
+  - `.updates-hero-image`
+  - `.updates-layout`
+  - `.updates-toolbar`
+  - `.updates-side-column`
+  - `.updates-recent-grid`
+  - `.updates-recent-card`
+- Because of those repeated overrides, changes became unpredictable and the layout drifted away from the demo.
+- Recommended next step is **not** more patching. The next session should clean `News.css` by removing duplicated override sections and keeping one final layout source of truth.
 
 #### Related files changed/directed
 - Frontend:
-  - `client/src/pages/HomePage.jsx`
-  - `client/src/styles/HomePage.css`
+  - `client/src/App.jsx`
+  - `client/src/pages/UpdatesPage.jsx`
+  - `client/src/components/news/NewsModal.jsx`
+  - `client/src/components/news/NewsModalTemplates.jsx`
+  - `client/src/data/newsData.js`
+  - `client/src/styles/News.css`
+  - `client/src/components/CleanIcon.jsx`
 
 #### Previous latest work retained
+- Homepage Latest News preview and opening news modal planning remain active.
 - MatchPage chat attachment upload, S3 permissions, and Messenger-style chat UI remain active.
 - Global skeleton loading system remains active through:
   - `client/src/components/Skeleton.jsx`
@@ -473,6 +507,14 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- `/updates` public FastBoost Updates page route and page structure added/directed
+- reusable news modal component and modal template component added/directed
+- shared `newsData.js` direction added for category/filter data and reusable post content
+- `News.css` added/directed for Updates page, news list, 2x2 preview cards, and origin-based modal zoom animations
+- `CleanIcon` reused for the Updates hero megaphone asset
+- Updates page category direction reduced to All News plus Events, Updates, Announcements, and Maintenance only
+- Updates page admin section postponed; focus should remain on public layout first
+- current issue identified: `News.css` has duplicate/repeated override blocks that should be cleaned before further layout tuning
 - homepage Latest News preview updated with a `View More →` action beside `FastBoost Updates`
 - opening event modal uses the S3 opening title image from `services/opening.png`
 - opening event wording simplified and made more customer-friendly
@@ -771,6 +813,9 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
+- cleanup/refactor `client/src/styles/News.css` so the Updates page has one final layout source of truth instead of repeated overrides
+- final `/updates` page structure polish to match the provided demo mockup: compact left hero/list and right 2x2 detail template preview
+- final megaphone asset positioning and transparency polish after CSS cleanup
 - final browser verification for the global skeleton migration after replacing cleaned CSS/JSX files
 - final check that no old page-specific skeleton shimmer classes remain referenced in active JSX
 - final end-to-end testing for unpaid checkout cleanup across cancel, back-button, closed-tab, and Stripe webhook timing cases
@@ -792,6 +837,21 @@ npx prisma studio
 ---
 
 ## Next steps (recommended)
+
+1. Clean the Updates page CSS before doing more visual tuning:
+   - open `client/src/styles/News.css`
+   - remove duplicate bottom override blocks for `.updates-page`, `.updates-hero`, `.updates-layout`, `.updates-side-column`, `.updates-recent-grid`, and `.updates-recent-card`
+   - keep only one final Updates layout block
+2. Rebuild the `/updates` page visual structure against the demo:
+   - top-left compact hero with megaphone
+   - filter row with only All News, Events, Updates, Announcements, and Maintenance
+   - left list smaller/compact
+   - right `News Detail Page Templates` section moved upward
+   - right preview cards as a larger 2x2 grid
+3. Confirm `UpdatesPage.jsx` imports are clean:
+   - `NewsModal` imported from `../components/news/NewsModal`
+   - no duplicate local `NewsModal` function inside `UpdatesPage.jsx`
+   - `CleanIcon` imported only if still needed for the megaphone
 
 1. Test MatchPage chat attachment upload end-to-end:
    - login as a customer on an order MatchPage

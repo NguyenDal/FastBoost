@@ -4,8 +4,6 @@ export const NEWS_CATEGORIES = [
   { key: "update", label: "Updates" },
   { key: "announcement", label: "Announcements" },
   { key: "maintenance", label: "Maintenance" },
-  { key: "guide", label: "Guides" },
-  { key: "promotion", label: "Promotions" },
 ];
 
 export const newsPosts = [

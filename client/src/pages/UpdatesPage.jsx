@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import NewsModal from "../components/news/NewsModal";
 import CleanIcon from "../components/CleanIcon";
-import { NEWS_CATEGORIES, getRecentNewsPosts, newsPosts } from "../data/newsData";
+import { NEWS_CATEGORIES, newsPosts } from "../data/newsData";
 import {
     getStoredUser,
     hasValidSession,
@@ -60,9 +60,9 @@ function UpdatesPage() {
         currentPage * POSTS_PER_PAGE
     );
 
-    const recentPosts = [...newsPosts]
+    const detailPreviewPosts = [...newsPosts]
         .sort((a, b) => (a.homePriority || 999) - (b.homePriority || 999))
-        .slice(0, 4);
+        .slice(0, 3);
 
     const openNewsModal = (post, event) => {
         const rect = event.currentTarget.getBoundingClientRect();
@@ -95,9 +95,7 @@ function UpdatesPage() {
         setCurrentUser(null);
         setShowProfileMenu(false);
 
-        notifyAuthChanged({
-            loggedOut: true,
-        });
+        notifyAuthChanged({ loggedOut: true });
     };
 
     const handleCategoryClick = (categoryKey) => {
@@ -126,16 +124,16 @@ function UpdatesPage() {
 
             <main className="updates-page">
                 <section className="updates-hero page-content">
-                    <div>
+                    <div className="updates-hero-copy">
                         <p className="section-label updates-hero-label">Latest News</p>
                         <h1>FastBoost Updates</h1>
                         <p>
-                            Stay up to date with the latest events, platform updates,
-                            announcements, guides, and maintenance notices from the FastBoost team.
+                            Stay up to date with the latest events, platform updates, and important
+                            announcements from the FastBoost team.
                         </p>
                     </div>
 
-                    <div className="updates-hero-art">
+                    <div className="updates-hero-art" aria-hidden="true">
                         <CleanIcon
                             src={UPDATES_HERO_IMAGE}
                             alt="FastBoost updates"
@@ -147,7 +145,7 @@ function UpdatesPage() {
                 <section className="updates-layout page-content">
                     <div className="updates-main-column">
                         <div className="updates-toolbar">
-                            <div className="updates-filter-row">
+                            <div className="updates-filter-row" aria-label="News categories">
                                 {NEWS_CATEGORIES.map((category) => (
                                     <button
                                         key={category.key}
@@ -165,6 +163,7 @@ function UpdatesPage() {
                                 className="updates-sort-select"
                                 value={sortMode}
                                 onChange={(event) => setSortMode(event.target.value)}
+                                aria-label="Sort news"
                             >
                                 <option value="newest">Newest First</option>
                                 <option value="oldest">Oldest First</option>
@@ -243,7 +242,7 @@ function UpdatesPage() {
                         </div>
 
                         <div className="updates-recent-grid">
-                            {recentPosts.map((post) => (
+                            {detailPreviewPosts.map((post) => (
                                 <article
                                     key={post.id}
                                     className={`updates-recent-card updates-card-${post.type}`}
@@ -257,7 +256,6 @@ function UpdatesPage() {
                                     }}
                                 >
                                     <img src={post.image} alt={post.title} />
-
                                     <div className="updates-recent-overlay" />
 
                                     <div className="updates-recent-content">
