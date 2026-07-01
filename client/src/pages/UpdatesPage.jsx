@@ -15,6 +15,18 @@ const POSTS_PER_PAGE = 4;
 const UPDATES_HERO_IMAGE =
     "https://fastboost-assets.s3.amazonaws.com/services/updates-megaphone.png";
 
+function getPostByType(type, fallbackIndex = 0) {
+    return newsPosts.find((post) => post.type === type) || newsPosts[fallbackIndex] || null;
+}
+
+function getPaginationItems(totalPages) {
+    if (totalPages <= 5) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    return [1, 2, 3, 4, "ellipsis", totalPages];
+}
+
 function UpdatesPage() {
     const [currentUser, setCurrentUser] = useState(() => {
         if (!hasValidSession()) return null;
@@ -60,11 +72,14 @@ function UpdatesPage() {
         currentPage * POSTS_PER_PAGE
     );
 
-    const detailPreviewPosts = [...newsPosts]
-        .sort((a, b) => (a.homePriority || 999) - (b.homePriority || 999))
-        .slice(0, 3);
+    const previewEvent = getPostByType("event", 0);
+    const previewUpdate = getPostByType("update", 1);
+    const previewMaintenance = getPostByType("maintenance", 3);
+    const paginationItems = getPaginationItems(totalPages);
 
     const openNewsModal = (post, event) => {
+        if (!post) return;
+
         const rect = event.currentTarget.getBoundingClientRect();
 
         setNewsModalOrigin({
@@ -123,34 +138,34 @@ function UpdatesPage() {
             />
 
             <main className="updates-page">
-                <section className="updates-hero page-content">
-                    <div className="updates-hero-copy">
-                        <p className="section-label updates-hero-label">Latest News</p>
-                        <h1>FastBoost Updates</h1>
-                        <p>
-                            Stay up to date with the latest events, platform updates, and important
-                            announcements from the FastBoost team.
-                        </p>
-                    </div>
+                <section className="updates-board page-content">
+                    <div className="updates-left-column">
+                        <section className="updates-hero">
+                            <div className="updates-hero-copy">
+                                <p className="section-label updates-hero-label">Latest News</p>
+                                <h1>FastBoost Updates</h1>
+                                <p>
+                                    Stay up to date with the latest events, platform updates, and important
+                                    announcements from the FastBoost team.
+                                </p>
+                            </div>
 
-                    <div className="updates-hero-art" aria-hidden="true">
-                        <CleanIcon
-                            src={UPDATES_HERO_IMAGE}
-                            alt="FastBoost updates"
-                            className="updates-hero-image"
-                        />
-                    </div>
-                </section>
+                            <div className="updates-hero-art" aria-hidden="true">
+                                <CleanIcon
+                                    src={UPDATES_HERO_IMAGE}
+                                    alt="FastBoost updates"
+                                    className="updates-hero-image"
+                                />
+                            </div>
+                        </section>
 
-                <section className="updates-layout page-content">
-                    <div className="updates-main-column">
                         <div className="updates-toolbar">
                             <div className="updates-filter-row" aria-label="News categories">
                                 {NEWS_CATEGORIES.map((category) => (
                                     <button
                                         key={category.key}
                                         type="button"
-                                        className={`updates-filter-btn ${selectedCategory === category.key ? "updates-filter-btn-active" : ""
+                                        className={`updates-filter-btn updates-filter-${category.key} ${selectedCategory === category.key ? "updates-filter-btn-active" : ""
                                             }`}
                                         onClick={() => handleCategoryClick(category.key)}
                                     >
@@ -198,7 +213,7 @@ function UpdatesPage() {
 
                                         <div className="updates-card-footer">
                                             <span>{post.date}</span>
-                                            <button type="button">Read More →</button>
+                                            <button type="button">Read More <span>→</span></button>
                                         </div>
                                     </div>
                                 </article>
@@ -208,25 +223,33 @@ function UpdatesPage() {
                         <div className="updates-pagination">
                             <button
                                 type="button"
+                                className="updates-pagination-nav"
                                 disabled={currentPage === 1}
                                 onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                             >
                                 ‹ Prev
                             </button>
 
-                            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                                <button
-                                    key={page}
-                                    type="button"
-                                    className={currentPage === page ? "updates-page-btn-active" : ""}
-                                    onClick={() => setCurrentPage(page)}
-                                >
-                                    {page}
-                                </button>
-                            ))}
+                            <div className="updates-pagination-pages">
+                                {paginationItems.map((item) =>
+                                    item === "ellipsis" ? (
+                                        <span key="ellipsis" className="updates-pagination-ellipsis">...</span>
+                                    ) : (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            className={currentPage === item ? "updates-page-btn-active" : ""}
+                                            onClick={() => setCurrentPage(item)}
+                                        >
+                                            {item}
+                                        </button>
+                                    )
+                                )}
+                            </div>
 
                             <button
                                 type="button"
+                                className="updates-pagination-nav"
                                 disabled={currentPage === totalPages}
                                 onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                             >
@@ -241,32 +264,115 @@ function UpdatesPage() {
                             <p>Different layouts based on content type</p>
                         </div>
 
-                        <div className="updates-recent-grid">
-                            {detailPreviewPosts.map((post) => (
+                        <div className="updates-template-preview-grid">
+                            {previewEvent && (
                                 <article
-                                    key={post.id}
-                                    className={`updates-recent-card updates-card-${post.type}`}
+                                    className="updates-template-card updates-template-card-feature updates-card-event"
                                     role="button"
                                     tabIndex={0}
-                                    onClick={(event) => openNewsModal(post, event)}
+                                    onClick={(event) => openNewsModal(previewEvent, event)}
                                     onKeyDown={(event) => {
-                                        if (event.key === "Enter" || event.key === " ") {
-                                            openNewsModal(post, event);
-                                        }
+                                        if (event.key === "Enter" || event.key === " ") openNewsModal(previewEvent, event);
                                     }}
                                 >
-                                    <img src={post.image} alt={post.title} />
-                                    <div className="updates-recent-overlay" />
+                                    <img src={previewEvent.image} alt={previewEvent.title} />
+                                    <div className="updates-template-card-overlay" />
 
-                                    <div className="updates-recent-content">
-                                        <span className={`updates-category-chip updates-category-${post.type}`}>
-                                            {post.type}
-                                        </span>
-                                        <h3>{post.title}</h3>
-                                        <p>{post.date}</p>
+                                    <div className="updates-template-card-topline">
+                                        <span>‹ Back to News</span>
+                                        <button type="button">↗ Share</button>
+                                    </div>
+
+                                    <div className="updates-template-feature-body">
+                                        <span className="updates-category-chip updates-category-event">Event</span>
+                                        <h3>FastBoost Opening Day</h3>
+                                        <div className="updates-template-meta">
+                                            <span>▣ May 25, 2025</span>
+                                            <span>◴ 3 min read</span>
+                                        </div>
+                                        <p>
+                                            We are excited to announce that FastBoost is officially live! You can now
+                                            access our League of Legends and Teamfight Tactics services.
+                                        </p>
+
+                                        <h4>What’s Available Now</h4>
+                                        <ul>
+                                            <li>League of Legends Services</li>
+                                            <li>Teamfight Tactics Services</li>
+                                            <li>Secure Checkout</li>
+                                            <li>Private Order Chat</li>
+                                        </ul>
                                     </div>
                                 </article>
-                            ))}
+                            )}
+
+                            {previewUpdate && (
+                                <article
+                                    className="updates-template-card updates-template-card-small updates-card-update"
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(event) => openNewsModal(previewUpdate, event)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter" || event.key === " ") openNewsModal(previewUpdate, event);
+                                    }}
+                                >
+                                    <img src={previewUpdate.image} alt={previewUpdate.title} />
+                                    <div className="updates-template-card-overlay" />
+                                    <div className="updates-template-card-topline">
+                                        <span>‹ Back to News</span>
+                                        <button type="button">↗ Share</button>
+                                    </div>
+                                    <div className="updates-template-small-body">
+                                        <span className="updates-category-chip updates-category-update">Update</span>
+                                        <h3>Live Chat Will Be Available Soon</h3>
+                                        <div className="updates-template-meta">
+                                            <span>▣ May 24, 2025</span>
+                                            <span>◴ 2 min read</span>
+                                        </div>
+                                        <p>We’re working hard to bring you live chat support for a better and faster experience.</p>
+                                        <h4>What to Expect</h4>
+                                        <ul>
+                                            <li>Real-time support from our team</li>
+                                            <li>Faster responses to your questions</li>
+                                            <li>Better overall experience</li>
+                                        </ul>
+                                    </div>
+                                </article>
+                            )}
+
+                            {previewMaintenance && (
+                                <article
+                                    className="updates-template-card updates-template-card-small updates-card-maintenance"
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(event) => openNewsModal(previewMaintenance, event)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter" || event.key === " ") openNewsModal(previewMaintenance, event);
+                                    }}
+                                >
+                                    <img src={previewMaintenance.image} alt={previewMaintenance.title} />
+                                    <div className="updates-template-card-overlay" />
+                                    <div className="updates-template-card-topline">
+                                        <span>‹ Back to News</span>
+                                        <button type="button">↗ Share</button>
+                                    </div>
+                                    <div className="updates-template-small-body">
+                                        <span className="updates-category-chip updates-category-maintenance">Maintenance</span>
+                                        <h3>Scheduled Maintenance</h3>
+                                        <div className="updates-template-meta">
+                                            <span>▣ May 18, 2025</span>
+                                            <span>◴ 1 min read</span>
+                                        </div>
+                                        <p>We will be performing scheduled maintenance to improve our platform.</p>
+                                        <h4>Maintenance Schedule</h4>
+                                        <ul>
+                                            <li>Start: May 28, 2:00 AM UTC</li>
+                                            <li>End: May 28, 4:00 AM UTC</li>
+                                            <li>Duration: 2 hours</li>
+                                        </ul>
+                                    </div>
+                                </article>
+                            )}
                         </div>
                     </aside>
                 </section>
