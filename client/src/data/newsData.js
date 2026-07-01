@@ -12,26 +12,109 @@ export const newsPosts = [
     type: "event",
     modalTemplate: "event",
     title: "Opening Day Event",
-    detailTitle: "FastBoost Opening Day",
-    subtitle: "FastBoost is officially live.",
+    detailTitle: "FastBoost Community Event: Unleash the Power",
+    subtitle:
+      "Join the community for an exciting in-game event packed with challenges, rewards, and unforgettable moments.",
     summary:
       "FastBoost's first League of Legends and Teamfight Tactics services are now available.",
     date: "May 25, 2025",
-    readTime: "3 min read",
+    readTime: "10 min read",
     image: "https://fastboost-assets.s3.amazonaws.com/updates/opening.png",
     pinned: true,
     homePriority: 1,
-    tags: ["LoL", "TFT", "Opening"],
-    highlights: [
-      "League of Legends services are open.",
-      "Teamfight Tactics services are open.",
-      "Private order chat is available after checkout.",
-      "Customers can track order progress in one place.",
+    tags: ["LoL", "TFT", "Opening", "Community"],
+
+    eventDetails: [
+      {
+        icon: "▣",
+        label: "Event Type",
+        value: "Community Event",
+      },
+      {
+        icon: "◴",
+        label: "Start Time",
+        value: "May 25, 2025 10:00 AM UTC",
+      },
+      {
+        icon: "◎",
+        label: "End Time",
+        value: "May 30, 2025 11:59 PM UTC",
+      },
+      {
+        icon: "⌂",
+        label: "Available On",
+        value: "All Servers",
+      },
+      {
+        icon: "◇",
+        label: "Eligible For",
+        value: "FastBoost Registered Users",
+      },
     ],
-    sections: {
-      intro:
-        "FastBoost is officially opening as a gaming services platform built around a clean order flow, secure checkout, protected order chat, and role-based support.",
-      timeline: ["Announcement", "Orders live", "Secure checkout", "Order tracking"],
+
+    highlightCards: [
+      "Exclusive time-limited challenges",
+      "Unique rewards and collectibles",
+      "Compete on the leaderboards",
+      "Connect with the community",
+    ],
+
+    includedItems: [
+      {
+        icon: "♟",
+        title: "Event Challenges & Quests",
+        text: "Complete missions and earn event points.",
+      },
+      {
+        icon: "✦",
+        title: "Special In-Game Currency",
+        text: "Use event points toward rewards.",
+      },
+      {
+        icon: "✧",
+        title: "Unique Rewards",
+        text: "XP boosts, boosters, and more.",
+      },
+      {
+        icon: "⬡",
+        title: "Exclusive Avatars",
+        text: "Unlock titles, badges, and profile items.",
+      },
+      {
+        icon: "♜",
+        title: "Detailed Instructions",
+        text: "Rewards and recognition for participants.",
+      },
+    ],
+
+    timeline: [
+      {
+        title: "Event Begins",
+        date: "May 25",
+      },
+      {
+        title: "Week 1",
+        date: "May 25 – Jun 1",
+      },
+      {
+        title: "Week 2",
+        date: "Jun 1 – Jun 8",
+      },
+      {
+        title: "Week 3",
+        date: "Jun 8 – Jun 15",
+      },
+      {
+        title: "Finale Week",
+        date: "May 30",
+      },
+    ],
+
+    footerNotice: {
+      icon: "🎁",
+      text: "Don’t miss out on this experience. The event is live for a limited time only!",
+      ctaText: "Join the Event",
+      ctaLink: "/updates/opening-day-event",
     },
   },
   {

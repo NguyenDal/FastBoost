@@ -21,28 +21,119 @@ function HighlightGrid({ items = [] }) {
 }
 
 function EventTemplate({ post }) {
-    return (
-        <div className="news-template news-template-event">
-            <TemplateSection title="Introduction">
-                <p>{post.sections?.intro || post.summary}</p>
-            </TemplateSection>
+  const eventDetails = post.eventDetails || [];
+  const highlightCards = post.highlightCards || post.highlights || [];
+  const includedItems = post.includedItems || [];
+  const timeline = post.timeline || post.sections?.timeline || [];
+  const footerNotice = post.footerNotice;
 
-            <TemplateSection title="What's Available Now">
-                <HighlightGrid items={post.highlights} />
-            </TemplateSection>
+  return (
+    <div className="news-detail-template news-detail-template-event">
+      <section className="news-detail-hero">
+        <img src={post.image} alt={post.detailTitle || post.title} />
+        <div className="news-detail-hero-overlay" />
 
-            <TemplateSection title="Launch Timeline">
-                <div className="news-template-timeline">
-                    {(post.sections?.timeline || []).map((item, index) => (
-                        <div className="news-template-timeline-item" key={item}>
-                            <span>{index + 1}</span>
-                            <p>{item}</p>
-                        </div>
-                    ))}
-                </div>
-            </TemplateSection>
+        <div className="news-detail-hero-content">
+          <span className={`updates-category-chip updates-category-${post.type}`}>
+            Events
+          </span>
+
+          <h1>{post.detailTitle || post.title}</h1>
+
+          <div className="news-detail-meta">
+            <span>▣ {post.date}</span>
+            <span>◴ {post.readTime}</span>
+          </div>
+
+          <p>{post.subtitle}</p>
         </div>
-    );
+      </section>
+
+      <section className="news-detail-card-grid news-detail-card-grid-three">
+        <article className="news-detail-panel">
+          <h3>Event Details</h3>
+
+          <div className="news-detail-list">
+            {eventDetails.map((item) => (
+              <div key={`${item.label}-${item.value}`} className="news-detail-list-row">
+                <span className="news-detail-row-icon">{item.icon}</span>
+
+                <div>
+                  <strong>{item.value}</strong>
+                  <small>{item.label}</small>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="news-detail-panel">
+          <h3>Highlights</h3>
+
+          <ul className="news-detail-check-list">
+            {highlightCards.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+
+          <button type="button" className="news-detail-outline-btn">
+            View All Rewards
+          </button>
+        </article>
+
+        <article className="news-detail-panel">
+          <h3>What’s Included</h3>
+
+          <div className="news-detail-included-list">
+            {includedItems.map((item) => (
+              <div key={item.title} className="news-detail-included-row">
+                <span>{item.icon}</span>
+
+                <div>
+                  <strong>{item.title}</strong>
+                  <p>{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+
+      <section className="news-detail-panel news-detail-timeline-panel">
+        <h3>Event Timeline</h3>
+
+        <div className="news-detail-timeline">
+          {timeline.map((step, index) => {
+            const normalizedStep =
+              typeof step === "string"
+                ? { title: step, date: "" }
+                : step;
+
+            return (
+              <div key={`${normalizedStep.title}-${index}`} className="news-detail-timeline-step">
+                <span className="news-detail-timeline-dot" />
+                <strong>{normalizedStep.title}</strong>
+                <small>{normalizedStep.date}</small>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {footerNotice && (
+        <section className="news-detail-footer-cta">
+          <div className="news-detail-footer-left">
+            <span>{footerNotice.icon}</span>
+            <p>{footerNotice.text}</p>
+          </div>
+
+          <button type="button" className="news-detail-primary-btn">
+            {footerNotice.ctaText || "Learn More"}
+          </button>
+        </section>
+      )}
+    </div>
+  );
 }
 
 function UpdateTemplate({ post }) {
