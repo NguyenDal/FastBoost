@@ -130,7 +130,7 @@ function HomePage() {
   };
 
   const fastBoostEventImage =
-    "https://fastboost-assets.s3.amazonaws.com/services/opening.png";
+    "https://fastboost-assets.s3.amazonaws.com/updates/opening.png";
 
   const homepageUpdates = [
     {

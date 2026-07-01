@@ -516,7 +516,7 @@ npx prisma studio
 - Updates page admin section postponed; focus should remain on public layout first
 - current issue identified: `News.css` has duplicate/repeated override blocks that should be cleaned before further layout tuning
 - homepage Latest News preview updated with a `View More →` action beside `FastBoost Updates`
-- opening event modal uses the S3 opening title image from `services/opening.png`
+- opening event modal uses the S3 opening title image from `updates/opening.png`
 - opening event wording simplified and made more customer-friendly
 - duplicate opening event check row removed from the modal
 - opening news architecture decision finalized: homepage top 3 preview now, full `/updates` page later, admin News Management later
