@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import NewsModal from "../components/news/NewsModal";
-import CleanIcon from "../components/CleanIcon";
 import { NEWS_CATEGORIES, newsPosts } from "../data/newsData";
 import {
     getStoredUser,
@@ -12,8 +11,6 @@ import "../styles/News.css";
 
 const POSTS_PER_PAGE = 4;
 
-const UPDATES_HERO_IMAGE =
-    "https://fastboost-assets.s3.amazonaws.com/services/updates-megaphone.png";
 
 function getPostByType(type, fallbackIndex = 0) {
     return newsPosts.find((post) => post.type === type) || newsPosts[fallbackIndex] || null;
@@ -142,20 +139,11 @@ function UpdatesPage() {
                     <div className="updates-left-column">
                         <section className="updates-hero">
                             <div className="updates-hero-copy">
-                                <p className="section-label updates-hero-label">Latest News</p>
                                 <h1>FastBoost Updates</h1>
                                 <p>
                                     Stay up to date with the latest events, platform updates, and important
                                     announcements from the FastBoost team.
                                 </p>
-                            </div>
-
-                            <div className="updates-hero-art" aria-hidden="true">
-                                <CleanIcon
-                                    src={UPDATES_HERO_IMAGE}
-                                    alt="FastBoost updates"
-                                    className="updates-hero-image"
-                                />
                             </div>
                         </section>
 
@@ -278,11 +266,6 @@ function UpdatesPage() {
                                     <img src={previewEvent.image} alt={previewEvent.title} />
                                     <div className="updates-template-card-overlay" />
 
-                                    <div className="updates-template-card-topline">
-                                        <span>‹ Back to News</span>
-                                        <button type="button">↗ Share</button>
-                                    </div>
-
                                     <div className="updates-template-feature-body">
                                         <span className="updates-category-chip updates-category-event">Event</span>
                                         <h3>FastBoost Opening Day</h3>
@@ -318,10 +301,6 @@ function UpdatesPage() {
                                 >
                                     <img src={previewUpdate.image} alt={previewUpdate.title} />
                                     <div className="updates-template-card-overlay" />
-                                    <div className="updates-template-card-topline">
-                                        <span>‹ Back to News</span>
-                                        <button type="button">↗ Share</button>
-                                    </div>
                                     <div className="updates-template-small-body">
                                         <span className="updates-category-chip updates-category-update">Update</span>
                                         <h3>Live Chat Will Be Available Soon</h3>
@@ -352,10 +331,6 @@ function UpdatesPage() {
                                 >
                                     <img src={previewMaintenance.image} alt={previewMaintenance.title} />
                                     <div className="updates-template-card-overlay" />
-                                    <div className="updates-template-card-topline">
-                                        <span>‹ Back to News</span>
-                                        <button type="button">↗ Share</button>
-                                    </div>
                                     <div className="updates-template-small-body">
                                         <span className="updates-category-chip updates-category-maintenance">Maintenance</span>
                                         <h3>Scheduled Maintenance</h3>
