@@ -2,7 +2,7 @@ export const NEWS_CATEGORIES = [
   { key: "all", label: "All News" },
   { key: "event", label: "Events" },
   { key: "update", label: "Updates" },
-  { key: "announcement", label: "Announcements" },
+  { key: "promotion", label: "Promotions" },
   { key: "maintenance", label: "Maintenance" },
 ];
 
@@ -36,8 +36,8 @@ export const newsPosts = [
   },
   {
     id: "live-chat-coming-soon",
-    type: "update",
-    modalTemplate: "update",
+    type: "promotion",
+    modalTemplate: "promotion",
     title: "Live Chat Will Be Available Soon",
     detailTitle: "Live Chat 2.0 Is Coming",
     subtitle: "Faster communication and better support.",
@@ -62,7 +62,7 @@ export const newsPosts = [
   },
   {
     id: "improved-order-protection",
-    type: "announcement",
+    type: "update",
     modalTemplate: "guide",
     title: "Improved Order Protection",
     detailTitle: "How FastBoost Protects Your Order",
@@ -124,29 +124,6 @@ export const newsPosts = [
       affected: ["Website dashboard", "Order checkout", "Live chat"],
       progress: ["Scheduled", "In progress", "Testing", "Complete"],
     },
-  },
-  {
-    id: "mythic-service-announcement",
-    type: "announcement",
-    modalTemplate: "service",
-    title: "WoW Mythic+ Boosting Now Live",
-    detailTitle: "WoW Mythic+ Boosting Now Live",
-    subtitle: "New services, same trusted quality.",
-    summary:
-      "A new service category is being prepared for future FastBoost expansion.",
-    date: "June 2, 2025",
-    readTime: "3 min read",
-    image: "https://fastboost-assets.s3.amazonaws.com/updates/opening.png",
-    pinned: false,
-    homePriority: 5,
-    tags: ["Service", "Expansion"],
-    highlights: [
-      "New service launch direction.",
-      "More game categories in the future.",
-      "Same order tracking structure.",
-      "Support flow remains consistent.",
-    ],
-    availability: ["NA", "EU", "OCE", "ASIA"],
   },
   {
     id: "spring-boost-bash",
