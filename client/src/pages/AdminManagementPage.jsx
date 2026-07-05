@@ -34,6 +34,14 @@ const managementCards = [
         active: false,
     },
     {
+        title: "Price Management",
+        description: "View service pricing rules, manage sales, and control sale duration.",
+        icon: "💰",
+        path: "/admin/prices",
+        status: "Ready",
+        active: true,
+    },
+    {
         title: "FAQ Management",
         description: "Manage FAQ and help content for customers and boosters.",
         icon: "❓",
@@ -53,7 +61,7 @@ export default function AdminManagementPage() {
                         <p className="admin-eyebrow">FastBoost Admin</p>
                         <h1 className="admin-order-title">Management Utilities</h1>
                         <p className="admin-list-subtitle">
-                            Central hub for managing orders, users, boosters, services, and FAQ content.
+                            Central hub for managing orders, users, boosters, services, pricing, sales, and FAQ content.
                         </p>
                     </div>
 

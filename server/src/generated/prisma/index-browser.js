@@ -156,6 +156,31 @@ exports.Prisma.ServiceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ServicePriceRuleScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  game: 'game',
+  pricingType: 'pricingType',
+  basePrice: 'basePrice',
+  config: 'config',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ServiceSaleScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  title: 'title',
+  discountPercent: 'discountPercent',
+  appliesTo: 'appliesTo',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
@@ -380,6 +405,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   Profile: 'Profile',
   Service: 'Service',
+  ServicePriceRule: 'ServicePriceRule',
+  ServiceSale: 'ServiceSale',
   Order: 'Order',
   OrderAssignment: 'OrderAssignment',
   RewardHistory: 'RewardHistory',

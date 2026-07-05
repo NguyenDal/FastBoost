@@ -29,6 +29,16 @@ export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
  */
 export type Service = $Result.DefaultSelection<Prisma.$ServicePayload>
 /**
+ * Model ServicePriceRule
+ * 
+ */
+export type ServicePriceRule = $Result.DefaultSelection<Prisma.$ServicePriceRulePayload>
+/**
+ * Model ServiceSale
+ * 
+ */
+export type ServiceSale = $Result.DefaultSelection<Prisma.$ServiceSalePayload>
+/**
  * Model Order
  * 
  */
@@ -336,6 +346,26 @@ export class PrismaClient<
     * ```
     */
   get service(): Prisma.ServiceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.servicePriceRule`: Exposes CRUD operations for the **ServicePriceRule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ServicePriceRules
+    * const servicePriceRules = await prisma.servicePriceRule.findMany()
+    * ```
+    */
+  get servicePriceRule(): Prisma.ServicePriceRuleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.serviceSale`: Exposes CRUD operations for the **ServiceSale** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ServiceSales
+    * const serviceSales = await prisma.serviceSale.findMany()
+    * ```
+    */
+  get serviceSale(): Prisma.ServiceSaleDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.order`: Exposes CRUD operations for the **Order** model.
@@ -873,6 +903,8 @@ export namespace Prisma {
     User: 'User',
     Profile: 'Profile',
     Service: 'Service',
+    ServicePriceRule: 'ServicePriceRule',
+    ServiceSale: 'ServiceSale',
     Order: 'Order',
     OrderAssignment: 'OrderAssignment',
     RewardHistory: 'RewardHistory',
@@ -898,7 +930,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "order" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1121,6 +1153,154 @@ export namespace Prisma {
           count: {
             args: Prisma.ServiceCountArgs<ExtArgs>
             result: $Utils.Optional<ServiceCountAggregateOutputType> | number
+          }
+        }
+      }
+      ServicePriceRule: {
+        payload: Prisma.$ServicePriceRulePayload<ExtArgs>
+        fields: Prisma.ServicePriceRuleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ServicePriceRuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ServicePriceRuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          findFirst: {
+            args: Prisma.ServicePriceRuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ServicePriceRuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          findMany: {
+            args: Prisma.ServicePriceRuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>[]
+          }
+          create: {
+            args: Prisma.ServicePriceRuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          createMany: {
+            args: Prisma.ServicePriceRuleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ServicePriceRuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>[]
+          }
+          delete: {
+            args: Prisma.ServicePriceRuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          update: {
+            args: Prisma.ServicePriceRuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          deleteMany: {
+            args: Prisma.ServicePriceRuleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ServicePriceRuleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ServicePriceRuleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>[]
+          }
+          upsert: {
+            args: Prisma.ServicePriceRuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServicePriceRulePayload>
+          }
+          aggregate: {
+            args: Prisma.ServicePriceRuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateServicePriceRule>
+          }
+          groupBy: {
+            args: Prisma.ServicePriceRuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ServicePriceRuleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ServicePriceRuleCountArgs<ExtArgs>
+            result: $Utils.Optional<ServicePriceRuleCountAggregateOutputType> | number
+          }
+        }
+      }
+      ServiceSale: {
+        payload: Prisma.$ServiceSalePayload<ExtArgs>
+        fields: Prisma.ServiceSaleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ServiceSaleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ServiceSaleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          findFirst: {
+            args: Prisma.ServiceSaleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ServiceSaleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          findMany: {
+            args: Prisma.ServiceSaleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>[]
+          }
+          create: {
+            args: Prisma.ServiceSaleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          createMany: {
+            args: Prisma.ServiceSaleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ServiceSaleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>[]
+          }
+          delete: {
+            args: Prisma.ServiceSaleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          update: {
+            args: Prisma.ServiceSaleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          deleteMany: {
+            args: Prisma.ServiceSaleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ServiceSaleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ServiceSaleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>[]
+          }
+          upsert: {
+            args: Prisma.ServiceSaleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceSalePayload>
+          }
+          aggregate: {
+            args: Prisma.ServiceSaleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateServiceSale>
+          }
+          groupBy: {
+            args: Prisma.ServiceSaleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ServiceSaleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ServiceSaleCountArgs<ExtArgs>
+            result: $Utils.Optional<ServiceSaleCountAggregateOutputType> | number
           }
         }
       }
@@ -1975,6 +2155,8 @@ export namespace Prisma {
     user?: UserOmit
     profile?: ProfileOmit
     service?: ServiceOmit
+    servicePriceRule?: ServicePriceRuleOmit
+    serviceSale?: ServiceSaleOmit
     order?: OrderOmit
     orderAssignment?: OrderAssignmentOmit
     rewardHistory?: RewardHistoryOmit
@@ -2187,10 +2369,14 @@ export namespace Prisma {
 
   export type ServiceCountOutputType = {
     orders: number
+    priceRules: number
+    sales: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | ServiceCountOutputTypeCountOrdersArgs
+    priceRules?: boolean | ServiceCountOutputTypeCountPriceRulesArgs
+    sales?: boolean | ServiceCountOutputTypeCountSalesArgs
   }
 
   // Custom InputTypes
@@ -2209,6 +2395,20 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountPriceRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServicePriceRuleWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountSalesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceSaleWhereInput
   }
 
 
@@ -5095,6 +5295,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     orders?: boolean | Service$ordersArgs<ExtArgs>
+    priceRules?: boolean | Service$priceRulesArgs<ExtArgs>
+    sales?: boolean | Service$salesArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
@@ -5125,6 +5327,8 @@ export namespace Prisma {
   export type ServiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | Service$ordersArgs<ExtArgs>
+    priceRules?: boolean | Service$priceRulesArgs<ExtArgs>
+    sales?: boolean | Service$salesArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5134,6 +5338,8 @@ export namespace Prisma {
     name: "Service"
     objects: {
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      priceRules: Prisma.$ServicePriceRulePayload<ExtArgs>[]
+      sales: Prisma.$ServiceSalePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5536,6 +5742,8 @@ export namespace Prisma {
   export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     orders<T extends Service$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Service$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    priceRules<T extends Service$priceRulesArgs<ExtArgs> = {}>(args?: Subset<T, Service$priceRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sales<T extends Service$salesArgs<ExtArgs> = {}>(args?: Subset<T, Service$salesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5987,6 +6195,54 @@ export namespace Prisma {
   }
 
   /**
+   * Service.priceRules
+   */
+  export type Service$priceRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    where?: ServicePriceRuleWhereInput
+    orderBy?: ServicePriceRuleOrderByWithRelationInput | ServicePriceRuleOrderByWithRelationInput[]
+    cursor?: ServicePriceRuleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServicePriceRuleScalarFieldEnum | ServicePriceRuleScalarFieldEnum[]
+  }
+
+  /**
+   * Service.sales
+   */
+  export type Service$salesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    where?: ServiceSaleWhereInput
+    orderBy?: ServiceSaleOrderByWithRelationInput | ServiceSaleOrderByWithRelationInput[]
+    cursor?: ServiceSaleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceSaleScalarFieldEnum | ServiceSaleScalarFieldEnum[]
+  }
+
+  /**
    * Service without action
    */
   export type ServiceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6002,6 +6258,2313 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ServiceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ServicePriceRule
+   */
+
+  export type AggregateServicePriceRule = {
+    _count: ServicePriceRuleCountAggregateOutputType | null
+    _avg: ServicePriceRuleAvgAggregateOutputType | null
+    _sum: ServicePriceRuleSumAggregateOutputType | null
+    _min: ServicePriceRuleMinAggregateOutputType | null
+    _max: ServicePriceRuleMaxAggregateOutputType | null
+  }
+
+  export type ServicePriceRuleAvgAggregateOutputType = {
+    basePrice: Decimal | null
+  }
+
+  export type ServicePriceRuleSumAggregateOutputType = {
+    basePrice: Decimal | null
+  }
+
+  export type ServicePriceRuleMinAggregateOutputType = {
+    id: string | null
+    serviceId: string | null
+    game: string | null
+    pricingType: string | null
+    basePrice: Decimal | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServicePriceRuleMaxAggregateOutputType = {
+    id: string | null
+    serviceId: string | null
+    game: string | null
+    pricingType: string | null
+    basePrice: Decimal | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServicePriceRuleCountAggregateOutputType = {
+    id: number
+    serviceId: number
+    game: number
+    pricingType: number
+    basePrice: number
+    config: number
+    active: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ServicePriceRuleAvgAggregateInputType = {
+    basePrice?: true
+  }
+
+  export type ServicePriceRuleSumAggregateInputType = {
+    basePrice?: true
+  }
+
+  export type ServicePriceRuleMinAggregateInputType = {
+    id?: true
+    serviceId?: true
+    game?: true
+    pricingType?: true
+    basePrice?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServicePriceRuleMaxAggregateInputType = {
+    id?: true
+    serviceId?: true
+    game?: true
+    pricingType?: true
+    basePrice?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServicePriceRuleCountAggregateInputType = {
+    id?: true
+    serviceId?: true
+    game?: true
+    pricingType?: true
+    basePrice?: true
+    config?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ServicePriceRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServicePriceRule to aggregate.
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServicePriceRules to fetch.
+     */
+    orderBy?: ServicePriceRuleOrderByWithRelationInput | ServicePriceRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ServicePriceRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServicePriceRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServicePriceRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ServicePriceRules
+    **/
+    _count?: true | ServicePriceRuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ServicePriceRuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ServicePriceRuleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ServicePriceRuleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ServicePriceRuleMaxAggregateInputType
+  }
+
+  export type GetServicePriceRuleAggregateType<T extends ServicePriceRuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateServicePriceRule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateServicePriceRule[P]>
+      : GetScalarType<T[P], AggregateServicePriceRule[P]>
+  }
+
+
+
+
+  export type ServicePriceRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServicePriceRuleWhereInput
+    orderBy?: ServicePriceRuleOrderByWithAggregationInput | ServicePriceRuleOrderByWithAggregationInput[]
+    by: ServicePriceRuleScalarFieldEnum[] | ServicePriceRuleScalarFieldEnum
+    having?: ServicePriceRuleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ServicePriceRuleCountAggregateInputType | true
+    _avg?: ServicePriceRuleAvgAggregateInputType
+    _sum?: ServicePriceRuleSumAggregateInputType
+    _min?: ServicePriceRuleMinAggregateInputType
+    _max?: ServicePriceRuleMaxAggregateInputType
+  }
+
+  export type ServicePriceRuleGroupByOutputType = {
+    id: string
+    serviceId: string
+    game: string
+    pricingType: string
+    basePrice: Decimal | null
+    config: JsonValue | null
+    active: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: ServicePriceRuleCountAggregateOutputType | null
+    _avg: ServicePriceRuleAvgAggregateOutputType | null
+    _sum: ServicePriceRuleSumAggregateOutputType | null
+    _min: ServicePriceRuleMinAggregateOutputType | null
+    _max: ServicePriceRuleMaxAggregateOutputType | null
+  }
+
+  type GetServicePriceRuleGroupByPayload<T extends ServicePriceRuleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ServicePriceRuleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ServicePriceRuleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ServicePriceRuleGroupByOutputType[P]>
+            : GetScalarType<T[P], ServicePriceRuleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ServicePriceRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    game?: boolean
+    pricingType?: boolean
+    basePrice?: boolean
+    config?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["servicePriceRule"]>
+
+  export type ServicePriceRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    game?: boolean
+    pricingType?: boolean
+    basePrice?: boolean
+    config?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["servicePriceRule"]>
+
+  export type ServicePriceRuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    game?: boolean
+    pricingType?: boolean
+    basePrice?: boolean
+    config?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["servicePriceRule"]>
+
+  export type ServicePriceRuleSelectScalar = {
+    id?: boolean
+    serviceId?: boolean
+    game?: boolean
+    pricingType?: boolean
+    basePrice?: boolean
+    config?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ServicePriceRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "serviceId" | "game" | "pricingType" | "basePrice" | "config" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["servicePriceRule"]>
+  export type ServicePriceRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ServicePriceRuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ServicePriceRuleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+
+  export type $ServicePriceRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ServicePriceRule"
+    objects: {
+      service: Prisma.$ServicePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      serviceId: string
+      game: string
+      pricingType: string
+      basePrice: Prisma.Decimal | null
+      config: Prisma.JsonValue | null
+      active: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["servicePriceRule"]>
+    composites: {}
+  }
+
+  type ServicePriceRuleGetPayload<S extends boolean | null | undefined | ServicePriceRuleDefaultArgs> = $Result.GetResult<Prisma.$ServicePriceRulePayload, S>
+
+  type ServicePriceRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ServicePriceRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ServicePriceRuleCountAggregateInputType | true
+    }
+
+  export interface ServicePriceRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ServicePriceRule'], meta: { name: 'ServicePriceRule' } }
+    /**
+     * Find zero or one ServicePriceRule that matches the filter.
+     * @param {ServicePriceRuleFindUniqueArgs} args - Arguments to find a ServicePriceRule
+     * @example
+     * // Get one ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ServicePriceRuleFindUniqueArgs>(args: SelectSubset<T, ServicePriceRuleFindUniqueArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ServicePriceRule that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ServicePriceRuleFindUniqueOrThrowArgs} args - Arguments to find a ServicePriceRule
+     * @example
+     * // Get one ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ServicePriceRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, ServicePriceRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ServicePriceRule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleFindFirstArgs} args - Arguments to find a ServicePriceRule
+     * @example
+     * // Get one ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ServicePriceRuleFindFirstArgs>(args?: SelectSubset<T, ServicePriceRuleFindFirstArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ServicePriceRule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleFindFirstOrThrowArgs} args - Arguments to find a ServicePriceRule
+     * @example
+     * // Get one ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ServicePriceRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, ServicePriceRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ServicePriceRules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ServicePriceRules
+     * const servicePriceRules = await prisma.servicePriceRule.findMany()
+     * 
+     * // Get first 10 ServicePriceRules
+     * const servicePriceRules = await prisma.servicePriceRule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const servicePriceRuleWithIdOnly = await prisma.servicePriceRule.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ServicePriceRuleFindManyArgs>(args?: SelectSubset<T, ServicePriceRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ServicePriceRule.
+     * @param {ServicePriceRuleCreateArgs} args - Arguments to create a ServicePriceRule.
+     * @example
+     * // Create one ServicePriceRule
+     * const ServicePriceRule = await prisma.servicePriceRule.create({
+     *   data: {
+     *     // ... data to create a ServicePriceRule
+     *   }
+     * })
+     * 
+     */
+    create<T extends ServicePriceRuleCreateArgs>(args: SelectSubset<T, ServicePriceRuleCreateArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ServicePriceRules.
+     * @param {ServicePriceRuleCreateManyArgs} args - Arguments to create many ServicePriceRules.
+     * @example
+     * // Create many ServicePriceRules
+     * const servicePriceRule = await prisma.servicePriceRule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ServicePriceRuleCreateManyArgs>(args?: SelectSubset<T, ServicePriceRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ServicePriceRules and returns the data saved in the database.
+     * @param {ServicePriceRuleCreateManyAndReturnArgs} args - Arguments to create many ServicePriceRules.
+     * @example
+     * // Create many ServicePriceRules
+     * const servicePriceRule = await prisma.servicePriceRule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ServicePriceRules and only return the `id`
+     * const servicePriceRuleWithIdOnly = await prisma.servicePriceRule.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ServicePriceRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, ServicePriceRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ServicePriceRule.
+     * @param {ServicePriceRuleDeleteArgs} args - Arguments to delete one ServicePriceRule.
+     * @example
+     * // Delete one ServicePriceRule
+     * const ServicePriceRule = await prisma.servicePriceRule.delete({
+     *   where: {
+     *     // ... filter to delete one ServicePriceRule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ServicePriceRuleDeleteArgs>(args: SelectSubset<T, ServicePriceRuleDeleteArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ServicePriceRule.
+     * @param {ServicePriceRuleUpdateArgs} args - Arguments to update one ServicePriceRule.
+     * @example
+     * // Update one ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ServicePriceRuleUpdateArgs>(args: SelectSubset<T, ServicePriceRuleUpdateArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ServicePriceRules.
+     * @param {ServicePriceRuleDeleteManyArgs} args - Arguments to filter ServicePriceRules to delete.
+     * @example
+     * // Delete a few ServicePriceRules
+     * const { count } = await prisma.servicePriceRule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ServicePriceRuleDeleteManyArgs>(args?: SelectSubset<T, ServicePriceRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServicePriceRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ServicePriceRules
+     * const servicePriceRule = await prisma.servicePriceRule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ServicePriceRuleUpdateManyArgs>(args: SelectSubset<T, ServicePriceRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServicePriceRules and returns the data updated in the database.
+     * @param {ServicePriceRuleUpdateManyAndReturnArgs} args - Arguments to update many ServicePriceRules.
+     * @example
+     * // Update many ServicePriceRules
+     * const servicePriceRule = await prisma.servicePriceRule.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ServicePriceRules and only return the `id`
+     * const servicePriceRuleWithIdOnly = await prisma.servicePriceRule.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ServicePriceRuleUpdateManyAndReturnArgs>(args: SelectSubset<T, ServicePriceRuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ServicePriceRule.
+     * @param {ServicePriceRuleUpsertArgs} args - Arguments to update or create a ServicePriceRule.
+     * @example
+     * // Update or create a ServicePriceRule
+     * const servicePriceRule = await prisma.servicePriceRule.upsert({
+     *   create: {
+     *     // ... data to create a ServicePriceRule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ServicePriceRule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ServicePriceRuleUpsertArgs>(args: SelectSubset<T, ServicePriceRuleUpsertArgs<ExtArgs>>): Prisma__ServicePriceRuleClient<$Result.GetResult<Prisma.$ServicePriceRulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ServicePriceRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleCountArgs} args - Arguments to filter ServicePriceRules to count.
+     * @example
+     * // Count the number of ServicePriceRules
+     * const count = await prisma.servicePriceRule.count({
+     *   where: {
+     *     // ... the filter for the ServicePriceRules we want to count
+     *   }
+     * })
+    **/
+    count<T extends ServicePriceRuleCountArgs>(
+      args?: Subset<T, ServicePriceRuleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ServicePriceRuleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ServicePriceRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ServicePriceRuleAggregateArgs>(args: Subset<T, ServicePriceRuleAggregateArgs>): Prisma.PrismaPromise<GetServicePriceRuleAggregateType<T>>
+
+    /**
+     * Group by ServicePriceRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServicePriceRuleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ServicePriceRuleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ServicePriceRuleGroupByArgs['orderBy'] }
+        : { orderBy?: ServicePriceRuleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ServicePriceRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetServicePriceRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ServicePriceRule model
+   */
+  readonly fields: ServicePriceRuleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ServicePriceRule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ServicePriceRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ServicePriceRule model
+   */
+  interface ServicePriceRuleFieldRefs {
+    readonly id: FieldRef<"ServicePriceRule", 'String'>
+    readonly serviceId: FieldRef<"ServicePriceRule", 'String'>
+    readonly game: FieldRef<"ServicePriceRule", 'String'>
+    readonly pricingType: FieldRef<"ServicePriceRule", 'String'>
+    readonly basePrice: FieldRef<"ServicePriceRule", 'Decimal'>
+    readonly config: FieldRef<"ServicePriceRule", 'Json'>
+    readonly active: FieldRef<"ServicePriceRule", 'Boolean'>
+    readonly createdAt: FieldRef<"ServicePriceRule", 'DateTime'>
+    readonly updatedAt: FieldRef<"ServicePriceRule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ServicePriceRule findUnique
+   */
+  export type ServicePriceRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServicePriceRule to fetch.
+     */
+    where: ServicePriceRuleWhereUniqueInput
+  }
+
+  /**
+   * ServicePriceRule findUniqueOrThrow
+   */
+  export type ServicePriceRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServicePriceRule to fetch.
+     */
+    where: ServicePriceRuleWhereUniqueInput
+  }
+
+  /**
+   * ServicePriceRule findFirst
+   */
+  export type ServicePriceRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServicePriceRule to fetch.
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServicePriceRules to fetch.
+     */
+    orderBy?: ServicePriceRuleOrderByWithRelationInput | ServicePriceRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServicePriceRules.
+     */
+    cursor?: ServicePriceRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServicePriceRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServicePriceRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServicePriceRules.
+     */
+    distinct?: ServicePriceRuleScalarFieldEnum | ServicePriceRuleScalarFieldEnum[]
+  }
+
+  /**
+   * ServicePriceRule findFirstOrThrow
+   */
+  export type ServicePriceRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServicePriceRule to fetch.
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServicePriceRules to fetch.
+     */
+    orderBy?: ServicePriceRuleOrderByWithRelationInput | ServicePriceRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServicePriceRules.
+     */
+    cursor?: ServicePriceRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServicePriceRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServicePriceRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServicePriceRules.
+     */
+    distinct?: ServicePriceRuleScalarFieldEnum | ServicePriceRuleScalarFieldEnum[]
+  }
+
+  /**
+   * ServicePriceRule findMany
+   */
+  export type ServicePriceRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServicePriceRules to fetch.
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServicePriceRules to fetch.
+     */
+    orderBy?: ServicePriceRuleOrderByWithRelationInput | ServicePriceRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ServicePriceRules.
+     */
+    cursor?: ServicePriceRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServicePriceRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServicePriceRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServicePriceRules.
+     */
+    distinct?: ServicePriceRuleScalarFieldEnum | ServicePriceRuleScalarFieldEnum[]
+  }
+
+  /**
+   * ServicePriceRule create
+   */
+  export type ServicePriceRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ServicePriceRule.
+     */
+    data: XOR<ServicePriceRuleCreateInput, ServicePriceRuleUncheckedCreateInput>
+  }
+
+  /**
+   * ServicePriceRule createMany
+   */
+  export type ServicePriceRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ServicePriceRules.
+     */
+    data: ServicePriceRuleCreateManyInput | ServicePriceRuleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ServicePriceRule createManyAndReturn
+   */
+  export type ServicePriceRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * The data used to create many ServicePriceRules.
+     */
+    data: ServicePriceRuleCreateManyInput | ServicePriceRuleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ServicePriceRule update
+   */
+  export type ServicePriceRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ServicePriceRule.
+     */
+    data: XOR<ServicePriceRuleUpdateInput, ServicePriceRuleUncheckedUpdateInput>
+    /**
+     * Choose, which ServicePriceRule to update.
+     */
+    where: ServicePriceRuleWhereUniqueInput
+  }
+
+  /**
+   * ServicePriceRule updateMany
+   */
+  export type ServicePriceRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ServicePriceRules.
+     */
+    data: XOR<ServicePriceRuleUpdateManyMutationInput, ServicePriceRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which ServicePriceRules to update
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * Limit how many ServicePriceRules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ServicePriceRule updateManyAndReturn
+   */
+  export type ServicePriceRuleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * The data used to update ServicePriceRules.
+     */
+    data: XOR<ServicePriceRuleUpdateManyMutationInput, ServicePriceRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which ServicePriceRules to update
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * Limit how many ServicePriceRules to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ServicePriceRule upsert
+   */
+  export type ServicePriceRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ServicePriceRule to update in case it exists.
+     */
+    where: ServicePriceRuleWhereUniqueInput
+    /**
+     * In case the ServicePriceRule found by the `where` argument doesn't exist, create a new ServicePriceRule with this data.
+     */
+    create: XOR<ServicePriceRuleCreateInput, ServicePriceRuleUncheckedCreateInput>
+    /**
+     * In case the ServicePriceRule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ServicePriceRuleUpdateInput, ServicePriceRuleUncheckedUpdateInput>
+  }
+
+  /**
+   * ServicePriceRule delete
+   */
+  export type ServicePriceRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+    /**
+     * Filter which ServicePriceRule to delete.
+     */
+    where: ServicePriceRuleWhereUniqueInput
+  }
+
+  /**
+   * ServicePriceRule deleteMany
+   */
+  export type ServicePriceRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServicePriceRules to delete
+     */
+    where?: ServicePriceRuleWhereInput
+    /**
+     * Limit how many ServicePriceRules to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ServicePriceRule without action
+   */
+  export type ServicePriceRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicePriceRule
+     */
+    select?: ServicePriceRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServicePriceRule
+     */
+    omit?: ServicePriceRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServicePriceRuleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ServiceSale
+   */
+
+  export type AggregateServiceSale = {
+    _count: ServiceSaleCountAggregateOutputType | null
+    _avg: ServiceSaleAvgAggregateOutputType | null
+    _sum: ServiceSaleSumAggregateOutputType | null
+    _min: ServiceSaleMinAggregateOutputType | null
+    _max: ServiceSaleMaxAggregateOutputType | null
+  }
+
+  export type ServiceSaleAvgAggregateOutputType = {
+    discountPercent: Decimal | null
+  }
+
+  export type ServiceSaleSumAggregateOutputType = {
+    discountPercent: Decimal | null
+  }
+
+  export type ServiceSaleMinAggregateOutputType = {
+    id: string | null
+    serviceId: string | null
+    title: string | null
+    discountPercent: Decimal | null
+    appliesTo: string | null
+    startsAt: Date | null
+    endsAt: Date | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceSaleMaxAggregateOutputType = {
+    id: string | null
+    serviceId: string | null
+    title: string | null
+    discountPercent: Decimal | null
+    appliesTo: string | null
+    startsAt: Date | null
+    endsAt: Date | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceSaleCountAggregateOutputType = {
+    id: number
+    serviceId: number
+    title: number
+    discountPercent: number
+    appliesTo: number
+    startsAt: number
+    endsAt: number
+    active: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ServiceSaleAvgAggregateInputType = {
+    discountPercent?: true
+  }
+
+  export type ServiceSaleSumAggregateInputType = {
+    discountPercent?: true
+  }
+
+  export type ServiceSaleMinAggregateInputType = {
+    id?: true
+    serviceId?: true
+    title?: true
+    discountPercent?: true
+    appliesTo?: true
+    startsAt?: true
+    endsAt?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceSaleMaxAggregateInputType = {
+    id?: true
+    serviceId?: true
+    title?: true
+    discountPercent?: true
+    appliesTo?: true
+    startsAt?: true
+    endsAt?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceSaleCountAggregateInputType = {
+    id?: true
+    serviceId?: true
+    title?: true
+    discountPercent?: true
+    appliesTo?: true
+    startsAt?: true
+    endsAt?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ServiceSaleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceSale to aggregate.
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceSales to fetch.
+     */
+    orderBy?: ServiceSaleOrderByWithRelationInput | ServiceSaleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ServiceSaleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceSales from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceSales.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ServiceSales
+    **/
+    _count?: true | ServiceSaleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ServiceSaleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ServiceSaleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ServiceSaleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ServiceSaleMaxAggregateInputType
+  }
+
+  export type GetServiceSaleAggregateType<T extends ServiceSaleAggregateArgs> = {
+        [P in keyof T & keyof AggregateServiceSale]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateServiceSale[P]>
+      : GetScalarType<T[P], AggregateServiceSale[P]>
+  }
+
+
+
+
+  export type ServiceSaleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceSaleWhereInput
+    orderBy?: ServiceSaleOrderByWithAggregationInput | ServiceSaleOrderByWithAggregationInput[]
+    by: ServiceSaleScalarFieldEnum[] | ServiceSaleScalarFieldEnum
+    having?: ServiceSaleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ServiceSaleCountAggregateInputType | true
+    _avg?: ServiceSaleAvgAggregateInputType
+    _sum?: ServiceSaleSumAggregateInputType
+    _min?: ServiceSaleMinAggregateInputType
+    _max?: ServiceSaleMaxAggregateInputType
+  }
+
+  export type ServiceSaleGroupByOutputType = {
+    id: string
+    serviceId: string
+    title: string
+    discountPercent: Decimal
+    appliesTo: string
+    startsAt: Date | null
+    endsAt: Date | null
+    active: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: ServiceSaleCountAggregateOutputType | null
+    _avg: ServiceSaleAvgAggregateOutputType | null
+    _sum: ServiceSaleSumAggregateOutputType | null
+    _min: ServiceSaleMinAggregateOutputType | null
+    _max: ServiceSaleMaxAggregateOutputType | null
+  }
+
+  type GetServiceSaleGroupByPayload<T extends ServiceSaleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ServiceSaleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ServiceSaleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ServiceSaleGroupByOutputType[P]>
+            : GetScalarType<T[P], ServiceSaleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ServiceSaleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    title?: boolean
+    discountPercent?: boolean
+    appliesTo?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceSale"]>
+
+  export type ServiceSaleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    title?: boolean
+    discountPercent?: boolean
+    appliesTo?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceSale"]>
+
+  export type ServiceSaleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceId?: boolean
+    title?: boolean
+    discountPercent?: boolean
+    appliesTo?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceSale"]>
+
+  export type ServiceSaleSelectScalar = {
+    id?: boolean
+    serviceId?: boolean
+    title?: boolean
+    discountPercent?: boolean
+    appliesTo?: boolean
+    startsAt?: boolean
+    endsAt?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "serviceId" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
+  export type ServiceSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ServiceSaleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ServiceSaleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+
+  export type $ServiceSalePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ServiceSale"
+    objects: {
+      service: Prisma.$ServicePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      serviceId: string
+      title: string
+      discountPercent: Prisma.Decimal
+      appliesTo: string
+      startsAt: Date | null
+      endsAt: Date | null
+      active: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["serviceSale"]>
+    composites: {}
+  }
+
+  type ServiceSaleGetPayload<S extends boolean | null | undefined | ServiceSaleDefaultArgs> = $Result.GetResult<Prisma.$ServiceSalePayload, S>
+
+  type ServiceSaleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ServiceSaleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ServiceSaleCountAggregateInputType | true
+    }
+
+  export interface ServiceSaleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ServiceSale'], meta: { name: 'ServiceSale' } }
+    /**
+     * Find zero or one ServiceSale that matches the filter.
+     * @param {ServiceSaleFindUniqueArgs} args - Arguments to find a ServiceSale
+     * @example
+     * // Get one ServiceSale
+     * const serviceSale = await prisma.serviceSale.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ServiceSaleFindUniqueArgs>(args: SelectSubset<T, ServiceSaleFindUniqueArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ServiceSale that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ServiceSaleFindUniqueOrThrowArgs} args - Arguments to find a ServiceSale
+     * @example
+     * // Get one ServiceSale
+     * const serviceSale = await prisma.serviceSale.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ServiceSaleFindUniqueOrThrowArgs>(args: SelectSubset<T, ServiceSaleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ServiceSale that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleFindFirstArgs} args - Arguments to find a ServiceSale
+     * @example
+     * // Get one ServiceSale
+     * const serviceSale = await prisma.serviceSale.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ServiceSaleFindFirstArgs>(args?: SelectSubset<T, ServiceSaleFindFirstArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ServiceSale that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleFindFirstOrThrowArgs} args - Arguments to find a ServiceSale
+     * @example
+     * // Get one ServiceSale
+     * const serviceSale = await prisma.serviceSale.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ServiceSaleFindFirstOrThrowArgs>(args?: SelectSubset<T, ServiceSaleFindFirstOrThrowArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ServiceSales that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ServiceSales
+     * const serviceSales = await prisma.serviceSale.findMany()
+     * 
+     * // Get first 10 ServiceSales
+     * const serviceSales = await prisma.serviceSale.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const serviceSaleWithIdOnly = await prisma.serviceSale.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ServiceSaleFindManyArgs>(args?: SelectSubset<T, ServiceSaleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ServiceSale.
+     * @param {ServiceSaleCreateArgs} args - Arguments to create a ServiceSale.
+     * @example
+     * // Create one ServiceSale
+     * const ServiceSale = await prisma.serviceSale.create({
+     *   data: {
+     *     // ... data to create a ServiceSale
+     *   }
+     * })
+     * 
+     */
+    create<T extends ServiceSaleCreateArgs>(args: SelectSubset<T, ServiceSaleCreateArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ServiceSales.
+     * @param {ServiceSaleCreateManyArgs} args - Arguments to create many ServiceSales.
+     * @example
+     * // Create many ServiceSales
+     * const serviceSale = await prisma.serviceSale.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ServiceSaleCreateManyArgs>(args?: SelectSubset<T, ServiceSaleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ServiceSales and returns the data saved in the database.
+     * @param {ServiceSaleCreateManyAndReturnArgs} args - Arguments to create many ServiceSales.
+     * @example
+     * // Create many ServiceSales
+     * const serviceSale = await prisma.serviceSale.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ServiceSales and only return the `id`
+     * const serviceSaleWithIdOnly = await prisma.serviceSale.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ServiceSaleCreateManyAndReturnArgs>(args?: SelectSubset<T, ServiceSaleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ServiceSale.
+     * @param {ServiceSaleDeleteArgs} args - Arguments to delete one ServiceSale.
+     * @example
+     * // Delete one ServiceSale
+     * const ServiceSale = await prisma.serviceSale.delete({
+     *   where: {
+     *     // ... filter to delete one ServiceSale
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ServiceSaleDeleteArgs>(args: SelectSubset<T, ServiceSaleDeleteArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ServiceSale.
+     * @param {ServiceSaleUpdateArgs} args - Arguments to update one ServiceSale.
+     * @example
+     * // Update one ServiceSale
+     * const serviceSale = await prisma.serviceSale.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ServiceSaleUpdateArgs>(args: SelectSubset<T, ServiceSaleUpdateArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ServiceSales.
+     * @param {ServiceSaleDeleteManyArgs} args - Arguments to filter ServiceSales to delete.
+     * @example
+     * // Delete a few ServiceSales
+     * const { count } = await prisma.serviceSale.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ServiceSaleDeleteManyArgs>(args?: SelectSubset<T, ServiceSaleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServiceSales.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ServiceSales
+     * const serviceSale = await prisma.serviceSale.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ServiceSaleUpdateManyArgs>(args: SelectSubset<T, ServiceSaleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServiceSales and returns the data updated in the database.
+     * @param {ServiceSaleUpdateManyAndReturnArgs} args - Arguments to update many ServiceSales.
+     * @example
+     * // Update many ServiceSales
+     * const serviceSale = await prisma.serviceSale.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ServiceSales and only return the `id`
+     * const serviceSaleWithIdOnly = await prisma.serviceSale.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ServiceSaleUpdateManyAndReturnArgs>(args: SelectSubset<T, ServiceSaleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ServiceSale.
+     * @param {ServiceSaleUpsertArgs} args - Arguments to update or create a ServiceSale.
+     * @example
+     * // Update or create a ServiceSale
+     * const serviceSale = await prisma.serviceSale.upsert({
+     *   create: {
+     *     // ... data to create a ServiceSale
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ServiceSale we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ServiceSaleUpsertArgs>(args: SelectSubset<T, ServiceSaleUpsertArgs<ExtArgs>>): Prisma__ServiceSaleClient<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ServiceSales.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleCountArgs} args - Arguments to filter ServiceSales to count.
+     * @example
+     * // Count the number of ServiceSales
+     * const count = await prisma.serviceSale.count({
+     *   where: {
+     *     // ... the filter for the ServiceSales we want to count
+     *   }
+     * })
+    **/
+    count<T extends ServiceSaleCountArgs>(
+      args?: Subset<T, ServiceSaleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ServiceSaleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ServiceSale.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ServiceSaleAggregateArgs>(args: Subset<T, ServiceSaleAggregateArgs>): Prisma.PrismaPromise<GetServiceSaleAggregateType<T>>
+
+    /**
+     * Group by ServiceSale.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceSaleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ServiceSaleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ServiceSaleGroupByArgs['orderBy'] }
+        : { orderBy?: ServiceSaleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ServiceSaleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetServiceSaleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ServiceSale model
+   */
+  readonly fields: ServiceSaleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ServiceSale.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ServiceSaleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ServiceSale model
+   */
+  interface ServiceSaleFieldRefs {
+    readonly id: FieldRef<"ServiceSale", 'String'>
+    readonly serviceId: FieldRef<"ServiceSale", 'String'>
+    readonly title: FieldRef<"ServiceSale", 'String'>
+    readonly discountPercent: FieldRef<"ServiceSale", 'Decimal'>
+    readonly appliesTo: FieldRef<"ServiceSale", 'String'>
+    readonly startsAt: FieldRef<"ServiceSale", 'DateTime'>
+    readonly endsAt: FieldRef<"ServiceSale", 'DateTime'>
+    readonly active: FieldRef<"ServiceSale", 'Boolean'>
+    readonly createdAt: FieldRef<"ServiceSale", 'DateTime'>
+    readonly updatedAt: FieldRef<"ServiceSale", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ServiceSale findUnique
+   */
+  export type ServiceSaleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceSale to fetch.
+     */
+    where: ServiceSaleWhereUniqueInput
+  }
+
+  /**
+   * ServiceSale findUniqueOrThrow
+   */
+  export type ServiceSaleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceSale to fetch.
+     */
+    where: ServiceSaleWhereUniqueInput
+  }
+
+  /**
+   * ServiceSale findFirst
+   */
+  export type ServiceSaleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceSale to fetch.
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceSales to fetch.
+     */
+    orderBy?: ServiceSaleOrderByWithRelationInput | ServiceSaleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceSales.
+     */
+    cursor?: ServiceSaleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceSales from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceSales.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceSales.
+     */
+    distinct?: ServiceSaleScalarFieldEnum | ServiceSaleScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceSale findFirstOrThrow
+   */
+  export type ServiceSaleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceSale to fetch.
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceSales to fetch.
+     */
+    orderBy?: ServiceSaleOrderByWithRelationInput | ServiceSaleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceSales.
+     */
+    cursor?: ServiceSaleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceSales from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceSales.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceSales.
+     */
+    distinct?: ServiceSaleScalarFieldEnum | ServiceSaleScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceSale findMany
+   */
+  export type ServiceSaleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceSales to fetch.
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceSales to fetch.
+     */
+    orderBy?: ServiceSaleOrderByWithRelationInput | ServiceSaleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ServiceSales.
+     */
+    cursor?: ServiceSaleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceSales from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceSales.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceSales.
+     */
+    distinct?: ServiceSaleScalarFieldEnum | ServiceSaleScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceSale create
+   */
+  export type ServiceSaleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ServiceSale.
+     */
+    data: XOR<ServiceSaleCreateInput, ServiceSaleUncheckedCreateInput>
+  }
+
+  /**
+   * ServiceSale createMany
+   */
+  export type ServiceSaleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ServiceSales.
+     */
+    data: ServiceSaleCreateManyInput | ServiceSaleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ServiceSale createManyAndReturn
+   */
+  export type ServiceSaleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * The data used to create many ServiceSales.
+     */
+    data: ServiceSaleCreateManyInput | ServiceSaleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ServiceSale update
+   */
+  export type ServiceSaleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ServiceSale.
+     */
+    data: XOR<ServiceSaleUpdateInput, ServiceSaleUncheckedUpdateInput>
+    /**
+     * Choose, which ServiceSale to update.
+     */
+    where: ServiceSaleWhereUniqueInput
+  }
+
+  /**
+   * ServiceSale updateMany
+   */
+  export type ServiceSaleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ServiceSales.
+     */
+    data: XOR<ServiceSaleUpdateManyMutationInput, ServiceSaleUncheckedUpdateManyInput>
+    /**
+     * Filter which ServiceSales to update
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * Limit how many ServiceSales to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ServiceSale updateManyAndReturn
+   */
+  export type ServiceSaleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * The data used to update ServiceSales.
+     */
+    data: XOR<ServiceSaleUpdateManyMutationInput, ServiceSaleUncheckedUpdateManyInput>
+    /**
+     * Filter which ServiceSales to update
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * Limit how many ServiceSales to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ServiceSale upsert
+   */
+  export type ServiceSaleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ServiceSale to update in case it exists.
+     */
+    where: ServiceSaleWhereUniqueInput
+    /**
+     * In case the ServiceSale found by the `where` argument doesn't exist, create a new ServiceSale with this data.
+     */
+    create: XOR<ServiceSaleCreateInput, ServiceSaleUncheckedCreateInput>
+    /**
+     * In case the ServiceSale was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ServiceSaleUpdateInput, ServiceSaleUncheckedUpdateInput>
+  }
+
+  /**
+   * ServiceSale delete
+   */
+  export type ServiceSaleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
+    /**
+     * Filter which ServiceSale to delete.
+     */
+    where: ServiceSaleWhereUniqueInput
+  }
+
+  /**
+   * ServiceSale deleteMany
+   */
+  export type ServiceSaleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceSales to delete
+     */
+    where?: ServiceSaleWhereInput
+    /**
+     * Limit how many ServiceSales to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ServiceSale without action
+   */
+  export type ServiceSaleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceSale
+     */
+    select?: ServiceSaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ServiceSale
+     */
+    omit?: ServiceSaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceSaleInclude<ExtArgs> | null
   }
 
 
@@ -17844,6 +20407,37 @@ export namespace Prisma {
   export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
 
 
+  export const ServicePriceRuleScalarFieldEnum: {
+    id: 'id',
+    serviceId: 'serviceId',
+    game: 'game',
+    pricingType: 'pricingType',
+    basePrice: 'basePrice',
+    config: 'config',
+    active: 'active',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ServicePriceRuleScalarFieldEnum = (typeof ServicePriceRuleScalarFieldEnum)[keyof typeof ServicePriceRuleScalarFieldEnum]
+
+
+  export const ServiceSaleScalarFieldEnum: {
+    id: 'id',
+    serviceId: 'serviceId',
+    title: 'title',
+    discountPercent: 'discountPercent',
+    appliesTo: 'appliesTo',
+    startsAt: 'startsAt',
+    endsAt: 'endsAt',
+    active: 'active',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ServiceSaleScalarFieldEnum = (typeof ServiceSaleScalarFieldEnum)[keyof typeof ServiceSaleScalarFieldEnum]
+
+
   export const OrderScalarFieldEnum: {
     id: 'id',
     customerId: 'customerId',
@@ -18105,6 +20699,41 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'OrderStatus'
    */
   export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
@@ -18143,27 +20772,6 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -18456,6 +21064,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     orders?: OrderListRelationFilter
+    priceRules?: ServicePriceRuleListRelationFilter
+    sales?: ServiceSaleListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
@@ -18465,6 +21075,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     orders?: OrderOrderByRelationAggregateInput
+    priceRules?: ServicePriceRuleOrderByRelationAggregateInput
+    sales?: ServiceSaleOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -18477,6 +21089,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     orders?: OrderListRelationFilter
+    priceRules?: ServicePriceRuleListRelationFilter
+    sales?: ServiceSaleListRelationFilter
   }, "id">
 
   export type ServiceOrderByWithAggregationInput = {
@@ -18499,6 +21113,165 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Service"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
+  }
+
+  export type ServicePriceRuleWhereInput = {
+    AND?: ServicePriceRuleWhereInput | ServicePriceRuleWhereInput[]
+    OR?: ServicePriceRuleWhereInput[]
+    NOT?: ServicePriceRuleWhereInput | ServicePriceRuleWhereInput[]
+    id?: StringFilter<"ServicePriceRule"> | string
+    serviceId?: StringFilter<"ServicePriceRule"> | string
+    game?: StringFilter<"ServicePriceRule"> | string
+    pricingType?: StringFilter<"ServicePriceRule"> | string
+    basePrice?: DecimalNullableFilter<"ServicePriceRule"> | Decimal | DecimalJsLike | number | string | null
+    config?: JsonNullableFilter<"ServicePriceRule">
+    active?: BoolFilter<"ServicePriceRule"> | boolean
+    createdAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+    updatedAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }
+
+  export type ServicePriceRuleOrderByWithRelationInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    game?: SortOrder
+    pricingType?: SortOrder
+    basePrice?: SortOrderInput | SortOrder
+    config?: SortOrderInput | SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    service?: ServiceOrderByWithRelationInput
+  }
+
+  export type ServicePriceRuleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ServicePriceRuleWhereInput | ServicePriceRuleWhereInput[]
+    OR?: ServicePriceRuleWhereInput[]
+    NOT?: ServicePriceRuleWhereInput | ServicePriceRuleWhereInput[]
+    serviceId?: StringFilter<"ServicePriceRule"> | string
+    game?: StringFilter<"ServicePriceRule"> | string
+    pricingType?: StringFilter<"ServicePriceRule"> | string
+    basePrice?: DecimalNullableFilter<"ServicePriceRule"> | Decimal | DecimalJsLike | number | string | null
+    config?: JsonNullableFilter<"ServicePriceRule">
+    active?: BoolFilter<"ServicePriceRule"> | boolean
+    createdAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+    updatedAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }, "id">
+
+  export type ServicePriceRuleOrderByWithAggregationInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    game?: SortOrder
+    pricingType?: SortOrder
+    basePrice?: SortOrderInput | SortOrder
+    config?: SortOrderInput | SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ServicePriceRuleCountOrderByAggregateInput
+    _avg?: ServicePriceRuleAvgOrderByAggregateInput
+    _max?: ServicePriceRuleMaxOrderByAggregateInput
+    _min?: ServicePriceRuleMinOrderByAggregateInput
+    _sum?: ServicePriceRuleSumOrderByAggregateInput
+  }
+
+  export type ServicePriceRuleScalarWhereWithAggregatesInput = {
+    AND?: ServicePriceRuleScalarWhereWithAggregatesInput | ServicePriceRuleScalarWhereWithAggregatesInput[]
+    OR?: ServicePriceRuleScalarWhereWithAggregatesInput[]
+    NOT?: ServicePriceRuleScalarWhereWithAggregatesInput | ServicePriceRuleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ServicePriceRule"> | string
+    serviceId?: StringWithAggregatesFilter<"ServicePriceRule"> | string
+    game?: StringWithAggregatesFilter<"ServicePriceRule"> | string
+    pricingType?: StringWithAggregatesFilter<"ServicePriceRule"> | string
+    basePrice?: DecimalNullableWithAggregatesFilter<"ServicePriceRule"> | Decimal | DecimalJsLike | number | string | null
+    config?: JsonNullableWithAggregatesFilter<"ServicePriceRule">
+    active?: BoolWithAggregatesFilter<"ServicePriceRule"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"ServicePriceRule"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ServicePriceRule"> | Date | string
+  }
+
+  export type ServiceSaleWhereInput = {
+    AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    OR?: ServiceSaleWhereInput[]
+    NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    id?: StringFilter<"ServiceSale"> | string
+    serviceId?: StringFilter<"ServiceSale"> | string
+    title?: StringFilter<"ServiceSale"> | string
+    discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFilter<"ServiceSale"> | string
+    startsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    endsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    active?: BoolFilter<"ServiceSale"> | boolean
+    createdAt?: DateTimeFilter<"ServiceSale"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceSale"> | Date | string
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }
+
+  export type ServiceSaleOrderByWithRelationInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    title?: SortOrder
+    discountPercent?: SortOrder
+    appliesTo?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
+    endsAt?: SortOrderInput | SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    service?: ServiceOrderByWithRelationInput
+  }
+
+  export type ServiceSaleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    OR?: ServiceSaleWhereInput[]
+    NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    serviceId?: StringFilter<"ServiceSale"> | string
+    title?: StringFilter<"ServiceSale"> | string
+    discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFilter<"ServiceSale"> | string
+    startsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    endsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    active?: BoolFilter<"ServiceSale"> | boolean
+    createdAt?: DateTimeFilter<"ServiceSale"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceSale"> | Date | string
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }, "id">
+
+  export type ServiceSaleOrderByWithAggregationInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    title?: SortOrder
+    discountPercent?: SortOrder
+    appliesTo?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
+    endsAt?: SortOrderInput | SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ServiceSaleCountOrderByAggregateInput
+    _avg?: ServiceSaleAvgOrderByAggregateInput
+    _max?: ServiceSaleMaxOrderByAggregateInput
+    _min?: ServiceSaleMinOrderByAggregateInput
+    _sum?: ServiceSaleSumOrderByAggregateInput
+  }
+
+  export type ServiceSaleScalarWhereWithAggregatesInput = {
+    AND?: ServiceSaleScalarWhereWithAggregatesInput | ServiceSaleScalarWhereWithAggregatesInput[]
+    OR?: ServiceSaleScalarWhereWithAggregatesInput[]
+    NOT?: ServiceSaleScalarWhereWithAggregatesInput | ServiceSaleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ServiceSale"> | string
+    serviceId?: StringWithAggregatesFilter<"ServiceSale"> | string
+    title?: StringWithAggregatesFilter<"ServiceSale"> | string
+    discountPercent?: DecimalWithAggregatesFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringWithAggregatesFilter<"ServiceSale"> | string
+    startsAt?: DateTimeNullableWithAggregatesFilter<"ServiceSale"> | Date | string | null
+    endsAt?: DateTimeNullableWithAggregatesFilter<"ServiceSale"> | Date | string | null
+    active?: BoolWithAggregatesFilter<"ServiceSale"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"ServiceSale"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ServiceSale"> | Date | string
   }
 
   export type OrderWhereInput = {
@@ -19652,6 +22425,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutServiceInput
+    priceRules?: ServicePriceRuleCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
@@ -19661,6 +22436,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutServiceInput
+    priceRules?: ServicePriceRuleUncheckedCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUpdateInput = {
@@ -19670,6 +22447,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutServiceNestedInput
+    priceRules?: ServicePriceRuleUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
@@ -19679,6 +22458,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutServiceNestedInput
+    priceRules?: ServicePriceRuleUncheckedUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
@@ -19701,6 +22482,179 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServicePriceRuleCreateInput = {
+    id?: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    service: ServiceCreateNestedOneWithoutPriceRulesInput
+  }
+
+  export type ServicePriceRuleUncheckedCreateInput = {
+    id?: string
+    serviceId: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServicePriceRuleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    service?: ServiceUpdateOneRequiredWithoutPriceRulesNestedInput
+  }
+
+  export type ServicePriceRuleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServicePriceRuleCreateManyInput = {
+    id?: string
+    serviceId: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServicePriceRuleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServicePriceRuleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleCreateInput = {
+    id?: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    service: ServiceCreateNestedOneWithoutSalesInput
+  }
+
+  export type ServiceSaleUncheckedCreateInput = {
+    id?: string
+    serviceId: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceSaleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    service?: ServiceUpdateOneRequiredWithoutSalesNestedInput
+  }
+
+  export type ServiceSaleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleCreateManyInput = {
+    id?: string
+    serviceId: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceSaleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21040,6 +23994,26 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type ServicePriceRuleListRelationFilter = {
+    every?: ServicePriceRuleWhereInput
+    some?: ServicePriceRuleWhereInput
+    none?: ServicePriceRuleWhereInput
+  }
+
+  export type ServiceSaleListRelationFilter = {
+    every?: ServiceSaleWhereInput
+    some?: ServiceSaleWhereInput
+    none?: ServiceSaleWhereInput
+  }
+
+  export type ServicePriceRuleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ServiceSaleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -21062,6 +24036,216 @@ export namespace Prisma {
     description?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type ServiceScalarRelationFilter = {
+    is?: ServiceWhereInput
+    isNot?: ServiceWhereInput
+  }
+
+  export type ServicePriceRuleCountOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    game?: SortOrder
+    pricingType?: SortOrder
+    basePrice?: SortOrder
+    config?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServicePriceRuleAvgOrderByAggregateInput = {
+    basePrice?: SortOrder
+  }
+
+  export type ServicePriceRuleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    game?: SortOrder
+    pricingType?: SortOrder
+    basePrice?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServicePriceRuleMinOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    game?: SortOrder
+    pricingType?: SortOrder
+    basePrice?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServicePriceRuleSumOrderByAggregateInput = {
+    basePrice?: SortOrder
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type ServiceSaleCountOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    title?: SortOrder
+    discountPercent?: SortOrder
+    appliesTo?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceSaleAvgOrderByAggregateInput = {
+    discountPercent?: SortOrder
+  }
+
+  export type ServiceSaleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    title?: SortOrder
+    discountPercent?: SortOrder
+    appliesTo?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceSaleMinOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    title?: SortOrder
+    discountPercent?: SortOrder
+    appliesTo?: SortOrder
+    startsAt?: SortOrder
+    endsAt?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceSaleSumOrderByAggregateInput = {
+    discountPercent?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type EnumOrderStatusFilter<$PrismaModel = never> = {
@@ -21099,34 +24283,6 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
   }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
 
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
@@ -21137,11 +24293,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type ServiceScalarRelationFilter = {
-    is?: ServiceWhereInput
-    isNot?: ServiceWhereInput
   }
 
   export type ConversationNullableScalarRelationFilter = {
@@ -21383,40 +24534,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -22369,11 +25486,39 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type ServicePriceRuleCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput> | ServicePriceRuleCreateWithoutServiceInput[] | ServicePriceRuleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServicePriceRuleCreateOrConnectWithoutServiceInput | ServicePriceRuleCreateOrConnectWithoutServiceInput[]
+    createMany?: ServicePriceRuleCreateManyServiceInputEnvelope
+    connect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+  }
+
+  export type ServiceSaleCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput> | ServiceSaleCreateWithoutServiceInput[] | ServiceSaleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServiceSaleCreateOrConnectWithoutServiceInput | ServiceSaleCreateOrConnectWithoutServiceInput[]
+    createMany?: ServiceSaleCreateManyServiceInputEnvelope
+    connect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+  }
+
   export type OrderUncheckedCreateNestedManyWithoutServiceInput = {
     create?: XOR<OrderCreateWithoutServiceInput, OrderUncheckedCreateWithoutServiceInput> | OrderCreateWithoutServiceInput[] | OrderUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutServiceInput | OrderCreateOrConnectWithoutServiceInput[]
     createMany?: OrderCreateManyServiceInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type ServicePriceRuleUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput> | ServicePriceRuleCreateWithoutServiceInput[] | ServicePriceRuleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServicePriceRuleCreateOrConnectWithoutServiceInput | ServicePriceRuleCreateOrConnectWithoutServiceInput[]
+    createMany?: ServicePriceRuleCreateManyServiceInputEnvelope
+    connect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+  }
+
+  export type ServiceSaleUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput> | ServiceSaleCreateWithoutServiceInput[] | ServiceSaleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServiceSaleCreateOrConnectWithoutServiceInput | ServiceSaleCreateOrConnectWithoutServiceInput[]
+    createMany?: ServiceSaleCreateManyServiceInputEnvelope
+    connect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
   }
 
   export type OrderUpdateManyWithoutServiceNestedInput = {
@@ -22390,6 +25535,34 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type ServicePriceRuleUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput> | ServicePriceRuleCreateWithoutServiceInput[] | ServicePriceRuleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServicePriceRuleCreateOrConnectWithoutServiceInput | ServicePriceRuleCreateOrConnectWithoutServiceInput[]
+    upsert?: ServicePriceRuleUpsertWithWhereUniqueWithoutServiceInput | ServicePriceRuleUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ServicePriceRuleCreateManyServiceInputEnvelope
+    set?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    disconnect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    delete?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    connect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    update?: ServicePriceRuleUpdateWithWhereUniqueWithoutServiceInput | ServicePriceRuleUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ServicePriceRuleUpdateManyWithWhereWithoutServiceInput | ServicePriceRuleUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ServicePriceRuleScalarWhereInput | ServicePriceRuleScalarWhereInput[]
+  }
+
+  export type ServiceSaleUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput> | ServiceSaleCreateWithoutServiceInput[] | ServiceSaleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServiceSaleCreateOrConnectWithoutServiceInput | ServiceSaleCreateOrConnectWithoutServiceInput[]
+    upsert?: ServiceSaleUpsertWithWhereUniqueWithoutServiceInput | ServiceSaleUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ServiceSaleCreateManyServiceInputEnvelope
+    set?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    disconnect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    delete?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    connect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    update?: ServiceSaleUpdateWithWhereUniqueWithoutServiceInput | ServiceSaleUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ServiceSaleUpdateManyWithWhereWithoutServiceInput | ServiceSaleUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
+  }
+
   export type OrderUncheckedUpdateManyWithoutServiceNestedInput = {
     create?: XOR<OrderCreateWithoutServiceInput, OrderUncheckedCreateWithoutServiceInput> | OrderCreateWithoutServiceInput[] | OrderUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutServiceInput | OrderCreateOrConnectWithoutServiceInput[]
@@ -22402,6 +25575,82 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutServiceInput | OrderUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutServiceInput | OrderUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type ServicePriceRuleUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput> | ServicePriceRuleCreateWithoutServiceInput[] | ServicePriceRuleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServicePriceRuleCreateOrConnectWithoutServiceInput | ServicePriceRuleCreateOrConnectWithoutServiceInput[]
+    upsert?: ServicePriceRuleUpsertWithWhereUniqueWithoutServiceInput | ServicePriceRuleUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ServicePriceRuleCreateManyServiceInputEnvelope
+    set?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    disconnect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    delete?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    connect?: ServicePriceRuleWhereUniqueInput | ServicePriceRuleWhereUniqueInput[]
+    update?: ServicePriceRuleUpdateWithWhereUniqueWithoutServiceInput | ServicePriceRuleUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ServicePriceRuleUpdateManyWithWhereWithoutServiceInput | ServicePriceRuleUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ServicePriceRuleScalarWhereInput | ServicePriceRuleScalarWhereInput[]
+  }
+
+  export type ServiceSaleUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput> | ServiceSaleCreateWithoutServiceInput[] | ServiceSaleUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ServiceSaleCreateOrConnectWithoutServiceInput | ServiceSaleCreateOrConnectWithoutServiceInput[]
+    upsert?: ServiceSaleUpsertWithWhereUniqueWithoutServiceInput | ServiceSaleUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ServiceSaleCreateManyServiceInputEnvelope
+    set?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    disconnect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    delete?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    connect?: ServiceSaleWhereUniqueInput | ServiceSaleWhereUniqueInput[]
+    update?: ServiceSaleUpdateWithWhereUniqueWithoutServiceInput | ServiceSaleUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ServiceSaleUpdateManyWithWhereWithoutServiceInput | ServiceSaleUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
+  }
+
+  export type ServiceCreateNestedOneWithoutPriceRulesInput = {
+    create?: XOR<ServiceCreateWithoutPriceRulesInput, ServiceUncheckedCreateWithoutPriceRulesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutPriceRulesInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type ServiceUpdateOneRequiredWithoutPriceRulesNestedInput = {
+    create?: XOR<ServiceCreateWithoutPriceRulesInput, ServiceUncheckedCreateWithoutPriceRulesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutPriceRulesInput
+    upsert?: ServiceUpsertWithoutPriceRulesInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutPriceRulesInput, ServiceUpdateWithoutPriceRulesInput>, ServiceUncheckedUpdateWithoutPriceRulesInput>
+  }
+
+  export type ServiceCreateNestedOneWithoutSalesInput = {
+    create?: XOR<ServiceCreateWithoutSalesInput, ServiceUncheckedCreateWithoutSalesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutSalesInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type ServiceUpdateOneRequiredWithoutSalesNestedInput = {
+    create?: XOR<ServiceCreateWithoutSalesInput, ServiceUncheckedCreateWithoutSalesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutSalesInput
+    upsert?: ServiceUpsertWithoutSalesInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutSalesInput, ServiceUpdateWithoutSalesInput>, ServiceUncheckedUpdateWithoutSalesInput>
   }
 
   export type UserCreateNestedOneWithoutOrdersInput = {
@@ -22478,10 +25727,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -23033,6 +26278,96 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -23045,11 +26380,6 @@ export namespace Prisma {
     in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -23124,37 +26454,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -24454,6 +27753,72 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ServicePriceRuleCreateWithoutServiceInput = {
+    id?: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServicePriceRuleUncheckedCreateWithoutServiceInput = {
+    id?: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServicePriceRuleCreateOrConnectWithoutServiceInput = {
+    where: ServicePriceRuleWhereUniqueInput
+    create: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ServicePriceRuleCreateManyServiceInputEnvelope = {
+    data: ServicePriceRuleCreateManyServiceInput | ServicePriceRuleCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ServiceSaleCreateWithoutServiceInput = {
+    id?: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceSaleUncheckedCreateWithoutServiceInput = {
+    id?: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceSaleCreateOrConnectWithoutServiceInput = {
+    where: ServiceSaleWhereUniqueInput
+    create: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ServiceSaleCreateManyServiceInputEnvelope = {
+    data: ServiceSaleCreateManyServiceInput | ServiceSaleCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrderUpsertWithWhereUniqueWithoutServiceInput = {
     where: OrderWhereUniqueInput
     update: XOR<OrderUpdateWithoutServiceInput, OrderUncheckedUpdateWithoutServiceInput>
@@ -24468,6 +27833,181 @@ export namespace Prisma {
   export type OrderUpdateManyWithWhereWithoutServiceInput = {
     where: OrderScalarWhereInput
     data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type ServicePriceRuleUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ServicePriceRuleWhereUniqueInput
+    update: XOR<ServicePriceRuleUpdateWithoutServiceInput, ServicePriceRuleUncheckedUpdateWithoutServiceInput>
+    create: XOR<ServicePriceRuleCreateWithoutServiceInput, ServicePriceRuleUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ServicePriceRuleUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ServicePriceRuleWhereUniqueInput
+    data: XOR<ServicePriceRuleUpdateWithoutServiceInput, ServicePriceRuleUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ServicePriceRuleUpdateManyWithWhereWithoutServiceInput = {
+    where: ServicePriceRuleScalarWhereInput
+    data: XOR<ServicePriceRuleUpdateManyMutationInput, ServicePriceRuleUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type ServicePriceRuleScalarWhereInput = {
+    AND?: ServicePriceRuleScalarWhereInput | ServicePriceRuleScalarWhereInput[]
+    OR?: ServicePriceRuleScalarWhereInput[]
+    NOT?: ServicePriceRuleScalarWhereInput | ServicePriceRuleScalarWhereInput[]
+    id?: StringFilter<"ServicePriceRule"> | string
+    serviceId?: StringFilter<"ServicePriceRule"> | string
+    game?: StringFilter<"ServicePriceRule"> | string
+    pricingType?: StringFilter<"ServicePriceRule"> | string
+    basePrice?: DecimalNullableFilter<"ServicePriceRule"> | Decimal | DecimalJsLike | number | string | null
+    config?: JsonNullableFilter<"ServicePriceRule">
+    active?: BoolFilter<"ServicePriceRule"> | boolean
+    createdAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+    updatedAt?: DateTimeFilter<"ServicePriceRule"> | Date | string
+  }
+
+  export type ServiceSaleUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ServiceSaleWhereUniqueInput
+    update: XOR<ServiceSaleUpdateWithoutServiceInput, ServiceSaleUncheckedUpdateWithoutServiceInput>
+    create: XOR<ServiceSaleCreateWithoutServiceInput, ServiceSaleUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ServiceSaleUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ServiceSaleWhereUniqueInput
+    data: XOR<ServiceSaleUpdateWithoutServiceInput, ServiceSaleUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ServiceSaleUpdateManyWithWhereWithoutServiceInput = {
+    where: ServiceSaleScalarWhereInput
+    data: XOR<ServiceSaleUpdateManyMutationInput, ServiceSaleUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type ServiceSaleScalarWhereInput = {
+    AND?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
+    OR?: ServiceSaleScalarWhereInput[]
+    NOT?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
+    id?: StringFilter<"ServiceSale"> | string
+    serviceId?: StringFilter<"ServiceSale"> | string
+    title?: StringFilter<"ServiceSale"> | string
+    discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFilter<"ServiceSale"> | string
+    startsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    endsAt?: DateTimeNullableFilter<"ServiceSale"> | Date | string | null
+    active?: BoolFilter<"ServiceSale"> | boolean
+    createdAt?: DateTimeFilter<"ServiceSale"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceSale"> | Date | string
+  }
+
+  export type ServiceCreateWithoutPriceRulesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutPriceRulesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutPriceRulesInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutPriceRulesInput, ServiceUncheckedCreateWithoutPriceRulesInput>
+  }
+
+  export type ServiceUpsertWithoutPriceRulesInput = {
+    update: XOR<ServiceUpdateWithoutPriceRulesInput, ServiceUncheckedUpdateWithoutPriceRulesInput>
+    create: XOR<ServiceCreateWithoutPriceRulesInput, ServiceUncheckedCreateWithoutPriceRulesInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutPriceRulesInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutPriceRulesInput, ServiceUncheckedUpdateWithoutPriceRulesInput>
+  }
+
+  export type ServiceUpdateWithoutPriceRulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutPriceRulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceCreateWithoutSalesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutServiceInput
+    priceRules?: ServicePriceRuleCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutSalesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutServiceInput
+    priceRules?: ServicePriceRuleUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutSalesInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutSalesInput, ServiceUncheckedCreateWithoutSalesInput>
+  }
+
+  export type ServiceUpsertWithoutSalesInput = {
+    update: XOR<ServiceUpdateWithoutSalesInput, ServiceUncheckedUpdateWithoutSalesInput>
+    create: XOR<ServiceCreateWithoutSalesInput, ServiceUncheckedCreateWithoutSalesInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutSalesInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutSalesInput, ServiceUncheckedUpdateWithoutSalesInput>
+  }
+
+  export type ServiceUpdateWithoutSalesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutServiceNestedInput
+    priceRules?: ServicePriceRuleUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutSalesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutServiceNestedInput
+    priceRules?: ServicePriceRuleUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -24533,6 +28073,8 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    priceRules?: ServicePriceRuleCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutOrdersInput = {
@@ -24541,6 +28083,8 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    priceRules?: ServicePriceRuleUncheckedCreateNestedManyWithoutServiceInput
+    sales?: ServiceSaleUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutOrdersInput = {
@@ -24701,6 +28245,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    priceRules?: ServicePriceRuleUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutOrdersInput = {
@@ -24709,6 +28255,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    priceRules?: ServicePriceRuleUncheckedUpdateManyWithoutServiceNestedInput
+    sales?: ServiceSaleUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type OrderAssignmentUpsertWithWhereUniqueWithoutOrderInput = {
@@ -27417,6 +30965,29 @@ export namespace Prisma {
     totalPrice?: number
   }
 
+  export type ServicePriceRuleCreateManyServiceInput = {
+    id?: string
+    game: string
+    pricingType: string
+    basePrice?: Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceSaleCreateManyServiceInput = {
+    id?: string
+    title: string
+    discountPercent: Decimal | DecimalJsLike | number | string
+    appliesTo?: string
+    startsAt?: Date | string | null
+    endsAt?: Date | string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type OrderUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -27574,6 +31145,75 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type ServicePriceRuleUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServicePriceRuleUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServicePriceRuleUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    game?: StringFieldUpdateOperationsInput | string
+    pricingType?: StringFieldUpdateOperationsInput | string
+    basePrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    config?: NullableJsonNullValueInput | InputJsonValue
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceSaleUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    appliesTo?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderAssignmentCreateManyOrderInput = {

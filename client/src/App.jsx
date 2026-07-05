@@ -21,6 +21,7 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PaymentResultPage from "./pages/PaymentResultPage";
 import ContactPage from "./pages/ContactPage";
+import PriceManagementPage from "./pages/PriceManagementPage";
 
 import {
   clearExpiredSession,
@@ -200,6 +201,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminAccountsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/prices"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <PriceManagementPage />
             </ProtectedRoute>
           }
         />
