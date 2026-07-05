@@ -833,7 +833,7 @@ function NotificationPanelContent({ notifications, loading, error, onRefresh, on
         return (
             <div className="panel-empty">
                 <h4 className="panel-empty-title">Loading notifications...</h4>
-                <p className="panel-empty-sub">Checking your latest updates</p>
+                <p className="panel-empty-sub">Checking your notifications</p>
             </div>
         );
     }

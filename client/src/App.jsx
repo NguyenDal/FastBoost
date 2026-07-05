@@ -21,7 +21,6 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PaymentResultPage from "./pages/PaymentResultPage";
 import ContactPage from "./pages/ContactPage";
-import UpdatesPage from "./pages/UpdatesPage";
 
 import {
   clearExpiredSession,
@@ -93,7 +92,6 @@ function App() {
         <Route path="/order/:serviceId" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/updates" element={<UpdatesPage />} />
 
         <Route
           path="/payment/success/:serviceId"

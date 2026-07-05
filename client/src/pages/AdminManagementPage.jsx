@@ -34,20 +34,6 @@ const managementCards = [
         active: false,
     },
     {
-        title: "Event Management",
-        description: "Create and manage FastBoost events shown on the homepage.",
-        icon: "🎉",
-        status: "Coming Soon",
-        active: false,
-    },
-    {
-        title: "Update Management",
-        description: "Post platform updates, service changes, and announcement content.",
-        icon: "📰",
-        status: "Coming Soon",
-        active: false,
-    },
-    {
         title: "FAQ Management",
         description: "Manage FAQ and help content for customers and boosters.",
         icon: "❓",
@@ -67,7 +53,7 @@ export default function AdminManagementPage() {
                         <p className="admin-eyebrow">FastBoost Admin</p>
                         <h1 className="admin-order-title">Management Utilities</h1>
                         <p className="admin-list-subtitle">
-                            Central hub for managing orders, users, boosters, services, events, updates, and FAQ content.
+                            Central hub for managing orders, users, boosters, services, and FAQ content.
                         </p>
                     </div>
 
