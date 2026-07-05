@@ -14,7 +14,6 @@ import {
     listOrderAssignmentRequests,
 } from "../api/assignmentRequests";
 
-import Navbar from "../components/Navbar";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import "../styles/Admin.css";
 
@@ -237,11 +236,8 @@ export default function AdminOrderDetailsPage() {
     if (!isAdmin) return null;
 
     return (
-        <div className="page-shell">
-            <Navbar />
-            <div className="page-container">
-
-                {loading ? (
+        <main className="page-container">
+            {loading ? (
                     <GenericPageSkeleton />
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
@@ -426,8 +422,7 @@ export default function AdminOrderDetailsPage() {
                         </div>
                     </>
                 ) : null}
-            </div>
-        </div>
+            </main>
     );
 }
 

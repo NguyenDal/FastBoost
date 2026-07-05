@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import Navbar from "../components/Navbar";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
     adminListUsers,
@@ -328,11 +327,8 @@ export default function AdminAccountsPage() {
     };
 
     return (
-        <div className="page-shell">
-            <Navbar />
-
-            <main className="page-container">
-                <section className="admin-list-hero">
+        <main className="page-container">
+            <section className="admin-list-hero">
                     <div>
                         <p className="admin-eyebrow">FastBoost Admin</p>
                         <h1 className="admin-order-title">Account Management</h1>
@@ -525,7 +521,6 @@ export default function AdminAccountsPage() {
                         </button>
                     </div>
                 </div>
-            </main>
             {pendingRoleChange && (
                 <div
                     className="role-confirm-backdrop"
@@ -797,7 +792,7 @@ export default function AdminAccountsPage() {
                     </div>
                 </div>
             )}
-        </div>
+    </main>
     );
 }
 
