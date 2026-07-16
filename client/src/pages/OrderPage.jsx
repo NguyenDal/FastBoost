@@ -2,6 +2,7 @@ import { createCheckoutSession } from "../api/orders";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
+import { API_BASE_URL } from "../api/config";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
@@ -100,7 +101,7 @@ function OrderPage() {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:5000/api/loyalty/me", {
+        const response = await fetch(`${API_BASE_URL}/loyalty/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,7 +139,7 @@ function OrderPage() {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/services/${serviceId}`);
+        const response = await fetch(`${API_BASE_URL}/services/${serviceId}`);
 
         if (!response.ok) {
           throw new Error("Failed to load service");
@@ -687,7 +688,7 @@ function OrderPage() {
     setLoginErrors({ email: false, password: false });
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -729,7 +730,7 @@ function OrderPage() {
     setRegisterErrors({ email: false, password: false });
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -793,7 +794,7 @@ function OrderPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
