@@ -6,6 +6,7 @@ import {
     SkeletonButton,
     SkeletonCircle,
 } from "../components/Skeleton";
+import { API_BASE_URL } from "../api/config";
 import "../styles/MatchPage.css";
 import {
     getOrderConversation,
@@ -372,7 +373,7 @@ function MatchPage() {
                 }
 
                 // 1. Load normal order details
-                const orderResponse = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                const orderResponse = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

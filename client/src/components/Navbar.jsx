@@ -10,6 +10,7 @@ import {
     acceptAssignmentRequest,
     declineAssignmentRequest,
 } from "../api/assignmentRequests";
+import { API_BASE_URL } from "../api/config";
 import {
     clearExpiredSession,
     clearLoggedOutSession,
@@ -106,7 +107,7 @@ function Navbar({
 
             if (token) {
                 try {
-                    const res = await fetch("http://localhost:5000/api/user/me", {
+                    const res = await fetch(`${API_BASE_URL}/user/me`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 

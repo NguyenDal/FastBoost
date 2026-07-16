@@ -206,7 +206,7 @@ function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const servicesResponse = await fetch("http://localhost:5000/api/services");
+        const servicesResponse = await fetch(`${API_BASE_URL}/services`);
 
         if (!servicesResponse.ok) {
           throw new Error("Failed to fetch services");
@@ -432,7 +432,7 @@ function HomePage() {
     });
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -501,7 +501,7 @@ function HomePage() {
       // Only send expected fields to backend
       const { email, password, role, username, referralCode } = registerForm;
 
-      const registerResponse = await fetch("http://localhost:5000/api/auth/register", {
+      const registerResponse = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -526,7 +526,7 @@ function HomePage() {
         return;
       }
 
-      const loginResponse = await fetch("http://localhost:5000/api/auth/login", {
+      const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -594,7 +594,7 @@ function HomePage() {
     setAuthSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

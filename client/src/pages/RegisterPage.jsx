@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
 
 function RegisterPage({
@@ -66,7 +67,7 @@ function RegisterPage({
     if (u.length < 3) return;
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/user/check-username?u=${encodeURIComponent(u)}`);
+        const res = await fetch(`${API_BASE_URL}/user/check-username?u=${encodeURIComponent(u)}`);
         const data = await res.json();
         setNameStatus({ checked: true, available: !!data.available, reason: data.reason || "" });
       } catch {
