@@ -21,6 +21,8 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PaymentResultPage from "./pages/PaymentResultPage";
 import ContactPage from "./pages/ContactPage";
+import PriceManagementPage from "./pages/PriceManagementPage";
+import AdminLayout from "./layouts/AdminLayout";
 
 import {
   clearExpiredSession,
@@ -89,11 +91,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
         <Route path="/order/:serviceId" element={<OrderPage />} />
-
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-
         <Route path="/contact" element={<ContactPage />} />
 
         <Route
@@ -124,22 +123,27 @@ function App() {
         />
 
         <Route
-          path="/admin/orders"
+          path="/admin/management"
           element={
             <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <AdminOrdersPage />
+              <AdminManagementPage />
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/admin/orders/:id"
+          path="/admin"
           element={
             <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <AdminOrderDetailsPage />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
+          <Route path="accounts" element={<AdminAccountsPage />} />
+          <Route path="prices" element={<PriceManagementPage />} />
+        </Route>
 
         <Route
           path="/provider/orders"
@@ -185,24 +189,6 @@ function App() {
           element={
             <ProtectedRoute>
               <AccountSettingsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/management"
-          element={
-            <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <AdminManagementPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/accounts"
-          element={
-            <ProtectedRoute allowedRoles={["ADMIN"]}>
-              <AdminAccountsPage />
             </ProtectedRoute>
           }
         />

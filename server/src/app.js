@@ -13,6 +13,7 @@ const referralRoutes = require("./routes/referralRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const priceRoutes = require("./routes/priceRoutes");
 const { handleStripeWebhook } = require("./controllers/paymentController");
 
 const app = express();
@@ -48,5 +49,6 @@ app.use("/api/referrals", referralRoutes);
 app.use("/api/admin", adminUserRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/admin/prices", priceRoutes);
 
 module.exports = app;

@@ -61,7 +61,57 @@ model Service {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
   orders      Order[]
+
+  priceRules  ServicePriceRule[]
+  sales       ServiceSale[]
+}
+
+model ServicePriceRule {
+  id          String   @id @default(cuid())
+
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  game        String
+  pricingType String
+
+  basePrice   Decimal? @db.Decimal(10, 2)
+  config      Json?
+
+  active      Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([serviceId])
+  @@index([game])
+  @@index([pricingType])
+}
+
+model ServiceSale {
+  id              String   @id @default(cuid())
+
+  serviceId        String
+  service          Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  title            String
+  discountPercent  Decimal  @db.Decimal(5, 2)
+
+  appliesTo        String   @default("BASE_PRICE")
+  startsAt         DateTime?
+  endsAt           DateTime?
+
+  active           Boolean  @default(true)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([serviceId])
+  @@index([active])
+  @@index([startsAt])
+  @@index([endsAt])
 }
 
 model Order {

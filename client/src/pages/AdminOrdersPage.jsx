@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { adminListOrders } from "../api/admin";
 import "../styles/Admin.css";
-import Navbar from "../components/Navbar";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 
 function useAdminGuard() {
@@ -79,10 +78,8 @@ export default function AdminOrdersPage() {
     if (!isAdmin) return null;
 
     return (
-        <div className="page-shell">
-            <Navbar />
-            <div className="page-container">
-                <div className="admin-list-hero">
+        <main className="page-container">
+            <div className="admin-list-hero">
                     <div>
                         <p className="admin-eyebrow">FastBoost Admin</p>
                         <h1 className="admin-order-title">Order Management</h1>
@@ -203,8 +200,7 @@ export default function AdminOrdersPage() {
                         <button className="secondary-btn" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </main>
     );
 }
 
