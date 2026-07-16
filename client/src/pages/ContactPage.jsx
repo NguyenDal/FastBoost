@@ -4,7 +4,6 @@ import { sendContactEmail } from "../api/contact";
 
 export default function ContactPage() {
 
-    const [selectedMode, setSelectedMode] = useState(null); // "email" | "chat" | null
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -55,11 +54,7 @@ export default function ContactPage() {
         }
     };
 
-    const handleOpenChat = () => {
-        setSelectedMode("chat");
-        setSuccess("");
-        setError("Live support chat is coming soon. For now, please send us an email.");
-    };
+
 
     return (
         <div className="page-shell contact-page-shell">
@@ -67,51 +62,16 @@ export default function ContactPage() {
 
             <main className="page-container contact-page-container">
                 <section className="contact-hero">
-                    <p className="section-label">FastBoost Support</p>
-                    <h1>How would you like to contact us?</h1>
+                    <h1>Contact us</h1>
                     <p>
-                        Choose email for general questions, billing help, or partnership requests.
-                        Choose chat when your question is related to an active order.
+                        Send us a message for general questions, billing help, partnership requests,
+                        or support with an active order.
                     </p>
-                </section>
-
-                <section className="contact-choice-grid">
-                    <button
-                        type="button"
-                        className={`contact-choice-card ${selectedMode === "email" ? "contact-choice-active" : ""}`}
-                        onClick={() => {
-                            setSelectedMode("email");
-                            setError("");
-                            setSuccess("");
-                        }}
-                    >
-                        <span className="contact-choice-icon">✉</span>
-                        <h2>Send Email</h2>
-                        <p>Send a message directly to FastBoost support from the website.</p>
-                        <span className="contact-choice-action">Write message</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        className={`contact-choice-card ${selectedMode === "chat" ? "contact-choice-active" : ""}`}
-                        onClick={() => {
-                            setSelectedMode("chat");
-                            handleOpenChat();
-                        }}
-                    >
-                        <span className="contact-choice-icon">💬</span>
-                        <h2>Open Chat</h2>
-                        <p>Open your order chat if you need help with an active boost.</p>
-                        <span className="contact-choice-action">Open chat</span>
-                    </button>
                 </section>
 
                 {error && <p className="contact-message contact-error">{error}</p>}
 
-                <section
-                    className={`contact-form-card ${selectedMode === "email" ? "contact-form-open" : "contact-form-closed"
-                        }`}
-                >
+                <section className="contact-form-card contact-form-open">
                     <div className="contact-form-heading">
                         <p className="section-label">Email Support</p>
                         <h2>Send us a message</h2>
@@ -126,8 +86,8 @@ export default function ContactPage() {
                                     value={form.name}
                                     onChange={handleChange}
                                     placeholder="Your name"
-                                    required={selectedMode === "email"}
-                                    tabIndex={selectedMode === "email" ? 0 : -1}
+                                    required
+                                    tabIndex={0}
                                 />
                             </label>
 
@@ -139,8 +99,8 @@ export default function ContactPage() {
                                     value={form.email}
                                     onChange={handleChange}
                                     placeholder="you@example.com"
-                                    required={selectedMode === "email"}
-                                    tabIndex={selectedMode === "email" ? 0 : -1}
+                                    required
+                                    tabIndex={0}
                                 />
                             </label>
                         </div>
@@ -152,8 +112,8 @@ export default function ContactPage() {
                                 value={form.subject}
                                 onChange={handleChange}
                                 placeholder="How can we help?"
-                                required={selectedMode === "email"}
-                                tabIndex={selectedMode === "email" ? 0 : -1}
+                                required
+                                tabIndex={0}
                             />
                         </label>
 
@@ -165,8 +125,8 @@ export default function ContactPage() {
                                 onChange={handleChange}
                                 placeholder="Tell us what happened..."
                                 rows={6}
-                                required={selectedMode === "email"}
-                                tabIndex={selectedMode === "email" ? 0 : -1}
+                                required
+                                tabIndex={0}
                             />
                         </label>
 
@@ -174,7 +134,7 @@ export default function ContactPage() {
                             type="submit"
                             className="contact-submit-btn"
                             disabled={loading}
-                            tabIndex={selectedMode === "email" ? 0 : -1}
+                            tabIndex={0}
                         >
                             {loading ? "Sending..." : "Send Message"}
                         </button>

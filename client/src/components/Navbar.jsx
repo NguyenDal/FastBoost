@@ -446,15 +446,6 @@ function Navbar({
                         </div>
                     </Link>
                 </div>
-
-                <button
-                    type="button"
-                    className="nav-pill nav-online-pill"
-                    onClick={() => navigate("/boosters")}
-                >
-                    <span className="nav-online-dot" />
-                    <span>133 Boosters</span>
-                </button>
             </div>
 
             <nav className="nav">
