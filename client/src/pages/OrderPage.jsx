@@ -1374,6 +1374,33 @@ function OrderPage() {
                         </div>
                       </div>
 
+                      {getTierFromAnyRank(formData.peakRank) === "Diamond" && (
+                        <div className="order-field">
+                          <label>Diamond Division</label>
+
+                          <div className="rank-division-row">
+                            {divisionOrder.map((division) => (
+                              <button
+                                key={`placement-diamond-${division}`}
+                                type="button"
+                                className={`rank-division-btn ${getDivisionFromRank(formData.peakRank) === division
+                                  ? "active"
+                                  : ""
+                                  }`}
+                                onClick={() =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    peakRank: `Diamond ${division}`,
+                                  }))
+                                }
+                              >
+                                {division}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="placement-options-area">
                         <div className="order-field">
                           <label>Placement Games</label>
@@ -2475,10 +2502,35 @@ function updateRankSelection(setFormData, fieldName, nextTier, nextDivision) {
 }
 
 function updatePlacementRankSelection(setFormData, nextTier) {
-  setFormData((prev) => ({
-    ...prev,
-    peakRank: nextTier === "Unranked" ? "Unranked" : `${nextTier} I`,
-  }));
+  setFormData((prev) => {
+    if (nextTier === "Unranked") {
+      return {
+        ...prev,
+        peakRank: "Unranked",
+      };
+    }
+
+    // Diamond must support IV, III, II, and I because Diamond I costs more.
+    if (nextTier === "Diamond") {
+      return {
+        ...prev,
+        peakRank: "Diamond IV",
+      };
+    }
+
+    // These ranks do not use divisions in the placement selector.
+    if (placementNoDivisionTiers.includes(nextTier)) {
+      return {
+        ...prev,
+        peakRank: nextTier,
+      };
+    }
+
+    return {
+      ...prev,
+      peakRank: `${nextTier} I`,
+    };
+  });
 }
 
 const rankOptions = [
@@ -2725,14 +2777,26 @@ function calculateRankBoostPrice(
 
 function getPlacementBasePrice(peakRank) {
   const tier = getTierFromAnyRank(peakRank);
+  const division = getDivisionFromRank(peakRank);
 
+  // Prices below represent the total price for 5 placement games.
   if (peakRank === "Unranked") return 24;
+
   if (tier === "Iron" || tier === "Bronze") return 15;
   if (tier === "Silver") return 21;
   if (tier === "Gold") return 25;
   if (tier === "Platinum") return 30;
+
+  // No new Emerald placement price was supplied,
+  // so preserve the current price for now.
   if (tier === "Emerald") return 38;
-  if (tier === "Diamond") return 45;
+
+  // Diamond IV–II = $45 for 5 games.
+  // Diamond I = $60 for 5 games.
+  if (tier === "Diamond") {
+    return division === "I" ? 60 : 45;
+  }
+
   if (tier === "Master") return 60;
   if (tier === "Grandmaster" || tier === "Challenger") return 88;
 

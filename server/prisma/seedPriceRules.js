@@ -109,7 +109,16 @@ const lolPlacementPrices = {
     Gold: 25,
     Platinum: 30,
     Emerald: 38,
+
+    // Tier fallback
     Diamond: 45,
+
+    // Exact Diamond division prices
+    "Diamond IV": 45,
+    "Diamond III": 45,
+    "Diamond II": 45,
+    "Diamond I": 60,
+
     Master: 60,
     Grandmaster: 88,
     Challenger: 88,
@@ -230,7 +239,8 @@ const pricingRuleMap = {
         config: {
             fullSetGames: 5,
             fullSetPrices: lolPlacementPrices,
-            formula: "price = fullSetPrice / 5 * selectedGames",
+            formula:
+                "price = (exactRankPrice or tierPrice) / 5 * selectedGames",
             addons: addonRules,
         },
     },

@@ -8,6 +8,159 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### Latest session update — Production deployment completed and pricing handoff
+
+#### Live production infrastructure
+- Frontend deployed as a Render Static Site:
+  - `https://fastboost.onrender.com`
+  - custom domain connected: `https://www.fastboost.gg`
+- Backend deployed as a Render Web Service:
+  - `https://fastboost-api.onrender.com`
+  - health endpoint confirmed: `GET /api/health` returns `{ "ok": true, "message": "Server is healthy" }`
+- PostgreSQL deployed on Render as `fastboost-db` in **Ohio (US East)**.
+- Frontend, backend, and database are grouped under the Render Production environment.
+- Render frontend uses the `main` branch and `client` as its root directory.
+- Render backend uses the `main` branch and `server` as its root directory.
+
+#### Render deployment configuration
+Backend Web Service:
+
+```text
+Name: fastboost-api
+Region: Ohio (US East)
+Root Directory: server
+Build Command: npm install && npx prisma generate
+Start Command: npx prisma migrate deploy && npm start
+```
+
+Frontend Static Site:
+
+```text
+Name: fastboost-web
+Root Directory: client
+Build Command: npm install && npm run build
+Publish Directory: dist
+```
+
+Frontend environment variables:
+
+```env
+VITE_API_BASE_URL=https://fastboost-api.onrender.com/api
+VITE_SOCKET_BASE_URL=https://fastboost-api.onrender.com
+```
+
+Backend production variables are stored in Render Environment settings and must not be committed. These include `DATABASE_URL`, `JWT_SECRET`, Stripe, SMTP, AWS S3, and AWS KMS values.
+
+#### Production database and Prisma migration fix
+- Initial Render deployment failed because the backend was accidentally using the old Prisma-hosted `DATABASE_URL`.
+- `DATABASE_URL` was corrected to the Render database Internal Database URL.
+- Migration drift existed because the development database already contained the full schema while the migration directory did not.
+- A schema synchronization migration was generated and committed:
+  - `server/prisma/migrations/20260715_sync_current_schema/migration.sql`
+- The migration was first committed on `loyaltyPage`, then merged into `main` because Render deploys `main`.
+- Render successfully applied all four migrations:
+
+```text
+Applying migration `20260715_sync_current_schema`
+All migrations have been successfully applied.
+```
+
+- The earlier Prisma `P2022` missing-column cleanup error disappeared after this migration.
+
+#### Production service seed
+- Migrations created the schema but did not create the required `Service` rows.
+- An idempotent SQL seed was added:
+  - `server/prisma/seedServices.sql`
+- It creates these seven service categories without duplicating existing records:
+  - Rank Boost
+  - Placement Boost
+  - Win Boost
+  - Pro Duo
+  - TFT Rank Boost
+  - TFT Win Boost
+  - TFT Placement Boost
+- Keep `seedServices.sql` in the repository. Do not add it to the Render start command; run it manually only when initializing an empty database.
+- Existing pricing seed file:
+  - `server/prisma/seedPriceRules.js`
+- Service records must exist before price-rule seeding because `ServicePriceRule.serviceId` is required.
+
+#### Domain and DNS
+- Primary public website: `https://www.fastboost.gg`
+- GoDaddy DNS direction used:
+
+```text
+A       @       216.24.57.1
+CNAME   www     fastboost.onrender.com
+```
+
+- Existing NS, MX, TXT, DKIM, and DMARC records were intentionally preserved.
+- Render handles HTTPS after domain verification.
+
+#### Frontend production fixes
+- Production originally attempted requests to `http://localhost:5000`.
+- All frontend API and Socket.IO calls should use the shared Vite environment configuration:
+  - `VITE_API_BASE_URL`
+  - `VITE_SOCKET_BASE_URL`
+- Search the frontend for any remaining `localhost:5000` before future releases.
+- AWS S3 CORS must allow the production origins so assets used through `CleanIcon` or browser fetch/canvas processing can load:
+  - `https://fastboost.gg`
+  - `https://www.fastboost.gg`
+  - `https://fastboost.onrender.com`
+  - `http://localhost:5173`
+
+#### Small UI cleanup completed/directed
+- Homepage should not show the old `133 boosters` count because launch begins with only two boosters.
+- Contact page is now webform-only; the Send Email/Open Chat selection and unavailable chat option were removed.
+- Admin Management Utilities now keeps only:
+  - Order Management
+  - Account Management
+  - Price Management
+
+#### Important free-tier warning
+- The free Render PostgreSQL database displayed an expiration date of **August 14, 2026**.
+- Upgrade before storing real long-term customer/order data, or the database can be deleted when the free instance expires.
+
+#### Next session focus — update all production prices
+The user has a new price list and wants to update pricing next.
+
+Start by reviewing:
+
+```text
+server/prisma/seedPriceRules.js
+server/prisma/schema.prisma
+client/src/pages/OrderPage.jsx
+client/src/api/*price*
+server/src/controllers/*price*
+server/src/routes/*price*
+```
+
+Pricing architecture currently includes:
+- `ServicePriceRule`
+  - `serviceId`
+  - `game`
+  - `pricingType`
+  - `basePrice`
+  - `config`
+  - `active`
+- `ServiceSale`
+  - service-level discount percentage
+  - start/end dates
+  - active flag
+- Admin Price Management route already exists at `/admin/prices`.
+
+Next-session workflow:
+1. Receive the user's complete new price list.
+2. Map each price to the exact service, rank/division, LP, win, placement, or duo configuration used by the current code.
+3. Inspect `seedPriceRules.js` and the backend price controller before editing values.
+4. Make the seed/update operation idempotent so production prices can be updated safely without duplicate rules.
+5. Apply the prices to the Render database using its External Database URL or a controlled admin/backend update path.
+6. Verify calculations on the production order pages before enabling live Stripe payments.
+7. Confirm sale percentage and sale-duration logic still applies to the final order total as intended.
+
+Do not guess missing price mappings. Ask for clarification whenever the new list does not directly match the current `pricingType` or `config` structure.
+
+---
+
 ### Latest session update — FastBoost Updates page build attempt and handoff
 
 #### Full `/updates` page direction
@@ -96,7 +249,7 @@ This project is a **game services marketplace demo** where users can register, l
   - `client/src/components/PageSkeletons.jsx`
   - `client/src/styles/Skeleton.css`
 - Dashboard, OrderPage, and MatchPage loading states already use the shared Facebook-style global skeleton effect.
-- Contact page support flow remains implemented with Send Email / Live Chat cards, swipe animation, and animated mail/check success popup.
+- Contact page is now webform-only and retains the animated mail/check success popup.
 
 ---
 ## Project concept
