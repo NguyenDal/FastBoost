@@ -24,6 +24,7 @@ import ContactPage from "./pages/ContactPage";
 import PriceManagementPage from "./pages/PriceManagementPage";
 import AdminLayout from "./layouts/AdminLayout";
 import DynamicTitle from "./components/DynamicTitle";
+import TabLoadingFavicon from "./components/TabLoadingFavicon";
 
 import {
   clearExpiredSession,
@@ -88,7 +89,8 @@ function App() {
   return (
     <>
       <DynamicTitle />
-      
+      <TabLoadingFavicon />
+
       <Routes>
         <Route path="/r/:referralCode" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
