@@ -970,11 +970,6 @@ function OrderPage() {
           <div>
             <h1 className="order-page-title compact-title">Order summary</h1>
           </div>
-
-          <div className="order-header-badges">
-            <div className="order-header-badge order-header-badge-green">74+ online now</div>
-            <div className="order-header-badge">~ 0-1 days</div>
-          </div>
         </div>
 
         <form className="order-layout" onSubmit={handleSubmit}>
