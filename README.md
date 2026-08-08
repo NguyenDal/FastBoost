@@ -8,7 +8,68 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### Latest session update — Production deployment completed and pricing handoff
+
+### Latest session update — Production pricing, admin bootstrap, and auth-role verification
+
+#### Production pricing update
+- Real service price rules are maintained through:
+  - `server/prisma/seedPriceRules.js`
+- The pricing seed remains idempotent through `prisma.servicePriceRule.upsert(...)`.
+- Current pricing direction verified in this session:
+  - LoL Iron and Bronze Net Win base price: **$3 per win**
+  - Placement pricing uses a **5-game full-set price** and prorates when fewer than 5 games are selected
+  - Pro Duo base price remains **75% of the corresponding LoL Net Win / Win Boost price**
+  - Pro Duo keeps the existing LP-gain modifiers instead of using a flat 75% without modifiers
+  - Existing rank/division, placement, win-boost, TFT, LP-progress, LP-gain, and add-on structures remain in the price-rule config
+- Local pricing checks were completed before pushing the pricing changes.
+- Do not use `prisma migrate reset` for price changes. Pricing updates are data/config updates, not destructive schema resets.
+
+#### Production admin account bootstrap
+- The first production account was promoted from `CUSTOMER` to `ADMIN` directly in the Render production PostgreSQL database.
+- Render Shell was unavailable on the free service tier, so the production database was accessed from the local FastBoost backend using Render's **External Database URL**.
+- No separate `psql` installation was required; the existing Node + Prisma backend was used.
+- The local Prisma client is configured through:
+  - `server/src/prisma.js`
+  - `@prisma/adapter-pg`
+- External Render PostgreSQL access required SSL. A connection that did not include SSL produced Prisma `P1017: Server has closed the connection`.
+- For temporary local access, append `sslmode=require` to the external database connection string before running Prisma reads/updates.
+- Keep the production database URL temporary in the shell only. Do not paste it into source code or commit it.
+
+#### Production admin authorization issue and resolution
+- After the database role was changed to `ADMIN`, the frontend user object refreshed and showed:
+  - `user.role = ADMIN`
+- However, the already-issued JWT still contained:
+  - `role = CUSTOMER`
+- Backend admin middleware correctly rejected protected admin API calls with:
+  - `Access denied, admin only`
+- This was a **stale JWT**, not an AdminOrders/AdminAccounts page bug.
+- Logging out and logging back in issued a fresh JWT containing `role = ADMIN`.
+- Production admin pages then worked normally.
+- Important future rule: after changing a user's role, that user must refresh/re-authenticate before JWT-based authorization reflects the new role.
+
+#### Browser tab/title UX direction
+- `client/index.html` still needs to use `FastBoost` as the fallback `<title>` instead of the Vite default `client` if that change has not already been committed.
+- Dynamic document-title direction:
+  - Home → `FastBoost`
+  - Sign In → `Sign In | FastBoost`
+  - Register → `Create Account | FastBoost`
+  - Dashboard → `Dashboard | FastBoost`
+  - Admin pages → page-specific admin titles
+  - Order pages → service-specific titles such as `Rank Boost | FastBoost`
+- Because FastBoost uses React Router SPA navigation, the browser's native tab loading throbber is not guaranteed to appear for client-side route/API activity.
+- Do not force full page reloads just to trigger the browser-native spinner.
+- A custom loading favicon can be considered later if desired, but it should only represent real pending requests.
+
+#### Production database safety
+- The Render production database is `fastboost-db`.
+- The free Render PostgreSQL instance previously showed an expiration date of **August 14, 2026**.
+- Upgrade/retain the production database before that deadline if the free-instance expiration warning is still active.
+- Never run destructive commands such as `prisma migrate reset` against production.
+- For production schema changes, prefer committed migrations and `prisma migrate deploy`.
+
+---
+
+### Previous session update — Production deployment completed and pricing handoff
 
 #### Live production infrastructure
 - Frontend deployed as a Render Static Site:
@@ -660,6 +721,14 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- production price-rule update verified locally before deployment
+- LoL Iron/Bronze Net Win base pricing confirmed at $3 per win
+- Placement pricing direction confirmed as 5-game full-set pricing with prorating for fewer games
+- Pro Duo pricing confirmed at 75% of the corresponding Net Win / Win Boost base while preserving LP-gain modifiers
+- first production admin account bootstrapped directly in Render PostgreSQL through local Node/Prisma access
+- Render external PostgreSQL SSL requirement documented (`sslmode=require`) after resolving Prisma `P1017`
+- stale production JWT role issue diagnosed: refreshed user object showed ADMIN while old JWT still contained CUSTOMER
+- admin authorization restored by logging out/in and receiving a fresh ADMIN JWT
 - `/updates` public FastBoost Updates page route and page structure added/directed
 - reusable news modal component and modal template component added/directed
 - shared `newsData.js` direction added for category/filter data and reusable post content
@@ -986,6 +1055,16 @@ npx prisma studio
 - duo-specific addon field cleanup, including `untrackableDuo`
 - FastBoost Updates real endpoint/pages for Latest Event, Latest Updates, and FAQ / Help
 - reveal/audit logging for viewed game credentials
+
+---
+
+## Current immediate focus
+
+1. Verify the live production pricing one more time after deployment, especially representative LoL/TFT Rank, Placement, Win, and Pro Duo cases.
+2. Finish/verify dynamic browser-tab titles so the default Vite `client` title never appears.
+3. Keep admin role/JWT behavior in mind when testing Account Management role changes: a changed role requires a refreshed login token.
+4. Upgrade or otherwise retain the Render PostgreSQL database before the free-instance expiration deadline if the warning is still active.
+5. Continue remaining production-readiness testing for Stripe, chat attachments, notifications, profile/account settings, and pricing edge cases.
 
 ---
 
