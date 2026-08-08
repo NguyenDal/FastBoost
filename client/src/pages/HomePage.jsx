@@ -27,6 +27,22 @@ function HomePage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
 
+  useEffect(() => {
+    if (!showAuthModal) {
+      document.title = "FastBoost";
+      return;
+    }
+
+    const authTitles = {
+      login: "Sign In | FastBoost",
+      register: "Create Account | FastBoost",
+      forgot: "Forgot Password | FastBoost",
+      "forgot-password": "Forgot Password | FastBoost",
+    };
+
+    document.title = authTitles[authMode] || "Account | FastBoost";
+  }, [showAuthModal, authMode]);
+
   const [referralInvite, setReferralInvite] = useState(null);
   const [referralInviteLoading, setReferralInviteLoading] = useState(false);
   const [referralInviteError, setReferralInviteError] = useState("");

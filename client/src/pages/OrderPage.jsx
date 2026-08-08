@@ -166,6 +166,12 @@ function OrderPage() {
   useEffect(() => {
     if (!serviceType) return;
 
+    document.title = `${serviceType} | FastBoost`;
+  }, [serviceType]);
+
+  useEffect(() => {
+    if (!serviceType) return;
+
     setFormData((prev) => {
       if (normalizedServiceType === "Rank Boost") {
         return {

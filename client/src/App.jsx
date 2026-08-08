@@ -23,6 +23,7 @@ import PaymentResultPage from "./pages/PaymentResultPage";
 import ContactPage from "./pages/ContactPage";
 import PriceManagementPage from "./pages/PriceManagementPage";
 import AdminLayout from "./layouts/AdminLayout";
+import DynamicTitle from "./components/DynamicTitle";
 
 import {
   clearExpiredSession,
@@ -86,6 +87,8 @@ function App() {
 
   return (
     <>
+      <DynamicTitle />
+      
       <Routes>
         <Route path="/r/:referralCode" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
