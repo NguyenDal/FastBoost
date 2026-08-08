@@ -756,8 +756,6 @@ function HomePage() {
 
                   return (
                     <article key={service.id} className="hover-service-card">
-                      {index === 0 && <span className="service-new-badge">Popular</span>}
-                      {service.title === "Pro Duo" && <span className="service-new-badge">New!</span>}
 
                       <div className="service-card-icon">
                         <CleanIcon src={serviceImage} alt={`${service.title} icon`} />
