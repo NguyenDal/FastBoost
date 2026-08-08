@@ -14,27 +14,9 @@ const adminLinks = [
         icon: <UsersIcon />,
     },
     {
-        label: "Booster Management",
-        path: "/admin/boosters",
-        icon: <BoosterIcon />,
-        disabled: true,
-    },
-    {
-        label: "Service Management",
-        path: "/admin/services",
-        icon: <ServiceIcon />,
-        disabled: true,
-    },
-    {
         label: "Price Management",
         path: "/admin/prices",
         icon: <PriceIcon />,
-    },
-    {
-        label: "FAQ Management",
-        path: "/admin/faq",
-        icon: <FaqIcon />,
-        disabled: true,
     },
 ];
 
@@ -56,19 +38,6 @@ export default function AdminLayout() {
                             const active =
                                 location.pathname === item.path ||
                                 location.pathname.startsWith(`${item.path}/`);
-
-                            if (item.disabled) {
-                                return (
-                                    <span
-                                        key={item.label}
-                                        className="admin-side-link admin-side-link-disabled"
-                                    >
-                                        {item.icon}
-                                        <span>{item.label}</span>
-                                        <small>Soon</small>
-                                    </span>
-                                );
-                            }
 
                             return (
                                 <Link
