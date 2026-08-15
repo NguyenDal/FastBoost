@@ -8,6 +8,173 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### Latest session update — Homepage performance, server-authoritative pricing, Prisma baseline recovery, and Price Management editing
+
+#### Homepage service-card loading optimization
+- Homepage service loading was optimized so repeat visits do not wait on the production API before rendering service cards.
+- `client/src/pages/HomePage.jsx` now:
+  - caches the service list in `localStorage` under `fastboost:services:v1`
+  - uses a 6-hour cache TTL
+  - initializes React state from cached services
+  - skips `/api/services` entirely while the cache is fresh
+  - keeps cached services visible if a later refresh request fails
+- `server/src/controllers/serviceController.js` now:
+  - selects only `id`, `title`, and `description`
+  - sends `Cache-Control: public, max-age=300, stale-while-revalidate=3600`
+- The first uncached visit can still show the skeleton while `/api/services` loads; repeat visits should be much faster.
+- `CleanIcon` remains in the codebase for other uses. The homepage optimization should continue to avoid unnecessary client-side image processing for already-clean transparent service assets.
+
+#### Server-authoritative pricing is now in the backend
+- Added/committed:
+  - `server/src/utils/pricingCalculator.js`
+- `server/src/controllers/orderController.js` now imports and uses `calculateOrderPrice(...)`.
+- New order creation now:
+  - resolves the selected service from `boostType`
+  - loads the active `ServicePriceRule` from PostgreSQL
+  - loads same-game reference rules
+  - loads any currently-active service sale
+  - calculates `basePrice`, `addonPrice`, `subtotal`, `saleDiscount`, and `totalPrice` on the server
+  - stores the server-calculated price snapshot on the `Order`
+  - derives `amountCents` from the server-calculated total
+- Browser-submitted `basePrice`, `addonPrice`, and `totalPrice` are no longer the authority for new orders.
+- This is important for Stripe safety because checkout continues to charge from the amount stored on the order.
+- The central calculator reads actual price values from `ServicePriceRule.config` instead of embedding the full price table in the backend.
+- Placement pricing in the central calculator uses:
+  - `fullSetPrice / fullSetGames * requestedGames`
+  - this fixes the earlier TFT placement inconsistency where full-set prices could be treated as per-game prices.
+
+#### New order option fields
+`Order` now includes:
+- `untrackableDuo Boolean @default(false)`
+- `championPreferenceTier String @default("4+")`
+
+`championPreferenceTier` corresponds to the configured champion-preference pricing tiers:
+- `1` champion → configured higher restriction surcharge
+- `2-3` champions → configured smaller surcharge
+- `4+` champions → no surcharge in the current seeded config
+
+#### Prisma migration history was baselined
+The previous migration directory did not accurately represent the already-existing production schema, so Prisma production deployment hit `P3005`, then the first Render baseline attempt hit `P3018` / `P3009`.
+
+Current active migration structure:
+```text
+server/prisma/
+  migrations/
+    migration_lock.toml
+    0_init/
+      migration.sql
+
+  legacy_migrations_backup/
+    20260320050007_init/
+    20260321040314_remove_price_from_service/
+    20260321041954_remove_ownerid_from_service/
+    20260715_sync_current_schema/
+```
+
+- `0_init` was generated from the current Prisma schema using:
+```bash
+npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script
+```
+- The old four migration folders are retained under `legacy_migrations_backup` for historical reference but are no longer active Prisma migrations.
+- The Prisma-hosted development/shared database and the Render production database were discovered to be separate databases.
+- The Render production database is:
+  - database: `fastboost`
+  - Render PostgreSQL host in Ohio
+- The Render production schema was missing only:
+  - `Order.championPreferenceTier`
+  - `Order.untrackableDuo`
+- A temporary forward-only SQL file was generated from the Render database to `schema.prisma`, reviewed, and executed with:
+```bash
+npx prisma db execute --file render_forward.sql
+```
+- After applying those two columns:
+```text
+npx prisma migrate diff ...  → -- This is an empty migration.
+npx prisma migrate status    → Database schema is up to date!
+npx prisma migrate deploy    → No pending migrations to apply.
+```
+- The temporary `render_forward.sql` file was deleted after recovery.
+- Render can continue using:
+```text
+npx prisma migrate deploy && npm start
+```
+- Never run `prisma migrate reset` against production.
+- When temporarily overriding `DATABASE_URL` to the Render External Database URL from a local terminal, unset it or close that terminal after the production operation so later development commands do not accidentally target production.
+
+#### Detailed Price Management display
+- `client/src/pages/PriceManagementPage.jsx` now has expandable detailed rule cards instead of only the old flat summary table.
+- Detailed display supports the existing rule shapes:
+  - `RANK_BASED`
+  - `PLACEMENT_BASED`
+  - `PER_WIN`
+  - `DUO_ADDON`
+- It can display:
+  - division-step prices
+  - Master LP prices
+  - placement full-set prices
+  - per-win prices
+  - LP-progress modifiers
+  - LP-gain modifiers
+  - formulas
+  - shared add-ons
+  - champion-preference tiers
+  - Bonus Win rules
+  - Pro Duo source pricing/multiplier
+- Game filters, status filters, search, and expand/collapse behavior are present.
+
+#### Price editing is NOT finished yet
+The current `main` branch still has a read-only Price Management implementation:
+- `PriceManagementPage.jsx` displays detailed prices but its `DetailTable` renders values as text.
+- `server/src/controllers/priceController.js` currently has:
+  - `listPriceRules`
+  - `createSale`
+  - `disableSale`
+- `server/src/routes/priceRoutes.js` currently has:
+  - `GET /api/admin/prices`
+  - `POST /api/admin/prices/sales`
+  - `PATCH /api/admin/prices/sales/:id/disable`
+- The rule update endpoint is still missing from `main`:
+```text
+PATCH /api/admin/prices/rules/:id
+```
+- A newer `PriceManagement.css` with edit-input, save/cancel, disabled, error, success, and responsive edit-control styles was prepared during this session, but verify it is committed before assuming production has it.
+
+#### Important Pro Duo single-source issue
+- The desired direction is for Pro Duo to follow LoL Win Boost pricing automatically.
+- The current seed stores a copied `perWinPrices` table inside the Pro Duo rule.
+- The current central `calculateDuoAddonPrice(...)` also reads `rule.config.perWinPrices`.
+- Therefore editing Win Boost alone will not automatically update Pro Duo until this duplication is removed/refactored.
+- Recommended fix:
+  - make Pro Duo resolve the active LoL `PER_WIN` rule from `referenceRules`
+  - use the Win Boost rule's `perWinPrices` and LP-gain modifiers
+  - keep only the Pro Duo-specific multiplier (`0.75`) in the Pro Duo rule
+  - keep Pro Duo's displayed source prices read-only in Admin Price Management
+  - edit the source Win Boost prices only once
+
+#### Customer OrderPage still needs live-price preview conversion
+- The backend is now server-authoritative, but `client/src/pages/OrderPage.jsx` still contains hardcoded pricing tables/functions.
+- Until it is converted, the customer-visible preview can disagree with the server-calculated amount after an admin price change.
+- Next pricing architecture target:
+```text
+Admin Price Management
+        ↓
+ServicePriceRule.config in PostgreSQL
+        ↓
+public/current pricing endpoint
+        ↓
+OrderPage live preview
+        ↓
+POST /orders
+        ↓
+server recalculates independently
+        ↓
+saved Order amount
+        ↓
+Stripe
+```
+- Do not remove the hardcoded OrderPage pricing until the live pricing endpoint and frontend conversion are working.
+
+---
 
 ### Latest session update — Production pricing, admin bootstrap, and auth-role verification
 
@@ -551,6 +718,12 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `PATCH /api/admin/users/:userId/role` — admin-only privilege update for Customer / Provider-Booster / Admin
 - `PATCH /api/admin/users/:userId/suspension` — admin-only suspend/restore account status update
 
+### Admin price management
+- `GET /api/admin/prices` — admin-only detailed `ServicePriceRule` list with current sale metadata
+- `POST /api/admin/prices/sales` — create a service sale
+- `PATCH /api/admin/prices/sales/:id/disable` — disable an existing sale
+- `PATCH /api/admin/prices/rules/:id` — **planned / not yet on `main`**; will update validated pricing config from the admin website
+
 ### Provider / booster orders
 - `GET /api/orders/provider/assigned` — provider assigned order list
 - `PATCH /api/orders/:id/provider-complete` — provider marks assigned order completed
@@ -710,6 +883,20 @@ npx prisma generate --schema=prisma/schema.prisma
 ```
 
 Note: For production/remote DBs with existing data, prefer planned migrations. Use `db push` only if you understand the implications and have backups.
+
+### Current production migration baseline
+- Active migration history is now based on `prisma/migrations/0_init`.
+- The four previous migration folders were moved to `prisma/legacy_migrations_backup`.
+- Both the current schema and Render production database were verified after the baseline repair.
+- Render production currently reports:
+  - `Database schema is up to date!`
+  - `No pending migrations to apply.`
+- Normal Render startup remains:
+```bash
+npx prisma migrate deploy && npm start
+```
+- Price changes inside `ServicePriceRule.config` are data updates and do not require schema migrations.
+- Do not run `prisma migrate reset` against production.
 
 ### View database
 ```bash
@@ -1060,11 +1247,26 @@ npx prisma studio
 
 ## Current immediate focus
 
-1. Verify the live production pricing one more time after deployment, especially representative LoL/TFT Rank, Placement, Win, and Pro Duo cases.
-2. Finish/verify dynamic browser-tab titles so the default Vite `client` title never appears.
-3. Keep admin role/JWT behavior in mind when testing Account Management role changes: a changed role requires a refreshed login token.
-4. Upgrade or otherwise retain the Render PostgreSQL database before the free-instance expiration deadline if the warning is still active.
-5. Continue remaining production-readiness testing for Stripe, chat attachments, notifications, profile/account settings, and pricing edge cases.
+1. Finish real admin price editing:
+   - add validated `updatePriceRule` to `server/src/controllers/priceController.js`
+   - add `PATCH /api/admin/prices/rules/:id` to `server/src/routes/priceRoutes.js`
+   - wire `PriceManagementPage.jsx` edit state, numeric fields, Cancel, Save Prices, loading, and error/success states
+   - commit the newest `PriceManagement.css` edit-control styles
+2. Refactor Pro Duo so it uses the active LoL Win Boost rule as its price source instead of keeping a duplicated `perWinPrices` table.
+3. Add a safe public/current pricing endpoint for customer price previews.
+4. Convert `client/src/pages/OrderPage.jsx` away from hardcoded price tables and onto live `ServicePriceRule` data while keeping backend recalculation as the final authority.
+5. Test representative prices end-to-end:
+   - LoL Rank Boost
+   - LoL Placement Boost
+   - LoL Win Boost
+   - Pro Duo
+   - TFT Rank Boost
+   - TFT Placement Boost
+   - TFT Win Boost
+   - Duo/add-ons/champion preference/Bonus Win
+   - active sale behavior
+6. Production test: change one admin price (for example Win Boost Gold), confirm PostgreSQL changes, confirm OrderPage preview changes, confirm `POST /orders` stores the same server-calculated amount, and confirm Stripe charges that amount.
+7. Keep the now-repaired Prisma baseline intact and use committed forward migrations for future schema changes.
 
 ---
 

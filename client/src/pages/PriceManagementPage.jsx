@@ -94,6 +94,8 @@ function DetailTable({
     leftHeading = "Condition",
     rightHeading = "Price",
     formatter = formatMoney,
+    editable = false,
+    onValueChange,
 }) {
     const rows = Object.entries(entries || {});
 
@@ -119,8 +121,30 @@ function DetailTable({
                         {rows.map(([label, value]) => (
                             <tr key={label}>
                                 <td>{label}</td>
+
                                 <td>
-                                    <strong>{formatter(value)}</strong>
+                                    {editable ? (
+                                        <div className="price-edit-input-wrap">
+                                            <span>$</span>
+
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={value}
+                                                onChange={(event) =>
+                                                    onValueChange?.(
+                                                        label,
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <strong>
+                                            {formatter(value)}
+                                        </strong>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -218,8 +242,17 @@ function AddonDetails({ addons }) {
     );
 }
 
-function PricingRuleDetails({ item }) {
-    const config = item.config || {};
+function PricingRuleDetails({
+    item,
+    editing = false,
+    draftConfig = null,
+    onDraftPriceChange,
+    onDraftValueChange,
+}) {
+    const config =
+        editing && draftConfig
+            ? draftConfig
+            : item.config || {};
     const modifiers = config.modifiers || {};
 
     if (item.pricingType === "RANK_BASED") {
@@ -230,6 +263,14 @@ function PricingRuleDetails({ item }) {
                     entries={config.divisionStepPrices}
                     leftHeading="Starting Division"
                     rightHeading="Step Price"
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "divisionStepPrices",
+                            key,
+                            value
+                        )
+                    }
                 />
 
                 {config.masterLpPricing && (
@@ -311,6 +352,14 @@ function PricingRuleDetails({ item }) {
                     entries={config.fullSetPrices}
                     leftHeading="Previous / Peak Rank"
                     rightHeading={`Price / ${config.fullSetGames || 5} Games`}
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "fullSetPrices",
+                            key,
+                            value
+                        )
+                    }
                 />
 
                 <AddonDetails addons={config.addons} />
@@ -333,6 +382,14 @@ function PricingRuleDetails({ item }) {
                     entries={config.perWinPrices}
                     leftHeading="Current Rank"
                     rightHeading="Price / Win"
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "perWinPrices",
+                            key,
+                            value
+                        )
+                    }
                 />
 
                 <DetailTable
@@ -404,6 +461,11 @@ export default function PriceManagementPage() {
     const [pricesLoading, setPricesLoading] = useState(true);
     const [pricesError, setPricesError] = useState("");
 
+    const [editingRuleId, setEditingRuleId] = useState(null);
+    const [draftConfig, setDraftConfig] = useState(null);
+    const [priceSaving, setPriceSaving] = useState(false);
+    const [priceSaveError, setPriceSaveError] = useState("");
+
     const [saleModalOpen, setSaleModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
@@ -450,6 +512,89 @@ export default function PriceManagementPage() {
             setPricesError(error.message || "Failed to load price rules.");
         } finally {
             setPricesLoading(false);
+        }
+    };
+
+    const startPriceEdit = (item) => {
+        setEditingRuleId(item.id);
+
+        setDraftConfig(
+            JSON.parse(JSON.stringify(item.config || {}))
+        );
+
+        setPriceSaveError("");
+    };
+
+    const cancelPriceEdit = () => {
+        setEditingRuleId(null);
+        setDraftConfig(null);
+        setPriceSaveError("");
+    };
+
+    const updateDraftPrice = (section, key, value) => {
+        setDraftConfig((current) => ({
+            ...current,
+
+            [section]: {
+                ...(current?.[section] || {}),
+                [key]: value,
+            },
+        }));
+    };
+
+    const updateDraftValue = (key, value) => {
+        setDraftConfig((current) => ({
+            ...current,
+            [key]: value,
+        }));
+    };
+
+    const savePriceChanges = async (item) => {
+        try {
+            setPriceSaving(true);
+            setPriceSaveError("");
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `${API_BASE_URL}/admin/prices/rules/${item.id}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        config: draftConfig,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || data.ok === false) {
+                throw new Error(
+                    data.message || "Failed to update pricing."
+                );
+            }
+
+            setPricingServices((current) =>
+                current.map((rule) =>
+                    rule.id === item.id
+                        ? {
+                            ...rule,
+                            config: data.rule.config,
+                        }
+                        : rule
+                )
+            );
+
+            setEditingRuleId(null);
+            setDraftConfig(null);
+        } catch (error) {
+            setPriceSaveError(error.message);
+        } finally {
+            setPriceSaving(false);
         }
     };
 
@@ -666,8 +811,8 @@ export default function PriceManagementPage() {
 
                                                                 <span
                                                                     className={`price-game-pill ${item.game === "LoL"
-                                                                            ? "lol"
-                                                                            : "tft"
+                                                                        ? "lol"
+                                                                        : "tft"
                                                                         }`}
                                                                 >
                                                                     {item.game}
@@ -703,8 +848,8 @@ export default function PriceManagementPage() {
 
                                                             <span
                                                                 className={`price-status-pill ${item.active
-                                                                        ? "active"
-                                                                        : "inactive"
+                                                                    ? "active"
+                                                                    : "inactive"
                                                                     }`}
                                                             >
                                                                 {item.sale?.status === "ACTIVE"
@@ -758,8 +903,8 @@ export default function PriceManagementPage() {
 
                                                             <span
                                                                 className={`price-detail-arrow ${expanded
-                                                                        ? "price-detail-arrow-open"
-                                                                        : ""
+                                                                    ? "price-detail-arrow-open"
+                                                                    : ""
                                                                     }`}
                                                             >
                                                                 ↓
@@ -773,11 +918,60 @@ export default function PriceManagementPage() {
                                                         >
                                                             Sale Settings
                                                         </button>
+
+                                                        <div className="price-rule-edit-actions">
+                                                            {editingRuleId === item.id ? (
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="price-secondary-btn"
+                                                                        onClick={cancelPriceEdit}
+                                                                        disabled={priceSaving}
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="price-primary-btn"
+                                                                        onClick={() =>
+                                                                            savePriceChanges(item)
+                                                                        }
+                                                                        disabled={priceSaving}
+                                                                    >
+                                                                        {priceSaving
+                                                                            ? "Saving..."
+                                                                            : "Save Prices"}
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    className="price-row-btn"
+                                                                    onClick={() => startPriceEdit(item)}
+                                                                >
+                                                                    Edit Prices
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
 
                                                     {expanded && (
-                                                        <PricingRuleDetails item={item} />
+                                                        <PricingRuleDetails
+                                                            item={item}
+                                                            editing={editingRuleId === item.id}
+                                                            draftConfig={draftConfig}
+                                                            onDraftPriceChange={updateDraftPrice}
+                                                            onDraftValueChange={updateDraftValue}
+                                                        />
                                                     )}
+
+                                                    {editingRuleId === item.id &&
+                                                        priceSaveError && (
+                                                            <div className="price-save-error">
+                                                                {priceSaveError}
+                                                            </div>
+                                                        )}
                                                 </article>
                                             );
                                         })}

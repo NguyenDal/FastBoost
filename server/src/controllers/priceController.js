@@ -156,6 +156,158 @@ exports.createSale = async (req, res) => {
     }
 };
 
+exports.updatePriceRule = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { config } = req.body || {};
+
+        if (!config || typeof config !== "object") {
+            return res.status(400).json({
+                ok: false,
+                message: "Pricing config is required.",
+            });
+        }
+
+        const existingRule = await prisma.servicePriceRule.findUnique({
+            where: { id },
+        });
+
+        if (!existingRule) {
+            return res.status(404).json({
+                ok: false,
+                message: "Price rule not found.",
+            });
+        }
+
+        const currentConfig = existingRule.config || {};
+        const nextConfig = {
+            ...currentConfig,
+        };
+
+        const validatePriceMap = (map, name) => {
+            if (!map || typeof map !== "object") {
+                throw new Error(`${name} is invalid.`);
+            }
+
+            const result = {};
+
+            for (const [key, rawValue] of Object.entries(map)) {
+                const value = Number(rawValue);
+
+                if (!Number.isFinite(value) || value < 0) {
+                    throw new Error(
+                        `${name}: ${key} must be a valid non-negative number.`
+                    );
+                }
+
+                result[key] = value;
+            }
+
+            return result;
+        };
+
+        switch (existingRule.pricingType) {
+            case "RANK_BASED": {
+                if (config.divisionStepPrices) {
+                    nextConfig.divisionStepPrices = validatePriceMap(
+                        config.divisionStepPrices,
+                        "Division prices"
+                    );
+                }
+
+                if (config.masterLpPricing) {
+                    nextConfig.masterLpPricing = validatePriceMap(
+                        config.masterLpPricing,
+                        "Master LP pricing"
+                    );
+                }
+
+                break;
+            }
+
+            case "PLACEMENT_BASED": {
+                if (config.fullSetPrices) {
+                    nextConfig.fullSetPrices = validatePriceMap(
+                        config.fullSetPrices,
+                        "Placement prices"
+                    );
+                }
+
+                break;
+            }
+
+            case "PER_WIN": {
+                if (config.perWinPrices) {
+                    nextConfig.perWinPrices = validatePriceMap(
+                        config.perWinPrices,
+                        "Win prices"
+                    );
+                }
+
+                break;
+            }
+
+            case "DUO_ADDON": {
+                if (config.multiplier !== undefined) {
+                    const multiplier = Number(config.multiplier);
+
+                    if (
+                        !Number.isFinite(multiplier) ||
+                        multiplier <= 0 ||
+                        multiplier > 5
+                    ) {
+                        return res.status(400).json({
+                            ok: false,
+                            message:
+                                "Pro Duo multiplier must be greater than 0 and no more than 5.",
+                        });
+                    }
+
+                    nextConfig.multiplier = multiplier;
+                }
+
+                break;
+            }
+
+            default:
+                return res.status(400).json({
+                    ok: false,
+                    message: "Unsupported pricing type.",
+                });
+        }
+
+        const updatedRule = await prisma.servicePriceRule.update({
+            where: { id },
+            data: {
+                config: nextConfig,
+            },
+            include: {
+                service: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                    },
+                },
+            },
+        });
+
+        return res.json({
+            ok: true,
+            message: "Pricing updated successfully.",
+            rule: updatedRule,
+        });
+    } catch (error) {
+        console.error("updatePriceRule error:", error);
+
+        return res.status(400).json({
+            ok: false,
+            message:
+                error.message || "Failed to update pricing rule.",
+        });
+    }
+};
+
 exports.disableSale = async (req, res) => {
     try {
         const { id } = req.params;
