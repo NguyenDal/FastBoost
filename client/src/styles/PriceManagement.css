@@ -434,6 +434,423 @@
     gap: 12px;
 }
 
+/* =========================================
+   Detailed pricing rule cards
+   ========================================= */
+
+.price-rules-panel {
+    padding: 20px;
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    border-radius: 24px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(15, 23, 42, 0.76),
+            rgba(10, 15, 32, 0.76)
+        );
+    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.28);
+}
+
+.price-rules-panel .price-table-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.price-result-count {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border-radius: 999px;
+    color: #c4b5fd;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.price-rule-card-list {
+    display: grid;
+    gap: 14px;
+}
+
+.price-rule-card {
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.11);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(15, 23, 42, 0.74),
+            rgba(2, 6, 23, 0.5)
+        );
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.price-rule-card:hover {
+    border-color: rgba(167, 139, 250, 0.24);
+}
+
+.price-rule-card-expanded {
+    border-color: rgba(167, 139, 250, 0.34);
+    box-shadow: 0 18px 50px rgba(76, 29, 149, 0.14);
+}
+
+.price-rule-card-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.price-rule-card-info {
+    min-width: 0;
+}
+
+.price-rule-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.price-rule-card-title-row h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.08rem;
+}
+
+.price-rule-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.price-rule-meta strong {
+    color: #ddd6fe;
+}
+
+.price-meta-divider {
+    color: #475569;
+}
+
+.price-rule-card-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.price-sale-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #fde68a;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.price-status-pill.inactive {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.price-rule-sale-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 0 20px 15px;
+    color: #94a3b8;
+    font-size: 0.84rem;
+}
+
+.price-rule-sale-row strong {
+    color: #e2e8f0;
+}
+
+.price-rule-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.08);
+    background: rgba(2, 6, 23, 0.2);
+}
+
+.price-detail-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #c4b5fd;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.price-detail-toggle:hover {
+    color: #ddd6fe;
+}
+
+.price-detail-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.price-detail-arrow-open {
+    transform: rotate(180deg);
+}
+
+
+/* Expanded details */
+
+.price-rule-details {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    border-top: 1px solid rgba(167, 139, 250, 0.12);
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(124, 58, 237, 0.08),
+            transparent 35%
+        ),
+        rgba(2, 6, 23, 0.26);
+}
+
+.price-detail-section {
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.52);
+}
+
+.price-detail-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+}
+
+.price-detail-section-header h4 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+.price-detail-section-header span {
+    color: #94a3b8;
+    font-size: 0.76rem;
+}
+
+.price-detail-table-wrap {
+    overflow-x: auto;
+}
+
+.price-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.price-detail-table th {
+    padding: 11px 16px;
+    text-align: left;
+    color: #64748b;
+    background: rgba(2, 6, 23, 0.22);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.price-detail-table td {
+    padding: 11px 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.07);
+    color: #cbd5e1;
+    font-size: 0.88rem;
+}
+
+.price-detail-table td:last-child,
+.price-detail-table th:last-child {
+    text-align: right;
+}
+
+.price-detail-table td strong {
+    color: #ddd6fe;
+}
+
+.price-addon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 15px;
+}
+
+.price-addon-item {
+    min-width: 0;
+    padding: 12px 13px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    background: rgba(2, 6, 23, 0.32);
+}
+
+.price-addon-item span {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.price-addon-item strong {
+    display: block;
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: 0.88rem;
+    overflow-wrap: anywhere;
+}
+
+.price-detail-subsection {
+    padding: 0 15px 15px;
+}
+
+.price-detail-subsection h5 {
+    margin: 0 0 10px;
+    color: #c4b5fd;
+    font-size: 0.82rem;
+}
+
+.price-detail-subsection .price-addon-grid {
+    padding: 0;
+}
+
+.price-formula-card {
+    display: grid;
+    gap: 7px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(59, 130, 246, 0.16);
+    background: rgba(30, 64, 175, 0.07);
+}
+
+.price-formula-card > span {
+    color: #93c5fd;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.price-formula-card > strong {
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.price-formula-card code {
+    display: block;
+    margin-top: 3px;
+    color: #bfdbfe;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 0.83rem;
+}
+
+.price-duo-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.price-duo-summary > div {
+    padding: 15px;
+    border-radius: 17px;
+    border: 1px solid rgba(167, 139, 250, 0.14);
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.price-duo-summary span {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.price-duo-summary strong {
+    display: block;
+    margin-top: 6px;
+    color: #ffffff;
+}
+
+.price-empty-state {
+    padding: 36px 20px;
+    border-radius: 18px;
+    text-align: center;
+    color: #94a3b8;
+    border: 1px dashed rgba(148, 163, 184, 0.16);
+}
+
+.price-empty-state-error {
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.price-empty-message {
+    margin: 0;
+    color: #94a3b8;
+}
+
+
+@media (max-width: 820px) {
+    .price-rule-card-main {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .price-rule-card-status {
+        justify-content: flex-start;
+    }
+
+    .price-addon-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .price-rule-card-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .price-detail-toggle,
+    .price-row-btn {
+        justify-content: center;
+        width: 100%;
+        text-align: center;
+    }
+
+    .price-addon-grid,
+    .price-duo-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .price-rules-panel .price-table-header {
+        flex-direction: column;
+    }
+}
+
 @media (max-width: 640px) {
     .price-modal-grid {
         grid-template-columns: 1fr;

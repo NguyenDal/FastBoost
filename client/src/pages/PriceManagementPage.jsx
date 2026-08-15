@@ -62,6 +62,343 @@ function getPricePreview(item) {
     return "Dynamic";
 }
 
+function formatMoney(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) return "—";
+
+    return Number.isInteger(number)
+        ? `$${number}`
+        : `$${number.toFixed(2)}`;
+}
+
+function formatMultiplier(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) return "—";
+
+    return `×${number.toFixed(2)}`;
+}
+
+function formatPercent(value) {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) return "—";
+
+    return `+${Math.round(number * 100)}%`;
+}
+
+function DetailTable({
+    title,
+    entries,
+    leftHeading = "Condition",
+    rightHeading = "Price",
+    formatter = formatMoney,
+}) {
+    const rows = Object.entries(entries || {});
+
+    if (rows.length === 0) return null;
+
+    return (
+        <section className="price-detail-section">
+            <div className="price-detail-section-header">
+                <h4>{title}</h4>
+                <span>{rows.length} values</span>
+            </div>
+
+            <div className="price-detail-table-wrap">
+                <table className="price-detail-table">
+                    <thead>
+                        <tr>
+                            <th>{leftHeading}</th>
+                            <th>{rightHeading}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {rows.map(([label, value]) => (
+                            <tr key={label}>
+                                <td>{label}</td>
+                                <td>
+                                    <strong>{formatter(value)}</strong>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    );
+}
+
+function AddonDetails({ addons }) {
+    if (!addons) return null;
+
+    return (
+        <section className="price-detail-section">
+            <div className="price-detail-section-header">
+                <h4>Add-on Pricing</h4>
+                <span>Shared modifiers</span>
+            </div>
+
+            <div className="price-addon-grid">
+                <div className="price-addon-item">
+                    <span>Duo Mode</span>
+                    <strong>{formatMultiplier(addons.duoModeMultiplier)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>Duo Extra</span>
+                    <strong>{formatPercent(addons.duoExtraPercent)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>Express</span>
+                    <strong>{formatPercent(addons.expressPercent)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>Premium Coaching</span>
+                    <strong>{formatPercent(addons.premiumCoachingPercent)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>Solo Only</span>
+                    <strong>{formatPercent(addons.soloOnlyPercent)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>High MMR Duo</span>
+                    <strong>{formatPercent(addons.highMmrDuoPercent)}</strong>
+                </div>
+
+                <div className="price-addon-item">
+                    <span>Untrackable Duo</span>
+                    <strong>{formatPercent(addons.untrackableDuoPercent)}</strong>
+                </div>
+            </div>
+
+            {addons.championPreference && (
+                <div className="price-detail-subsection">
+                    <h5>Champion Preference</h5>
+
+                    <div className="price-addon-grid">
+                        {Object.entries(addons.championPreference).map(
+                            ([label, value]) => (
+                                <div className="price-addon-item" key={label}>
+                                    <span>{label} champion{label === "1" ? "" : "s"}</span>
+                                    <strong>{formatPercent(value)}</strong>
+                                </div>
+                            )
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {addons.bonusWin && (
+                <div className="price-detail-subsection">
+                    <h5>Bonus Win</h5>
+
+                    <div className="price-addon-grid">
+                        <div className="price-addon-item">
+                            <span>Solo</span>
+                            <strong>{addons.bonusWin.solo}</strong>
+                        </div>
+
+                        <div className="price-addon-item">
+                            <span>Duo</span>
+                            <strong>
+                                {formatMultiplier(addons.bonusWin.duoMultiplier)}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+}
+
+function PricingRuleDetails({ item }) {
+    const config = item.config || {};
+    const modifiers = config.modifiers || {};
+
+    if (item.pricingType === "RANK_BASED") {
+        return (
+            <div className="price-rule-details">
+                <DetailTable
+                    title="Division Step Prices"
+                    entries={config.divisionStepPrices}
+                    leftHeading="Starting Division"
+                    rightHeading="Step Price"
+                />
+
+                {config.masterLpPricing && (
+                    <section className="price-detail-section">
+                        <div className="price-detail-section-header">
+                            <h4>Master LP Pricing</h4>
+                        </div>
+
+                        <div className="price-addon-grid">
+                            {config.masterLpPricing.first100LpPerLp != null && (
+                                <div className="price-addon-item">
+                                    <span>First 100 LP</span>
+                                    <strong>
+                                        {formatMoney(
+                                            config.masterLpPricing.first100LpPerLp
+                                        )}{" "}
+                                        / LP
+                                    </strong>
+                                </div>
+                            )}
+
+                            {config.masterLpPricing.above100LpPerLp != null && (
+                                <div className="price-addon-item">
+                                    <span>Above 100 LP</span>
+                                    <strong>
+                                        {formatMoney(
+                                            config.masterLpPricing.above100LpPerLp
+                                        )}{" "}
+                                        / LP
+                                    </strong>
+                                </div>
+                            )}
+
+                            {config.masterLpPricing.perLp != null && (
+                                <div className="price-addon-item">
+                                    <span>Master LP</span>
+                                    <strong>
+                                        {formatMoney(config.masterLpPricing.perLp)} / LP
+                                    </strong>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                )}
+
+                <DetailTable
+                    title="Current LP Progress"
+                    entries={modifiers.currentLpProgress}
+                    leftHeading="Current LP"
+                    rightHeading="Multiplier"
+                    formatter={formatMultiplier}
+                />
+
+                <DetailTable
+                    title="LP Gain Modifier"
+                    entries={modifiers.lpGain}
+                    leftHeading="LP Gain / Win"
+                    rightHeading="Multiplier"
+                    formatter={formatMultiplier}
+                />
+
+                <AddonDetails addons={config.addons} />
+            </div>
+        );
+    }
+
+    if (item.pricingType === "PLACEMENT_BASED") {
+        return (
+            <div className="price-rule-details">
+                <section className="price-formula-card">
+                    <span>Placement Set</span>
+                    <strong>{config.fullSetGames || 5} games</strong>
+
+                    {config.formula && <code>{config.formula}</code>}
+                </section>
+
+                <DetailTable
+                    title="Placement Prices"
+                    entries={config.fullSetPrices}
+                    leftHeading="Previous / Peak Rank"
+                    rightHeading={`Price / ${config.fullSetGames || 5} Games`}
+                />
+
+                <AddonDetails addons={config.addons} />
+            </div>
+        );
+    }
+
+    if (item.pricingType === "PER_WIN") {
+        return (
+            <div className="price-rule-details">
+                {config.formula && (
+                    <section className="price-formula-card">
+                        <span>Calculation Formula</span>
+                        <code>{config.formula}</code>
+                    </section>
+                )}
+
+                <DetailTable
+                    title="Per-Win Prices"
+                    entries={config.perWinPrices}
+                    leftHeading="Current Rank"
+                    rightHeading="Price / Win"
+                />
+
+                <DetailTable
+                    title="LP Gain Modifier"
+                    entries={modifiers.lpGain}
+                    leftHeading="LP Gain / Win"
+                    rightHeading="Multiplier"
+                    formatter={formatMultiplier}
+                />
+
+                <AddonDetails addons={config.addons} />
+            </div>
+        );
+    }
+
+    if (item.pricingType === "DUO_ADDON") {
+        return (
+            <div className="price-rule-details">
+                <section className="price-duo-summary">
+                    <div>
+                        <span>Pricing Source</span>
+                        <strong>{config.source || "Win Boost"}</strong>
+                    </div>
+
+                    <div>
+                        <span>Base Multiplier</span>
+                        <strong>{formatMultiplier(config.multiplier)}</strong>
+                    </div>
+                </section>
+
+                {config.formula && (
+                    <section className="price-formula-card">
+                        <span>Calculation Formula</span>
+                        <code>{config.formula}</code>
+                    </section>
+                )}
+
+                <DetailTable
+                    title="Source Win Prices"
+                    entries={config.perWinPrices}
+                    leftHeading="Current Rank"
+                    rightHeading="Win Boost Price"
+                />
+
+                <DetailTable
+                    title="LP Gain Modifier"
+                    entries={modifiers.lpGain}
+                    leftHeading="LP Gain / Win"
+                    rightHeading="Multiplier"
+                    formatter={formatMultiplier}
+                />
+
+                <AddonDetails addons={config.addons} />
+            </div>
+        );
+    }
+
+    return (
+        <div className="price-rule-details">
+            <p className="price-empty-message">
+                No detailed configuration is available for this rule.
+            </p>
+        </div>
+    );
+}
+
 export default function PriceManagementPage() {
     const [pricingServices, setPricingServices] = useState([]);
     const [pricesLoading, setPricesLoading] = useState(true);
@@ -69,6 +406,25 @@ export default function PriceManagementPage() {
 
     const [saleModalOpen, setSaleModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
+
+    const [gameFilter, setGameFilter] = useState("ALL");
+    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [expandedRuleIds, setExpandedRuleIds] = useState(() => new Set());
+
+    const toggleRuleDetails = (ruleId) => {
+        setExpandedRuleIds((current) => {
+            const next = new Set(current);
+
+            if (next.has(ruleId)) {
+                next.delete(ruleId);
+            } else {
+                next.add(ruleId);
+            }
+
+            return next;
+        });
+    };
 
     const loadPricingRules = async () => {
         setPricesLoading(true);
@@ -115,6 +471,38 @@ export default function PriceManagementPage() {
     const activeSales = pricingServices.filter((item) => item.sale?.status === "ACTIVE").length;
     const upcomingSales = pricingServices.filter((item) => item.sale?.status === "SCHEDULED").length;
 
+    const filteredPricingServices = pricingServices.filter((item) => {
+        const matchesGame =
+            gameFilter === "ALL" || item.game === gameFilter;
+
+        const normalizedSearch = searchTerm.trim().toLowerCase();
+
+        const matchesSearch =
+            !normalizedSearch ||
+            item.service?.title?.toLowerCase().includes(normalizedSearch) ||
+            item.pricingType?.toLowerCase().includes(normalizedSearch);
+
+        let matchesStatus = true;
+
+        if (statusFilter === "ACTIVE") {
+            matchesStatus = item.active;
+        }
+
+        if (statusFilter === "ON_SALE") {
+            matchesStatus = item.sale?.status === "ACTIVE";
+        }
+
+        if (statusFilter === "SCHEDULED") {
+            matchesStatus = item.sale?.status === "SCHEDULED";
+        }
+
+        if (statusFilter === "INACTIVE") {
+            matchesStatus = !item.active;
+        }
+
+        return matchesGame && matchesSearch && matchesStatus;
+    });
+
     return (
         <>
 
@@ -135,9 +523,9 @@ export default function PriceManagementPage() {
                     <article className="price-stat-card">
                         <span className="price-stat-icon">🧾</span>
                         <div>
-                            <p>Total Services</p>
+                            <p>Pricing Rules</p>
                             <strong>{pricingServices.length}</strong>
-                            <span>Pricing rules tracked</span>
+                            <span>Configured service rules</span>
                         </div>
                     </article>
 
@@ -173,103 +561,228 @@ export default function PriceManagementPage() {
                     <div className="price-main-panel">
                         <div className="price-toolbar">
                             <div className="price-tabs">
-                                <button className="price-tab price-tab-active">All Games</button>
-                                <button className="price-tab">League of Legends</button>
-                                <button className="price-tab">Teamfight Tactics</button>
+                                <button
+                                    type="button"
+                                    className={`price-tab ${gameFilter === "ALL" ? "price-tab-active" : ""}`}
+                                    onClick={() => setGameFilter("ALL")}
+                                >
+                                    All Games
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`price-tab ${gameFilter === "LoL" ? "price-tab-active" : ""}`}
+                                    onClick={() => setGameFilter("LoL")}
+                                >
+                                    League of Legends
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`price-tab ${gameFilter === "TFT" ? "price-tab-active" : ""}`}
+                                    onClick={() => setGameFilter("TFT")}
+                                >
+                                    Teamfight Tactics
+                                </button>
                             </div>
 
                             <div className="price-search-row">
-                                <select>
-                                    <option>All Status</option>
-                                    <option>Active</option>
-                                    <option>On Sale</option>
-                                    <option>Scheduled</option>
+                                <select
+                                    value={statusFilter}
+                                    onChange={(event) => setStatusFilter(event.target.value)}
+                                >
+                                    <option value="ALL">All Status</option>
+                                    <option value="ACTIVE">Active</option>
+                                    <option value="ON_SALE">On Sale</option>
+                                    <option value="SCHEDULED">Scheduled</option>
+                                    <option value="INACTIVE">Inactive</option>
                                 </select>
 
-                                <input type="text" placeholder="Search service..." />
+                                <input
+                                    type="text"
+                                    placeholder="Search service..."
+                                    value={searchTerm}
+                                    onChange={(event) => setSearchTerm(event.target.value)}
+                                />
                             </div>
                         </div>
 
-                        <div className="price-table-card">
+                        <div className="price-rules-panel">
                             <div className="price-table-header">
                                 <div>
                                     <h2>Service Pricing Rules</h2>
                                     <p>
-                                        These services use dynamic pricing from the order calculator.
+                                        Expand a service to inspect every rank price, modifier,
+                                        formula, and add-on used by the pricing calculator.
                                     </p>
                                 </div>
+
+                                <span className="price-result-count">
+                                    {filteredPricingServices.length} rule
+                                    {filteredPricingServices.length === 1 ? "" : "s"}
+                                </span>
                             </div>
 
-                            <div className="price-table-wrap">
-                                <table className="price-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Service</th>
-                                            <th>Game</th>
-                                            <th>Pricing Type</th>
-                                            <th>Price Preview</th>
-                                            <th>Sale</th>
-                                            <th>Sale Ends</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
+                            {pricesLoading && (
+                                <div className="price-empty-state">
+                                    Loading pricing rules...
+                                </div>
+                            )}
 
-                                    <tbody>
-                                        {pricingServices.map((item) => (
-                                            <tr key={item.id}>
-                                                <td>
-                                                    <strong>{item.service?.title || "Unknown Service"}</strong>
-                                                </td>
+                            {!pricesLoading && pricesError && (
+                                <div className="price-empty-state price-empty-state-error">
+                                    {pricesError}
+                                </div>
+                            )}
 
-                                                <td>
-                                                    <span className={`price-game-pill ${item.game === "LoL" ? "lol" : "tft"}`}>
-                                                        {item.game}
-                                                    </span>
-                                                </td>
+                            {!pricesLoading &&
+                                !pricesError &&
+                                filteredPricingServices.length === 0 && (
+                                    <div className="price-empty-state">
+                                        No pricing rules match the selected filters.
+                                    </div>
+                                )}
 
-                                                <td>{formatPricingType(item.pricingType)}</td>
+                            {!pricesLoading &&
+                                !pricesError &&
+                                filteredPricingServices.length > 0 && (
+                                    <div className="price-rule-card-list">
+                                        {filteredPricingServices.map((item) => {
+                                            const expanded = expandedRuleIds.has(item.id);
 
-                                                <td>{getPricePreview(item)}</td>
+                                            return (
+                                                <article
+                                                    key={item.id}
+                                                    className={`price-rule-card ${expanded ? "price-rule-card-expanded" : ""
+                                                        }`}
+                                                >
+                                                    <div className="price-rule-card-main">
+                                                        <div className="price-rule-card-info">
+                                                            <div className="price-rule-card-title-row">
+                                                                <h3>
+                                                                    {item.service?.title ||
+                                                                        "Unknown Service"}
+                                                                </h3>
 
-                                                <td>
-                                                    {item.sale
-                                                        ? `${Number(item.sale.discountPercent).toFixed(0)}% OFF`
-                                                        : "None"}
-                                                </td>
+                                                                <span
+                                                                    className={`price-game-pill ${item.game === "LoL"
+                                                                            ? "lol"
+                                                                            : "tft"
+                                                                        }`}
+                                                                >
+                                                                    {item.game}
+                                                                </span>
+                                                            </div>
 
-                                                <td>
-                                                    {item.sale?.endsAt
-                                                        ? new Date(item.sale.endsAt).toLocaleDateString()
-                                                        : "—"}
-                                                </td>
+                                                            <div className="price-rule-meta">
+                                                                <span>
+                                                                    {formatPricingType(
+                                                                        item.pricingType
+                                                                    )}
+                                                                </span>
 
-                                                <td>
-                                                    <span className={`price-status-pill ${item.active ? "active" : "inactive"}`}>
-                                                        {item.sale?.status === "ACTIVE"
-                                                            ? "On Sale"
-                                                            : item.sale?.status === "SCHEDULED"
-                                                                ? "Scheduled"
-                                                                : item.active
-                                                                    ? "Active"
-                                                                    : "Inactive"}
-                                                    </span>
-                                                </td>
+                                                                <span className="price-meta-divider">
+                                                                    •
+                                                                </span>
 
-                                                <td>
-                                                    <button
-                                                        type="button"
-                                                        className="price-row-btn"
-                                                        onClick={() => openSaleModal(item)}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                                <strong>
+                                                                    {getPricePreview(item)}
+                                                                </strong>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="price-rule-card-status">
+                                                            {item.sale && (
+                                                                <span className="price-sale-badge">
+                                                                    {Number(
+                                                                        item.sale.discountPercent
+                                                                    ).toFixed(0)}
+                                                                    % OFF
+                                                                </span>
+                                                            )}
+
+                                                            <span
+                                                                className={`price-status-pill ${item.active
+                                                                        ? "active"
+                                                                        : "inactive"
+                                                                    }`}
+                                                            >
+                                                                {item.sale?.status === "ACTIVE"
+                                                                    ? "On Sale"
+                                                                    : item.sale?.status ===
+                                                                        "SCHEDULED"
+                                                                        ? "Scheduled"
+                                                                        : item.active
+                                                                            ? "Active"
+                                                                            : "Inactive"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {item.sale && (
+                                                        <div className="price-rule-sale-row">
+                                                            <span>
+                                                                Sale:{" "}
+                                                                <strong>
+                                                                    {item.sale.title ||
+                                                                        `${Number(
+                                                                            item.sale.discountPercent
+                                                                        ).toFixed(0)}% OFF`}
+                                                                </strong>
+                                                            </span>
+
+                                                            <span>
+                                                                Ends:{" "}
+                                                                <strong>
+                                                                    {item.sale.endsAt
+                                                                        ? new Date(
+                                                                            item.sale.endsAt
+                                                                        ).toLocaleDateString()
+                                                                        : "No end date"}
+                                                                </strong>
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="price-rule-card-actions">
+                                                        <button
+                                                            type="button"
+                                                            className="price-detail-toggle"
+                                                            onClick={() =>
+                                                                toggleRuleDetails(item.id)
+                                                            }
+                                                        >
+                                                            {expanded
+                                                                ? "Hide Detailed Pricing"
+                                                                : "View Detailed Pricing"}
+
+                                                            <span
+                                                                className={`price-detail-arrow ${expanded
+                                                                        ? "price-detail-arrow-open"
+                                                                        : ""
+                                                                    }`}
+                                                            >
+                                                                ↓
+                                                            </span>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            className="price-row-btn"
+                                                            onClick={() => openSaleModal(item)}
+                                                        >
+                                                            Sale Settings
+                                                        </button>
+                                                    </div>
+
+                                                    {expanded && (
+                                                        <PricingRuleDetails item={item} />
+                                                    )}
+                                                </article>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                         </div>
                     </div>
 
