@@ -8653,9 +8653,11 @@ export namespace Prisma {
     premiumCoaching: boolean | null
     liveStream: boolean | null
     appearOffline: boolean | null
+    untrackableDuo: boolean | null
     bonusWin: boolean | null
     soloOnly: boolean | null
     highMMRDuo: boolean | null
+    championPreferenceTier: string | null
     basePrice: number | null
     addonPrice: number | null
     totalPrice: number | null
@@ -8704,9 +8706,11 @@ export namespace Prisma {
     premiumCoaching: boolean | null
     liveStream: boolean | null
     appearOffline: boolean | null
+    untrackableDuo: boolean | null
     bonusWin: boolean | null
     soloOnly: boolean | null
     highMMRDuo: boolean | null
+    championPreferenceTier: string | null
     basePrice: number | null
     addonPrice: number | null
     totalPrice: number | null
@@ -8756,9 +8760,11 @@ export namespace Prisma {
     premiumCoaching: number
     liveStream: number
     appearOffline: number
+    untrackableDuo: number
     bonusWin: number
     soloOnly: number
     highMMRDuo: number
+    championPreferenceTier: number
     basePrice: number
     addonPrice: number
     totalPrice: number
@@ -8839,9 +8845,11 @@ export namespace Prisma {
     premiumCoaching?: true
     liveStream?: true
     appearOffline?: true
+    untrackableDuo?: true
     bonusWin?: true
     soloOnly?: true
     highMMRDuo?: true
+    championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
@@ -8890,9 +8898,11 @@ export namespace Prisma {
     premiumCoaching?: true
     liveStream?: true
     appearOffline?: true
+    untrackableDuo?: true
     bonusWin?: true
     soloOnly?: true
     highMMRDuo?: true
+    championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
@@ -8942,9 +8952,11 @@ export namespace Prisma {
     premiumCoaching?: true
     liveStream?: true
     appearOffline?: true
+    untrackableDuo?: true
     bonusWin?: true
     soloOnly?: true
     highMMRDuo?: true
+    championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
     totalPrice?: true
@@ -9081,9 +9093,11 @@ export namespace Prisma {
     premiumCoaching: boolean
     liveStream: boolean
     appearOffline: boolean
+    untrackableDuo: boolean
     bonusWin: boolean
     soloOnly: boolean
     highMMRDuo: boolean
+    championPreferenceTier: string
     basePrice: number
     addonPrice: number
     totalPrice: number
@@ -9152,9 +9166,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
@@ -9210,9 +9226,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
@@ -9264,9 +9282,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
@@ -9318,15 +9338,17 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "bonusWin" | "soloOnly" | "highMMRDuo" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9397,9 +9419,11 @@ export namespace Prisma {
       premiumCoaching: boolean
       liveStream: boolean
       appearOffline: boolean
+      untrackableDuo: boolean
       bonusWin: boolean
       soloOnly: boolean
       highMMRDuo: boolean
+      championPreferenceTier: string
       basePrice: number
       addonPrice: number
       totalPrice: number
@@ -9874,9 +9898,11 @@ export namespace Prisma {
     readonly premiumCoaching: FieldRef<"Order", 'Boolean'>
     readonly liveStream: FieldRef<"Order", 'Boolean'>
     readonly appearOffline: FieldRef<"Order", 'Boolean'>
+    readonly untrackableDuo: FieldRef<"Order", 'Boolean'>
     readonly bonusWin: FieldRef<"Order", 'Boolean'>
     readonly soloOnly: FieldRef<"Order", 'Boolean'>
     readonly highMMRDuo: FieldRef<"Order", 'Boolean'>
+    readonly championPreferenceTier: FieldRef<"Order", 'String'>
     readonly basePrice: FieldRef<"Order", 'Float'>
     readonly addonPrice: FieldRef<"Order", 'Float'>
     readonly totalPrice: FieldRef<"Order", 'Float'>
@@ -20482,9 +20508,11 @@ export namespace Prisma {
     premiumCoaching: 'premiumCoaching',
     liveStream: 'liveStream',
     appearOffline: 'appearOffline',
+    untrackableDuo: 'untrackableDuo',
     bonusWin: 'bonusWin',
     soloOnly: 'soloOnly',
     highMMRDuo: 'highMMRDuo',
+    championPreferenceTier: 'championPreferenceTier',
     basePrice: 'basePrice',
     addonPrice: 'addonPrice',
     totalPrice: 'totalPrice'
@@ -21321,9 +21349,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
+    untrackableDuo?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
+    championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
@@ -21378,9 +21408,11 @@ export namespace Prisma {
     premiumCoaching?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
+    untrackableDuo?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
     highMMRDuo?: SortOrder
+    championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
@@ -21438,9 +21470,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
+    untrackableDuo?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
+    championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
@@ -21495,9 +21529,11 @@ export namespace Prisma {
     premiumCoaching?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
+    untrackableDuo?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
     highMMRDuo?: SortOrder
+    championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
@@ -21555,9 +21591,11 @@ export namespace Prisma {
     premiumCoaching?: BoolWithAggregatesFilter<"Order"> | boolean
     liveStream?: BoolWithAggregatesFilter<"Order"> | boolean
     appearOffline?: BoolWithAggregatesFilter<"Order"> | boolean
+    untrackableDuo?: BoolWithAggregatesFilter<"Order"> | boolean
     bonusWin?: BoolWithAggregatesFilter<"Order"> | boolean
     soloOnly?: BoolWithAggregatesFilter<"Order"> | boolean
     highMMRDuo?: BoolWithAggregatesFilter<"Order"> | boolean
+    championPreferenceTier?: StringWithAggregatesFilter<"Order"> | string
     basePrice?: FloatWithAggregatesFilter<"Order"> | number
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
@@ -22701,9 +22739,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -22758,9 +22798,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -22811,9 +22853,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -22868,9 +22912,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -22923,9 +22969,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -22973,9 +23021,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -23025,9 +23075,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -24344,9 +24396,11 @@ export namespace Prisma {
     premiumCoaching?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
+    untrackableDuo?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
     highMMRDuo?: SortOrder
+    championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
@@ -24410,9 +24464,11 @@ export namespace Prisma {
     premiumCoaching?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
+    untrackableDuo?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
     highMMRDuo?: SortOrder
+    championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
@@ -24461,9 +24517,11 @@ export namespace Prisma {
     premiumCoaching?: SortOrder
     liveStream?: SortOrder
     appearOffline?: SortOrder
+    untrackableDuo?: SortOrder
     bonusWin?: SortOrder
     soloOnly?: SortOrder
     highMMRDuo?: SortOrder
+    championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
     totalPrice?: SortOrder
@@ -26582,9 +26640,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -26637,9 +26697,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -27125,9 +27187,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFilter<"Order"> | boolean
     liveStream?: BoolFilter<"Order"> | boolean
     appearOffline?: BoolFilter<"Order"> | boolean
+    untrackableDuo?: BoolFilter<"Order"> | boolean
     bonusWin?: BoolFilter<"Order"> | boolean
     soloOnly?: BoolFilter<"Order"> | boolean
     highMMRDuo?: BoolFilter<"Order"> | boolean
+    championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
@@ -27677,9 +27741,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -27732,9 +27798,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -28362,9 +28430,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -28418,9 +28488,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -28543,9 +28615,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -28599,9 +28673,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -28834,9 +28910,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -28890,9 +28968,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -29072,9 +29152,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -29128,9 +29210,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -29306,9 +29390,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -29362,9 +29448,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -29490,9 +29578,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -29546,9 +29636,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -30335,9 +30427,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -30482,9 +30576,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -30537,9 +30633,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -30591,9 +30689,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -30957,9 +31057,11 @@ export namespace Prisma {
     premiumCoaching?: boolean
     liveStream?: boolean
     appearOffline?: boolean
+    untrackableDuo?: boolean
     bonusWin?: boolean
     soloOnly?: boolean
     highMMRDuo?: boolean
+    championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
     totalPrice?: number
@@ -31030,9 +31132,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -31085,9 +31189,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
@@ -31139,9 +31245,11 @@ export namespace Prisma {
     premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
     liveStream?: BoolFieldUpdateOperationsInput | boolean
     appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
     bonusWin?: BoolFieldUpdateOperationsInput | boolean
     soloOnly?: BoolFieldUpdateOperationsInput | boolean
     highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number

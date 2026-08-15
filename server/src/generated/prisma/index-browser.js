@@ -225,9 +225,11 @@ exports.Prisma.OrderScalarFieldEnum = {
   premiumCoaching: 'premiumCoaching',
   liveStream: 'liveStream',
   appearOffline: 'appearOffline',
+  untrackableDuo: 'untrackableDuo',
   bonusWin: 'bonusWin',
   soloOnly: 'soloOnly',
   highMMRDuo: 'highMMRDuo',
+  championPreferenceTier: 'championPreferenceTier',
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
   totalPrice: 'totalPrice'

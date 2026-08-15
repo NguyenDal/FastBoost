@@ -1,5 +1,6 @@
 const prisma = require("../prisma");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
+const { calculateOrderPrice } = require("../utils/pricingCalculator");
 
 const {
     encryptOrderPassword,
@@ -169,6 +170,7 @@ const createOrder = async (req, res) => {
         const {
             serviceId,
             boostType,
+
             currentRank,
             desiredRank,
             currentLP,
@@ -178,24 +180,26 @@ const createOrder = async (req, res) => {
             peakRank,
             desiredWins,
             placementGames,
+            numberOfGames,
+
             firstRole,
             secondRole,
             selectedChampions,
-            numberOfGames,
+
             region,
             queueType,
             playMode,
+
             priorityOrder,
             premiumCoaching,
             liveStream,
             appearOffline,
+            untrackableDuo,
             bonusWin,
             soloOnly,
             highMMRDuo,
-            basePrice,
-            addonPrice,
-            totalPrice,
-        } = req.body;
+            championPreferenceTier,
+        } = req.body || {};
 
         if (!serviceId || !boostType) {
             return res.status(400).json({
@@ -204,18 +208,7 @@ const createOrder = async (req, res) => {
             });
         }
 
-        const service = await prisma.service.findUnique({
-            where: { id: serviceId },
-        });
-
-        if (!service) {
-            return res.status(404).json({
-                ok: false,
-                message: "Service not found",
-            });
-        }
-
-        const customerId = req.user.id || req.user.userId;
+        const customerId = req.user?.id || req.user?.userId;
 
         if (!customerId) {
             return res.status(401).json({
@@ -224,29 +217,225 @@ const createOrder = async (req, res) => {
             });
         }
 
+        /*
+         * The Order Page allows switching between:
+         *
+         * Rank Boost
+         * Placement Boost
+         * Win Boost
+         * Pro Duo
+         *
+         * without changing the URL serviceId.
+         *
+         * Because of that, boostType is the selected service that
+         * actually needs to be priced.
+         */
+        const selectedService = await prisma.service.findFirst({
+            where: {
+                title: boostType,
+            },
+        });
+
+        if (!selectedService) {
+            return res.status(404).json({
+                ok: false,
+                message: "Selected service not found",
+            });
+        }
+
+        /*
+         * Load the LIVE pricing rule from PostgreSQL.
+         *
+         * This is now the source of truth.
+         */
+        const priceRule = await prisma.servicePriceRule.findFirst({
+            where: {
+                serviceId: selectedService.id,
+                active: true,
+            },
+            orderBy: {
+                updatedAt: "desc",
+            },
+        });
+
+        if (!priceRule) {
+            return res.status(400).json({
+                ok: false,
+                message: "No active pricing rule is configured for this service.",
+            });
+        }
+
+        /*
+         * Load other active rules for the same game.
+         *
+         * This is needed for linked pricing such as Bonus Win,
+         * which follows the game's Win Boost pricing.
+         */
+        const referenceRules = await prisma.servicePriceRule.findMany({
+            where: {
+                game: priceRule.game,
+                active: true,
+            },
+        });
+
+        const now = new Date();
+
+        /*
+         * Load only a sale that is active RIGHT NOW.
+         *
+         * Scheduled future sales are not applied yet.
+         * Expired sales are not applied.
+         */
+        const activeSale = await prisma.serviceSale.findFirst({
+            where: {
+                serviceId: selectedService.id,
+                active: true,
+
+                AND: [
+                    {
+                        OR: [
+                            { startsAt: null },
+                            { startsAt: { lte: now } },
+                        ],
+                    },
+                    {
+                        OR: [
+                            { endsAt: null },
+                            { endsAt: { gte: now } },
+                        ],
+                    },
+                ],
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        /*
+         * These are the CUSTOMER'S selections.
+         *
+         * The customer is allowed to control these options.
+         * They are NOT allowed to control the resulting dollar price.
+         */
+        const pricingOptions = {
+            currentRank: currentRank || null,
+            desiredRank: desiredRank || null,
+            currentLP: currentLP || null,
+
+            currentMasterLp:
+                currentMasterLp !== null &&
+                currentMasterLp !== undefined
+                    ? Number(currentMasterLp)
+                    : 0,
+
+            desiredMasterLp:
+                desiredMasterLp !== null &&
+                desiredMasterLp !== undefined
+                    ? Number(desiredMasterLp)
+                    : 0,
+
+            lpGain: lpGain || null,
+            peakRank: peakRank || null,
+
+            desiredWins: desiredWins
+                ? Number(desiredWins)
+                : 1,
+
+            placementGames: placementGames
+                ? Number(placementGames)
+                : 1,
+
+            numberOfGames: numberOfGames
+                ? Number(numberOfGames)
+                : 1,
+
+            playMode: playMode || "Solo",
+
+            priorityOrder: Boolean(priorityOrder),
+            premiumCoaching: Boolean(premiumCoaching),
+            untrackableDuo: Boolean(untrackableDuo),
+            bonusWin: Boolean(bonusWin),
+            soloOnly: Boolean(soloOnly),
+            highMMRDuo: Boolean(highMMRDuo),
+
+            championPreferenceTier:
+                championPreferenceTier || "4+",
+        };
+
+        /*
+         * IMPORTANT:
+         *
+         * The server calculates the price.
+         *
+         * basePrice / addonPrice / totalPrice sent by the browser
+         * are completely ignored.
+         */
+        const calculatedPrice = calculateOrderPrice({
+            rule: priceRule,
+            options: pricingOptions,
+            sale: activeSale,
+            referenceRules,
+        });
+
+        if (
+            !Number.isFinite(calculatedPrice.totalPrice) ||
+            calculatedPrice.totalPrice <= 0
+        ) {
+            return res.status(400).json({
+                ok: false,
+                message:
+                    "Unable to calculate a valid price for the selected configuration.",
+            });
+        }
+
         const order = await prisma.order.create({
             data: {
                 customerId,
-                serviceId,
 
-                boostType,
+                /*
+                 * Use the service matching the selected boost type,
+                 * not necessarily the service originally in the URL.
+                 */
+                serviceId: selectedService.id,
+                boostType: selectedService.title,
+
                 currentRank: currentRank || null,
                 desiredRank: desiredRank || null,
                 currentLP: currentLP || null,
-                currentMasterLp: currentMasterLp !== null && currentMasterLp !== undefined
-                    ? Number(currentMasterLp)
-                    : null,
-                desiredMasterLp: desiredMasterLp !== null && desiredMasterLp !== undefined
-                    ? Number(desiredMasterLp)
-                    : null,
+
+                currentMasterLp:
+                    currentMasterLp !== null &&
+                    currentMasterLp !== undefined
+                        ? Number(currentMasterLp)
+                        : null,
+
+                desiredMasterLp:
+                    desiredMasterLp !== null &&
+                    desiredMasterLp !== undefined
+                        ? Number(desiredMasterLp)
+                        : null,
+
                 lpGain: lpGain || null,
                 peakRank: peakRank || null,
-                desiredWins: desiredWins ? Number(desiredWins) : null,
-                placementGames: placementGames ? Number(placementGames) : null,
+
+                desiredWins: desiredWins
+                    ? Number(desiredWins)
+                    : null,
+
+                placementGames: placementGames
+                    ? Number(placementGames)
+                    : null,
+
+                numberOfGames: numberOfGames
+                    ? Number(numberOfGames)
+                    : null,
+
                 firstRole: firstRole || null,
                 secondRole: secondRole || null,
-                selectedChampions: selectedChampions || [],
-                numberOfGames: numberOfGames ? Number(numberOfGames) : null,
+                selectedChampions: Array.isArray(selectedChampions)
+                    ? selectedChampions
+                    : [],
+
                 region: region || null,
                 queueType: queueType || null,
                 playMode: playMode || null,
@@ -255,24 +444,63 @@ const createOrder = async (req, res) => {
                 premiumCoaching: Boolean(premiumCoaching),
                 liveStream: Boolean(liveStream),
                 appearOffline: Boolean(appearOffline),
+                untrackableDuo: Boolean(untrackableDuo),
                 bonusWin: Boolean(bonusWin),
                 soloOnly: Boolean(soloOnly),
                 highMMRDuo: Boolean(highMMRDuo),
+                championPreferenceTier:
+                    championPreferenceTier || "4+",
 
-                basePrice: Number(basePrice || 0),
-                addonPrice: Number(addonPrice || 0),
-                totalPrice: Number(totalPrice || 0),
+                /*
+                 * PRICE SNAPSHOT
+                 *
+                 * These values are calculated by the server and stored
+                 * permanently with the order.
+                 *
+                 * If an admin changes prices tomorrow, an old paid order
+                 * keeps the amount it was originally created with.
+                 */
+                basePrice: calculatedPrice.basePrice,
+                addonPrice: calculatedPrice.addonPrice,
+                totalPrice: calculatedPrice.totalPrice,
 
                 paymentStatus: "PENDING",
                 currency: "cad",
-                amountCents: Math.round(Number(totalPrice || 0) * 100),
+
+                amountCents: Math.round(
+                    calculatedPrice.totalPrice * 100
+                ),
             },
         });
 
         return res.status(201).json({
             ok: true,
             message: "Order created successfully",
+
             order: formatOrderForListResponse(order),
+
+            /*
+             * Useful temporarily while we convert OrderPage
+             * to live database pricing.
+             */
+            pricing: {
+                basePrice: calculatedPrice.basePrice,
+                addonPrice: calculatedPrice.addonPrice,
+                subtotal: calculatedPrice.subtotal,
+                saleDiscount: calculatedPrice.saleDiscount,
+                totalPrice: calculatedPrice.totalPrice,
+
+                sale: activeSale
+                    ? {
+                        id: activeSale.id,
+                        title: activeSale.title,
+                        discountPercent: Number(
+                            activeSale.discountPercent
+                        ),
+                        appliesTo: activeSale.appliesTo,
+                    }
+                    : null,
+            },
         });
     } catch (error) {
         console.error("createOrder error:", error);
@@ -280,6 +508,10 @@ const createOrder = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "Server error while creating order",
+            error:
+                process.env.NODE_ENV === "development"
+                    ? error.message
+                    : undefined,
         });
     }
 };
