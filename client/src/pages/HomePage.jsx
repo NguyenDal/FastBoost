@@ -4,7 +4,7 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -13,13 +13,59 @@ import { CardGridSkeleton } from "../components/PageSkeletons";
 import { API_BASE_URL } from "../api/config";
 import "../styles/HomePage.css";
 
+const SERVICES_CACHE_KEY = "fastboost:services:v1";
+const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+
+function getCachedServices() {
+  try {
+    const raw = localStorage.getItem(SERVICES_CACHE_KEY);
+
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+
+    if (
+      !Array.isArray(cached.services) ||
+      typeof cached.savedAt !== "number"
+    ) {
+      return null;
+    }
+
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedServices(services) {
+  try {
+    localStorage.setItem(
+      SERVICES_CACHE_KEY,
+      JSON.stringify({
+        services,
+        savedAt: Date.now(),
+      })
+    );
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { referralCode } = useParams();
 
-  const [services, setServices] = useState([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
+  const cachedServices = getCachedServices();
+
+  const [services, setServices] = useState(
+    () => cachedServices?.services || []
+  );
+
+  const [servicesLoading, setServicesLoading] = useState(
+    () => !cachedServices?.services?.length
+  );
+
   const [servicesError, setServicesError] = useState("");
   const [selectedGame, setSelectedGame] = useState("");
   const [visibleGame, setVisibleGame] = useState("");
@@ -220,28 +266,66 @@ function HomePage() {
   }, [referralCode]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const servicesResponse = await fetch(`${API_BASE_URL}/services`);
+    const controller = new AbortController();
 
-        if (!servicesResponse.ok) {
+    const fetchServices = async () => {
+      const cached = getCachedServices();
+      const hasCachedServices = Boolean(cached?.services?.length);
+
+      const cacheIsFresh =
+        hasCachedServices &&
+        Date.now() - cached.savedAt < SERVICES_CACHE_TTL;
+
+      // Fresh cache = display immediately and skip backend request.
+      if (cacheIsFresh) {
+        setServicesLoading(false);
+        return;
+      }
+
+      // Only show skeleton if we have nothing cached.
+      if (!hasCachedServices) {
+        setServicesLoading(true);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/services`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
           throw new Error("Failed to fetch services");
         }
 
-        const servicesData = await servicesResponse.json();
-        const normalizedServices = Array.isArray(servicesData)
-          ? servicesData
-          : servicesData.services || [];
+        const data = await response.json();
+
+        const normalizedServices = Array.isArray(data)
+          ? data
+          : data.services || [];
 
         setServices(normalizedServices);
+        saveCachedServices(normalizedServices);
+        setServicesError("");
       } catch (error) {
-        setServicesError("Could not load services");
+        if (error.name === "AbortError") {
+          return;
+        }
+
+        // Keep showing cached services if the backend is temporarily slow/down.
+        if (!hasCachedServices) {
+          setServicesError("Could not load services");
+        }
       } finally {
-        setServicesLoading(false);
+        if (!controller.signal.aborted) {
+          setServicesLoading(false);
+        }
       }
     };
 
-    fetchData();
+    fetchServices();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   useEffect(() => {

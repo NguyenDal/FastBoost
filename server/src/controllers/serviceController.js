@@ -35,10 +35,20 @@ const createService = async (req, res) => {
 const getAllServices = async (req, res) => {
   try {
     const services = await prisma.service.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+      },
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    res.set(
+      "Cache-Control",
+      "public, max-age=300, stale-while-revalidate=3600"
+    );
 
     return res.status(200).json({
       ok: true,
@@ -46,6 +56,7 @@ const getAllServices = async (req, res) => {
     });
   } catch (error) {
     console.error("Get services error:", error);
+
     return res.status(500).json({
       ok: false,
       message: "Server error",
