@@ -88,6 +88,86 @@ function formatPercent(value) {
     return `+${Math.round(number * 100)}%`;
 }
 
+const rankTierOrder = [
+    "Unranked",
+    "Iron",
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Platinum",
+    "Emerald",
+    "Diamond",
+    "Master",
+    "Grandmaster",
+    "Challenger",
+];
+
+const rankDivisionOrder = ["IV", "III", "II", "I"];
+
+function parseRankLabel(label) {
+    if (typeof label !== "string") return null;
+
+    const trimmed = label.trim();
+    if (!trimmed) return null;
+
+    const parts = trimmed.split(/\s+/);
+    if (parts.length === 1) {
+        return {
+            tier: parts[0],
+            division: null,
+        };
+    }
+
+    return {
+        tier: parts[0],
+        division: parts[1],
+    };
+}
+
+function isRankLabel(label) {
+    const parsed = parseRankLabel(label);
+    if (!parsed) return false;
+
+    if (parsed.tier === "Unranked") return true;
+
+    const hasTier = rankTierOrder.includes(parsed.tier);
+    const hasDivision = parsed.division
+        ? rankDivisionOrder.includes(parsed.division)
+        : true;
+
+    return hasTier && hasDivision;
+}
+
+function sortRankRows(rows) {
+    if (!rows.some(([label]) => isRankLabel(label))) {
+        return rows;
+    }
+
+    return [...rows].sort(([leftLabel], [rightLabel]) => {
+        const left = parseRankLabel(leftLabel) || { tier: "", division: null };
+        const right = parseRankLabel(rightLabel) || { tier: "", division: null };
+
+        const tierDiff =
+            (rankTierOrder.indexOf(left.tier) === -1
+                ? Number.MAX_SAFE_INTEGER
+                : rankTierOrder.indexOf(left.tier)) -
+            (rankTierOrder.indexOf(right.tier) === -1
+                ? Number.MAX_SAFE_INTEGER
+                : rankTierOrder.indexOf(right.tier));
+
+        if (tierDiff !== 0) return tierDiff;
+
+        const leftDivisionIndex = left.division
+            ? rankDivisionOrder.indexOf(left.division)
+            : rankDivisionOrder.length;
+        const rightDivisionIndex = right.division
+            ? rankDivisionOrder.indexOf(right.division)
+            : rankDivisionOrder.length;
+
+        return leftDivisionIndex - rightDivisionIndex;
+    });
+}
+
 function DetailTable({
     title,
     entries,
@@ -97,7 +177,7 @@ function DetailTable({
     editable = false,
     onValueChange,
 }) {
-    const rows = Object.entries(entries || {});
+    const rows = sortRankRows(Object.entries(entries || {}));
 
     if (rows.length === 0) return null;
 
@@ -155,8 +235,19 @@ function DetailTable({
     );
 }
 
-function AddonDetails({ addons }) {
+function AddonDetails({ addons, editing = false, onDraftValueChange }) {
     if (!addons) return null;
+
+    const championPreferenceOrder = { "1": 0, "2-3": 1, "4+": 2 };
+
+    const addonEntries = [
+        { key: "duoModeMultiplier", label: "Duo Mode", value: addons.duoModeMultiplier, formatter: formatMultiplier },
+        { key: "duoExtraPercent", label: "Duo Extra", value: addons.duoExtraPercent, formatter: formatPercent },
+        { key: "expressPercent", label: "Express", value: addons.expressPercent, formatter: formatPercent },
+        { key: "premiumCoachingPercent", label: "Premium Coaching", value: addons.premiumCoachingPercent, formatter: formatPercent },
+        { key: "highMmrDuoPercent", label: "High MMR Duo", value: addons.highMmrDuoPercent, formatter: formatPercent },
+        { key: "untrackableDuoPercent", label: "Untrackable Duo", value: addons.untrackableDuoPercent, formatter: formatPercent },
+    ];
 
     return (
         <section className="price-detail-section">
@@ -166,40 +257,30 @@ function AddonDetails({ addons }) {
             </div>
 
             <div className="price-addon-grid">
-                <div className="price-addon-item">
-                    <span>Duo Mode</span>
-                    <strong>{formatMultiplier(addons.duoModeMultiplier)}</strong>
-                </div>
+                {addonEntries
+                    .filter(({ key }) => key !== "soloOnlyPercent")
+                    .map(({ key, label, value, formatter }) => (
+                        <div className="price-addon-item" key={key}>
+                            <span>{label}</span>
 
-                <div className="price-addon-item">
-                    <span>Duo Extra</span>
-                    <strong>{formatPercent(addons.duoExtraPercent)}</strong>
-                </div>
-
-                <div className="price-addon-item">
-                    <span>Express</span>
-                    <strong>{formatPercent(addons.expressPercent)}</strong>
-                </div>
-
-                <div className="price-addon-item">
-                    <span>Premium Coaching</span>
-                    <strong>{formatPercent(addons.premiumCoachingPercent)}</strong>
-                </div>
-
-                <div className="price-addon-item">
-                    <span>Solo Only</span>
-                    <strong>{formatPercent(addons.soloOnlyPercent)}</strong>
-                </div>
-
-                <div className="price-addon-item">
-                    <span>High MMR Duo</span>
-                    <strong>{formatPercent(addons.highMmrDuoPercent)}</strong>
-                </div>
-
-                <div className="price-addon-item">
-                    <span>Untrackable Duo</span>
-                    <strong>{formatPercent(addons.untrackableDuoPercent)}</strong>
-                </div>
+                            {editing ? (
+                                <div className="price-edit-input-wrap">
+                                    <span>{key.includes("Multiplier") ? "×" : "%"}</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step={key.includes("Multiplier") ? "0.01" : "0.01"}
+                                        value={value}
+                                        onChange={(event) =>
+                                            onDraftValueChange?.("addons", key, event.target.value)
+                                        }
+                                    />
+                                </div>
+                            ) : (
+                                <strong>{formatter(value)}</strong>
+                            )}
+                        </div>
+                    ))}
             </div>
 
             {addons.championPreference && (
@@ -207,14 +288,41 @@ function AddonDetails({ addons }) {
                     <h5>Champion Preference</h5>
 
                     <div className="price-addon-grid">
-                        {Object.entries(addons.championPreference).map(
-                            ([label, value]) => (
+                        {Object.entries(addons.championPreference)
+                            .sort(([left], [right]) => (championPreferenceOrder[left] ?? 99) - (championPreferenceOrder[right] ?? 99))
+                            .map(([label, value]) => (
                                 <div className="price-addon-item" key={label}>
-                                    <span>{label} champion{label === "1" ? "" : "s"}</span>
-                                    <strong>{formatPercent(value)}</strong>
+                                    <span>
+                                        {label === "1"
+                                            ? "1 champ"
+                                            : label === "2-3"
+                                                ? "2-3 champs"
+                                                : "4+ champs"}
+                                    </span>
+
+                                    {editing ? (
+                                        <div className="price-edit-input-wrap">
+                                            <span>%</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={value}
+                                                onChange={(event) =>
+                                                    onDraftValueChange?.(
+                                                        "addons",
+                                                        "championPreference",
+                                                        label,
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <strong>{formatPercent(value)}</strong>
+                                    )}
                                 </div>
-                            )
-                        )}
+                            ))}
                     </div>
                 </div>
             )}
@@ -283,33 +391,93 @@ function PricingRuleDetails({
                             {config.masterLpPricing.first100LpPerLp != null && (
                                 <div className="price-addon-item">
                                     <span>First 100 LP</span>
-                                    <strong>
-                                        {formatMoney(
-                                            config.masterLpPricing.first100LpPerLp
-                                        )}{" "}
-                                        / LP
-                                    </strong>
+                                    {editing ? (
+                                        <div className="price-edit-input-wrap">
+                                            <span>$</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={config.masterLpPricing.first100LpPerLp}
+                                                onChange={(event) =>
+                                                    onDraftPriceChange(
+                                                        "masterLpPricing",
+                                                        "first100LpPerLp",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                            <span>/ LP</span>
+                                        </div>
+                                    ) : (
+                                        <strong>
+                                            {formatMoney(
+                                                config.masterLpPricing.first100LpPerLp
+                                            )}{" "}
+                                            / LP
+                                        </strong>
+                                    )}
                                 </div>
                             )}
 
                             {config.masterLpPricing.above100LpPerLp != null && (
                                 <div className="price-addon-item">
                                     <span>Above 100 LP</span>
-                                    <strong>
-                                        {formatMoney(
-                                            config.masterLpPricing.above100LpPerLp
-                                        )}{" "}
-                                        / LP
-                                    </strong>
+                                    {editing ? (
+                                        <div className="price-edit-input-wrap">
+                                            <span>$</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={config.masterLpPricing.above100LpPerLp}
+                                                onChange={(event) =>
+                                                    onDraftPriceChange(
+                                                        "masterLpPricing",
+                                                        "above100LpPerLp",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                            <span>/ LP</span>
+                                        </div>
+                                    ) : (
+                                        <strong>
+                                            {formatMoney(
+                                                config.masterLpPricing.above100LpPerLp
+                                            )}{" "}
+                                            / LP
+                                        </strong>
+                                    )}
                                 </div>
                             )}
 
                             {config.masterLpPricing.perLp != null && (
                                 <div className="price-addon-item">
                                     <span>Master LP</span>
-                                    <strong>
-                                        {formatMoney(config.masterLpPricing.perLp)} / LP
-                                    </strong>
+                                    {editing ? (
+                                        <div className="price-edit-input-wrap">
+                                            <span>$</span>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={config.masterLpPricing.perLp}
+                                                onChange={(event) =>
+                                                    onDraftPriceChange(
+                                                        "masterLpPricing",
+                                                        "perLp",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                            <span>/ LP</span>
+                                        </div>
+                                    ) : (
+                                        <strong>
+                                            {formatMoney(config.masterLpPricing.perLp)} / LP
+                                        </strong>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -332,7 +500,11 @@ function PricingRuleDetails({
                     formatter={formatMultiplier}
                 />
 
-                <AddonDetails addons={config.addons} />
+                <AddonDetails
+                    addons={config.addons}
+                    editing={editing}
+                    onDraftValueChange={onDraftValueChange}
+                />
             </div>
         );
     }
@@ -340,13 +512,6 @@ function PricingRuleDetails({
     if (item.pricingType === "PLACEMENT_BASED") {
         return (
             <div className="price-rule-details">
-                <section className="price-formula-card">
-                    <span>Placement Set</span>
-                    <strong>{config.fullSetGames || 5} games</strong>
-
-                    {config.formula && <code>{config.formula}</code>}
-                </section>
-
                 <DetailTable
                     title="Placement Prices"
                     entries={config.fullSetPrices}
@@ -362,7 +527,11 @@ function PricingRuleDetails({
                     }
                 />
 
-                <AddonDetails addons={config.addons} />
+                <AddonDetails
+                    addons={config.addons}
+                    editing={editing}
+                    onDraftValueChange={onDraftValueChange}
+                />
             </div>
         );
     }
@@ -370,13 +539,6 @@ function PricingRuleDetails({
     if (item.pricingType === "PER_WIN") {
         return (
             <div className="price-rule-details">
-                {config.formula && (
-                    <section className="price-formula-card">
-                        <span>Calculation Formula</span>
-                        <code>{config.formula}</code>
-                    </section>
-                )}
-
                 <DetailTable
                     title="Per-Win Prices"
                     entries={config.perWinPrices}
@@ -398,9 +560,22 @@ function PricingRuleDetails({
                     leftHeading="LP Gain / Win"
                     rightHeading="Multiplier"
                     formatter={formatMultiplier}
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "modifiers",
+                            "lpGain",
+                            key,
+                            value
+                        )
+                    }
                 />
 
-                <AddonDetails addons={config.addons} />
+                <AddonDetails
+                    addons={config.addons}
+                    editing={editing}
+                    onDraftValueChange={onDraftValueChange}
+                />
             </div>
         );
     }
@@ -408,30 +583,19 @@ function PricingRuleDetails({
     if (item.pricingType === "DUO_ADDON") {
         return (
             <div className="price-rule-details">
-                <section className="price-duo-summary">
-                    <div>
-                        <span>Pricing Source</span>
-                        <strong>{config.source || "Win Boost"}</strong>
-                    </div>
-
-                    <div>
-                        <span>Base Multiplier</span>
-                        <strong>{formatMultiplier(config.multiplier)}</strong>
-                    </div>
-                </section>
-
-                {config.formula && (
-                    <section className="price-formula-card">
-                        <span>Calculation Formula</span>
-                        <code>{config.formula}</code>
-                    </section>
-                )}
-
                 <DetailTable
                     title="Source Win Prices"
                     entries={config.perWinPrices}
                     leftHeading="Current Rank"
                     rightHeading="Win Boost Price"
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "perWinPrices",
+                            key,
+                            value
+                        )
+                    }
                 />
 
                 <DetailTable
@@ -440,9 +604,22 @@ function PricingRuleDetails({
                     leftHeading="LP Gain / Win"
                     rightHeading="Multiplier"
                     formatter={formatMultiplier}
+                    editable={editing}
+                    onValueChange={(key, value) =>
+                        onDraftPriceChange(
+                            "modifiers",
+                            "lpGain",
+                            key,
+                            value
+                        )
+                    }
                 />
 
-                <AddonDetails addons={config.addons} />
+                <AddonDetails
+                    addons={config.addons}
+                    editing={editing}
+                    onDraftValueChange={onDraftValueChange}
+                />
             </div>
         );
     }
@@ -456,6 +633,165 @@ function PricingRuleDetails({
     );
 }
 
+
+function cloneConfig(config) {
+    return JSON.parse(JSON.stringify(config || {}));
+}
+
+function valuesDiffer(oldValue, newValue) {
+    const oldNumber = Number(oldValue);
+    const newNumber = Number(newValue);
+
+    if (Number.isFinite(oldNumber) && Number.isFinite(newNumber)) {
+        return oldNumber !== newNumber;
+    }
+
+    return String(oldValue ?? "") !== String(newValue ?? "");
+}
+
+function collectPriceChanges(item, draftConfig) {
+    const original = item?.config || {};
+    const draft = draftConfig || {};
+    const changes = [];
+
+    const addMapChanges = (section, sectionLabel) => {
+        const originalMap = original?.[section] || {};
+        const draftMap = draft?.[section] || {};
+        const keys = new Set([
+            ...Object.keys(originalMap),
+            ...Object.keys(draftMap),
+        ]);
+
+        for (const key of keys) {
+            const oldValue = originalMap[key];
+            const newValue = draftMap[key];
+
+            if (!valuesDiffer(oldValue, newValue)) continue;
+
+            changes.push({
+                id: `${section}::${key}`,
+                section,
+                key,
+                sectionLabel,
+                label: key,
+                oldValue,
+                newValue,
+                kind: "price",
+            });
+        }
+    };
+
+    const addNestedMapChanges = (section, mapKey, sectionLabel) => {
+        const originalMap = original?.[section]?.[mapKey] || {};
+        const draftMap = draft?.[section]?.[mapKey] || {};
+        const keys = new Set([
+            ...Object.keys(originalMap),
+            ...Object.keys(draftMap),
+        ]);
+
+        for (const key of keys) {
+            const oldValue = originalMap[key];
+            const newValue = draftMap[key];
+
+            if (!valuesDiffer(oldValue, newValue)) continue;
+
+            changes.push({
+                id: `${section}::${mapKey}::${key}`,
+                section,
+                mapKey,
+                key,
+                sectionLabel,
+                label: key,
+                oldValue,
+                newValue,
+                kind: "price",
+            });
+        }
+    };
+
+    if (item?.pricingType === "RANK_BASED") {
+        addMapChanges("divisionStepPrices", "Division Step Price");
+        addMapChanges("masterLpPricing", "Master LP Price");
+    }
+
+    if (item?.pricingType === "PLACEMENT_BASED") {
+        addMapChanges("fullSetPrices", "Placement Price");
+    }
+
+    if (item?.pricingType === "PER_WIN") {
+        addMapChanges("perWinPrices", "Per-Win Price");
+        addNestedMapChanges("modifiers", "lpGain", "LP Gain Modifier");
+    }
+
+    if (item?.pricingType === "DUO_ADDON") {
+        addMapChanges("perWinPrices", "Source Win Price");
+        addNestedMapChanges("modifiers", "lpGain", "LP Gain Modifier");
+    }
+
+    if (
+        item?.pricingType === "DUO_ADDON" &&
+        valuesDiffer(original?.multiplier, draft?.multiplier)
+    ) {
+        changes.push({
+            id: "root::multiplier",
+            section: null,
+            key: "multiplier",
+            sectionLabel: "Pro Duo",
+            label: "Base Multiplier",
+            oldValue: original?.multiplier,
+            newValue: draft?.multiplier,
+            kind: "multiplier",
+        });
+    }
+
+    return changes;
+}
+
+function applySelectedPriceChanges(originalConfig, changes, selectedIds) {
+    const nextConfig = cloneConfig(originalConfig);
+
+    for (const change of changes) {
+        if (!selectedIds.has(change.id)) continue;
+
+        const numericValue = Number(change.newValue);
+        const safeValue = Number.isFinite(numericValue)
+            ? numericValue
+            : change.newValue;
+
+        if (!change.section) {
+            nextConfig[change.key] = safeValue;
+            continue;
+        }
+
+        if (change.mapKey) {
+            nextConfig[change.section] = {
+                ...(nextConfig[change.section] || {}),
+                [change.mapKey]: {
+                    ...((nextConfig[change.section] || {})[change.mapKey] || {}),
+                    [change.key]: safeValue,
+                },
+            };
+            continue;
+        }
+
+        nextConfig[change.section] = {
+            ...(nextConfig[change.section] || {}),
+            [change.key]: safeValue,
+        };
+    }
+
+    return nextConfig;
+}
+
+function formatChangeValue(change, value) {
+    if (change?.kind === "multiplier") {
+        const number = Number(value);
+        return Number.isFinite(number) ? `×${number.toFixed(2)}` : String(value ?? "—");
+    }
+
+    return formatMoney(value);
+}
+
 export default function PriceManagementPage() {
     const [pricingServices, setPricingServices] = useState([]);
     const [pricesLoading, setPricesLoading] = useState(true);
@@ -465,6 +801,13 @@ export default function PriceManagementPage() {
     const [draftConfig, setDraftConfig] = useState(null);
     const [priceSaving, setPriceSaving] = useState(false);
     const [priceSaveError, setPriceSaveError] = useState("");
+
+    const [priceConfirmOpen, setPriceConfirmOpen] = useState(false);
+    const [pendingPriceItem, setPendingPriceItem] = useState(null);
+    const [pendingPriceChanges, setPendingPriceChanges] = useState([]);
+    const [selectedPriceChangeIds, setSelectedPriceChangeIds] = useState(
+        () => new Set()
+    );
 
     const [saleModalOpen, setSaleModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
@@ -517,44 +860,167 @@ export default function PriceManagementPage() {
 
     const startPriceEdit = (item) => {
         setEditingRuleId(item.id);
-
-        setDraftConfig(
-            JSON.parse(JSON.stringify(item.config || {}))
-        );
-
+        setDraftConfig(cloneConfig(item.config));
         setPriceSaveError("");
+
+        // Editing must always reveal the detailed board where the inputs live.
+        setExpandedRuleIds((current) => {
+            const next = new Set(current);
+            next.add(item.id);
+            return next;
+        });
     };
 
     const cancelPriceEdit = () => {
         setEditingRuleId(null);
         setDraftConfig(null);
         setPriceSaveError("");
+        setPriceConfirmOpen(false);
+        setPendingPriceItem(null);
+        setPendingPriceChanges([]);
+        setSelectedPriceChangeIds(new Set());
     };
 
-    const updateDraftPrice = (section, key, value) => {
-        setDraftConfig((current) => ({
-            ...current,
+    const updateDraftPrice = (section, key, value, nestedKey) => {
+        setDraftConfig((current) => {
+            const next = cloneConfig(current);
 
-            [section]: {
-                ...(current?.[section] || {}),
+            if (nestedKey !== undefined) {
+                const parentMap = next?.[section] || {};
+                const nestedMap = parentMap[key] || {};
+
+                next[section] = {
+                    ...parentMap,
+                    [key]: {
+                        ...nestedMap,
+                        [nestedKey]: value,
+                    },
+                };
+
+                return next;
+            }
+
+            next[section] = {
+                ...(next?.[section] || {}),
                 [key]: value,
-            },
-        }));
+            };
+
+            return next;
+        });
     };
 
-    const updateDraftValue = (key, value) => {
-        setDraftConfig((current) => ({
-            ...current,
-            [key]: value,
-        }));
+    const updateDraftValue = (section, key, value, nestedKey) => {
+        if (section === "addons" && nestedKey !== undefined) {
+            setDraftConfig((current) => {
+                const next = cloneConfig(current);
+                const addons = next?.addons || {};
+
+                if (key === "championPreference") {
+                    const currentTierPrefs = addons.championPreference || {};
+                    next.addons = {
+                        ...addons,
+                        championPreference: {
+                            ...currentTierPrefs,
+                            [value]: Number(nestedKey),
+                        },
+                    };
+                    return next;
+                }
+
+                next.addons = {
+                    ...addons,
+                    [key]: Number.isFinite(Number(value)) ? Number(value) : value,
+                };
+
+                return next;
+            });
+            return;
+        }
+
+        setDraftConfig((current) => {
+            const next = cloneConfig(current);
+            next[section] = {
+                ...(next?.[section] || {}),
+                [key]: Number.isFinite(Number(value)) ? Number(value) : value,
+            };
+            return next;
+        });
     };
 
-    const savePriceChanges = async (item) => {
+    const openPriceConfirmation = (item) => {
+        const changes = collectPriceChanges(item, draftConfig);
+
+        if (changes.length === 0) {
+            setPriceSaveError("No price changes to save.");
+            return;
+        }
+
+        setPendingPriceItem(item);
+        setPendingPriceChanges(changes);
+        setSelectedPriceChangeIds(new Set());
+        setPriceSaveError("");
+        setPriceConfirmOpen(true);
+    };
+
+    const closePriceConfirmation = () => {
+        if (priceSaving) return;
+
+        setPriceConfirmOpen(false);
+        setPendingPriceItem(null);
+        setPendingPriceChanges([]);
+        setSelectedPriceChangeIds(new Set());
+    };
+
+    const togglePriceChange = (changeId) => {
+        setSelectedPriceChangeIds((current) => {
+            const next = new Set(current);
+
+            if (next.has(changeId)) {
+                next.delete(changeId);
+            } else {
+                next.add(changeId);
+            }
+
+            return next;
+        });
+    };
+
+    const toggleAllPriceChanges = () => {
+        setSelectedPriceChangeIds((current) => {
+            const allSelected =
+                pendingPriceChanges.length > 0 &&
+                pendingPriceChanges.every((change) => current.has(change.id));
+
+            if (allSelected) {
+                return new Set();
+            }
+
+            return new Set(pendingPriceChanges.map((change) => change.id));
+        });
+    };
+
+    const savePriceChanges = async () => {
+        const item = pendingPriceItem;
+
+        if (!item) return;
+
+        if (selectedPriceChangeIds.size === 0) {
+            return;
+        }
+
         try {
             setPriceSaving(true);
             setPriceSaveError("");
 
             const token = localStorage.getItem("token");
+
+            // Start from the original config and apply ONLY the checked changes.
+            // Unchecked edits are intentionally discarded.
+            const selectedConfig = applySelectedPriceChanges(
+                item.config,
+                pendingPriceChanges,
+                selectedPriceChangeIds
+            );
 
             const response = await fetch(
                 `${API_BASE_URL}/admin/prices/rules/${item.id}`,
@@ -565,7 +1031,7 @@ export default function PriceManagementPage() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        config: draftConfig,
+                        config: selectedConfig,
                     }),
                 }
             );
@@ -589,6 +1055,10 @@ export default function PriceManagementPage() {
                 )
             );
 
+            setPriceConfirmOpen(false);
+            setPendingPriceItem(null);
+            setPendingPriceChanges([]);
+            setSelectedPriceChangeIds(new Set());
             setEditingRuleId(null);
             setDraftConfig(null);
         } catch (error) {
@@ -935,7 +1405,7 @@ export default function PriceManagementPage() {
                                                                         type="button"
                                                                         className="price-primary-btn"
                                                                         onClick={() =>
-                                                                            savePriceChanges(item)
+                                                                            openPriceConfirmation(item)
                                                                         }
                                                                         disabled={priceSaving}
                                                                     >
@@ -1001,34 +1471,133 @@ export default function PriceManagementPage() {
                             </button>
                         </section>
 
-                        <section className="price-side-card">
-                            <h3>Pricing Logic</h3>
-
-                            <div className="price-rule-list">
-                                <div>
-                                    <strong>Rank Boost</strong>
-                                    <span>Current rank → desired rank</span>
-                                </div>
-
-                                <div>
-                                    <strong>Win Boost</strong>
-                                    <span>Rank tier × number of wins</span>
-                                </div>
-
-                                <div>
-                                    <strong>Placement</strong>
-                                    <span>Peak rank × placement games</span>
-                                </div>
-
-                                <div>
-                                    <strong>Add-ons</strong>
-                                    <span>Priority, coaching, stream, privacy</span>
-                                </div>
-                            </div>
-                        </section>
                     </aside>
                 </section>
             </main>
+
+            {priceConfirmOpen && pendingPriceItem && (
+                <div
+                    className="price-modal-backdrop"
+                    onClick={closePriceConfirmation}
+                >
+                    <section
+                        className="price-modal price-change-confirm-modal"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="price-modal-header">
+                            <div>
+                                <p className="admin-eyebrow">Confirm Price Changes</p>
+                                <h2>
+                                    Review {pendingPriceItem.service?.title || "Service"}
+                                </h2>
+                                <p>
+                                    Only checked changes will be saved. Unchecked changes
+                                    will keep their current production values.
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="price-modal-close"
+                                onClick={closePriceConfirmation}
+                                disabled={priceSaving}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="price-change-confirm-toolbar">
+                            <label className="price-change-check-all">
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        pendingPriceChanges.length > 0 &&
+                                        pendingPriceChanges.every((change) =>
+                                            selectedPriceChangeIds.has(change.id)
+                                        )
+                                    }
+                                    onChange={toggleAllPriceChanges}
+                                    disabled={priceSaving}
+                                />
+                                <span>Check All</span>
+                            </label>
+
+                            <span className="price-change-selected-count">
+                                {selectedPriceChangeIds.size} of {pendingPriceChanges.length} selected
+                            </span>
+                        </div>
+
+                        <div className="price-change-list">
+                            {pendingPriceChanges.map((change) => {
+                                const checked = selectedPriceChangeIds.has(change.id);
+
+                                return (
+                                    <label
+                                        className={`price-change-row ${checked ? "price-change-row-selected" : ""}`}
+                                        key={change.id}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={() => togglePriceChange(change.id)}
+                                            disabled={priceSaving}
+                                        />
+
+                                        <div className="price-change-copy">
+                                            <span className="price-change-section">
+                                                {change.sectionLabel}
+                                            </span>
+                                            <strong>{change.label}</strong>
+                                        </div>
+
+                                        <div className="price-change-values">
+                                            <span className="price-change-old">
+                                                {formatChangeValue(change, change.oldValue)}
+                                            </span>
+                                            <span className="price-change-arrow">→</span>
+                                            <span className="price-change-new">
+                                                {formatChangeValue(change, change.newValue)}
+                                            </span>
+                                        </div>
+                                    </label>
+                                );
+                            })}
+                        </div>
+
+                        {priceSaveError && (
+                            <div className="price-save-error price-confirm-error">
+                                {priceSaveError}
+                            </div>
+                        )}
+
+                        <div className="price-modal-actions">
+                            <button
+                                type="button"
+                                className="price-secondary-btn"
+                                onClick={closePriceConfirmation}
+                                disabled={priceSaving}
+                            >
+                                Back to Editing
+                            </button>
+
+                            <button
+                                type="button"
+                                className="price-primary-btn"
+                                onClick={savePriceChanges}
+                                disabled={
+                                    priceSaving || selectedPriceChangeIds.size === 0
+                                }
+                            >
+                                {priceSaving
+                                    ? "Applying Changes..."
+                                    : `Apply ${selectedPriceChangeIds.size} Selected Change${
+                                        selectedPriceChangeIds.size === 1 ? "" : "s"
+                                    }`}
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            )}
 
             {saleModalOpen && (
                 <div className="price-modal-backdrop" onClick={closeSaleModal}>

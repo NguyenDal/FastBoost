@@ -1030,3 +1030,168 @@
     }
 }
 
+/* =========================================
+   Price change confirmation
+   ========================================= */
+
+.price-edit-source-note {
+    margin: 0 20px 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    background: rgba(59, 130, 246, 0.07);
+    color: #bfdbfe;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.price-multiplier-input-wrap input {
+    width: 96px;
+}
+
+.price-change-confirm-modal {
+    width: min(820px, 100%);
+    max-height: min(86vh, 820px);
+    display: flex;
+    flex-direction: column;
+}
+
+.price-change-confirm-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    background: rgba(2, 6, 23, 0.5);
+}
+
+.price-change-check-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-weight: 850;
+    cursor: pointer;
+}
+
+.price-change-check-all input,
+.price-change-row > input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    accent-color: #8b5cf6;
+    cursor: pointer;
+}
+
+.price-change-check-all input:disabled,
+.price-change-row > input:disabled {
+    cursor: not-allowed;
+}
+
+.price-change-selected-count {
+    color: #a5b4fc;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.price-change-list {
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    gap: 10px;
+    padding-right: 4px;
+}
+
+.price-change-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    background: rgba(2, 6, 23, 0.42);
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.price-change-row:hover {
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.price-change-row-selected {
+    border-color: rgba(139, 92, 246, 0.34);
+    background: rgba(124, 58, 237, 0.09);
+}
+
+.price-change-copy {
+    min-width: 0;
+}
+
+.price-change-copy strong {
+    display: block;
+    margin-top: 4px;
+    color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+.price-change-section {
+    display: block;
+    color: #a78bfa;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.price-change-values {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    white-space: nowrap;
+    font-weight: 900;
+}
+
+.price-change-old {
+    color: #fca5a5;
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+}
+
+.price-change-arrow {
+    color: #64748b;
+}
+
+.price-change-new {
+    color: #86efac;
+}
+
+.price-confirm-error {
+    margin: 14px 0 0;
+}
+
+@media (max-width: 640px) {
+    .price-change-confirm-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .price-change-row {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .price-change-values {
+        grid-column: 2;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        white-space: normal;
+    }
+}
+
