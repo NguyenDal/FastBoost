@@ -161,7 +161,11 @@ exports.updatePriceRule = async (req, res) => {
         const { id } = req.params;
         const { config } = req.body || {};
 
-        if (!config || typeof config !== "object") {
+        if (
+            !config ||
+            typeof config !== "object" ||
+            Array.isArray(config)
+        ) {
             return res.status(400).json({
                 ok: false,
                 message: "Pricing config is required.",
@@ -179,28 +183,60 @@ exports.updatePriceRule = async (req, res) => {
             });
         }
 
-        const currentConfig = existingRule.config || {};
-        const nextConfig = {
-            ...currentConfig,
+        const currentConfig =
+            existingRule.config &&
+            typeof existingRule.config === "object"
+                ? existingRule.config
+                : {};
+
+        const nextConfig = JSON.parse(JSON.stringify(currentConfig));
+
+        const validateNumber = (
+            rawValue,
+            name,
+            min = 0,
+            max = Number.POSITIVE_INFINITY
+        ) => {
+            const value = Number(rawValue);
+
+            if (
+                !Number.isFinite(value) ||
+                value < min ||
+                value > max
+            ) {
+                throw new Error(
+                    `${name} must be a valid number between ${min} and ${
+                        Number.isFinite(max) ? max : "any positive value"
+                    }.`
+                );
+            }
+
+            return value;
         };
 
-        const validatePriceMap = (map, name) => {
-            if (!map || typeof map !== "object") {
+        const validatePriceMap = (
+            map,
+            name,
+            min = 0,
+            max = Number.POSITIVE_INFINITY
+        ) => {
+            if (
+                !map ||
+                typeof map !== "object" ||
+                Array.isArray(map)
+            ) {
                 throw new Error(`${name} is invalid.`);
             }
 
             const result = {};
 
             for (const [key, rawValue] of Object.entries(map)) {
-                const value = Number(rawValue);
-
-                if (!Number.isFinite(value) || value < 0) {
-                    throw new Error(
-                        `${name}: ${key} must be a valid non-negative number.`
-                    );
-                }
-
-                result[key] = value;
+                result[key] = validateNumber(
+                    rawValue,
+                    `${name}: ${key}`,
+                    min,
+                    max
+                );
             }
 
             return result;
@@ -248,22 +284,20 @@ exports.updatePriceRule = async (req, res) => {
             }
 
             case "DUO_ADDON": {
+                if (config.perWinPrices) {
+                    nextConfig.perWinPrices = validatePriceMap(
+                        config.perWinPrices,
+                        "Pro Duo source prices"
+                    );
+                }
+
                 if (config.multiplier !== undefined) {
-                    const multiplier = Number(config.multiplier);
-
-                    if (
-                        !Number.isFinite(multiplier) ||
-                        multiplier <= 0 ||
-                        multiplier > 5
-                    ) {
-                        return res.status(400).json({
-                            ok: false,
-                            message:
-                                "Pro Duo multiplier must be greater than 0 and no more than 5.",
-                        });
-                    }
-
-                    nextConfig.multiplier = multiplier;
+                    nextConfig.multiplier = validateNumber(
+                        config.multiplier,
+                        "Pro Duo multiplier",
+                        0.01,
+                        5
+                    );
                 }
 
                 break;
@@ -274,6 +308,112 @@ exports.updatePriceRule = async (req, res) => {
                     ok: false,
                     message: "Unsupported pricing type.",
                 });
+        }
+
+        if (
+            config.modifiers &&
+            typeof config.modifiers === "object" &&
+            !Array.isArray(config.modifiers)
+        ) {
+            nextConfig.modifiers = {
+                ...(nextConfig.modifiers || {}),
+            };
+
+            if (config.modifiers.currentLpProgress) {
+                nextConfig.modifiers.currentLpProgress = validatePriceMap(
+                    config.modifiers.currentLpProgress,
+                    "Current LP modifiers",
+                    0,
+                    5
+                );
+            }
+
+            if (config.modifiers.lpGain) {
+                nextConfig.modifiers.lpGain = validatePriceMap(
+                    config.modifiers.lpGain,
+                    "LP gain modifiers",
+                    0,
+                    5
+                );
+            }
+        }
+
+        if (
+            config.addons &&
+            typeof config.addons === "object" &&
+            !Array.isArray(config.addons)
+        ) {
+            const currentAddons = nextConfig.addons || {};
+            const incomingAddons = config.addons;
+
+            const nextAddons = {
+                ...currentAddons,
+            };
+
+            if (incomingAddons.duoModeMultiplier !== undefined) {
+                nextAddons.duoModeMultiplier = validateNumber(
+                    incomingAddons.duoModeMultiplier,
+                    "Duo mode multiplier",
+                    0,
+                    5
+                );
+            }
+
+            const percentageKeys = [
+                "duoExtraPercent",
+                "expressPercent",
+                "premiumCoachingPercent",
+                "soloOnlyPercent",
+                "highMmrDuoPercent",
+                "untrackableDuoPercent",
+            ];
+
+            for (const key of percentageKeys) {
+                if (incomingAddons[key] === undefined) continue;
+
+                nextAddons[key] = validateNumber(
+                    incomingAddons[key],
+                    key,
+                    0,
+                    5
+                );
+            }
+
+            if (
+                incomingAddons.championPreference &&
+                typeof incomingAddons.championPreference === "object" &&
+                !Array.isArray(incomingAddons.championPreference)
+            ) {
+                nextAddons.championPreference = validatePriceMap(
+                    incomingAddons.championPreference,
+                    "Champion preference",
+                    0,
+                    5
+                );
+            }
+
+            if (
+                incomingAddons.bonusWin &&
+                typeof incomingAddons.bonusWin === "object" &&
+                !Array.isArray(incomingAddons.bonusWin)
+            ) {
+                nextAddons.bonusWin = {
+                    ...(currentAddons.bonusWin || {}),
+                };
+
+                if (
+                    incomingAddons.bonusWin.duoMultiplier !== undefined
+                ) {
+                    nextAddons.bonusWin.duoMultiplier = validateNumber(
+                        incomingAddons.bonusWin.duoMultiplier,
+                        "Bonus Win Duo multiplier",
+                        0,
+                        5
+                    );
+                }
+            }
+
+            nextConfig.addons = nextAddons;
         }
 
         const updatedRule = await prisma.servicePriceRule.update({

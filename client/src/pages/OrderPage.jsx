@@ -95,6 +95,9 @@ function OrderPage() {
   const [availableGold, setAvailableGold] = useState(0);
   const [goldToUse, setGoldToUse] = useState(0);
 
+  const [serverQuote, setServerQuote] = useState(null);
+  const [priceQuoteRefreshKey, setPriceQuoteRefreshKey] = useState(0);
+
   useEffect(() => {
     const loadGold = async () => {
       const token = localStorage.getItem("token");
@@ -226,6 +229,102 @@ function OrderPage() {
   }, [normalizedServiceType]);
 
   useEffect(() => {
+    setServerQuote(null);
+  }, [serviceType]);
+
+  useEffect(() => {
+    if (!serviceType) return;
+
+    const controller = new AbortController();
+
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/pricing/quote`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            boostType: serviceType,
+            currentRank: formData.currentRank,
+            desiredRank: formData.desiredRank,
+            currentLP: formData.currentLP,
+            currentMasterLp: formData.currentMasterLp,
+            desiredMasterLp: formData.desiredMasterLp,
+            lpGain: formData.lpGain,
+            peakRank: formData.peakRank,
+            desiredWins: formData.desiredWins,
+            placementGames: formData.placementGames,
+            numberOfGames: formData.numberOfGames,
+            playMode: formData.playMode,
+            priorityOrder: formData.priorityOrder,
+            premiumCoaching: formData.premiumCoaching,
+            liveStream: formData.liveStream,
+            appearOffline: formData.appearOffline,
+            untrackableDuo: formData.untrackableDuo,
+            bonusWin: formData.bonusWin,
+            soloOnly: formData.soloOnly,
+            highMMRDuo: formData.highMMRDuo,
+            championPreferenceTier: formData.championPreferenceTier,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.message || "Failed to load current price.");
+        }
+
+        setServerQuote(data.quote || null);
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        console.error("Failed to load live price:", error);
+      }
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    serviceType,
+    formData.currentRank,
+    formData.desiredRank,
+    formData.currentLP,
+    formData.currentMasterLp,
+    formData.desiredMasterLp,
+    formData.lpGain,
+    formData.peakRank,
+    formData.desiredWins,
+    formData.placementGames,
+    formData.numberOfGames,
+    formData.playMode,
+    formData.priorityOrder,
+    formData.premiumCoaching,
+    formData.liveStream,
+    formData.appearOffline,
+    formData.untrackableDuo,
+    formData.bonusWin,
+    formData.soloOnly,
+    formData.highMMRDuo,
+    formData.championPreferenceTier,
+    priceQuoteRefreshKey,
+  ]);
+
+  useEffect(() => {
+    const refreshLivePrice = () => {
+      setPriceQuoteRefreshKey((current) => current + 1);
+    };
+
+    window.addEventListener("focus", refreshLivePrice);
+
+    return () => {
+      window.removeEventListener("focus", refreshLivePrice);
+    };
+  }, []);
+
+  useEffect(() => {
     const loadChampions = async () => {
       try {
         const versionResponse = await fetch("https://ddragon.leagueoflegends.com/api/versions.json");
@@ -279,7 +378,7 @@ function OrderPage() {
     formData.desiredMasterLp,
   ]);
 
-  const basePrice = useMemo(() => {
+  const fallbackBasePrice = useMemo(() => {
     if (normalizedServiceType === "Rank Boost") {
       if (isTftService) {
         return calculateTftRankBoostPrice(
@@ -354,49 +453,49 @@ function OrderPage() {
     formData.numberOfGames,
   ]);
 
-  const modeAdjustedBasePrice = useMemo(() => {
+  const fallbackModeAdjustedBasePrice = useMemo(() => {
     // Pro Duo already priced as duo; do not apply duo multiplier
     if (normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo") {
-      return basePrice * 1.4;
+      return fallbackBasePrice * 1.4;
     }
 
-    return basePrice;
-  }, [basePrice, formData.playMode, normalizedServiceType]);
+    return fallbackBasePrice;
+  }, [fallbackBasePrice, formData.playMode, normalizedServiceType]);
 
-  const addonPrice = useMemo(() => {
+  const fallbackAddonPrice = useMemo(() => {
     let total = 0;
 
     // Skip base duo surcharge for Pro Duo (already factored into base price)
-    const duoExtra = normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo" ? basePrice * 0.4 : 0;
+    const duoExtra = normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo" ? fallbackBasePrice * 0.4 : 0;
 
-    if (formData.priorityOrder) total += modeAdjustedBasePrice * 0.15;
+    if (formData.priorityOrder) total += fallbackModeAdjustedBasePrice * 0.15;
 
     if (formData.playMode === "Duo" && formData.premiumCoaching) {
-      total += modeAdjustedBasePrice * 0.4;
+      total += fallbackModeAdjustedBasePrice * 0.4;
     }
 
     if (formData.playMode === "Solo" && formData.soloOnly) {
-      total += modeAdjustedBasePrice * 0.3;
+      total += fallbackModeAdjustedBasePrice * 0.3;
     }
 
     if (formData.playMode === "Duo" && formData.highMMRDuo) {
-      total += modeAdjustedBasePrice * 0.2;
+      total += fallbackModeAdjustedBasePrice * 0.2;
     }
 
     if (formData.playMode === "Duo" && formData.untrackableDuo) {
-      total += modeAdjustedBasePrice * 0.3;
+      total += fallbackModeAdjustedBasePrice * 0.3;
     }
 
     if (formData.bonusWin) {
       total += getBonusWinPriceByRank(formData.currentRank, formData.playMode);
     }
 
-    total += getChampionPreferencePrice(modeAdjustedBasePrice, formData.championPreferenceTier);
+    total += getChampionPreferencePrice(fallbackModeAdjustedBasePrice, formData.championPreferenceTier);
 
     return duoExtra + total;
   }, [
-    basePrice,
-    modeAdjustedBasePrice,
+    fallbackBasePrice,
+    fallbackModeAdjustedBasePrice,
     formData.playMode,
     formData.priorityOrder,
     formData.premiumCoaching,
@@ -409,9 +508,19 @@ function OrderPage() {
     normalizedServiceType,
   ]);
 
-  const totalPrice = (basePrice + addonPrice).toFixed(2);
+  const basePrice = serverQuote
+    ? Number(serverQuote.basePrice || 0)
+    : fallbackBasePrice;
 
-  const totalPriceNumber = Number(totalPrice || 0);
+  const addonPrice = serverQuote
+    ? Number(serverQuote.addonPrice || 0)
+    : fallbackAddonPrice;
+
+  const totalPriceNumber = serverQuote
+    ? Number(serverQuote.totalPrice || 0)
+    : basePrice + addonPrice;
+
+  const totalPrice = totalPriceNumber.toFixed(2);
   const totalPriceCents = Math.round(totalPriceNumber * 100);
 
   // 1 gold = $0.10 = 10 cents
