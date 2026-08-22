@@ -166,6 +166,7 @@ function Navbar({
                 setLocalHasSession(true);
                 setLocalCurrentUser(updatedUser);
                 expiryTimerId = scheduleSessionExpiryCheck();
+                syncNavbarSession();
                 return;
             }
 
