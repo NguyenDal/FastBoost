@@ -884,6 +884,10 @@ export default function PriceManagementPage() {
 
     const [saleSaving, setSaleSaving] = useState(false);
     const [saleError, setSaleError] = useState("");
+    const [saleConfirmOpen, setSaleConfirmOpen] = useState(false);
+    const [saleConfirmType, setSaleConfirmType] = useState(null);
+    const [pendingSaleAction, setPendingSaleAction] = useState(null);
+    const [saleConfirmationChecked, setSaleConfirmationChecked] = useState(false);
 
     const [saleClock, setSaleClock] = useState(
         Date.now()
@@ -1191,9 +1195,8 @@ export default function PriceManagementPage() {
         setSaleError("");
     };
 
-    const saveSale = async () => {
+    const requestCreateSale = () => {
         try {
-            setSaleSaving(true);
             setSaleError("");
 
             const discount = Number(saleForm.discountPercent);
@@ -1214,6 +1217,51 @@ export default function PriceManagementPage() {
                 throw new Error("No service was selected.");
             }
 
+            const pending = {
+                type: "CREATE",
+                scope: saleScope,
+                serviceId:
+                    saleScope === "SERVICE"
+                        ? selectedService.serviceId
+                        : null,
+                serviceName:
+                    saleScope === "SERVICE"
+                        ? selectedService?.service?.title || "Service"
+                        : "All FastBoost Services",
+                title:
+                    saleForm.title.trim() ||
+                    (saleScope === "GLOBAL"
+                        ? `${discount}% off all services`
+                        : `${discount}% off ${selectedService?.service?.title || "Service"}`),
+                discountPercent: discount,
+                appliesTo: saleForm.appliesTo,
+                startsAt: saleForm.startsAt || null,
+                endsAt: saleForm.endsAt || null,
+            };
+
+            setPendingSaleAction(pending);
+            setSaleConfirmType("CREATE");
+            setSaleConfirmationChecked(false);
+            setSaleModalOpen(false);
+            setSaleConfirmOpen(true);
+        } catch (error) {
+            setSaleError(error.message || "Failed to create sale.");
+        }
+    };
+
+    const confirmCreateSale = async () => {
+        if (
+            !pendingSaleAction ||
+            pendingSaleAction.type !== "CREATE" ||
+            !saleConfirmationChecked
+        ) {
+            return;
+        }
+
+        try {
+            setSaleSaving(true);
+            setSaleError("");
+
             const token = localStorage.getItem("token");
             const response = await fetch(
                 `${API_BASE_URL}/admin/prices/sales`,
@@ -1224,19 +1272,16 @@ export default function PriceManagementPage() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        scope: saleScope,
-                        serviceId:
-                            saleScope === "SERVICE"
-                                ? selectedService.serviceId
-                                : null,
-                        title: saleForm.title.trim() || undefined,
-                        discountPercent: discount,
-                        appliesTo: saleForm.appliesTo,
-                        startsAt: saleForm.startsAt
-                            ? new Date(saleForm.startsAt).toISOString()
+                        scope: pendingSaleAction.scope,
+                        serviceId: pendingSaleAction.serviceId,
+                        title: pendingSaleAction.title,
+                        discountPercent: pendingSaleAction.discountPercent,
+                        appliesTo: pendingSaleAction.appliesTo,
+                        startsAt: pendingSaleAction.startsAt
+                            ? new Date(pendingSaleAction.startsAt).toISOString()
                             : null,
-                        endsAt: saleForm.endsAt
-                            ? new Date(saleForm.endsAt).toISOString()
+                        endsAt: pendingSaleAction.endsAt
+                            ? new Date(pendingSaleAction.endsAt).toISOString()
                             : null,
                     }),
                 }
@@ -1249,7 +1294,13 @@ export default function PriceManagementPage() {
             }
 
             await loadPricingRules();
-            closeSaleModal();
+            setSaleConfirmOpen(false);
+            setPendingSaleAction(null);
+            setSaleConfirmType(null);
+            setSaleConfirmationChecked(false);
+            setSelectedService(null);
+            setSaleScope("SERVICE");
+            setSaleForm({ ...EMPTY_SALE_FORM });
         } catch (error) {
             setSaleError(error.message || "Failed to create sale.");
         } finally {
@@ -1257,15 +1308,44 @@ export default function PriceManagementPage() {
         }
     };
 
-    const endGlobalSale = async () => {
-        if (!globalSale?.id) return;
+    const requestEndSale = ({ sale, scope, serviceName }) => {
+        if (!sale?.id) return;
+
+        setSaleError("");
+        setPendingSaleAction({
+            type: "END",
+            saleId: sale.id,
+            scope,
+            serviceName:
+                serviceName ||
+                (scope === "GLOBAL" ? "All FastBoost Services" : "Service"),
+            title: sale.title || `${Number(sale.discountPercent).toFixed(0)}% OFF`,
+            discountPercent: Number(sale.discountPercent),
+            appliesTo: sale.appliesTo,
+            startsAt: sale.startsAt || null,
+            endsAt: sale.endsAt || null,
+        });
+        setSaleConfirmType("END");
+        setSaleConfirmationChecked(false);
+        setSaleConfirmOpen(true);
+    };
+
+    const confirmEndSale = async () => {
+        if (
+            !pendingSaleAction ||
+            pendingSaleAction.type !== "END" ||
+            !saleConfirmationChecked
+        ) {
+            return;
+        }
 
         try {
+            setSaleSaving(true);
             setSaleError("");
 
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `${API_BASE_URL}/admin/prices/sales/${globalSale.id}/disable`,
+                `${API_BASE_URL}/admin/prices/sales/${pendingSaleAction.saleId}/disable`,
                 {
                     method: "PATCH",
                     headers: {
@@ -1273,17 +1353,42 @@ export default function PriceManagementPage() {
                     },
                 }
             );
-
             const data = await response.json();
 
             if (!response.ok || data.ok === false) {
-                throw new Error(data.message || "Failed to end global sale.");
+                throw new Error(data.message || "Failed to end sale.");
             }
 
             await loadPricingRules();
+            setSaleConfirmOpen(false);
+            setPendingSaleAction(null);
+            setSaleConfirmType(null);
+            setSaleConfirmationChecked(false);
         } catch (error) {
-            setSaleError(error.message || "Failed to end global sale.");
+            setSaleError(error.message || "Failed to end sale.");
+        } finally {
+            setSaleSaving(false);
         }
+    };
+
+    const closeSaleConfirmation = () => {
+        if (saleSaving) return;
+
+        setSaleConfirmOpen(false);
+        setSaleConfirmType(null);
+        setPendingSaleAction(null);
+        setSaleConfirmationChecked(false);
+        setSaleError("");
+    };
+
+    const backToSaleSetup = () => {
+        if (saleSaving) return;
+
+        setSaleConfirmOpen(false);
+        setPendingSaleAction(null);
+        setSaleConfirmType(null);
+        setSaleConfirmationChecked(false);
+        setSaleModalOpen(true);
     };
 
     const globalSaleStatus = getSaleDisplayStatus(globalSale, saleClock);
@@ -1603,6 +1708,24 @@ export default function PriceManagementPage() {
                                                             Sale Settings
                                                         </button>
 
+                                                        {item.sale && (
+                                                            <button
+                                                                type="button"
+                                                                className="price-row-btn price-end-sale-row-btn"
+                                                                onClick={() =>
+                                                                    requestEndSale({
+                                                                        sale: item.sale,
+                                                                        scope: "SERVICE",
+                                                                        serviceName:
+                                                                            item.service?.title ||
+                                                                            "Service",
+                                                                    })
+                                                                }
+                                                            >
+                                                                End Sale
+                                                            </button>
+                                                        )}
+
                                                         <div className="price-rule-edit-actions">
                                                             {editingRuleId === item.id ? (
                                                                 <>
@@ -1765,7 +1888,13 @@ export default function PriceManagementPage() {
                                     <button
                                         type="button"
                                         className="price-secondary-btn price-full-btn price-end-sale-btn"
-                                        onClick={endGlobalSale}
+                                        onClick={() =>
+                                            requestEndSale({
+                                                sale: globalSale,
+                                                scope: "GLOBAL",
+                                                serviceName: "All FastBoost Services",
+                                            })
+                                        }
                                     >
                                         End Global Sale
                                     </button>
@@ -1893,6 +2022,182 @@ export default function PriceManagementPage() {
                                     ? "Applying Changes..."
                                     : `Apply ${selectedPriceChangeIds.size} Selected Change${selectedPriceChangeIds.size === 1 ? "" : "s"
                                     }`}
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            )}
+
+            {saleConfirmOpen && pendingSaleAction && (
+                <div
+                    className="price-modal-backdrop"
+                    onClick={
+                        saleConfirmType === "CREATE"
+                            ? backToSaleSetup
+                            : closeSaleConfirmation
+                    }
+                >
+                    <section
+                        className="price-modal price-change-confirm-modal"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="price-modal-header">
+                            <div>
+                                <p className="admin-eyebrow">
+                                    {saleConfirmType === "CREATE"
+                                        ? "Confirm Sale Creation"
+                                        : "Confirm Sale Cancellation"}
+                                </p>
+                                <h2>
+                                    {saleConfirmType === "CREATE"
+                                        ? "Review Sale Before Activation"
+                                        : "Review Sale Before Ending"}
+                                </h2>
+                                <p>
+                                    {saleConfirmType === "CREATE"
+                                        ? "Review every setting below. Nothing will be changed until you explicitly confirm."
+                                        : "Ending this sale will remove its discount from future price calculations."}
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="price-modal-close"
+                                onClick={
+                                    saleConfirmType === "CREATE"
+                                        ? backToSaleSetup
+                                        : closeSaleConfirmation
+                                }
+                                disabled={saleSaving}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div
+                            className={`price-sale-critical-banner ${saleConfirmType === "END" ? "danger" : ""}`}
+                        >
+                            <span>
+                                {saleConfirmType === "CREATE"
+                                    ? "SALE WILL BE CREATED"
+                                    : "SALE WILL BE ENDED"}
+                            </span>
+                            <strong>{pendingSaleAction.title}</strong>
+                        </div>
+
+                        <div className="price-sale-confirm-list">
+                            <div className="price-sale-confirm-row">
+                                <span>Action</span>
+                                <strong>
+                                    {saleConfirmType === "CREATE"
+                                        ? "Create sale"
+                                        : "End existing sale"}
+                                </strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Scope</span>
+                                <strong>
+                                    {pendingSaleAction.scope === "GLOBAL"
+                                        ? "Global - All Services"
+                                        : `Service - ${pendingSaleAction.serviceName}`}
+                                </strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Sale Title</span>
+                                <strong>{pendingSaleAction.title}</strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Discount</span>
+                                <strong>
+                                    {Number(pendingSaleAction.discountPercent).toFixed(0)}% OFF
+                                </strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Discount Applies To</span>
+                                <strong>
+                                    {String(pendingSaleAction.appliesTo).toUpperCase() === "TOTAL"
+                                        ? "Whole order total"
+                                        : "Base price only"}
+                                </strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Starts</span>
+                                <strong>
+                                    {pendingSaleAction.startsAt
+                                        ? new Date(pendingSaleAction.startsAt).toLocaleString()
+                                        : "Immediately"}
+                                </strong>
+                            </div>
+                            <div className="price-sale-confirm-row">
+                                <span>Ends</span>
+                                <strong>
+                                    {pendingSaleAction.endsAt
+                                        ? new Date(pendingSaleAction.endsAt).toLocaleString()
+                                        : "No expiration"}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <label
+                            className={`price-sale-critical-check ${saleConfirmationChecked ? "checked" : ""}`}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={saleConfirmationChecked}
+                                onChange={(event) =>
+                                    setSaleConfirmationChecked(event.target.checked)
+                                }
+                                disabled={saleSaving}
+                            />
+                            <div>
+                                <strong>I have reviewed these changes</strong>
+                                <span>
+                                    {saleConfirmType === "CREATE"
+                                        ? "I confirm that this sale should be created with exactly the settings shown above."
+                                        : "I understand that this sale will stop applying to future orders."}
+                                </span>
+                            </div>
+                        </label>
+
+                        {saleError && (
+                            <div className="price-save-error price-confirm-error">
+                                {saleError}
+                            </div>
+                        )}
+
+                        <div className="price-modal-actions">
+                            <button
+                                type="button"
+                                className="price-secondary-btn"
+                                onClick={
+                                    saleConfirmType === "CREATE"
+                                        ? backToSaleSetup
+                                        : closeSaleConfirmation
+                                }
+                                disabled={saleSaving}
+                            >
+                                {saleConfirmType === "CREATE"
+                                    ? "Back to Sale Setup"
+                                    : "Keep Sale Active"}
+                            </button>
+
+                            <button
+                                type="button"
+                                className={saleConfirmType === "END" ? "price-danger-btn" : "price-primary-btn"}
+                                onClick={
+                                    saleConfirmType === "CREATE"
+                                        ? confirmCreateSale
+                                        : confirmEndSale
+                                }
+                                disabled={saleSaving || !saleConfirmationChecked}
+                            >
+                                {saleSaving
+                                    ? saleConfirmType === "CREATE"
+                                        ? "Creating Sale..."
+                                        : "Ending Sale..."
+                                    : saleConfirmType === "CREATE"
+                                        ? "Confirm & Create Sale"
+                                        : "Confirm & End Sale"}
                             </button>
                         </div>
                     </section>
@@ -2059,7 +2364,7 @@ export default function PriceManagementPage() {
                             <button
                                 type="button"
                                 className="price-primary-btn"
-                                onClick={saveSale}
+                                onClick={requestCreateSale}
                                 disabled={saleSaving}
                             >
                                 {saleSaving

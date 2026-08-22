@@ -8,6 +8,95 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+
+### Latest session update — Global/service sales, critical sale confirmation safety, and Render schema deployment
+
+#### Global and service-specific sale architecture
+- `ServiceSale` now supports two scopes through a Prisma enum:
+  - `SERVICE`
+  - `GLOBAL`
+- `ServiceSale.serviceId` is nullable:
+  - service sale → `scope = SERVICE`, `serviceId = <service id>`
+  - global sale → `scope = GLOBAL`, `serviceId = null`
+- New Prisma migration:
+  - `server/prisma/migrations/20260822205028_add_global_sale_scope/migration.sql`
+- The migration:
+  - creates the `SaleScope` enum
+  - adds `ServiceSale.scope` with default `SERVICE`
+  - makes `ServiceSale.serviceId` nullable
+  - adds an index on `ServiceSale.scope`
+- Existing sale rows remain service sales because the new scope defaults to `SERVICE`.
+
+#### Backend sale behavior
+- `server/src/controllers/priceController.js` now supports creating both `SERVICE` and `GLOBAL` sales.
+- `GET /api/admin/prices` returns the current global sale separately as `globalSale` while continuing to attach service-specific sale data to each pricing rule.
+- Expired sales are excluded from current active/scheduled sale displays.
+- Only one current active/scheduled global sale should exist at a time.
+- `server/src/controllers/pricingController.js` and `server/src/controllers/orderController.js` use the same sale precedence:
+  1. active service-specific sale
+  2. otherwise active global sale
+  3. otherwise no sale
+- Sales do **not** stack. A service-specific sale overrides the global sale for that service.
+- The same sale selection logic must remain in both the customer quote path and authoritative order creation path so displayed price and checkout price cannot diverge.
+
+#### Price Management sale UI
+- `client/src/pages/PriceManagementPage.jsx` now separates:
+  - **Create Global Sale** — creates a campaign for all FastBoost services
+  - **Sale Control** — displays the current global campaign, status, discount, target, expiration, and countdown
+  - each service card's **Sale Settings** — creates a sale for that service only
+- Global sale creation is disabled while another active/scheduled global sale exists.
+- The sale form supports:
+  - title
+  - discount percentage
+  - base-price-only or whole-order-total discount target
+  - optional start time
+  - optional end time
+- `PriceManagement.css` contains dedicated global sale cards, status pills, countdown, sale metadata, and sale-scope preview styles.
+
+#### Critical sale confirmation requirement — next safety step
+Creating or ending a sale is considered a critical admin action and must use the same review-first philosophy as price editing.
+
+Required behavior before calling sale management complete:
+```text
+Configure / choose sale action
+        ↓
+Review confirmation modal
+        ↓
+Show exact scope, title, discount, target, start, and end
+        ↓
+Admin checks explicit confirmation checkbox
+        ↓
+Confirm create / confirm end
+        ↓
+Only then call the backend mutation
+```
+
+- The current uploaded frontend still performs the sale mutation directly from `saveSale()` and performs global cancellation directly from `endGlobalSale()`.
+- Next implementation should split these into request-confirmation and confirmed-mutation functions.
+- Service-specific sale cancellation should use the same confirmation flow as global sale cancellation.
+- Do not use a browser `confirm()` dialog; keep the existing FastBoost full-screen modal design.
+
+#### Render production schema deployment rule
+"Push the DB to Render" means **commit a forward Prisma migration and push the code to `main`**. Do not use `prisma db push` against the production database.
+
+For the current sale-scope change:
+```text
+0_init                                      already applied
+20260822205028_add_global_sale_scope        new forward migration
+```
+
+Render backend startup remains:
+```bash
+npx prisma migrate deploy && npm start
+```
+
+When the migration and schema are committed and pushed to `main`, Render automatically runs `prisma migrate deploy` against its production `DATABASE_URL`.
+
+See **Database / Prisma → Deploy schema changes to Render production** below for the full procedure.
+
+---
+
+
 ### Latest session update — Homepage performance, server-authoritative pricing, Prisma baseline recovery, and Price Management editing
 
 #### Homepage service-card loading optimization
@@ -62,6 +151,8 @@ server/prisma/
   migrations/
     migration_lock.toml
     0_init/
+      migration.sql
+    20260822205028_add_global_sale_scope/
       migration.sql
 
   legacy_migrations_backup/
@@ -122,22 +213,19 @@ npx prisma migrate deploy && npm start
   - Pro Duo source pricing/multiplier
 - Game filters, status filters, search, and expand/collapse behavior are present.
 
-#### Price editing is NOT finished yet
-The current `main` branch still has a read-only Price Management implementation:
-- `PriceManagementPage.jsx` displays detailed prices but its `DetailTable` renders values as text.
-- `server/src/controllers/priceController.js` currently has:
-  - `listPriceRules`
-  - `createSale`
-  - `disableSale`
-- `server/src/routes/priceRoutes.js` currently has:
+#### Price editing is implemented
+- `PriceManagementPage.jsx` supports editing detailed pricing values directly from the expanded pricing boards.
+- `server/src/controllers/priceController.js` includes validated `updatePriceRule`.
+- `server/src/routes/priceRoutes.js` exposes:
   - `GET /api/admin/prices`
   - `POST /api/admin/prices/sales`
   - `PATCH /api/admin/prices/sales/:id/disable`
-- The rule update endpoint is still missing from `main`:
-```text
-PATCH /api/admin/prices/rules/:id
-```
-- A newer `PriceManagement.css` with edit-input, save/cancel, disabled, error, success, and responsive edit-control styles was prepared during this session, but verify it is committed before assuming production has it.
+  - `PATCH /api/admin/prices/rules/:id`
+- Price edits use a dedicated confirmation modal before saving.
+- The modal lists each detected change and requires the admin to check the exact changes to apply.
+- A **Check All** option is available.
+- Unchecked changes are discarded and keep their existing production values.
+- Price Management changes update `ServicePriceRule.config`; the order pricing backend remains authoritative.
 
 #### Important Pro Duo single-source issue
 - The desired direction is for Pro Duo to follow LoL Win Boost pricing automatically.
@@ -151,16 +239,15 @@ PATCH /api/admin/prices/rules/:id
   - keep Pro Duo's displayed source prices read-only in Admin Price Management
   - edit the source Win Boost prices only once
 
-#### Customer OrderPage still needs live-price preview conversion
-- The backend is now server-authoritative, but `client/src/pages/OrderPage.jsx` still contains hardcoded pricing tables/functions.
-- Until it is converted, the customer-visible preview can disagree with the server-calculated amount after an admin price change.
-- Next pricing architecture target:
+#### Customer OrderPage live-price direction
+- A public/current pricing quote path is used so customer-visible pricing can come from the same `ServicePriceRule` data managed by Admin Price Management.
+- The intended production architecture is:
 ```text
 Admin Price Management
         ↓
 ServicePriceRule.config in PostgreSQL
         ↓
-public/current pricing endpoint
+POST /api/pricing/quote
         ↓
 OrderPage live preview
         ↓
@@ -172,11 +259,13 @@ saved Order amount
         ↓
 Stripe
 ```
-- Do not remove the hardcoded OrderPage pricing until the live pricing endpoint and frontend conversion are working.
+- Backend order creation remains the final authority even when the customer preview is live.
+- Remaining cleanup/performance work should remove obsolete hardcoded fallback pricing only after the live quote path is verified across every service.
+- OrderPage startup should reuse stable service metadata/cache where possible, while pricing quotes, order state, and payment state remain fresh.
 
 ---
 
-### Latest session update — Production pricing, admin bootstrap, and auth-role verification
+### Previous session update — Production pricing, admin bootstrap, and auth-role verification
 
 #### Production pricing update
 - Real service price rules are maintained through:
@@ -236,160 +325,7 @@ Stripe
 
 ---
 
-### Previous session update — Production deployment completed and pricing handoff
 
-#### Live production infrastructure
-- Frontend deployed as a Render Static Site:
-  - `https://fastboost.onrender.com`
-  - custom domain connected: `https://www.fastboost.gg`
-- Backend deployed as a Render Web Service:
-  - `https://fastboost-api.onrender.com`
-  - health endpoint confirmed: `GET /api/health` returns `{ "ok": true, "message": "Server is healthy" }`
-- PostgreSQL deployed on Render as `fastboost-db` in **Ohio (US East)**.
-- Frontend, backend, and database are grouped under the Render Production environment.
-- Render frontend uses the `main` branch and `client` as its root directory.
-- Render backend uses the `main` branch and `server` as its root directory.
-
-#### Render deployment configuration
-Backend Web Service:
-
-```text
-Name: fastboost-api
-Region: Ohio (US East)
-Root Directory: server
-Build Command: npm install && npx prisma generate
-Start Command: npx prisma migrate deploy && npm start
-```
-
-Frontend Static Site:
-
-```text
-Name: fastboost-web
-Root Directory: client
-Build Command: npm install && npm run build
-Publish Directory: dist
-```
-
-Frontend environment variables:
-
-```env
-VITE_API_BASE_URL=https://fastboost-api.onrender.com/api
-VITE_SOCKET_BASE_URL=https://fastboost-api.onrender.com
-```
-
-Backend production variables are stored in Render Environment settings and must not be committed. These include `DATABASE_URL`, `JWT_SECRET`, Stripe, SMTP, AWS S3, and AWS KMS values.
-
-#### Production database and Prisma migration fix
-- Initial Render deployment failed because the backend was accidentally using the old Prisma-hosted `DATABASE_URL`.
-- `DATABASE_URL` was corrected to the Render database Internal Database URL.
-- Migration drift existed because the development database already contained the full schema while the migration directory did not.
-- A schema synchronization migration was generated and committed:
-  - `server/prisma/migrations/20260715_sync_current_schema/migration.sql`
-- The migration was first committed on `loyaltyPage`, then merged into `main` because Render deploys `main`.
-- Render successfully applied all four migrations:
-
-```text
-Applying migration `20260715_sync_current_schema`
-All migrations have been successfully applied.
-```
-
-- The earlier Prisma `P2022` missing-column cleanup error disappeared after this migration.
-
-#### Production service seed
-- Migrations created the schema but did not create the required `Service` rows.
-- An idempotent SQL seed was added:
-  - `server/prisma/seedServices.sql`
-- It creates these seven service categories without duplicating existing records:
-  - Rank Boost
-  - Placement Boost
-  - Win Boost
-  - Pro Duo
-  - TFT Rank Boost
-  - TFT Win Boost
-  - TFT Placement Boost
-- Keep `seedServices.sql` in the repository. Do not add it to the Render start command; run it manually only when initializing an empty database.
-- Existing pricing seed file:
-  - `server/prisma/seedPriceRules.js`
-- Service records must exist before price-rule seeding because `ServicePriceRule.serviceId` is required.
-
-#### Domain and DNS
-- Primary public website: `https://www.fastboost.gg`
-- GoDaddy DNS direction used:
-
-```text
-A       @       216.24.57.1
-CNAME   www     fastboost.onrender.com
-```
-
-- Existing NS, MX, TXT, DKIM, and DMARC records were intentionally preserved.
-- Render handles HTTPS after domain verification.
-
-#### Frontend production fixes
-- Production originally attempted requests to `http://localhost:5000`.
-- All frontend API and Socket.IO calls should use the shared Vite environment configuration:
-  - `VITE_API_BASE_URL`
-  - `VITE_SOCKET_BASE_URL`
-- Search the frontend for any remaining `localhost:5000` before future releases.
-- AWS S3 CORS must allow the production origins so assets used through `CleanIcon` or browser fetch/canvas processing can load:
-  - `https://fastboost.gg`
-  - `https://www.fastboost.gg`
-  - `https://fastboost.onrender.com`
-  - `http://localhost:5173`
-
-#### Small UI cleanup completed/directed
-- Homepage should not show the old `133 boosters` count because launch begins with only two boosters.
-- Contact page is now webform-only; the Send Email/Open Chat selection and unavailable chat option were removed.
-- Admin Management Utilities now keeps only:
-  - Order Management
-  - Account Management
-  - Price Management
-
-#### Important free-tier warning
-- The free Render PostgreSQL database displayed an expiration date of **August 14, 2026**.
-- Upgrade before storing real long-term customer/order data, or the database can be deleted when the free instance expires.
-
-#### Next session focus — update all production prices
-The user has a new price list and wants to update pricing next.
-
-Start by reviewing:
-
-```text
-server/prisma/seedPriceRules.js
-server/prisma/schema.prisma
-client/src/pages/OrderPage.jsx
-client/src/api/*price*
-server/src/controllers/*price*
-server/src/routes/*price*
-```
-
-Pricing architecture currently includes:
-- `ServicePriceRule`
-  - `serviceId`
-  - `game`
-  - `pricingType`
-  - `basePrice`
-  - `config`
-  - `active`
-- `ServiceSale`
-  - service-level discount percentage
-  - start/end dates
-  - active flag
-- Admin Price Management route already exists at `/admin/prices`.
-
-Next-session workflow:
-1. Receive the user's complete new price list.
-2. Map each price to the exact service, rank/division, LP, win, placement, or duo configuration used by the current code.
-3. Inspect `seedPriceRules.js` and the backend price controller before editing values.
-4. Make the seed/update operation idempotent so production prices can be updated safely without duplicate rules.
-5. Apply the prices to the Render database using its External Database URL or a controlled admin/backend update path.
-6. Verify calculations on the production order pages before enabling live Stripe payments.
-7. Confirm sale percentage and sale-duration logic still applies to the final order total as intended.
-
-Do not guess missing price mappings. Ask for clarification whenever the new list does not directly match the current `pricingType` or `config` structure.
-
----
-
-### Latest session update — FastBoost Updates page build attempt and handoff
 
 #### Full `/updates` page direction
 - Added/directed a public `/updates` page for FastBoost news and platform announcements.
@@ -676,6 +612,7 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/health`
 - `GET /api/services`
 - `GET /api/services/:id`
+- `POST /api/pricing/quote` — public/current server-calculated price quote using active `ServicePriceRule` data and sale precedence
 - `GET /api/referrals/public/:referralCode` — public inviter preview for private invite registration
 
 ### Auth
@@ -719,10 +656,10 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `PATCH /api/admin/users/:userId/suspension` — admin-only suspend/restore account status update
 
 ### Admin price management
-- `GET /api/admin/prices` — admin-only detailed `ServicePriceRule` list with current sale metadata
-- `POST /api/admin/prices/sales` — create a service sale
-- `PATCH /api/admin/prices/sales/:id/disable` — disable an existing sale
-- `PATCH /api/admin/prices/rules/:id` — **planned / not yet on `main`**; will update validated pricing config from the admin website
+- `GET /api/admin/prices` — admin-only detailed `ServicePriceRule` list, service-sale metadata, and current `globalSale`
+- `POST /api/admin/prices/sales` — create a `SERVICE` or `GLOBAL` sale
+- `PATCH /api/admin/prices/sales/:id/disable` — disable/end an existing service or global sale
+- `PATCH /api/admin/prices/rules/:id` — update validated pricing config from the admin website
 
 ### Provider / booster orders
 - `GET /api/orders/provider/assigned` — provider assigned order list
@@ -884,19 +821,121 @@ npx prisma generate --schema=prisma/schema.prisma
 
 Note: For production/remote DBs with existing data, prefer planned migrations. Use `db push` only if you understand the implications and have backups.
 
+
+### Deploy schema changes to Render production
+
+Use this procedure whenever `server/prisma/schema.prisma` changes.
+
+#### 1. Create the migration against the development database
+From `server/`:
+
+```bash
+npx prisma migrate status
+```
+
+Confirm the datasource is the development/shared database and **not** the Render production host. If the shell was temporarily pointed at Render earlier, unset that override first.
+
+Then create and generate:
+
+```bash
+npx prisma migrate dev --name your_migration_name
+npx prisma generate
+```
+
+Verify a new folder exists:
+
+```bash
+ls -1 prisma/migrations
+```
+
+Inspect the generated SQL before deployment:
+
+```bash
+cat prisma/migrations/<new_migration>/migration.sql
+```
+
+#### 2. Commit the schema and migration together
+
+From the repository root:
+
+```bash
+git status
+git add server/prisma/schema.prisma
+git add server/prisma/migrations/<new_migration>
+git add <related backend/frontend files>
+git commit -m "Describe the schema feature"
+git push origin main
+```
+
+Do **not** push a schema change without its forward migration.
+
+#### 3. Let Render apply the production migration
+
+The backend Render service is configured with:
+
+```text
+Build Command: npm install && npx prisma generate
+Start Command: npx prisma migrate deploy && npm start
+```
+
+After the push to `main`, Render deploys the backend and runs:
+
+```bash
+npx prisma migrate deploy
+```
+
+against the production `DATABASE_URL`.
+
+The deployment log should show the new migration being applied, followed by the server starting normally.
+
+For the current global-sale schema update, the expected migration is:
+
+```text
+20260822205028_add_global_sale_scope
+```
+
+and its SQL creates `SaleScope`, adds `ServiceSale.scope`, and makes `ServiceSale.serviceId` nullable.
+
+#### 4. Verify production
+
+After Render finishes:
+- confirm the backend starts without Prisma errors
+- open Price Management
+- verify `GET /api/admin/prices` succeeds
+- test the new schema-dependent feature
+- confirm the OrderPage quote and real order creation agree on pricing
+
+If Render reports `P3009`, `P3018`, drift, or another migration error, **do not** immediately use `migrate resolve`, recreate the baseline, or run destructive recovery commands. Inspect the production state and migration SQL first.
+
+#### Schema migration vs data seed
+
+A migration changes database **structure**. It does not automatically populate price-rule data.
+
+If an empty/new Render database needs services or price rules:
+- services must exist first
+- `server/prisma/seedServices.sql` is the service initialization seed
+- `server/prisma/seedPriceRules.js` is the idempotent price-rule seed
+
+When manually running a seed against Render from a local terminal, use the Render **External Database URL** temporarily, include the required SSL mode, run the seed, verify the result, then unset the production `DATABASE_URL` override or close the terminal.
+
+Never commit the Render database URL or credentials.
+
+
+
 ### Current production migration baseline
-- Active migration history is now based on `prisma/migrations/0_init`.
-- The four previous migration folders were moved to `prisma/legacy_migrations_backup`.
-- Both the current schema and Render production database were verified after the baseline repair.
-- Render production currently reports:
-  - `Database schema is up to date!`
-  - `No pending migrations to apply.`
+- Active migration history starts from `prisma/migrations/0_init`.
+- The four previous migration folders remain under `prisma/legacy_migrations_backup` for historical reference.
+- The next forward migration is:
+  - `20260822205028_add_global_sale_scope`
 - Normal Render startup remains:
 ```bash
 npx prisma migrate deploy && npm start
 ```
+- Once the new migration is committed and pushed to `main`, Render should apply it automatically during backend startup.
 - Price changes inside `ServicePriceRule.config` are data updates and do not require schema migrations.
+- Schema changes **do** require a committed forward migration.
 - Do not run `prisma migrate reset` against production.
+- Do not use `prisma db push` as the normal production deployment path.
 
 ### View database
 ```bash
@@ -908,6 +947,12 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+- detailed Admin Price Management editing with per-change confirmation and Check All selection
+- server-authoritative price-rule updates through `PATCH /api/admin/prices/rules/:id`
+- global/service sale schema with `SaleScope` and nullable `ServiceSale.serviceId`
+- forward migration created at `20260822205028_add_global_sale_scope`
+- backend sale precedence standardized as service-specific sale → global sale → no sale
+- Price Management sidebar split into Create Global Sale and live Sale Control cards
 - production price-rule update verified locally before deployment
 - LoL Iron/Bronze Net Win base pricing confirmed at $3 per win
 - Placement pricing direction confirmed as 5-game full-set pricing with prorating for fewer games
@@ -1222,6 +1267,9 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
+- critical sale create/end confirmation modal: review exact sale settings, require explicit checkbox confirmation, then perform backend mutation
+- service-specific End Sale action using the same confirmation path as global sale cancellation
+- production deployment/verification of `20260822205028_add_global_sale_scope` on Render after pushing the migration with the feature
 - cleanup/refactor `client/src/styles/News.css` so the Updates page has one final layout source of truth instead of repeated overrides
 - final `/updates` page structure polish to match the provided demo mockup: compact left hero/list and right 2x2 detail template preview
 - final megaphone asset positioning and transparency polish after CSS cleanup
@@ -1247,26 +1295,25 @@ npx prisma studio
 
 ## Current immediate focus
 
-1. Finish real admin price editing:
-   - add validated `updatePriceRule` to `server/src/controllers/priceController.js`
-   - add `PATCH /api/admin/prices/rules/:id` to `server/src/routes/priceRoutes.js`
-   - wire `PriceManagementPage.jsx` edit state, numeric fields, Cancel, Save Prices, loading, and error/success states
-   - commit the newest `PriceManagement.css` edit-control styles
-2. Refactor Pro Duo so it uses the active LoL Win Boost rule as its price source instead of keeping a duplicated `perWinPrices` table.
-3. Add a safe public/current pricing endpoint for customer price previews.
-4. Convert `client/src/pages/OrderPage.jsx` away from hardcoded price tables and onto live `ServicePriceRule` data while keeping backend recalculation as the final authority.
-5. Test representative prices end-to-end:
-   - LoL Rank Boost
-   - LoL Placement Boost
-   - LoL Win Boost
-   - Pro Duo
-   - TFT Rank Boost
-   - TFT Placement Boost
-   - TFT Win Boost
-   - Duo/add-ons/champion preference/Bonus Win
-   - active sale behavior
-6. Production test: change one admin price (for example Win Boost Gold), confirm PostgreSQL changes, confirm OrderPage preview changes, confirm `POST /orders` stores the same server-calculated amount, and confirm Stripe charges that amount.
-7. Keep the now-repaired Prisma baseline intact and use committed forward migrations for future schema changes.
+1. Finish the critical sale confirmation flow in `PriceManagementPage.jsx`:
+   - clicking Create Sale must validate the form but **must not POST yet**
+   - show a full review modal with scope, title, discount, discount target, start, and end
+   - require an explicit confirmation checkbox
+   - only the final confirm button may call `POST /api/admin/prices/sales`
+   - clicking End Global Sale or End Service Sale must use the same review/checkbox pattern before `PATCH .../disable`
+2. Test sale precedence end-to-end:
+   - global sale applies to every service without its own sale
+   - service-specific sale overrides global for that service
+   - sales never stack
+   - customer quote and created order use the same result
+3. Commit and push the schema, migration, backend, and frontend together.
+4. Verify Render applies `20260822205028_add_global_sale_scope` through `npx prisma migrate deploy`.
+5. Continue OrderPage performance cleanup:
+   - reuse stable service metadata/cache
+   - lazy-load optional champion data
+   - keep pricing/order/payment data fresh
+   - remove obsolete hardcoded price fallbacks only after live quote behavior is verified.
+6. Refactor Pro Duo toward a single Win Boost price source so price data is not duplicated.
 
 ---
 

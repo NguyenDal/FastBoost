@@ -1351,3 +1351,153 @@
     }
 }
 
+/* =========================================
+   Sale critical confirmation
+   ========================================= */
+
+.price-sale-critical-banner {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 16px;
+    padding: 15px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    background: rgba(124, 58, 237, 0.1);
+}
+
+.price-sale-critical-banner span {
+    color: #c4b5fd;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.price-sale-critical-banner strong {
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.price-sale-critical-banner.danger {
+    border-color: rgba(239, 68, 68, 0.28);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.price-sale-critical-banner.danger span {
+    color: #fca5a5;
+}
+
+.price-sale-confirm-list {
+    display: grid;
+    overflow: hidden;
+    margin-bottom: 16px;
+    border-radius: 17px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    background: rgba(2, 6, 23, 0.38);
+}
+
+.price-sale-confirm-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 13px 15px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.price-sale-confirm-row:last-child {
+    border-bottom: 0;
+}
+
+.price-sale-confirm-row span {
+    color: #94a3b8;
+    font-size: 0.84rem;
+}
+
+.price-sale-confirm-row strong {
+    color: #ffffff;
+    font-size: 0.86rem;
+    text-align: right;
+}
+
+.price-sale-critical-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    background: rgba(2, 6, 23, 0.42);
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease;
+}
+
+.price-sale-critical-check.checked {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(124, 58, 237, 0.1);
+}
+
+.price-sale-critical-check input {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+    margin-top: 2px;
+    accent-color: #8b5cf6;
+    cursor: pointer;
+}
+
+.price-sale-critical-check div {
+    display: grid;
+    gap: 5px;
+}
+
+.price-sale-critical-check strong {
+    color: #ffffff;
+}
+
+.price-sale-critical-check span {
+    color: #94a3b8;
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.price-danger-btn {
+    padding: 12px 18px;
+    border: 1px solid rgba(239, 68, 68, 0.32);
+    border-radius: 14px;
+    background: rgba(220, 38, 38, 0.16);
+    color: #fecaca;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.price-danger-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(248, 113, 113, 0.58);
+    background: rgba(220, 38, 38, 0.22);
+}
+
+.price-danger-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.price-end-sale-row-btn {
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 640px) {
+    .price-sale-confirm-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .price-sale-confirm-row strong {
+        text-align: left;
+    }
+}
+
