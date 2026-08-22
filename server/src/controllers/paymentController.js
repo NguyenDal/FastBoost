@@ -6,7 +6,17 @@ function getUserId(req) {
 }
 
 function getClientUrl() {
-    return process.env.CLIENT_URL || "http://localhost:5173";
+    const clientUrl = process.env.CLIENT_URL;
+
+    if (clientUrl) {
+        return clientUrl.replace(/\/+$/, "");
+    }
+
+    if (process.env.NODE_ENV === "production") {
+        throw new Error("CLIENT_URL is not configured in production.");
+    }
+
+    return "http://localhost:5173";
 }
 
 async function getAvailableGold(userId) {
