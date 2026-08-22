@@ -286,30 +286,52 @@ const createOrder = async (req, res) => {
          * Scheduled future sales are not applied yet.
          * Expired sales are not applied.
          */
-        const activeSale = await prisma.serviceSale.findFirst({
-            where: {
-                serviceId: selectedService.id,
-                active: true,
+        const saleTimeWindow = {
+            active: true,
 
-                AND: [
-                    {
-                        OR: [
-                            { startsAt: null },
-                            { startsAt: { lte: now } },
-                        ],
-                    },
-                    {
-                        OR: [
-                            { endsAt: null },
-                            { endsAt: { gte: now } },
-                        ],
-                    },
-                ],
+            AND: [
+                {
+                    OR: [
+                        { startsAt: null },
+                        { startsAt: { lte: now } },
+                    ],
+                },
+                {
+                    OR: [
+                        { endsAt: null },
+                        { endsAt: { gte: now } },
+                    ],
+                },
+            ],
+        };
+
+        const serviceSale = await prisma.serviceSale.findFirst({
+            where: {
+                ...saleTimeWindow,
+                scope: "SERVICE",
+                serviceId: selectedService.id,
             },
+
             orderBy: {
                 createdAt: "desc",
             },
         });
+
+        const globalSale = serviceSale
+            ? null
+            : await prisma.serviceSale.findFirst({
+                where: {
+                    ...saleTimeWindow,
+                    scope: "GLOBAL",
+                    serviceId: null,
+                },
+
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        const activeSale = serviceSale || globalSale;
 
         /*
          * These are the CUSTOMER'S selections.
@@ -324,13 +346,13 @@ const createOrder = async (req, res) => {
 
             currentMasterLp:
                 currentMasterLp !== null &&
-                currentMasterLp !== undefined
+                    currentMasterLp !== undefined
                     ? Number(currentMasterLp)
                     : 0,
 
             desiredMasterLp:
                 desiredMasterLp !== null &&
-                desiredMasterLp !== undefined
+                    desiredMasterLp !== undefined
                     ? Number(desiredMasterLp)
                     : 0,
 
@@ -405,13 +427,13 @@ const createOrder = async (req, res) => {
 
                 currentMasterLp:
                     currentMasterLp !== null &&
-                    currentMasterLp !== undefined
+                        currentMasterLp !== undefined
                         ? Number(currentMasterLp)
                         : null,
 
                 desiredMasterLp:
                     desiredMasterLp !== null &&
-                    desiredMasterLp !== undefined
+                        desiredMasterLp !== undefined
                         ? Number(desiredMasterLp)
                         : null,
 

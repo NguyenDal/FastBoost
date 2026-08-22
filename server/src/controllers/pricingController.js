@@ -81,30 +81,52 @@ exports.getPriceQuote = async (req, res) => {
 
         const now = new Date();
 
-        const activeSale = await prisma.serviceSale.findFirst({
+        const saleTimeWindow = {
+            active: true,
+
+            AND: [
+                {
+                    OR: [
+                        { startsAt: null },
+                        { startsAt: { lte: now } },
+                    ],
+                },
+                {
+                    OR: [
+                        { endsAt: null },
+                        { endsAt: { gte: now } },
+                    ],
+                },
+            ],
+        };
+
+        const serviceSale = await prisma.serviceSale.findFirst({
             where: {
+                ...saleTimeWindow,
+                scope: "SERVICE",
                 serviceId: service.id,
-                active: true,
-                AND: [
-                    {
-                        OR: [
-                            { startsAt: null },
-                            { startsAt: { lte: now } },
-                        ],
-                    },
-                    {
-                        OR: [
-                            { endsAt: null },
-                            { endsAt: { gte: now } },
-                        ],
-                    },
-                ],
             },
+
             orderBy: {
                 createdAt: "desc",
             },
         });
 
+        const globalSale = serviceSale
+            ? null
+            : await prisma.serviceSale.findFirst({
+                where: {
+                    ...saleTimeWindow,
+                    scope: "GLOBAL",
+                    serviceId: null,
+                },
+
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        const activeSale = serviceSale || globalSale;
         const pricingOptions = {
             currentRank: currentRank || null,
             desiredRank: desiredRank || null,

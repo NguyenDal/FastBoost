@@ -792,6 +792,69 @@ function formatChangeValue(change, value) {
     return formatMoney(value);
 }
 
+const EMPTY_SALE_FORM = {
+    title: "",
+    discountPercent: "",
+    startsAt: "",
+    endsAt: "",
+    appliesTo: "BASE_PRICE",
+};
+
+function getSaleDisplayStatus(sale, nowMs = Date.now()) {
+    if (!sale || !sale.active) return "NONE";
+
+    const startsAt = sale.startsAt
+        ? new Date(sale.startsAt).getTime()
+        : null;
+
+    const endsAt = sale.endsAt
+        ? new Date(sale.endsAt).getTime()
+        : null;
+
+    if (startsAt && startsAt > nowMs) {
+        return "SCHEDULED";
+    }
+
+    if (endsAt && endsAt < nowMs) {
+        return "EXPIRED";
+    }
+
+    return "ACTIVE";
+}
+
+function formatTimeRemaining(targetDate, nowMs = Date.now()) {
+    if (!targetDate) return "No expiration";
+
+    const difference =
+        new Date(targetDate).getTime() - nowMs;
+
+    if (difference <= 0) {
+        return "Ending now";
+    }
+
+    const days = Math.floor(
+        difference / (1000 * 60 * 60 * 24)
+    );
+
+    const hours = Math.floor(
+        (difference / (1000 * 60 * 60)) % 24
+    );
+
+    const minutes = Math.floor(
+        (difference / (1000 * 60)) % 60
+    );
+
+    if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+    }
+
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+
+    return `${Math.max(minutes, 1)}m`;
+}
+
 export default function PriceManagementPage() {
     const [pricingServices, setPricingServices] = useState([]);
     const [pricesLoading, setPricesLoading] = useState(true);
@@ -811,6 +874,20 @@ export default function PriceManagementPage() {
 
     const [saleModalOpen, setSaleModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
+
+    const [globalSale, setGlobalSale] = useState(null);
+    const [saleScope, setSaleScope] = useState("SERVICE");
+
+    const [saleForm, setSaleForm] = useState(
+        EMPTY_SALE_FORM
+    );
+
+    const [saleSaving, setSaleSaving] = useState(false);
+    const [saleError, setSaleError] = useState("");
+
+    const [saleClock, setSaleClock] = useState(
+        Date.now()
+    );
 
     const [gameFilter, setGameFilter] = useState("ALL");
     const [statusFilter, setStatusFilter] = useState("ALL");
@@ -851,12 +928,15 @@ export default function PriceManagementPage() {
             }
 
             setPricingServices(data.items || []);
+            setGlobalSale(data.globalSale || null);
         } catch (error) {
             setPricesError(error.message || "Failed to load price rules.");
         } finally {
             setPricesLoading(false);
         }
     };
+
+    
 
     const startPriceEdit = (item) => {
         setEditingRuleId(item.id);
@@ -1072,19 +1152,151 @@ export default function PriceManagementPage() {
         loadPricingRules();
     }, []);
 
-    const openSaleModal = (service = null) => {
+    useEffect(() => {
+        const timer = window.setInterval(() => {
+            setSaleClock(Date.now());
+        }, 60000);
+
+        return () => {
+            window.clearInterval(timer);
+        };
+    }, []);
+
+    const openSaleModal = (
+        service = null,
+        scope = "SERVICE"
+    ) => {
         setSelectedService(service);
+        setSaleScope(scope);
+
+        setSaleForm({
+            ...EMPTY_SALE_FORM,
+        });
+
+        setSaleError("");
         setSaleModalOpen(true);
     };
 
     const closeSaleModal = () => {
+        if (saleSaving) return;
+
         setSaleModalOpen(false);
         setSelectedService(null);
+        setSaleScope("SERVICE");
+
+        setSaleForm({
+            ...EMPTY_SALE_FORM,
+        });
+
+        setSaleError("");
     };
 
+    const saveSale = async () => {
+        try {
+            setSaleSaving(true);
+            setSaleError("");
+
+            const discount = Number(saleForm.discountPercent);
+
+            if (!Number.isFinite(discount) || discount <= 0 || discount > 90) {
+                throw new Error("Discount must be between 1 and 90.");
+            }
+
+            if (
+                saleForm.startsAt &&
+                saleForm.endsAt &&
+                new Date(saleForm.endsAt) <= new Date(saleForm.startsAt)
+            ) {
+                throw new Error("Sale end must be after sale start.");
+            }
+
+            if (saleScope === "SERVICE" && !selectedService?.serviceId) {
+                throw new Error("No service was selected.");
+            }
+
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${API_BASE_URL}/admin/prices/sales`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        scope: saleScope,
+                        serviceId:
+                            saleScope === "SERVICE"
+                                ? selectedService.serviceId
+                                : null,
+                        title: saleForm.title.trim() || undefined,
+                        discountPercent: discount,
+                        appliesTo: saleForm.appliesTo,
+                        startsAt: saleForm.startsAt
+                            ? new Date(saleForm.startsAt).toISOString()
+                            : null,
+                        endsAt: saleForm.endsAt
+                            ? new Date(saleForm.endsAt).toISOString()
+                            : null,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || data.ok === false) {
+                throw new Error(data.message || "Failed to create sale.");
+            }
+
+            await loadPricingRules();
+            closeSaleModal();
+        } catch (error) {
+            setSaleError(error.message || "Failed to create sale.");
+        } finally {
+            setSaleSaving(false);
+        }
+    };
+
+    const endGlobalSale = async () => {
+        if (!globalSale?.id) return;
+
+        try {
+            setSaleError("");
+
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `${API_BASE_URL}/admin/prices/sales/${globalSale.id}/disable`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || data.ok === false) {
+                throw new Error(data.message || "Failed to end global sale.");
+            }
+
+            await loadPricingRules();
+        } catch (error) {
+            setSaleError(error.message || "Failed to end global sale.");
+        }
+    };
+
+    const globalSaleStatus = getSaleDisplayStatus(globalSale, saleClock);
+    const hasCurrentGlobalSale =
+        globalSaleStatus === "ACTIVE" || globalSaleStatus === "SCHEDULED";
+
     const activeServices = pricingServices.filter((item) => item.active).length;
-    const activeSales = pricingServices.filter((item) => item.sale?.status === "ACTIVE").length;
-    const upcomingSales = pricingServices.filter((item) => item.sale?.status === "SCHEDULED").length;
+    const activeSales =
+        pricingServices.filter((item) => item.sale?.status === "ACTIVE").length +
+        (globalSaleStatus === "ACTIVE" ? 1 : 0);
+    const upcomingSales =
+        pricingServices.filter((item) => item.sale?.status === "SCHEDULED").length +
+        (globalSaleStatus === "SCHEDULED" ? 1 : 0);
 
     const filteredPricingServices = pricingServices.filter((item) => {
         const matchesGame =
@@ -1384,7 +1596,9 @@ export default function PriceManagementPage() {
                                                         <button
                                                             type="button"
                                                             className="price-row-btn"
-                                                            onClick={() => openSaleModal(item)}
+                                                            onClick={() =>
+                                                                openSaleModal(item, "SERVICE")
+                                                            }
                                                         >
                                                             Sale Settings
                                                         </button>
@@ -1451,26 +1665,113 @@ export default function PriceManagementPage() {
                     </div>
 
                     <aside className="price-side-panel">
-                        <section className="price-side-card">
-                            <h3>Sale Control</h3>
+                        <section className="price-side-card price-global-create-card">
+                            <div className="price-global-create-icon">
+                                🌐
+                            </div>
+
+                            <h3>Create Global Sale</h3>
+
                             <p>
-                                Activate a discount for one or more services and choose how long it stays active.
+                                Apply a temporary discount across all FastBoost services.
                             </p>
 
-                            <div className="price-sale-preview">
-                                <span>Example</span>
-                                <strong>15% OFF Rank Boost</strong>
-                                <p>Applies to calculated base price before checkout.</p>
-                            </div>
                             <button
                                 type="button"
                                 className="price-primary-btn price-full-btn"
-                                onClick={() => openSaleModal()}
+                                onClick={() => openSaleModal(null, "GLOBAL")}
+                                disabled={hasCurrentGlobalSale}
                             >
-                                Create Sale
+                                {hasCurrentGlobalSale
+                                    ? "Global Sale Already Exists"
+                                    : "Create Global Sale"}
                             </button>
                         </section>
 
+                        <section className="price-side-card">
+                            <div className="price-sale-control-header">
+                                <div>
+                                    <h3>Sale Control</h3>
+                                    <p>Current global campaign status.</p>
+                                </div>
+
+                                {hasCurrentGlobalSale && (
+                                    <span
+                                        className={`price-global-status ${globalSaleStatus === "ACTIVE"
+                                            ? "active"
+                                            : "scheduled"
+                                            }`}
+                                    >
+                                        {globalSaleStatus}
+                                    </span>
+                                )}
+                            </div>
+
+                            {!hasCurrentGlobalSale ? (
+                                <div className="price-sale-empty">
+                                    <span>No Global Campaign</span>
+                                    <strong>
+                                        No global sale is currently active or scheduled.
+                                    </strong>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="price-sale-preview">
+                                        <span>
+                                            {globalSaleStatus === "ACTIVE"
+                                                ? "Live Campaign"
+                                                : "Scheduled Campaign"}
+                                        </span>
+                                        <strong>{globalSale.title}</strong>
+                                        <p>
+                                            {Number(globalSale.discountPercent).toFixed(0)}% OFF - All Services
+                                        </p>
+                                    </div>
+
+                                    <div className="price-sale-countdown">
+                                        <span>
+                                            {globalSaleStatus === "SCHEDULED"
+                                                ? "Starts in"
+                                                : "Expires in"}
+                                        </span>
+                                        <strong>
+                                            {formatTimeRemaining(
+                                                globalSaleStatus === "SCHEDULED"
+                                                    ? globalSale.startsAt
+                                                    : globalSale.endsAt,
+                                                saleClock
+                                            )}
+                                        </strong>
+                                    </div>
+
+                                    <div className="price-sale-meta">
+                                        <span>Discount applies to</span>
+                                        <strong>
+                                            {String(globalSale.appliesTo).toUpperCase() === "TOTAL"
+                                                ? "Whole order total"
+                                                : "Base price only"}
+                                        </strong>
+                                    </div>
+
+                                    <div className="price-sale-meta">
+                                        <span>Ends</span>
+                                        <strong>
+                                            {globalSale.endsAt
+                                                ? new Date(globalSale.endsAt).toLocaleString()
+                                                : "No expiration"}
+                                        </strong>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="price-secondary-btn price-full-btn price-end-sale-btn"
+                                        onClick={endGlobalSale}
+                                    >
+                                        End Global Sale
+                                    </button>
+                                </>
+                            )}
+                        </section>
                     </aside>
                 </section>
             </main>
@@ -1590,8 +1891,7 @@ export default function PriceManagementPage() {
                             >
                                 {priceSaving
                                     ? "Applying Changes..."
-                                    : `Apply ${selectedPriceChangeIds.size} Selected Change${
-                                        selectedPriceChangeIds.size === 1 ? "" : "s"
+                                    : `Apply ${selectedPriceChangeIds.size} Selected Change${selectedPriceChangeIds.size === 1 ? "" : "s"
                                     }`}
                             </button>
                         </div>
@@ -1600,21 +1900,34 @@ export default function PriceManagementPage() {
             )}
 
             {saleModalOpen && (
-                <div className="price-modal-backdrop" onClick={closeSaleModal}>
+                <div
+                    className="price-modal-backdrop"
+                    onClick={closeSaleModal}
+                >
                     <section
                         className="price-modal"
-                        onClick={(event) => event.stopPropagation()}
+                        onClick={(event) =>
+                            event.stopPropagation()
+                        }
                     >
                         <div className="price-modal-header">
                             <div>
-                                <p className="admin-eyebrow">Sale Setup</p>
+                                <p className="admin-eyebrow">
+                                    {saleScope === "GLOBAL"
+                                        ? "Global Campaign"
+                                        : "Service Campaign"}
+                                </p>
+
                                 <h2>
-                                    {selectedService
-                                        ? `Edit ${selectedService.service?.title || "Service"}`
-                                        : "Create Sale"}
+                                    {saleScope === "GLOBAL"
+                                        ? "Create Global Sale"
+                                        : `Create ${selectedService?.service?.title || "Service"} Sale`}
                                 </h2>
+
                                 <p>
-                                    Configure a temporary discount without changing the original pricing rules.
+                                    {saleScope === "GLOBAL"
+                                        ? "Apply one temporary discount across every FastBoost service."
+                                        : `This discount applies only to ${selectedService?.service?.title || "this service"}.`}
                                 </p>
                             </div>
 
@@ -1622,60 +1935,123 @@ export default function PriceManagementPage() {
                                 type="button"
                                 className="price-modal-close"
                                 onClick={closeSaleModal}
+                                disabled={saleSaving}
                             >
                                 ×
                             </button>
                         </div>
 
+                        <div className="price-sale-scope-preview">
+                            <span>Sale Scope</span>
+                            <strong>
+                                {saleScope === "GLOBAL"
+                                    ? "🌐 All FastBoost Services"
+                                    : `🎯 ${selectedService?.service?.title || "Selected Service"} Only`}
+                            </strong>
+                        </div>
+
                         <div className="price-modal-grid">
-                            <label className="price-modal-field">
-                                <span>Service</span>
-                                <select defaultValue={selectedService?.serviceId || ""}>
-                                    <option value="">Select service</option>
-                                    {pricingServices.map((service) => (
-                                        <option key={service.serviceId} value={service.serviceId}>
-                                            {service.service?.title || "Unknown Service"}
-                                        </option>
-                                    ))}
-                                </select>
+                            <label className="price-modal-field price-modal-field-wide">
+                                <span>Sale Title</span>
+                                <input
+                                    type="text"
+                                    placeholder={saleScope === "GLOBAL"
+                                        ? "Summer Sale"
+                                        : `${selectedService?.service?.title || "Service"} Promotion`}
+                                    value={saleForm.title}
+                                    onChange={(event) =>
+                                        setSaleForm((current) => ({
+                                            ...current,
+                                            title: event.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
 
                             <label className="price-modal-field">
                                 <span>Discount %</span>
-                                <input type="number" min="1" max="90" placeholder="15" />
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="90"
+                                    step="1"
+                                    placeholder="15"
+                                    value={saleForm.discountPercent}
+                                    onChange={(event) =>
+                                        setSaleForm((current) => ({
+                                            ...current,
+                                            discountPercent: event.target.value,
+                                        }))
+                                    }
+                                />
+                            </label>
+
+                            <label className="price-modal-field">
+                                <span>Apply Discount To</span>
+                                <select
+                                    value={saleForm.appliesTo}
+                                    onChange={(event) =>
+                                        setSaleForm((current) => ({
+                                            ...current,
+                                            appliesTo: event.target.value,
+                                        }))
+                                    }
+                                >
+                                    <option value="BASE_PRICE">Base price only</option>
+                                    <option value="TOTAL">Whole order total</option>
+                                </select>
                             </label>
 
                             <label className="price-modal-field">
                                 <span>Sale Start</span>
-                                <input type="datetime-local" />
+                                <input
+                                    type="datetime-local"
+                                    value={saleForm.startsAt}
+                                    onChange={(event) =>
+                                        setSaleForm((current) => ({
+                                            ...current,
+                                            startsAt: event.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
 
                             <label className="price-modal-field">
                                 <span>Sale End</span>
-                                <input type="datetime-local" />
-                            </label>
-
-                            <label className="price-modal-field price-modal-field-wide">
-                                <span>Apply Discount To</span>
-                                <select defaultValue="base">
-                                    <option value="base">Base price only</option>
-                                    <option value="total">Whole order total</option>
-                                </select>
+                                <input
+                                    type="datetime-local"
+                                    value={saleForm.endsAt}
+                                    onChange={(event) =>
+                                        setSaleForm((current) => ({
+                                            ...current,
+                                            endsAt: event.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
                         </div>
 
                         <div className="price-modal-note">
                             <strong>Safe behavior:</strong>
                             <span>
-                                This sale will sit on top of the current dynamic calculator. It does not overwrite Rank Boost, Win Boost, Placement, or add-on pricing.
+                                {saleScope === "GLOBAL"
+                                    ? "The global sale applies automatically unless a service has its own specific sale. Service-specific sales take priority."
+                                    : "This service-specific sale overrides the global sale for this service while it is active."}
                             </span>
                         </div>
+
+                        {saleError && (
+                            <div className="price-save-error price-confirm-error">
+                                {saleError}
+                            </div>
+                        )}
 
                         <div className="price-modal-actions">
                             <button
                                 type="button"
                                 className="price-secondary-btn"
                                 onClick={closeSaleModal}
+                                disabled={saleSaving}
                             >
                                 Cancel
                             </button>
@@ -1683,9 +2059,14 @@ export default function PriceManagementPage() {
                             <button
                                 type="button"
                                 className="price-primary-btn"
-                                onClick={closeSaleModal}
+                                onClick={saveSale}
+                                disabled={saleSaving}
                             >
-                                Save Draft
+                                {saleSaving
+                                    ? "Creating Sale..."
+                                    : saleScope === "GLOBAL"
+                                        ? "Create Global Sale"
+                                        : "Create Service Sale"}
                             </button>
                         </div>
                     </section>

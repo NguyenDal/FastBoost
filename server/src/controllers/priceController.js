@@ -43,11 +43,30 @@ exports.listPriceRules = async (req, res) => {
             },
         });
 
+        const now = new Date();
+
+        const globalSale =
+            sales.find(
+                (sale) =>
+                    sale.scope === "GLOBAL" &&
+                    getSaleStatus(sale) !== "EXPIRED"
+            ) || null;
+
         const salesByServiceId = new Map();
 
         for (const sale of sales) {
+            if (
+                sale.scope !== "SERVICE" ||
+                getSaleStatus(sale) === "EXPIRED"
+            ) {
+                continue;
+            }
+
             if (!salesByServiceId.has(sale.serviceId)) {
-                salesByServiceId.set(sale.serviceId, sale);
+                salesByServiceId.set(
+                    sale.serviceId,
+                    sale
+                );
             }
         }
 
@@ -81,6 +100,27 @@ exports.listPriceRules = async (req, res) => {
         return res.json({
             ok: true,
             items,
+
+            globalSale: globalSale
+                ? {
+                    id: globalSale.id,
+                    title: globalSale.title,
+                    discountPercent:
+                        globalSale.discountPercent,
+                    appliesTo:
+                        globalSale.appliesTo,
+                    startsAt:
+                        globalSale.startsAt,
+                    endsAt:
+                        globalSale.endsAt,
+                    active:
+                        globalSale.active,
+                    scope:
+                        globalSale.scope,
+                    status:
+                        getSaleStatus(globalSale),
+                }
+                : null,
         });
     } catch (error) {
         console.error("listPriceRules error:", error);
@@ -95,6 +135,7 @@ exports.createSale = async (req, res) => {
     try {
         const {
             serviceId,
+            scope = "SERVICE",
             title,
             discountPercent,
             appliesTo,
@@ -102,43 +143,112 @@ exports.createSale = async (req, res) => {
             endsAt,
         } = req.body || {};
 
-        if (!serviceId) {
+        if (!["SERVICE", "GLOBAL"].includes(scope)) {
             return res.status(400).json({
                 ok: false,
-                message: "serviceId is required.",
+                message: "Invalid sale scope.",
+            });
+        }
+
+        if (scope === "SERVICE" && !serviceId) {
+            return res.status(400).json({
+                ok: false,
+                message: "serviceId is required for a service sale.",
+            });
+        }
+
+        if (scope === "GLOBAL" && serviceId) {
+            return res.status(400).json({
+                ok: false,
+                message: "Global sales must not have a serviceId.",
             });
         }
 
         const discount = Number(discountPercent);
 
-        if (!Number.isFinite(discount) || discount <= 0 || discount > 90) {
+        if (
+            !Number.isFinite(discount) ||
+            discount <= 0 ||
+            discount > 90
+        ) {
             return res.status(400).json({
                 ok: false,
                 message: "discountPercent must be between 1 and 90.",
             });
         }
 
-        const service = await prisma.service.findUnique({
-            where: {
-                id: serviceId,
-            },
-        });
+        let service = null;
 
-        if (!service) {
-            return res.status(404).json({
-                ok: false,
-                message: "Service not found.",
+        if (scope === "SERVICE") {
+            service = await prisma.service.findUnique({
+                where: {
+                    id: serviceId,
+                },
             });
+
+            if (!service) {
+                return res.status(404).json({
+                    ok: false,
+                    message: "Service not found.",
+                });
+            }
+        }
+
+        if (scope === "GLOBAL") {
+            const now = new Date();
+
+            const existingGlobalSale =
+                await prisma.serviceSale.findFirst({
+                    where: {
+                        scope: "GLOBAL",
+                        active: true,
+
+                        OR: [
+                            { endsAt: null },
+                            { endsAt: { gt: now } },
+                        ],
+                    },
+                });
+
+            if (existingGlobalSale) {
+                return res.status(409).json({
+                    ok: false,
+                    message:
+                        "A global sale is already active or scheduled. End it before creating another one.",
+                });
+            }
         }
 
         const sale = await prisma.serviceSale.create({
             data: {
-                serviceId,
-                title: title || `${discount}% off ${service.title}`,
+                scope,
+
+                serviceId:
+                    scope === "SERVICE"
+                        ? serviceId
+                        : null,
+
+                title:
+                    title ||
+                    (
+                        scope === "GLOBAL"
+                            ? `${discount}% off all services`
+                            : `${discount}% off ${service.title}`
+                    ),
+
                 discountPercent: discount,
                 appliesTo: appliesTo || "BASE_PRICE",
-                startsAt: startsAt ? new Date(startsAt) : null,
-                endsAt: endsAt ? new Date(endsAt) : null,
+
+                startsAt:
+                    startsAt
+                        ? new Date(startsAt)
+                        : null,
+
+                endsAt:
+                    endsAt
+                        ? new Date(endsAt)
+                        : null,
+
                 active: true,
             },
         });
@@ -149,6 +259,7 @@ exports.createSale = async (req, res) => {
         });
     } catch (error) {
         console.error("createSale error:", error);
+
         return res.status(500).json({
             ok: false,
             message: "Failed to create sale.",
@@ -185,7 +296,7 @@ exports.updatePriceRule = async (req, res) => {
 
         const currentConfig =
             existingRule.config &&
-            typeof existingRule.config === "object"
+                typeof existingRule.config === "object"
                 ? existingRule.config
                 : {};
 
@@ -205,8 +316,7 @@ exports.updatePriceRule = async (req, res) => {
                 value > max
             ) {
                 throw new Error(
-                    `${name} must be a valid number between ${min} and ${
-                        Number.isFinite(max) ? max : "any positive value"
+                    `${name} must be a valid number between ${min} and ${Number.isFinite(max) ? max : "any positive value"
                     }.`
                 );
             }

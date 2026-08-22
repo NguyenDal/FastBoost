@@ -93,8 +93,10 @@ model ServicePriceRule {
 model ServiceSale {
   id String @id @default(cuid())
 
-  serviceId String
-  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  scope SaleScope @default(SERVICE)
 
   title           String
   discountPercent Decimal @db.Decimal(5, 2)
@@ -109,9 +111,15 @@ model ServiceSale {
   updatedAt DateTime @updatedAt
 
   @@index([serviceId])
+  @@index([scope])
   @@index([active])
   @@index([startsAt])
   @@index([endsAt])
+}
+
+enum SaleScope {
+  SERVICE
+  GLOBAL
 }
 
 model Order {

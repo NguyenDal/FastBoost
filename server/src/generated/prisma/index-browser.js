@@ -171,6 +171,7 @@ exports.Prisma.ServicePriceRuleScalarFieldEnum = {
 exports.Prisma.ServiceSaleScalarFieldEnum = {
   id: 'id',
   serviceId: 'serviceId',
+  scope: 'scope',
   title: 'title',
   discountPercent: 'discountPercent',
   appliesTo: 'appliesTo',
@@ -354,6 +355,11 @@ exports.UserRole = exports.$Enums.UserRole = {
   CUSTOMER: 'CUSTOMER',
   PROVIDER: 'PROVIDER',
   ADMIN: 'ADMIN'
+};
+
+exports.SaleScope = exports.$Enums.SaleScope = {
+  SERVICE: 'SERVICE',
+  GLOBAL: 'GLOBAL'
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {

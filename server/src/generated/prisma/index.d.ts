@@ -93,7 +93,15 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
  * Enums
  */
 export namespace $Enums {
-  export const RewardType: {
+  export const SaleScope: {
+  SERVICE: 'SERVICE',
+  GLOBAL: 'GLOBAL'
+};
+
+export type SaleScope = (typeof SaleScope)[keyof typeof SaleScope]
+
+
+export const RewardType: {
   REFERRAL_INVITER: 'REFERRAL_INVITER',
   REFERRAL_INVITED: 'REFERRAL_INVITED',
   TOP_UP_BONUS: 'TOP_UP_BONUS',
@@ -167,6 +175,10 @@ export const NotificationType: {
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 }
+
+export type SaleScope = $Enums.SaleScope
+
+export const SaleScope: typeof $Enums.SaleScope
 
 export type RewardType = $Enums.RewardType
 
@@ -7429,6 +7441,7 @@ export namespace Prisma {
   export type ServiceSaleMinAggregateOutputType = {
     id: string | null
     serviceId: string | null
+    scope: $Enums.SaleScope | null
     title: string | null
     discountPercent: Decimal | null
     appliesTo: string | null
@@ -7442,6 +7455,7 @@ export namespace Prisma {
   export type ServiceSaleMaxAggregateOutputType = {
     id: string | null
     serviceId: string | null
+    scope: $Enums.SaleScope | null
     title: string | null
     discountPercent: Decimal | null
     appliesTo: string | null
@@ -7455,6 +7469,7 @@ export namespace Prisma {
   export type ServiceSaleCountAggregateOutputType = {
     id: number
     serviceId: number
+    scope: number
     title: number
     discountPercent: number
     appliesTo: number
@@ -7478,6 +7493,7 @@ export namespace Prisma {
   export type ServiceSaleMinAggregateInputType = {
     id?: true
     serviceId?: true
+    scope?: true
     title?: true
     discountPercent?: true
     appliesTo?: true
@@ -7491,6 +7507,7 @@ export namespace Prisma {
   export type ServiceSaleMaxAggregateInputType = {
     id?: true
     serviceId?: true
+    scope?: true
     title?: true
     discountPercent?: true
     appliesTo?: true
@@ -7504,6 +7521,7 @@ export namespace Prisma {
   export type ServiceSaleCountAggregateInputType = {
     id?: true
     serviceId?: true
+    scope?: true
     title?: true
     discountPercent?: true
     appliesTo?: true
@@ -7603,7 +7621,8 @@ export namespace Prisma {
 
   export type ServiceSaleGroupByOutputType = {
     id: string
-    serviceId: string
+    serviceId: string | null
+    scope: $Enums.SaleScope
     title: string
     discountPercent: Decimal
     appliesTo: string
@@ -7636,6 +7655,7 @@ export namespace Prisma {
   export type ServiceSaleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     serviceId?: boolean
+    scope?: boolean
     title?: boolean
     discountPercent?: boolean
     appliesTo?: boolean
@@ -7644,12 +7664,13 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     serviceId?: boolean
+    scope?: boolean
     title?: boolean
     discountPercent?: boolean
     appliesTo?: boolean
@@ -7658,12 +7679,13 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     serviceId?: boolean
+    scope?: boolean
     title?: boolean
     discountPercent?: boolean
     appliesTo?: boolean
@@ -7672,12 +7694,13 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectScalar = {
     id?: boolean
     serviceId?: boolean
+    scope?: boolean
     title?: boolean
     discountPercent?: boolean
     appliesTo?: boolean
@@ -7688,25 +7711,26 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "serviceId" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
+  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
   export type ServiceSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }
   export type ServiceSaleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }
   export type ServiceSaleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    service?: boolean | ServiceSale$serviceArgs<ExtArgs>
   }
 
   export type $ServiceSalePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ServiceSale"
     objects: {
-      service: Prisma.$ServicePayload<ExtArgs>
+      service: Prisma.$ServicePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      serviceId: string
+      serviceId: string | null
+      scope: $Enums.SaleScope
       title: string
       discountPercent: Prisma.Decimal
       appliesTo: string
@@ -8109,7 +8133,7 @@ export namespace Prisma {
    */
   export interface Prisma__ServiceSaleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    service<T extends ServiceSale$serviceArgs<ExtArgs> = {}>(args?: Subset<T, ServiceSale$serviceArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8141,6 +8165,7 @@ export namespace Prisma {
   interface ServiceSaleFieldRefs {
     readonly id: FieldRef<"ServiceSale", 'String'>
     readonly serviceId: FieldRef<"ServiceSale", 'String'>
+    readonly scope: FieldRef<"ServiceSale", 'SaleScope'>
     readonly title: FieldRef<"ServiceSale", 'String'>
     readonly discountPercent: FieldRef<"ServiceSale", 'Decimal'>
     readonly appliesTo: FieldRef<"ServiceSale", 'String'>
@@ -8547,6 +8572,25 @@ export namespace Prisma {
      * Limit how many ServiceSales to delete.
      */
     limit?: number
+  }
+
+  /**
+   * ServiceSale.service
+   */
+  export type ServiceSale$serviceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Service
+     */
+    omit?: ServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
   }
 
   /**
@@ -20451,6 +20495,7 @@ export namespace Prisma {
   export const ServiceSaleScalarFieldEnum: {
     id: 'id',
     serviceId: 'serviceId',
+    scope: 'scope',
     title: 'title',
     discountPercent: 'discountPercent',
     appliesTo: 'appliesTo',
@@ -20758,6 +20803,20 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'SaleScope'
+   */
+  export type EnumSaleScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'SaleScope[]'
+   */
+  export type ListEnumSaleScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleScope[]'>
     
 
 
@@ -21225,7 +21284,8 @@ export namespace Prisma {
     OR?: ServiceSaleWhereInput[]
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     id?: StringFilter<"ServiceSale"> | string
-    serviceId?: StringFilter<"ServiceSale"> | string
+    serviceId?: StringNullableFilter<"ServiceSale"> | string | null
+    scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
     discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFilter<"ServiceSale"> | string
@@ -21234,12 +21294,13 @@ export namespace Prisma {
     active?: BoolFilter<"ServiceSale"> | boolean
     createdAt?: DateTimeFilter<"ServiceSale"> | Date | string
     updatedAt?: DateTimeFilter<"ServiceSale"> | Date | string
-    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+    service?: XOR<ServiceNullableScalarRelationFilter, ServiceWhereInput> | null
   }
 
   export type ServiceSaleOrderByWithRelationInput = {
     id?: SortOrder
-    serviceId?: SortOrder
+    serviceId?: SortOrderInput | SortOrder
+    scope?: SortOrder
     title?: SortOrder
     discountPercent?: SortOrder
     appliesTo?: SortOrder
@@ -21256,7 +21317,8 @@ export namespace Prisma {
     AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     OR?: ServiceSaleWhereInput[]
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
-    serviceId?: StringFilter<"ServiceSale"> | string
+    serviceId?: StringNullableFilter<"ServiceSale"> | string | null
+    scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
     discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFilter<"ServiceSale"> | string
@@ -21265,12 +21327,13 @@ export namespace Prisma {
     active?: BoolFilter<"ServiceSale"> | boolean
     createdAt?: DateTimeFilter<"ServiceSale"> | Date | string
     updatedAt?: DateTimeFilter<"ServiceSale"> | Date | string
-    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+    service?: XOR<ServiceNullableScalarRelationFilter, ServiceWhereInput> | null
   }, "id">
 
   export type ServiceSaleOrderByWithAggregationInput = {
     id?: SortOrder
-    serviceId?: SortOrder
+    serviceId?: SortOrderInput | SortOrder
+    scope?: SortOrder
     title?: SortOrder
     discountPercent?: SortOrder
     appliesTo?: SortOrder
@@ -21291,7 +21354,8 @@ export namespace Prisma {
     OR?: ServiceSaleScalarWhereWithAggregatesInput[]
     NOT?: ServiceSaleScalarWhereWithAggregatesInput | ServiceSaleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ServiceSale"> | string
-    serviceId?: StringWithAggregatesFilter<"ServiceSale"> | string
+    serviceId?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
+    scope?: EnumSaleScopeWithAggregatesFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringWithAggregatesFilter<"ServiceSale"> | string
     discountPercent?: DecimalWithAggregatesFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
     appliesTo?: StringWithAggregatesFilter<"ServiceSale"> | string
@@ -22609,6 +22673,7 @@ export namespace Prisma {
 
   export type ServiceSaleCreateInput = {
     id?: string
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -22617,12 +22682,13 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    service: ServiceCreateNestedOneWithoutSalesInput
+    service?: ServiceCreateNestedOneWithoutSalesInput
   }
 
   export type ServiceSaleUncheckedCreateInput = {
     id?: string
-    serviceId: string
+    serviceId?: string | null
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -22635,6 +22701,7 @@ export namespace Prisma {
 
   export type ServiceSaleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -22643,12 +22710,13 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    service?: ServiceUpdateOneRequiredWithoutSalesNestedInput
+    service?: ServiceUpdateOneWithoutSalesNestedInput
   }
 
   export type ServiceSaleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    serviceId?: StringFieldUpdateOperationsInput | string
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -22661,7 +22729,8 @@ export namespace Prisma {
 
   export type ServiceSaleCreateManyInput = {
     id?: string
-    serviceId: string
+    serviceId?: string | null
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -22674,6 +22743,7 @@ export namespace Prisma {
 
   export type ServiceSaleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -22686,7 +22756,8 @@ export namespace Prisma {
 
   export type ServiceSaleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    serviceId?: StringFieldUpdateOperationsInput | string
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -24226,6 +24297,13 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type EnumSaleScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSaleScopeFilter<$PrismaModel> | $Enums.SaleScope
+  }
+
   export type DecimalFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
@@ -24237,9 +24315,15 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
+  export type ServiceNullableScalarRelationFilter = {
+    is?: ServiceWhereInput | null
+    isNot?: ServiceWhereInput | null
+  }
+
   export type ServiceSaleCountOrderByAggregateInput = {
     id?: SortOrder
     serviceId?: SortOrder
+    scope?: SortOrder
     title?: SortOrder
     discountPercent?: SortOrder
     appliesTo?: SortOrder
@@ -24257,6 +24341,7 @@ export namespace Prisma {
   export type ServiceSaleMaxOrderByAggregateInput = {
     id?: SortOrder
     serviceId?: SortOrder
+    scope?: SortOrder
     title?: SortOrder
     discountPercent?: SortOrder
     appliesTo?: SortOrder
@@ -24270,6 +24355,7 @@ export namespace Prisma {
   export type ServiceSaleMinOrderByAggregateInput = {
     id?: SortOrder
     serviceId?: SortOrder
+    scope?: SortOrder
     title?: SortOrder
     discountPercent?: SortOrder
     appliesTo?: SortOrder
@@ -24282,6 +24368,16 @@ export namespace Prisma {
 
   export type ServiceSaleSumOrderByAggregateInput = {
     discountPercent?: SortOrder
+  }
+
+  export type EnumSaleScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSaleScopeWithAggregatesFilter<$PrismaModel> | $Enums.SaleScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSaleScopeFilter<$PrismaModel>
+    _max?: NestedEnumSaleScopeFilter<$PrismaModel>
   }
 
   export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
@@ -25695,6 +25791,10 @@ export namespace Prisma {
     connect?: ServiceWhereUniqueInput
   }
 
+  export type EnumSaleScopeFieldUpdateOperationsInput = {
+    set?: $Enums.SaleScope
+  }
+
   export type DecimalFieldUpdateOperationsInput = {
     set?: Decimal | DecimalJsLike | number | string
     increment?: Decimal | DecimalJsLike | number | string
@@ -25703,10 +25803,12 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
-  export type ServiceUpdateOneRequiredWithoutSalesNestedInput = {
+  export type ServiceUpdateOneWithoutSalesNestedInput = {
     create?: XOR<ServiceCreateWithoutSalesInput, ServiceUncheckedCreateWithoutSalesInput>
     connectOrCreate?: ServiceCreateOrConnectWithoutSalesInput
     upsert?: ServiceUpsertWithoutSalesInput
+    disconnect?: ServiceWhereInput | boolean
+    delete?: ServiceWhereInput | boolean
     connect?: ServiceWhereUniqueInput
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutSalesInput, ServiceUpdateWithoutSalesInput>, ServiceUncheckedUpdateWithoutSalesInput>
   }
@@ -26399,6 +26501,13 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedEnumSaleScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSaleScopeFilter<$PrismaModel> | $Enums.SaleScope
+  }
+
   export type NestedDecimalFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
@@ -26408,6 +26517,16 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedEnumSaleScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSaleScopeWithAggregatesFilter<$PrismaModel> | $Enums.SaleScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSaleScopeFilter<$PrismaModel>
+    _max?: NestedEnumSaleScopeFilter<$PrismaModel>
   }
 
   export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
@@ -27855,6 +27974,7 @@ export namespace Prisma {
 
   export type ServiceSaleCreateWithoutServiceInput = {
     id?: string
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -27867,6 +27987,7 @@ export namespace Prisma {
 
   export type ServiceSaleUncheckedCreateWithoutServiceInput = {
     id?: string
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -27955,7 +28076,8 @@ export namespace Prisma {
     OR?: ServiceSaleScalarWhereInput[]
     NOT?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
     id?: StringFilter<"ServiceSale"> | string
-    serviceId?: StringFilter<"ServiceSale"> | string
+    serviceId?: StringNullableFilter<"ServiceSale"> | string | null
+    scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
     discountPercent?: DecimalFilter<"ServiceSale"> | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFilter<"ServiceSale"> | string
@@ -31080,6 +31202,7 @@ export namespace Prisma {
 
   export type ServiceSaleCreateManyServiceInput = {
     id?: string
+    scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
     appliesTo?: string
@@ -31290,6 +31413,7 @@ export namespace Prisma {
 
   export type ServiceSaleUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -31302,6 +31426,7 @@ export namespace Prisma {
 
   export type ServiceSaleUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
@@ -31314,6 +31439,7 @@ export namespace Prisma {
 
   export type ServiceSaleUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     appliesTo?: StringFieldUpdateOperationsInput | string
