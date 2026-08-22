@@ -2,10 +2,82 @@ import { createCheckoutSession } from "../api/orders";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
+import { Skeleton } from "../components/Skeleton";
 import { API_BASE_URL } from "../api/config";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
+
+const SERVICES_CACHE_KEY = "fastboost:services:v1";
+const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000;
+const CHAMPIONS_CACHE_KEY = "fastboost:champions:v1";
+const CHAMPIONS_CACHE_TTL = 24 * 60 * 60 * 1000;
+
+function getCachedService(serviceId) {
+  try {
+    const raw = localStorage.getItem(SERVICES_CACHE_KEY);
+
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+
+    if (!Array.isArray(cached?.services)) {
+      return null;
+    }
+
+    const service = cached.services.find(
+      (item) => String(item.id) === String(serviceId)
+    );
+
+    if (!service) return null;
+
+    const isFresh =
+      typeof cached.savedAt === "number" &&
+      Date.now() - cached.savedAt < SERVICES_CACHE_TTL;
+
+    return {
+      service,
+      isFresh,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function refreshCachedService(updatedService) {
+  try {
+    const raw = localStorage.getItem(SERVICES_CACHE_KEY);
+
+    // Important:
+    // Do not create a partial services cache from OrderPage.
+    if (!raw) return;
+
+    const cached = JSON.parse(raw);
+
+    if (!Array.isArray(cached?.services)) {
+      return;
+    }
+
+    const services = cached.services.map((service) =>
+      String(service.id) === String(updatedService.id)
+        ? {
+          ...service,
+          ...updatedService,
+        }
+        : service
+    );
+
+    localStorage.setItem(
+      SERVICES_CACHE_KEY,
+      JSON.stringify({
+        services,
+        savedAt: Date.now(),
+      })
+    );
+  } catch {
+    // Ignore cache errors.
+  }
+}
 
 function OrderPage() {
   const navigate = useNavigate();
@@ -96,6 +168,8 @@ function OrderPage() {
   const [goldToUse, setGoldToUse] = useState(0);
 
   const [serverQuote, setServerQuote] = useState(null);
+  const [priceQuoteLoading, setPriceQuoteLoading] = useState(false);
+  const [priceQuoteError, setPriceQuoteError] = useState("");
   const [priceQuoteRefreshKey, setPriceQuoteRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -140,9 +214,31 @@ function OrderPage() {
   const [championSearch, setChampionSearch] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
+    const cached = getCachedService(serviceId);
+
+    if (cached?.service) {
+      setService(cached.service);
+      setSelectedBoostType(cached.service.title);
+      setLoadError("");
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    // Fresh HomePage cache = no reason to wait on Render again.
+    if (cached?.isFresh) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const fetchService = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/services/${serviceId}`);
+        const response = await fetch(
+          `${API_BASE_URL}/services/${serviceId}`
+        );
 
         if (!response.ok) {
           throw new Error("Failed to load service");
@@ -150,16 +246,34 @@ function OrderPage() {
 
         const data = await response.json();
         const normalizedService = data.service || data;
+
+        if (cancelled) return;
+
         setService(normalizedService);
         setSelectedBoostType(normalizedService.title);
+        setLoadError("");
+
+        refreshCachedService(normalizedService);
       } catch (error) {
-        setLoadError("Could not load this service");
+        if (cancelled) return;
+
+        // If cached data is already visible,
+        // don't destroy the page just because refresh failed.
+        if (!cached?.service) {
+          setLoadError("Could not load this service");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled && !cached?.service) {
+          setLoading(false);
+        }
       }
     };
 
     fetchService();
+
+    return () => {
+      cancelled = true;
+    };
   }, [serviceId]);
 
   const serviceType = selectedBoostType || service?.title || "";
@@ -235,6 +349,9 @@ function OrderPage() {
   useEffect(() => {
     if (!serviceType) return;
 
+    setPriceQuoteLoading(true);
+    setPriceQuoteError("");
+
     const controller = new AbortController();
 
     const timer = window.setTimeout(async () => {
@@ -279,7 +396,17 @@ function OrderPage() {
         setServerQuote(data.quote || null);
       } catch (error) {
         if (error.name === "AbortError") return;
+
         console.error("Failed to load live price:", error);
+
+        setServerQuote(null);
+        setPriceQuoteError(
+          error.message || "Could not load current pricing."
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setPriceQuoteLoading(false);
+        }
       }
     }, 200);
 
@@ -325,9 +452,30 @@ function OrderPage() {
   }, []);
 
   useEffect(() => {
+    if (!isChampionPanelOpen) return;
+    if (allChampions.length > 0) return;
+
     const loadChampions = async () => {
       try {
-        const versionResponse = await fetch("https://ddragon.leagueoflegends.com/api/versions.json");
+        const cachedRaw = localStorage.getItem(CHAMPIONS_CACHE_KEY);
+
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+
+          const isFresh =
+            Array.isArray(cached?.champions) &&
+            typeof cached?.savedAt === "number" &&
+            Date.now() - cached.savedAt < CHAMPIONS_CACHE_TTL;
+
+          if (isFresh) {
+            setAllChampions(cached.champions);
+            return;
+          }
+        }
+
+        const versionResponse = await fetch(
+          "https://ddragon.leagueoflegends.com/api/versions.json"
+        );
         const versions = await versionResponse.json();
         const latestVersion = versions[0];
 
@@ -339,17 +487,28 @@ function OrderPage() {
         const champions = Object.values(championData.data).map((champion) => ({
           id: champion.id,
           name: champion.name,
-          icon: `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion.image.full}`,
+          icon:
+            `https://ddragon.leagueoflegends.com/cdn/` +
+            `${latestVersion}/img/champion/` +
+            `${champion.image.full}`,
         }));
 
         setAllChampions(champions);
+
+        localStorage.setItem(
+          CHAMPIONS_CACHE_KEY,
+          JSON.stringify({
+            champions,
+            savedAt: Date.now(),
+          })
+        );
       } catch (error) {
         console.error("Failed to load champions:", error);
       }
     };
 
     loadChampions();
-  }, []);
+  }, [isChampionPanelOpen, allChampions.length]);
 
   const isInvalidRankPath = useMemo(() => {
     if (normalizedServiceType !== "Rank Boost") return false;
@@ -378,150 +537,26 @@ function OrderPage() {
     formData.desiredMasterLp,
   ]);
 
-  const fallbackBasePrice = useMemo(() => {
-    if (normalizedServiceType === "Rank Boost") {
-      if (isTftService) {
-        return calculateTftRankBoostPrice(
-          formData.currentRank,
-          formData.desiredRank,
-          formData.currentLP,
-          formData.currentMasterLp,
-          formData.desiredMasterLp
-        );
-      }
+  const priceReady = Boolean(serverQuote);
 
-      return calculateRankBoostPrice(
-        formData.currentRank,
-        formData.desiredRank,
-        formData.currentLP,
-        formData.lpGain,
-        formData.currentMasterLp,
-        formData.desiredMasterLp
-      );
-    }
-
-    if (normalizedServiceType === "Placement Boost") {
-      if (isTftService) {
-        return calculateTftPlacementBoostPrice(
-          formData.peakRank,
-          Number(formData.placementGames)
-        );
-      }
-
-      return calculatePlacementBoostPrice(
-        formData.peakRank,
-        Number(formData.placementGames)
-      );
-    }
-
-    if (normalizedServiceType === "Win Boost") {
-      if (isTftService) {
-        return calculateTftWinBoostPrice(
-          formData.currentRank,
-          Number(formData.desiredWins)
-        );
-      }
-
-      return calculateWinBoostPrice(
-        formData.currentRank,
-        formData.lpGain,
-        Number(formData.desiredWins)
-      );
-    }
-
-    if (normalizedServiceType === "Pro Duo") {
-      return calculateProDuoPrice(
-        formData.currentRank,
-        formData.lpGain,
-        Number(formData.numberOfGames)
-      );
-    }
-
-    return 0;
-  }, [
-    normalizedServiceType,
-    isTftService,
-    formData.currentRank,
-    formData.desiredRank,
-    formData.currentLP,
-    formData.currentMasterLp,
-    formData.desiredMasterLp,
-    formData.lpGain,
-    formData.peakRank,
-    formData.placementGames,
-    formData.desiredWins,
-    formData.numberOfGames,
-  ]);
-
-  const fallbackModeAdjustedBasePrice = useMemo(() => {
-    // Pro Duo already priced as duo; do not apply duo multiplier
-    if (normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo") {
-      return fallbackBasePrice * 1.4;
-    }
-
-    return fallbackBasePrice;
-  }, [fallbackBasePrice, formData.playMode, normalizedServiceType]);
-
-  const fallbackAddonPrice = useMemo(() => {
-    let total = 0;
-
-    // Skip base duo surcharge for Pro Duo (already factored into base price)
-    const duoExtra = normalizedServiceType !== "Pro Duo" && formData.playMode === "Duo" ? fallbackBasePrice * 0.4 : 0;
-
-    if (formData.priorityOrder) total += fallbackModeAdjustedBasePrice * 0.15;
-
-    if (formData.playMode === "Duo" && formData.premiumCoaching) {
-      total += fallbackModeAdjustedBasePrice * 0.4;
-    }
-
-    if (formData.playMode === "Solo" && formData.soloOnly) {
-      total += fallbackModeAdjustedBasePrice * 0.3;
-    }
-
-    if (formData.playMode === "Duo" && formData.highMMRDuo) {
-      total += fallbackModeAdjustedBasePrice * 0.2;
-    }
-
-    if (formData.playMode === "Duo" && formData.untrackableDuo) {
-      total += fallbackModeAdjustedBasePrice * 0.3;
-    }
-
-    if (formData.bonusWin) {
-      total += getBonusWinPriceByRank(formData.currentRank, formData.playMode);
-    }
-
-    total += getChampionPreferencePrice(fallbackModeAdjustedBasePrice, formData.championPreferenceTier);
-
-    return duoExtra + total;
-  }, [
-    fallbackBasePrice,
-    fallbackModeAdjustedBasePrice,
-    formData.playMode,
-    formData.priorityOrder,
-    formData.premiumCoaching,
-    formData.soloOnly,
-    formData.highMMRDuo,
-    formData.untrackableDuo,
-    formData.bonusWin,
-    formData.currentRank,
-    formData.championPreferenceTier,
-    normalizedServiceType,
-  ]);
-
-  const basePrice = serverQuote
+  const basePrice = priceReady
     ? Number(serverQuote.basePrice || 0)
-    : fallbackBasePrice;
+    : 0;
 
-  const addonPrice = serverQuote
+  const addonPrice = priceReady
     ? Number(serverQuote.addonPrice || 0)
-    : fallbackAddonPrice;
+    : 0;
 
-  const totalPriceNumber = serverQuote
+  const totalPriceNumber = priceReady
     ? Number(serverQuote.totalPrice || 0)
-    : basePrice + addonPrice;
+    : 0;
 
-  const totalPrice = totalPriceNumber.toFixed(2);
-  const totalPriceCents = Math.round(totalPriceNumber * 100);
+  const totalPrice = priceReady
+    ? totalPriceNumber.toFixed(2)
+    : "";
+  const totalPriceCents = priceReady
+    ? Math.round(totalPriceNumber * 100)
+    : 0;
 
   // 1 gold = $0.10 = 10 cents
   const maxGoldByOrder = Math.floor(totalPriceCents / 10);
@@ -884,6 +919,13 @@ function OrderPage() {
 
     try {
       setSubmitError("");
+
+      if (!serverQuote || priceQuoteLoading) {
+        setSubmitError(
+          "Current pricing is still loading. Please wait a moment."
+        );
+        return;
+      }
 
       if (isInvalidRankPath) {
         return;
@@ -2322,18 +2364,34 @@ function OrderPage() {
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
                     <span>Total Price</span>
-                    <strong>${finalPrice}</strong>
+                    {priceQuoteLoading || !priceReady ? (
+                      <Skeleton width={96} height={25} radius={6} />
+                    ) : (
+                      <strong>${finalPrice}</strong>
+                    )}
                   </div>
                 </div>
 
                 {submitError && <p className="error-message">{submitError}</p>}
+                {priceQuoteError && (
+                  <p className="error-message">{priceQuoteError}</p>
+                )}
 
                 <button
                   type="submit"
                   className="primary-btn order-submit-btn"
-                  disabled={paymentLoading || isGoldInputInvalid}
+                  disabled={
+                    paymentLoading ||
+                    priceQuoteLoading ||
+                    !priceReady ||
+                    isGoldInputInvalid
+                  }
                 >
-                  {paymentLoading ? "Preparing secure payment..." : "Continue to Secure Payment"}
+                  {paymentLoading
+                    ? "Preparing secure payment..."
+                    : priceQuoteLoading || !priceReady
+                      ? "Updating price..."
+                      : "Continue to Secure Payment"}
                 </button>
               </>
             )}
@@ -2674,48 +2732,6 @@ const rankOptions = [
   "Diamond I",
 ];
 
-function getRankStepDifference(currentRank, desiredRank) {
-  const currentIndex = rankOptions.indexOf(currentRank);
-  const desiredIndex = rankOptions.indexOf(desiredRank);
-
-  if (currentIndex === -1 || desiredIndex === -1 || desiredIndex <= currentIndex) {
-    return 1;
-  }
-
-  return desiredIndex - currentIndex;
-}
-
-const divisionStepPrices = {
-  "Iron IV": 8,
-  "Iron III": 8,
-  "Iron II": 8,
-  "Iron I": 8,
-  "Bronze IV": 8,
-  "Bronze III": 8,
-  "Bronze II": 8,
-  "Bronze I": 8,
-  "Silver IV": 10,
-  "Silver III": 10,
-  "Silver II": 10,
-  "Silver I": 10,
-  "Gold IV": 12,
-  "Gold III": 14,
-  "Gold II": 16,
-  "Gold I": 18,
-  "Platinum IV": 20,
-  "Platinum III": 22,
-  "Platinum II": 24,
-  "Platinum I": 26,
-  "Emerald IV": 30,
-  "Emerald III": 35,
-  "Emerald II": 40,
-  "Emerald I": 45,
-  "Diamond IV": 59,
-  "Diamond III": 69,
-  "Diamond II": 79,
-  "Diamond I": 120,
-};
-
 function getTierFromAnyRank(rank) {
   return (rank || "").split(" ")[0];
 }
@@ -2770,339 +2786,5 @@ function formatWinsRankDisplay(rank) {
 }
 
 
-
-function clampMasterLp(value) {
-  const num = Number(value) || 0;
-  return Math.max(0, Math.min(999, num));
-}
-
-function getCurrentLpProgressModifier(lpGain) {
-  if (lpGain === "0-20 LP") return 1;
-  if (lpGain === "21-40 LP") return 4 / 5;
-  if (lpGain === "41-60 LP") return 3 / 5;
-  if (lpGain === "61-80 LP") return 2 / 5;
-  if (lpGain === "81-99 LP") return 1 / 5;
-  return 1;
-}
-
-function getLpGainModifierForDivision(lpGain) {
-  if (lpGain === "0-18 LP / win") return 1.1;
-  if (lpGain === "18-23 LP / win") return 1;
-  if (lpGain === "23-28 LP / win") return 0.95;
-  if (lpGain === "28+ LP / win") return 0.9;
-  return 1;
-}
-
-function getLpGainModifierForNetWins(lpGain) {
-  if (lpGain === "0-18 LP / win") return 1;
-  if (lpGain === "18-23 LP / win") return 1;
-  if (lpGain === "23-28 LP / win") return 1.05;
-  if (lpGain === "28+ LP / win") return 1.1;
-  return 1;
-}
-
-function getMasterLpBasePrice(startLp, endLp) {
-  const safeStart = clampMasterLp(startLp);
-  const safeEnd = clampMasterLp(endLp);
-
-  if (safeEnd <= safeStart) return 0;
-
-  const lpTo100 = Math.max(0, Math.min(safeEnd, 100) - safeStart);
-  const lpAbove100 = Math.max(0, safeEnd - Math.max(safeStart, 100));
-
-  return lpTo100 * 1 + lpAbove100 * 1.5;
-}
-
-function calculateRankBoostPrice(
-  currentRank,
-  desiredRank,
-  currentLP,
-  lpGain,
-  currentMasterLp,
-  desiredMasterLp
-) {
-  const currentTier = getTierFromAnyRank(currentRank);
-  const desiredTier = getTierFromAnyRank(desiredRank);
-
-  if (currentTier === "Master" && desiredTier === "Master") {
-    return (
-      getMasterLpBasePrice(currentMasterLp, desiredMasterLp) *
-      getLpGainModifierForDivision(lpGain)
-    );
-  }
-
-  if (currentTier !== "Master" && desiredTier === "Master") {
-    const currentIndex = rankOptions.indexOf(currentRank);
-
-    if (currentIndex === -1) return 0;
-
-    let total = 0;
-
-    for (let i = currentIndex; i < rankOptions.length; i += 1) {
-      const stepRank = rankOptions[i];
-      const stepPrice = divisionStepPrices[stepRank] || 0;
-
-      if (i === currentIndex) {
-        total +=
-          stepPrice *
-          getCurrentLpProgressModifier(currentLP) *
-          getLpGainModifierForDivision(lpGain);
-      } else {
-        total += stepPrice * getLpGainModifierForDivision(lpGain);
-      }
-    }
-
-    total +=
-      getMasterLpBasePrice(0, desiredMasterLp) *
-      getLpGainModifierForDivision(lpGain);
-
-    return total;
-  }
-
-  const currentIndex = rankOptions.indexOf(currentRank);
-  const desiredIndex = rankOptions.indexOf(desiredRank);
-
-  if (currentIndex === -1 || desiredIndex === -1 || desiredIndex <= currentIndex) {
-    return 0;
-  }
-
-  let total = 0;
-
-  for (let i = currentIndex; i < desiredIndex; i += 1) {
-    const stepRank = rankOptions[i];
-    const stepPrice = divisionStepPrices[stepRank] || 0;
-
-    if (i === currentIndex) {
-      total +=
-        stepPrice *
-        getCurrentLpProgressModifier(currentLP) *
-        getLpGainModifierForDivision(lpGain);
-    } else {
-      total += stepPrice * getLpGainModifierForDivision(lpGain);
-    }
-  }
-
-  return total;
-}
-
-function getPlacementBasePrice(peakRank) {
-  const tier = getTierFromAnyRank(peakRank);
-  const division = getDivisionFromRank(peakRank);
-
-  // Prices below represent the total price for 5 placement games.
-  if (peakRank === "Unranked") return 24;
-
-  if (tier === "Iron" || tier === "Bronze") return 15;
-  if (tier === "Silver") return 21;
-  if (tier === "Gold") return 25;
-  if (tier === "Platinum") return 30;
-
-  // No new Emerald placement price was supplied,
-  // so preserve the current price for now.
-  if (tier === "Emerald") return 38;
-
-  // Diamond IV–II = $45 for 5 games.
-  // Diamond I = $60 for 5 games.
-  if (tier === "Diamond") {
-    return division === "I" ? 60 : 45;
-  }
-
-  if (tier === "Master") return 60;
-  if (tier === "Grandmaster" || tier === "Challenger") return 88;
-
-  return 24;
-}
-
-function calculatePlacementBoostPrice(peakRank, placementGames) {
-  const fullSetPrice = getPlacementBasePrice(peakRank);
-  const safeGames = Math.max(1, Math.min(5, placementGames || 5));
-  return (fullSetPrice / 5) * safeGames;
-}
-
-function getNetWinBasePrice(currentRank) {
-  const tier = getTierFromAnyRank(currentRank);
-  const division = getDivisionFromRank(currentRank);
-
-  // Iron → Silver I: $3 per match
-  if (tier === "Iron" || tier === "Bronze" || tier === "Silver") return 3;
-  // Gold IV → Gold I: $5 per match
-  if (tier === "Gold") return 5;
-  // Platinum IV → Platinum I: $6 per match
-  if (tier === "Platinum") return 6;
-  // Emerald gradation by division
-  if (tier === "Emerald") {
-    if (division === "IV") return 7;   // E4 → E3
-    if (division === "III") return 8;  // E3 → E2
-    if (division === "II") return 9;   // E2 → E1
-    return 10;                           // E1 → D4
-  }
-  // Diamond gradation by division
-  if (tier === "Diamond") {
-    if (division === "IV") return 12;  // D4 → D3
-    if (division === "III") return 14; // D3 → D2
-    if (division === "II") return 18;  // D2 → D1
-    return 22;                           // D1 → Master
-  }
-  if (tier === "Master") return 30;      // Master net win stays $30
-  if (tier === "Grandmaster") return 40; // Grandmaster option
-
-  return 3;
-}
-
-function calculateWinBoostPrice(currentRank, lpGain, desiredWins) {
-  const safeWins = Math.max(1, desiredWins || 1);
-  const basePerWin = getNetWinBasePrice(currentRank);
-  const modifier = getLpGainModifierForNetWins(lpGain);
-  return basePerWin * modifier * safeWins;
-}
-
-function calculateProDuoPrice(currentRank, lpGain, numberOfGames) {
-  const safeGames = Math.max(1, numberOfGames || 1);
-  const winBoostEquivalent = calculateWinBoostPrice(currentRank, lpGain, 1);
-  return winBoostEquivalent * 0.75 * safeGames;
-}
-
-function getBonusWinPriceByRank(currentRank, playMode = "Solo") {
-  const soloPrice = getNetWinBasePrice(currentRank) || 0;
-  return playMode === "Duo" ? soloPrice * 1.4 : soloPrice;
-}
-
-function getChampionPreferencePrice(basePrice, tier) {
-  if (tier === "1") return basePrice * 0.1;
-  if (tier === "2-3") return basePrice * 0.05;
-  return 0;
-}
-
-const tftDivisionStepPrices = {
-  "Iron IV": 4,
-  "Iron III": 4,
-  "Iron II": 4,
-  "Iron I": 4,
-
-  "Bronze IV": 4,
-  "Bronze III": 4,
-  "Bronze II": 4,
-  "Bronze I": 4,
-
-  "Silver IV": 5,
-  "Silver III": 6,
-  "Silver II": 7,
-  "Silver I": 7,
-
-  "Gold IV": 7,
-  "Gold III": 8,
-  "Gold II": 9,
-  "Gold I": 10,
-
-  "Platinum IV": 10,
-  "Platinum III": 11,
-  "Platinum II": 12,
-  "Platinum I": 13,
-
-  "Emerald IV": 13,
-  "Emerald III": 15,
-  "Emerald II": 17,
-  "Emerald I": 20,
-
-  "Diamond IV": 22,
-  "Diamond III": 27,
-  "Diamond II": 32,
-  "Diamond I": 40,
-};
-
-const tftWinBoostPrices = {
-  Iron: 3,
-  Bronze: 3,
-  Silver: 3,
-  Gold: 4,
-  Platinum: 5,
-  Emerald: 6,
-  Diamond: 8,
-  Master: 18,
-  Grandmaster: 22,
-};
-
-const tftPlacementPrices = {
-  Unranked: 15,
-  Iron: 15,
-  Bronze: 15,
-  Silver: 15,
-  Gold: 17,
-  Platinum: 20,
-  Emerald: 25,
-  "Diamond IV": 30,
-  "Diamond III": 32,
-  "Diamond II": 37,
-  "Diamond I": 40,
-  Master: 49,
-  Grandmaster: 49,
-  Challenger: 49,
-};
-
-function calculateTftRankBoostPrice(
-  currentRank,
-  desiredRank,
-  currentLP,
-  currentMasterLp = 0,
-  desiredMasterLp = 50
-) {
-  const currentTier = getTierFromAnyRank(currentRank);
-  const desiredTier = getTierFromAnyRank(desiredRank);
-
-  if (currentTier === "Master" && desiredTier === "Master") {
-    const lpDifference =
-      Math.max(0, Number(desiredMasterLp) - Number(currentMasterLp));
-
-    return lpDifference * 1.3;
-  }
-
-  if (currentTier === "Master" && desiredTier !== "Master") {
-    return 0;
-  }
-
-  const currentIndex = rankOptions.indexOf(currentRank);
-  const desiredIndex = rankOptions.indexOf(desiredRank);
-
-  if (
-    currentIndex === -1 ||
-    desiredIndex === -1 ||
-    desiredIndex <= currentIndex
-  ) {
-    return 0;
-  }
-
-  let total = 0;
-
-  for (let i = currentIndex; i < desiredIndex; i += 1) {
-    const stepRank = rankOptions[i];
-    const stepPrice = tftDivisionStepPrices[stepRank] || 0;
-
-    if (i === currentIndex) {
-      total += stepPrice * getCurrentLpProgressModifier(currentLP);
-    } else {
-      total += stepPrice;
-    }
-  }
-
-  return total;
-}
-
-function calculateTftWinBoostPrice(currentRank, desiredWins) {
-  const tier = getTierFromAnyRank(currentRank);
-  const pricePerWin = tftWinBoostPrices[tier] || 0;
-
-  return pricePerWin * (Number(desiredWins) || 0);
-}
-
-function calculateTftPlacementBoostPrice(peakRank, placementGames) {
-  const tier = getTierFromAnyRank(peakRank);
-
-  const pricePerGame =
-    tftPlacementPrices[peakRank] ??
-    tftPlacementPrices[tier] ??
-    0;
-
-  return pricePerGame * (Number(placementGames) || 0);
-}
 
 export default OrderPage;
