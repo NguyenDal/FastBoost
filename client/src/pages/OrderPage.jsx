@@ -1,5 +1,5 @@
 import { createCheckoutSession } from "../api/orders";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
 import { Skeleton } from "../components/Skeleton";
@@ -171,6 +171,8 @@ function OrderPage() {
   const [priceQuoteLoading, setPriceQuoteLoading] = useState(false);
   const [priceQuoteError, setPriceQuoteError] = useState("");
   const [priceQuoteRefreshKey, setPriceQuoteRefreshKey] = useState(0);
+  const [lastQuoteAt, setLastQuoteAt] = useState(0);
+  const serverQuoteRef = useRef(null);
 
   useEffect(() => {
     const loadGold = async () => {
@@ -344,10 +346,91 @@ function OrderPage() {
 
   useEffect(() => {
     setServerQuote(null);
+    serverQuoteRef.current = null;
   }, [serviceType]);
 
   useEffect(() => {
-    if (!serviceType) return;
+    serverQuoteRef.current = serverQuote;
+  }, [serverQuote]);
+
+  const pricingRequestPayload = useMemo(() => {
+    if (!serviceType) return null;
+
+    const payload = {
+      boostType: serviceType,
+      playMode: formData.playMode,
+      priorityOrder: Boolean(formData.priorityOrder),
+      premiumCoaching:
+        formData.playMode === "Duo"
+          ? Boolean(formData.premiumCoaching)
+          : false,
+      untrackableDuo:
+        formData.playMode === "Duo"
+          ? Boolean(formData.untrackableDuo)
+          : false,
+      highMMRDuo:
+        formData.playMode === "Duo"
+          ? Boolean(formData.highMMRDuo)
+          : false,
+      soloOnly:
+        formData.playMode === "Solo"
+          ? Boolean(formData.soloOnly)
+          : false,
+      bonusWin: Boolean(formData.bonusWin),
+      championPreferenceTier: formData.championPreferenceTier || "4+",
+    };
+
+    if (normalizedServiceType === "Rank Boost") {
+      return {
+        ...payload,
+        currentRank: formData.currentRank,
+        desiredRank: formData.desiredRank,
+        currentLP: formData.currentLP,
+        currentMasterLp: formData.currentMasterLp,
+        desiredMasterLp: formData.desiredMasterLp,
+        lpGain: formData.lpGain,
+      };
+    }
+
+    if (normalizedServiceType === "Placement Boost") {
+      return {
+        ...payload,
+        peakRank: formData.peakRank,
+        placementGames: formData.placementGames,
+        ...(formData.bonusWin
+          ? { currentRank: formData.currentRank }
+          : {}),
+      };
+    }
+
+    if (normalizedServiceType === "Win Boost") {
+      return {
+        ...payload,
+        currentRank: formData.currentRank,
+        lpGain: formData.lpGain,
+        desiredWins: formData.desiredWins,
+      };
+    }
+
+    if (normalizedServiceType === "Pro Duo") {
+      return {
+        ...payload,
+        currentRank: formData.currentRank,
+        lpGain: formData.lpGain,
+        numberOfGames: formData.numberOfGames,
+      };
+    }
+
+    return payload;
+  }, [serviceType, normalizedServiceType, formData]);
+
+  const pricingRequestKey = useMemo(
+    () => pricingRequestPayload ? JSON.stringify(pricingRequestPayload) : "",
+    [pricingRequestPayload]
+  );
+
+  useEffect(() => {
+    if (!pricingRequestKey) return;
 
     setPriceQuoteLoading(true);
     setPriceQuoteError("");
@@ -362,29 +445,7 @@ function OrderPage() {
             "Content-Type": "application/json",
           },
           signal: controller.signal,
-          body: JSON.stringify({
-            boostType: serviceType,
-            currentRank: formData.currentRank,
-            desiredRank: formData.desiredRank,
-            currentLP: formData.currentLP,
-            currentMasterLp: formData.currentMasterLp,
-            desiredMasterLp: formData.desiredMasterLp,
-            lpGain: formData.lpGain,
-            peakRank: formData.peakRank,
-            desiredWins: formData.desiredWins,
-            placementGames: formData.placementGames,
-            numberOfGames: formData.numberOfGames,
-            playMode: formData.playMode,
-            priorityOrder: formData.priorityOrder,
-            premiumCoaching: formData.premiumCoaching,
-            liveStream: formData.liveStream,
-            appearOffline: formData.appearOffline,
-            untrackableDuo: formData.untrackableDuo,
-            bonusWin: formData.bonusWin,
-            soloOnly: formData.soloOnly,
-            highMMRDuo: formData.highMMRDuo,
-            championPreferenceTier: formData.championPreferenceTier,
-          }),
+          body: pricingRequestKey,
         });
 
         const data = await response.json();
@@ -394,54 +455,36 @@ function OrderPage() {
         }
 
         setServerQuote(data.quote || null);
+        serverQuoteRef.current = data.quote || null;
+        setLastQuoteAt(Date.now());
       } catch (error) {
         if (error.name === "AbortError") return;
 
         console.error("Failed to load live price:", error);
 
-        setServerQuote(null);
-        setPriceQuoteError(
-          error.message || "Could not load current pricing."
-        );
+        if (!serverQuoteRef.current) {
+          setPriceQuoteError(
+            error.message || "Could not load current pricing."
+          );
+        }
       } finally {
         if (!controller.signal.aborted) {
           setPriceQuoteLoading(false);
         }
       }
-    }, 200);
+    }, 150);
 
     return () => {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [
-    serviceType,
-    formData.currentRank,
-    formData.desiredRank,
-    formData.currentLP,
-    formData.currentMasterLp,
-    formData.desiredMasterLp,
-    formData.lpGain,
-    formData.peakRank,
-    formData.desiredWins,
-    formData.placementGames,
-    formData.numberOfGames,
-    formData.playMode,
-    formData.priorityOrder,
-    formData.premiumCoaching,
-    formData.liveStream,
-    formData.appearOffline,
-    formData.untrackableDuo,
-    formData.bonusWin,
-    formData.soloOnly,
-    formData.highMMRDuo,
-    formData.championPreferenceTier,
-    priceQuoteRefreshKey,
-  ]);
+  }, [pricingRequestKey, priceQuoteRefreshKey]);
 
   useEffect(() => {
     const refreshLivePrice = () => {
-      setPriceQuoteRefreshKey((current) => current + 1);
+      if (!lastQuoteAt || Date.now() - lastQuoteAt >= 60000) {
+        setPriceQuoteRefreshKey((current) => current + 1);
+      }
     };
 
     window.addEventListener("focus", refreshLivePrice);
@@ -449,7 +492,7 @@ function OrderPage() {
     return () => {
       window.removeEventListener("focus", refreshLivePrice);
     };
-  }, []);
+  }, [lastQuoteAt]);
 
   useEffect(() => {
     if (!isChampionPanelOpen) return;
@@ -2364,7 +2407,7 @@ function OrderPage() {
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
                     <span>Total Price</span>
-                    {priceQuoteLoading || !priceReady ? (
+                    {!priceReady ? (
                       <Skeleton width={96} height={25} radius={6} />
                     ) : (
                       <strong>${finalPrice}</strong>
