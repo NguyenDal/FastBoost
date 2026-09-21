@@ -83,21 +83,18 @@ export default function DashboardPage() {
     const referralRewardGold = Number(referralOffer?.rewardGold || 50);
     const canUseReferral = Boolean(referralLink);
 
-    const referralConditionList = [
+    const referralSteps = [
         {
-            label: `${referralDiscountPercent}% off their first purchase`,
-            helpText: "Your friend receives the discount through your private link.",
-            passed: true,
+            label: "Share your private invite link",
+            helpText: `Your friend receives ${referralDiscountPercent}% off their first purchase when they join through it.`,
         },
         {
-            label: `Complete a $${referralQualifyingPurchaseMinimum.toFixed(2)}+ first purchase`,
+            label: `Your friend completes a $${referralQualifyingPurchaseMinimum.toFixed(2)}+ first purchase`,
             helpText: "The order must be paid and completed before the gold rewards are added.",
-            passed: true,
         },
         {
-            label: `${referralRewardGold} gold for each account`,
-            helpText: "Your friend's gold is available for their next purchase.",
-            passed: true,
+            label: `Both accounts receive ${referralRewardGold} gold ($5)`,
+            helpText: "Your friend's gold is ready for a future purchase.",
         },
     ];
 
@@ -236,9 +233,6 @@ export default function DashboardPage() {
                                 <div>
                                     <p className="dashboard-eyebrow green">Refer a Friend</p>
                                     <h2>Refer a Friend</h2>
-                                    <p className="dashboard-subtitle">
-                                        Earn {referralRewardGold} gold ($5) when a friend you refer completes their first purchase of ${referralQualifyingPurchaseMinimum.toFixed(2)} or more. Your friend receives {referralDiscountPercent}% off their first purchase, plus {referralRewardGold} gold ($5) for their next purchase after the qualifying order is completed.
-                                    </p>
                                 </div>
 
                                 <div className="dashboard-referral-count">
@@ -247,23 +241,19 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            <div className="dashboard-referral-conditions">
-                                {referralConditionList.map((condition) => (
+                            <div className="dashboard-referral-steps">
+                                {referralSteps.map((step, index) => (
                                     <div
-                                        key={condition.label}
-                                        className={`dashboard-referral-condition ${condition.passed ? "passed" : "failed"
-                                            }`}
+                                        key={step.label}
+                                        className="dashboard-referral-step"
                                     >
-                                        <span>{condition.passed ? "✓" : "×"}</span>
+                                        <span aria-hidden="true">{index + 1}</span>
 
                                         <div>
                                             <strong>
-                                                {condition.label}
-                                                {condition.current !== undefined && condition.required !== undefined
-                                                    ? ` • ${condition.current}/${condition.required}`
-                                                    : ""}
+                                                {step.label}
                                             </strong>
-                                            <small>{condition.helpText}</small>
+                                            <small>{step.helpText}</small>
                                         </div>
                                     </div>
                                 ))}
@@ -381,14 +371,12 @@ function DashboardReferralSkeleton() {
                     <Skeleton width={112} height={12} />
                     <div style={{ height: 10 }} />
                     <Skeleton width={250} height={26} />
-                    <div style={{ height: 12 }} />
-                    <Skeleton width={360} height={14} />
                 </div>
 
                 <Skeleton width={72} height={58} radius={18} />
             </div>
 
-            <div className="dashboard-referral-conditions">
+            <div className="dashboard-referral-steps">
                 {Array.from({ length: 3 }).map((_, index) => (
                     <div className="dashboard-skeleton-condition" key={index}>
                         <SkeletonCircle size={30} />
