@@ -1,18 +1,31 @@
 const nodemailer = require("nodemailer");
 
-function createTransporter() {
-    return nodemailer.createTransport({
+let transporter;
+
+function getTransporter() {
+    if (transporter) {
+        return transporter;
+    }
+
+    transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT || 587),
         secure: process.env.SMTP_SECURE === "true",
+        pool: true,
+        maxConnections: 1,
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 20000,
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
         },
     });
+
+    return transporter;
 }
 
-exports.sendContactMessage = async (req, res) => {
+exports.sendContactMessage = (req, res) => {
     try {
         const { name, email, subject, message } = req.body;
 
@@ -23,13 +36,11 @@ exports.sendContactMessage = async (req, res) => {
             });
         }
 
-        const transporter = createTransporter();
-
-        await transporter.sendMail({
+        const mailOptions = {
             from: process.env.SMTP_FROM || process.env.SMTP_USER,
             to: "support@fastboost.gg",
             replyTo: email,
-            subject: `[FastBoost Contact] ${subject}`,
+            subject,
             text: `
 Name: ${name}
 Email: ${email}
@@ -37,11 +48,15 @@ Email: ${email}
 Message:
 ${message}
             `.trim(),
+        };
+
+        void getTransporter().sendMail(mailOptions).catch((error) => {
+            console.error("Contact email error:", error);
         });
 
-        return res.json({
+        return res.status(202).json({
             ok: true,
-            message: "Message sent successfully.",
+            message: "Message accepted successfully.",
         });
     } catch (error) {
         console.error("Contact email error:", error);
