@@ -66,6 +66,8 @@ model Service {
 
   priceRules  ServicePriceRule[]
   sales       ServiceSale[]
+
+  @@index([title])
 }
 
 model ServicePriceRule {
@@ -88,6 +90,8 @@ model ServicePriceRule {
   @@index([serviceId])
   @@index([game])
   @@index([pricingType])
+  @@index([serviceId, active, updatedAt])
+  @@index([game, pricingType, active, updatedAt])
 }
 
 model ServiceSale {
@@ -115,6 +119,7 @@ model ServiceSale {
   @@index([active])
   @@index([startsAt])
   @@index([endsAt])
+  @@index([scope, serviceId, active, createdAt])
 }
 
 enum SaleScope {

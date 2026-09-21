@@ -12,6 +12,7 @@ const SERVICES_CACHE_KEY = "fastboost:services:v1";
 const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000;
 const CHAMPIONS_CACHE_KEY = "fastboost:champions:v1";
 const CHAMPIONS_CACHE_TTL = 24 * 60 * 60 * 1000;
+const PRICE_QUOTE_CACHE_TTL = 15 * 1000;
 
 function getCachedService(serviceId) {
   try {
@@ -144,7 +145,7 @@ function OrderPage() {
     currentLP: "0-20 LP",
     currentMasterLp: 0,
     desiredMasterLp: 50,
-    lpGain: "",
+    lpGain: "18-23 LP / win",
     peakRank: "",
     desiredWins: "",
     placementGames: "",
@@ -173,6 +174,7 @@ function OrderPage() {
   const [priceQuoteRefreshKey, setPriceQuoteRefreshKey] = useState(0);
   const [lastQuoteAt, setLastQuoteAt] = useState(0);
   const serverQuoteRef = useRef(null);
+  const priceQuoteCacheRef = useRef(new Map());
 
   useEffect(() => {
     const loadGold = async () => {
@@ -432,6 +434,24 @@ function OrderPage() {
   useEffect(() => {
     if (!pricingRequestKey) return;
 
+    const cachedQuote = priceQuoteCacheRef.current.get(pricingRequestKey);
+
+    if (
+      cachedQuote &&
+      Date.now() - cachedQuote.savedAt < PRICE_QUOTE_CACHE_TTL
+    ) {
+      setServerQuote(cachedQuote.quote);
+      serverQuoteRef.current = cachedQuote.quote;
+      setLastQuoteAt(cachedQuote.savedAt);
+      setPriceQuoteLoading(false);
+      setPriceQuoteError("");
+      return;
+    }
+
+    if (cachedQuote) {
+      priceQuoteCacheRef.current.delete(pricingRequestKey);
+    }
+
     setPriceQuoteLoading(true);
     setPriceQuoteError("");
 
@@ -454,9 +474,19 @@ function OrderPage() {
           throw new Error(data.message || "Failed to load current price.");
         }
 
-        setServerQuote(data.quote || null);
-        serverQuoteRef.current = data.quote || null;
-        setLastQuoteAt(Date.now());
+        const quote = data.quote || null;
+        const receivedAt = Date.now();
+
+        setServerQuote(quote);
+        serverQuoteRef.current = quote;
+        setLastQuoteAt(receivedAt);
+
+        if (quote) {
+          priceQuoteCacheRef.current.set(pricingRequestKey, {
+            quote,
+            savedAt: receivedAt,
+          });
+        }
       } catch (error) {
         if (error.name === "AbortError") return;
 
@@ -472,7 +502,7 @@ function OrderPage() {
           setPriceQuoteLoading(false);
         }
       }
-    }, 150);
+    }, serverQuoteRef.current ? 150 : 0);
 
     return () => {
       window.clearTimeout(timer);

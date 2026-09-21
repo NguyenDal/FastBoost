@@ -1,7 +1,9 @@
-const prisma = require("../prisma");
 const {
     calculateOrderPrice,
 } = require("../utils/pricingCalculator");
+const {
+    getPricingCatalog,
+} = require("../utils/pricingCatalogCache");
 
 exports.getPriceQuote = async (req, res) => {
     try {
@@ -36,41 +38,9 @@ exports.getPriceQuote = async (req, res) => {
             });
         }
 
-        /*
-         * Load the selected pricing rule + service together.
-         *
-         * Before:
-         *   1 query for Service
-         *   1 query for ServicePriceRule
-         *
-         * Now:
-         *   1 query total
-         */
-        const priceRule =
-            await prisma.servicePriceRule.findFirst({
-                where: {
-                    active: true,
+        const pricingCatalog = await getPricingCatalog(boostType);
 
-                    service: {
-                        title: boostType,
-                    },
-                },
-
-                orderBy: {
-                    updatedAt: "desc",
-                },
-
-                include: {
-                    service: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                    },
-                },
-            });
-
-        if (!priceRule) {
+        if (!pricingCatalog) {
             return res.status(404).json({
                 ok: false,
                 message:
@@ -78,125 +48,11 @@ exports.getPriceQuote = async (req, res) => {
             });
         }
 
-        const service = priceRule.service;
-        const now = new Date();
-
-        const saleTimeWindow = {
-            active: true,
-
-            AND: [
-                {
-                    OR: [
-                        { startsAt: null },
-                        {
-                            startsAt: {
-                                lte: now,
-                            },
-                        },
-                    ],
-                },
-                {
-                    OR: [
-                        { endsAt: null },
-                        {
-                            endsAt: {
-                                gte: now,
-                            },
-                        },
-                    ],
-                },
-            ],
-        };
-
-        /*
-         * Load service + global sale candidates in one query.
-         *
-         * Service-specific sale wins over global sale.
-         */
-        const salePromise =
-            prisma.serviceSale.findMany({
-                where: {
-                    ...saleTimeWindow,
-
-                    OR: [
-                        {
-                            scope: "SERVICE",
-                            serviceId: service.id,
-                        },
-                        {
-                            scope: "GLOBAL",
-                            serviceId: null,
-                        },
-                    ],
-                },
-
-                orderBy: {
-                    createdAt: "desc",
-                },
-            });
-
-        /*
-         * Reference Win Boost pricing is ONLY needed
-         * when Bonus Win is actually selected.
-         *
-         * Do not load every pricing rule for the game.
-         */
-        let referenceRulePromise =
-            Promise.resolve(null);
-
-        if (Boolean(bonusWin)) {
-            if (
-                priceRule.pricingType === "PER_WIN"
-            ) {
-                // The selected rule already IS Win Boost.
-                referenceRulePromise =
-                    Promise.resolve(priceRule);
-            } else {
-                referenceRulePromise =
-                    prisma.servicePriceRule.findFirst({
-                        where: {
-                            game: priceRule.game,
-                            pricingType: "PER_WIN",
-                            active: true,
-                        },
-
-                        orderBy: {
-                            updatedAt: "desc",
-                        },
-                    });
-            }
-        }
-
-        /*
-         * Run independent DB work in parallel.
-         */
-        const [
-            saleCandidates,
-            referenceWinRule,
-        ] = await Promise.all([
-            salePromise,
-            referenceRulePromise,
-        ]);
-
-        const serviceSale =
-            saleCandidates.find(
-                (sale) =>
-                    sale.scope === "SERVICE"
-            ) || null;
-
-        const globalSale =
-            saleCandidates.find(
-                (sale) =>
-                    sale.scope === "GLOBAL"
-            ) || null;
-
-        const activeSale =
-            serviceSale || globalSale;
-
-        const referenceRules =
-            referenceWinRule
-                ? [referenceWinRule]
-                : [];
+        const {
+            priceRule,
+            activeSale,
+            referenceRules,
+        } = pricingCatalog;
 
         const pricingOptions = {
             currentRank:

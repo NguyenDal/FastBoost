@@ -1,4 +1,7 @@
 const prisma = require("../prisma");
+const {
+    invalidatePricingCatalog,
+} = require("../utils/pricingCatalogCache");
 
 function getSaleStatus(sale) {
     if (!sale || !sale.active) return "NONE";
@@ -252,6 +255,8 @@ exports.createSale = async (req, res) => {
                 active: true,
             },
         });
+
+        invalidatePricingCatalog();
 
         return res.status(201).json({
             ok: true,
@@ -542,6 +547,8 @@ exports.updatePriceRule = async (req, res) => {
             },
         });
 
+        invalidatePricingCatalog();
+
         return res.json({
             ok: true,
             message: "Pricing updated successfully.",
@@ -570,6 +577,8 @@ exports.disableSale = async (req, res) => {
                 active: false,
             },
         });
+
+        invalidatePricingCatalog();
 
         return res.json({
             ok: true,
