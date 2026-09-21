@@ -186,6 +186,7 @@ model Order {
 
   basePrice         Float       @default(0)
   addonPrice        Float       @default(0)
+  referralDiscount  Float       @default(0)
   totalPrice        Float       @default(0)
 
   customer          User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -194,6 +195,8 @@ model Order {
   assignments       OrderAssignment[]
   assignmentRequests AssignmentRequest[]
   conversation      Conversation?
+
+  @@index([customerId, paymentStatus, paidAt])
 }
 
 /// Link assigned boosters/providers to an order

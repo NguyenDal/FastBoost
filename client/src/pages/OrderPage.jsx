@@ -167,6 +167,7 @@ function OrderPage() {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [availableGold, setAvailableGold] = useState(0);
   const [goldToUse, setGoldToUse] = useState(0);
+  const [referralOffer, setReferralOffer] = useState(null);
 
   const [serverQuote, setServerQuote] = useState(null);
   const [priceQuoteLoading, setPriceQuoteLoading] = useState(false);
@@ -179,7 +180,12 @@ function OrderPage() {
   useEffect(() => {
     const loadGold = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+
+      if (!token) {
+        setAvailableGold(0);
+        setReferralOffer(null);
+        return;
+      }
 
       try {
         const response = await fetch(`${API_BASE_URL}/loyalty/me`, {
@@ -189,15 +195,16 @@ function OrderPage() {
         });
 
         const data = await response.json();
+        const loyalty = data?.loyalty || data || {};
 
         const totalGold =
-          data?.totalGold ??
-          data?.loyalty?.totalGold ??
-          data?.summary?.totalGold ??
-          data?.accountProgress?.totalGold ??
+          loyalty?.totalGold ??
+          loyalty?.summary?.totalGold ??
+          loyalty?.accountProgress?.totalGold ??
           0;
 
         setAvailableGold(Math.max(0, Number(totalGold || 0)));
+        setReferralOffer(loyalty?.referralOffer || null);
       } catch (error) {
         console.error("Failed to load available gold:", error);
       }
@@ -624,11 +631,25 @@ function OrderPage() {
     ? Number(serverQuote.totalPrice || 0)
     : 0;
 
+  const referralDiscountPercent = Number(
+    referralOffer?.firstPurchaseDiscountPercent || 0
+  );
+  const referralDiscount =
+    priceReady && referralOffer?.eligible
+      ? Math.round(
+        (totalPriceNumber * (referralDiscountPercent / 100) + Number.EPSILON) * 100
+      ) / 100
+      : 0;
+  const referralAdjustedTotal = Math.max(
+    0,
+    totalPriceNumber - referralDiscount
+  );
+
   const totalPrice = priceReady
-    ? totalPriceNumber.toFixed(2)
+    ? referralAdjustedTotal.toFixed(2)
     : "";
   const totalPriceCents = priceReady
-    ? Math.round(totalPriceNumber * 100)
+    ? Math.round(referralAdjustedTotal * 100)
     : 0;
 
   // 1 gold = $0.10 = 10 cents
@@ -655,7 +676,7 @@ function OrderPage() {
 
   const safeGoldToUse = isGoldInputInvalid ? 0 : enteredGoldToUse;
   const goldDiscount = safeGoldToUse * 0.1;
-  const finalPrice = Math.max(0, totalPriceNumber - goldDiscount).toFixed(2);
+  const finalPrice = Math.max(0, referralAdjustedTotal - goldDiscount).toFixed(2);
 
   const goldInputMessage = isGoldNotWholeNumber
     ? "Please enter a whole number of gold."
@@ -665,7 +686,7 @@ function OrderPage() {
         ? `You can only use up to ${maxGoldByOrder} gold for this order.`
         : "";
 
-  const coinCount = Math.floor(Number(totalPrice));
+  const coinCount = Math.floor(referralAdjustedTotal);
   const coinValue = (coinCount * 0.1).toFixed(2);
 
   const filteredChampions = allChampions.filter((champion) =>
@@ -2425,6 +2446,19 @@ function OrderPage() {
                 Gold is spent only after payment succeeds.
               </p>
             </div>
+
+            {referralDiscount > 0 && (
+              <>
+                <div className="summary-gold-redemption-row">
+                  <span>Referral first-purchase discount ({referralDiscountPercent}%)</span>
+                  <strong>-${referralDiscount.toFixed(2)}</strong>
+                </div>
+
+                <p className="summary-coins-footnote">
+                  Complete a first purchase of ${Number(referralOffer?.qualifyingPurchaseMinimum || 50).toFixed(2)} or more to earn {referralOffer?.rewardGold || 50} gold ($5) for a future purchase.
+                </p>
+              </>
+            )}
 
             {isInvalidRankPath ? (
               <div className="price-warning-box price-warning-box-blocking">

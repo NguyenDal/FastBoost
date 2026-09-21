@@ -73,14 +73,33 @@ export default function DashboardPage() {
     const totalGold = Number(loyalty?.totalGold || 0);
     const referralLink = loyalty?.referralLink || "";
     const referralCount = loyalty?.referralCount || 0;
-    const referralEligibility = loyalty?.referralEligibility || {};
-    const referralConditions = referralEligibility?.conditions || {};
-    const canUseReferral = Boolean(referralEligibility?.eligible && referralLink);
+    const referralOffer = loyalty?.referralOffer || {};
+    const referralDiscountPercent = Number(
+        referralOffer?.firstPurchaseDiscountPercent || 10
+    );
+    const referralQualifyingPurchaseMinimum = Number(
+        referralOffer?.qualifyingPurchaseMinimum || 50
+    );
+    const referralRewardGold = Number(referralOffer?.rewardGold || 50);
+    const canUseReferral = Boolean(referralLink);
 
     const referralConditionList = [
-        referralConditions.emailVerified,
-        referralConditions.completedOrders,
-    ].filter(Boolean);
+        {
+            label: `${referralDiscountPercent}% off their first purchase`,
+            helpText: "Your friend receives the discount through your private link.",
+            passed: true,
+        },
+        {
+            label: `Complete a $${referralQualifyingPurchaseMinimum.toFixed(2)}+ first purchase`,
+            helpText: "The order must be paid and completed before the gold rewards are added.",
+            passed: true,
+        },
+        {
+            label: `${referralRewardGold} gold for each account`,
+            helpText: "Your friend's gold is available for their next purchase.",
+            passed: true,
+        },
+    ];
 
     const tierInfo = {
         key: loyalty?.tierKey || "bronze",
@@ -215,10 +234,10 @@ export default function DashboardPage() {
                         <section className={`dashboard-card dashboard-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
                             <div className="dashboard-card-header">
                                 <div>
-                                    <p className="dashboard-eyebrow green">Private Invite</p>
-                                    <h2>Share Your Referral Link</h2>
+                                    <p className="dashboard-eyebrow green">Refer a Friend</p>
+                                    <h2>Refer a Friend</h2>
                                     <p className="dashboard-subtitle">
-                                        Invite friends to FastBoost and earn reward gold when the referral requirements are met.
+                                        Earn {referralRewardGold} gold ($5) when a friend you refer completes their first purchase of ${referralQualifyingPurchaseMinimum.toFixed(2)} or more. Your friend receives {referralDiscountPercent}% off their first purchase, plus {referralRewardGold} gold ($5) for their next purchase after the qualifying order is completed.
                                     </p>
                                 </div>
 
@@ -370,7 +389,7 @@ function DashboardReferralSkeleton() {
             </div>
 
             <div className="dashboard-referral-conditions">
-                {Array.from({ length: 2 }).map((_, index) => (
+                {Array.from({ length: 3 }).map((_, index) => (
                     <div className="dashboard-skeleton-condition" key={index}>
                         <SkeletonCircle size={30} />
 

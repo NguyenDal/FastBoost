@@ -233,6 +233,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   championPreferenceTier: 'championPreferenceTier',
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
+  referralDiscount: 'referralDiscount',
   totalPrice: 'totalPrice'
 };
 

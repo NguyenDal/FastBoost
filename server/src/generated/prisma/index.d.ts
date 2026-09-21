@@ -8636,6 +8636,7 @@ export namespace Prisma {
     numberOfGames: number | null
     basePrice: number | null
     addonPrice: number | null
+    referralDiscount: number | null
     totalPrice: number | null
   }
 
@@ -8651,6 +8652,7 @@ export namespace Prisma {
     numberOfGames: number | null
     basePrice: number | null
     addonPrice: number | null
+    referralDiscount: number | null
     totalPrice: number | null
   }
 
@@ -8704,6 +8706,7 @@ export namespace Prisma {
     championPreferenceTier: string | null
     basePrice: number | null
     addonPrice: number | null
+    referralDiscount: number | null
     totalPrice: number | null
   }
 
@@ -8757,6 +8760,7 @@ export namespace Prisma {
     championPreferenceTier: string | null
     basePrice: number | null
     addonPrice: number | null
+    referralDiscount: number | null
     totalPrice: number | null
   }
 
@@ -8811,6 +8815,7 @@ export namespace Prisma {
     championPreferenceTier: number
     basePrice: number
     addonPrice: number
+    referralDiscount: number
     totalPrice: number
     _all: number
   }
@@ -8828,6 +8833,7 @@ export namespace Prisma {
     numberOfGames?: true
     basePrice?: true
     addonPrice?: true
+    referralDiscount?: true
     totalPrice?: true
   }
 
@@ -8843,6 +8849,7 @@ export namespace Prisma {
     numberOfGames?: true
     basePrice?: true
     addonPrice?: true
+    referralDiscount?: true
     totalPrice?: true
   }
 
@@ -8896,6 +8903,7 @@ export namespace Prisma {
     championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
+    referralDiscount?: true
     totalPrice?: true
   }
 
@@ -8949,6 +8957,7 @@ export namespace Prisma {
     championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
+    referralDiscount?: true
     totalPrice?: true
   }
 
@@ -9003,6 +9012,7 @@ export namespace Prisma {
     championPreferenceTier?: true
     basePrice?: true
     addonPrice?: true
+    referralDiscount?: true
     totalPrice?: true
     _all?: true
   }
@@ -9144,6 +9154,7 @@ export namespace Prisma {
     championPreferenceTier: string
     basePrice: number
     addonPrice: number
+    referralDiscount: number
     totalPrice: number
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
@@ -9217,6 +9228,7 @@ export namespace Prisma {
     championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
+    referralDiscount?: boolean
     totalPrice?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9277,6 +9289,7 @@ export namespace Prisma {
     championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
+    referralDiscount?: boolean
     totalPrice?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9333,6 +9346,7 @@ export namespace Prisma {
     championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
+    referralDiscount?: boolean
     totalPrice?: boolean
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9389,10 +9403,11 @@ export namespace Prisma {
     championPreferenceTier?: boolean
     basePrice?: boolean
     addonPrice?: boolean
+    referralDiscount?: boolean
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9470,6 +9485,7 @@ export namespace Prisma {
       championPreferenceTier: string
       basePrice: number
       addonPrice: number
+      referralDiscount: number
       totalPrice: number
     }, ExtArgs["result"]["order"]>
     composites: {}
@@ -9949,6 +9965,7 @@ export namespace Prisma {
     readonly championPreferenceTier: FieldRef<"Order", 'String'>
     readonly basePrice: FieldRef<"Order", 'Float'>
     readonly addonPrice: FieldRef<"Order", 'Float'>
+    readonly referralDiscount: FieldRef<"Order", 'Float'>
     readonly totalPrice: FieldRef<"Order", 'Float'>
   }
     
@@ -20560,6 +20577,7 @@ export namespace Prisma {
     championPreferenceTier: 'championPreferenceTier',
     basePrice: 'basePrice',
     addonPrice: 'addonPrice',
+    referralDiscount: 'referralDiscount',
     totalPrice: 'totalPrice'
   };
 
@@ -21420,6 +21438,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
+    referralDiscount?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
@@ -21479,6 +21498,7 @@ export namespace Prisma {
     championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
     customer?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
@@ -21541,6 +21561,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
+    referralDiscount?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
@@ -21600,6 +21621,7 @@ export namespace Prisma {
     championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
@@ -21662,6 +21684,7 @@ export namespace Prisma {
     championPreferenceTier?: StringWithAggregatesFilter<"Order"> | string
     basePrice?: FloatWithAggregatesFilter<"Order"> | number
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
+    referralDiscount?: FloatWithAggregatesFilter<"Order"> | number
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
   }
 
@@ -22817,6 +22840,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
@@ -22876,6 +22900,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
@@ -22931,6 +22956,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
@@ -22990,6 +23016,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
@@ -23047,6 +23074,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
   }
 
@@ -23099,6 +23127,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
   }
 
@@ -23153,6 +23182,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
   }
 
@@ -24499,6 +24529,7 @@ export namespace Prisma {
     championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
   }
 
@@ -24514,6 +24545,7 @@ export namespace Prisma {
     numberOfGames?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
   }
 
@@ -24567,6 +24599,7 @@ export namespace Prisma {
     championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
   }
 
@@ -24620,6 +24653,7 @@ export namespace Prisma {
     championPreferenceTier?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
   }
 
@@ -24635,6 +24669,7 @@ export namespace Prisma {
     numberOfGames?: SortOrder
     basePrice?: SortOrder
     addonPrice?: SortOrder
+    referralDiscount?: SortOrder
     totalPrice?: SortOrder
   }
 
@@ -26766,6 +26801,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -26823,6 +26859,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
@@ -27313,6 +27350,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFilter<"Order"> | string
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
+    referralDiscount?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
   }
 
@@ -27867,6 +27905,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -27924,6 +27963,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
@@ -28559,6 +28599,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
@@ -28617,6 +28658,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
@@ -28744,6 +28786,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
@@ -28802,6 +28845,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
@@ -29039,6 +29083,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
@@ -29097,6 +29142,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
@@ -29281,6 +29327,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
@@ -29339,6 +29386,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
@@ -29519,6 +29567,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
@@ -29577,6 +29626,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
@@ -29707,6 +29757,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
@@ -29765,6 +29816,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
@@ -30556,6 +30608,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
   }
 
@@ -30705,6 +30758,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -30762,6 +30816,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
@@ -30818,6 +30873,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
   }
 
@@ -31186,6 +31242,7 @@ export namespace Prisma {
     championPreferenceTier?: string
     basePrice?: number
     addonPrice?: number
+    referralDiscount?: number
     totalPrice?: number
   }
 
@@ -31262,6 +31319,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -31319,6 +31377,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
@@ -31375,6 +31434,7 @@ export namespace Prisma {
     championPreferenceTier?: StringFieldUpdateOperationsInput | string
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
   }
 

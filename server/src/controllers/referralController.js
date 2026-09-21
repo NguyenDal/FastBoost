@@ -1,4 +1,7 @@
 const prisma = require("../prisma");
+const {
+  getReferralProgramDetails,
+} = require("../utils/referralProgram");
 
 async function getPublicReferralInvite(req, res) {
   try {
@@ -19,7 +22,6 @@ async function getPublicReferralInvite(req, res) {
         id: true,
         username: true,
         email: true,
-        emailVerifiedAt: true,
         referralCode: true,
         profile: {
           select: {
@@ -37,21 +39,13 @@ async function getPublicReferralInvite(req, res) {
       });
     }
 
-    const completedOrders = await prisma.order.count({
-      where: {
-        customerId: inviter.id,
-        status: "COMPLETED",
-      },
-    });
-
     const inviterName =
       inviter.username ||
       inviter.profile?.displayName ||
       inviter.email?.split("@")[0] ||
       "FastBoost user";
 
-    const inviterEligible =
-      Boolean(inviter.emailVerifiedAt) && completedOrders >= 3;
+    const referralProgram = getReferralProgramDetails();
 
     return res.json({
       ok: true,
@@ -61,16 +55,9 @@ async function getPublicReferralInvite(req, res) {
           username: inviterName,
           profileImageUrl: inviter.profile?.profileImageUrl || "",
         },
-        eligibility: {
-          emailVerified: Boolean(inviter.emailVerifiedAt),
-          completedOrders: Math.min(completedOrders, 3),
-          requiredCompletedOrders: 3,
-          eligible: inviterEligible,
-        },
         reward: {
-          goldAmount: 50,
-          dollarValue: 5,
-          text: "Both accounts receive 50 gold = $5 discount after the invited user verifies email.",
+          ...referralProgram,
+          text: "Get 10% off your first purchase. After you complete a first purchase of $50 or more, both accounts receive 50 gold ($5); your gold is for a future purchase.",
         },
       },
     });

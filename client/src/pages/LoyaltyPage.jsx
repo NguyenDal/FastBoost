@@ -244,7 +244,7 @@ export default function LoyaltyPage() {
                             <div className="loyalty-section-header">
                                 <div>
                                     <h2>Reward History</h2>
-                                    <p>Your latest completed match rewards, referral rewards, and bonus gold.</p>
+                                    <p>Your latest completed-order, referral, and bonus gold. Referral gold is added after a qualifying first order is completed and can be used on a future purchase.</p>
                                 </div>
 
                                 <Link to="/account/orders" className="loyalty-secondary-btn">

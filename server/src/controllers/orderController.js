@@ -1,6 +1,11 @@
 const prisma = require("../prisma");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
+const {
+    applyReferralFirstPurchaseDiscount,
+    getReferralFirstPurchaseOffer,
+    grantReferralCompletionRewards,
+} = require("../utils/referralProgram");
 
 const {
     encryptOrderPassword,
@@ -410,6 +415,14 @@ const createOrder = async (req, res) => {
             });
         }
 
+        const referralOffer = await getReferralFirstPurchaseOffer(
+            customerId
+        );
+        const orderPricing = applyReferralFirstPurchaseDiscount(
+            calculatedPrice.totalPrice,
+            referralOffer
+        );
+
         const order = await prisma.order.create({
             data: {
                 customerId,
@@ -484,13 +497,14 @@ const createOrder = async (req, res) => {
                  */
                 basePrice: calculatedPrice.basePrice,
                 addonPrice: calculatedPrice.addonPrice,
-                totalPrice: calculatedPrice.totalPrice,
+                referralDiscount: orderPricing.referralDiscount,
+                totalPrice: orderPricing.totalPrice,
 
                 paymentStatus: "PENDING",
                 currency: "cad",
 
                 amountCents: Math.round(
-                    calculatedPrice.totalPrice * 100
+                    orderPricing.totalPrice * 100
                 ),
             },
         });
@@ -510,7 +524,9 @@ const createOrder = async (req, res) => {
                 addonPrice: calculatedPrice.addonPrice,
                 subtotal: calculatedPrice.subtotal,
                 saleDiscount: calculatedPrice.saleDiscount,
-                totalPrice: calculatedPrice.totalPrice,
+                referralDiscount: orderPricing.referralDiscount,
+                totalPrice: orderPricing.totalPrice,
+                referralOffer,
 
                 sale: activeSale
                     ? {
@@ -1044,6 +1060,12 @@ module.exports.updateOrderStatus = async (req, res) => {
             removedBonuses: [],
         };
 
+        const referralReward =
+            status === "COMPLETED" &&
+                updated.paymentStatus === "PAID"
+                ? await grantReferralCompletionRewards(updated.id)
+                : { granted: false };
+
         if (
             status === "COMPLETED" &&
             existingOrder.status !== "COMPLETED" &&
@@ -1076,6 +1098,7 @@ module.exports.updateOrderStatus = async (req, res) => {
                     : "Order cancelled",
             order: formatOrderForListResponse(updated),
             loyaltyBonusSync,
+            referralReward,
         });
     } catch (error) {
         console.error("updateOrderStatus error:", error);
@@ -1507,6 +1530,11 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             removedBonuses: [],
         };
 
+        const referralReward =
+            updated.paymentStatus === "PAID"
+                ? await grantReferralCompletionRewards(updated.id)
+                : { granted: false };
+
         if (
             existingOrder.status !== "COMPLETED" &&
             existingOrder.paymentStatus === "PAID" &&
@@ -1534,6 +1562,7 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             message: "Order marked as completed",
             order: formatOrderForListResponse(updated),
             loyaltyBonusSync,
+            referralReward,
         });
     } catch (error) {
         console.error("providerCompleteAssignedOrder error:", error);

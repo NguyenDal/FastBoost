@@ -646,93 +646,6 @@ module.exports.sendEmailVerificationCode = async (req, res) => {
   }
 };
 
-async function maybeGrantReferralRewards(invitedUserId) {
-  const invitedUser = await prisma.user.findUnique({
-    where: { id: invitedUserId },
-    select: {
-      id: true,
-      emailVerifiedAt: true,
-      referredById: true,
-      referredBy: {
-        select: {
-          id: true,
-          emailVerifiedAt: true,
-        },
-      },
-    },
-  });
-
-  if (!invitedUser?.emailVerifiedAt || !invitedUser?.referredById) {
-    return {
-      granted: false,
-      reason: "Invited user is not verified or has no inviter.",
-    };
-  }
-
-  const inviterId = invitedUser.referredById;
-
-  const inviterCompletedOrders = await prisma.order.count({
-    where: {
-      customerId: inviterId,
-      status: "COMPLETED",
-    },
-  });
-
-  if (inviterCompletedOrders < 3) {
-    return {
-      granted: false,
-      reason: "Inviter does not have at least 3 completed orders.",
-    };
-  }
-
-  const referralGold = 50;
-
-  await prisma.$transaction([
-    prisma.rewardHistory.upsert({
-      where: {
-        userId_type_sourceUserId: {
-          userId: inviterId,
-          type: "REFERRAL_INVITER",
-          sourceUserId: invitedUser.id,
-        },
-      },
-      update: {},
-      create: {
-        userId: inviterId,
-        type: "REFERRAL_INVITER",
-        goldAmount: referralGold,
-        title: "Referral reward",
-        description: "You earned $5 discount credit because your invited user verified their email.",
-        sourceUserId: invitedUser.id,
-      },
-    }),
-
-    prisma.rewardHistory.upsert({
-      where: {
-        userId_type_sourceUserId: {
-          userId: invitedUser.id,
-          type: "REFERRAL_INVITED",
-          sourceUserId: inviterId,
-        },
-      },
-      update: {},
-      create: {
-        userId: invitedUser.id,
-        type: "REFERRAL_INVITED",
-        goldAmount: referralGold,
-        title: "Private invite welcome reward",
-        description: "You earned $5 discount credit after verifying your email through a private invite.",
-        sourceUserId: inviterId,
-      },
-    }),
-  ]);
-
-  return {
-    granted: true,
-    goldAmount: referralGold,
-  };
-}
-
 module.exports.confirmEmailVerificationCode = async (req, res) => {
   try {
     const userId = getUserId(req);
@@ -824,14 +737,9 @@ module.exports.confirmEmailVerificationCode = async (req, res) => {
       },
     });
 
-    const referralReward = await maybeGrantReferralRewards(userId);
-
     return res.json({
       ok: true,
-      message: referralReward.granted
-        ? "Email verified successfully. Your referral reward was added."
-        : "Email verified successfully.",
-      referralReward,
+      message: "Email verified successfully.",
       user: sanitizeUser(updatedUser),
     });
   } catch (error) {

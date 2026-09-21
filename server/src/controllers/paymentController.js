@@ -1,5 +1,8 @@
 const prisma = require("../prisma");
 const stripe = require("../utils/stripeClient");
+const {
+    grantReferralCompletionRewards,
+} = require("../utils/referralProgram");
 
 function getUserId(req) {
     return req.user?.id || req.user?.userId;
@@ -188,6 +191,8 @@ const createCheckoutSession = async (req, res) => {
                     ]
                     : []),
             ]);
+
+                    await grantReferralCompletionRewards(order.id);
 
             return res.json({
                 ok: true,
@@ -402,6 +407,8 @@ const handleStripeWebhook = async (req, res) => {
                     ]
                     : []),
             ]);
+
+                    await grantReferralCompletionRewards(order.id);
 
             console.log(`Stripe payment completed for order ${orderId}.`);
         }

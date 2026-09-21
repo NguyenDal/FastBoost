@@ -1,5 +1,8 @@
 const prisma = require("../prisma");
 const { generateReferralCode } = require("../utils/referralCode");
+const {
+    getReferralFirstPurchaseOffer,
+} = require("../utils/referralProgram");
 
 function getUserId(req) {
     return req.user?.id || req.user?.userId;
@@ -189,6 +192,7 @@ exports.getMyLoyalty = async (req, res) => {
         }
 
         const user = await ensureReferralCode(userId);
+        const referralOffer = await getReferralFirstPurchaseOffer(userId);
 
         const completedOrderWhere = {
             customerId: userId,
@@ -269,12 +273,7 @@ exports.getMyLoyalty = async (req, res) => {
 
         const completedMatches = completedOrdersStats._count._all || 0;
 
-        const hasVerifiedEmail = Boolean(user?.emailVerifiedAt);
-        const hasEnoughCompletedOrders = completedMatches >= 3;
         const hasReferralLink = Boolean(user?.referralCode);
-
-        const referralEligible =
-            hasVerifiedEmail && hasEnoughCompletedOrders && hasReferralLink;
 
         const totalCompletedSpend = Number(completedOrdersStats._sum.totalPrice || 0);
 
@@ -351,31 +350,17 @@ exports.getMyLoyalty = async (req, res) => {
 
                 referralCode: user?.referralCode || null,
                 referralLink:
-                    referralEligible && user?.referralCode
+                    hasReferralLink && user?.referralCode
                         ? `${process.env.APP_BASE_URL}/r/${user.referralCode}`
                         : null,
                 referralCount: user?._count?.referrals || 0,
 
+                referralOffer,
+
                 referralEligibility: {
-                    eligible: referralEligible,
-                    discountAmount: 5,
+                    eligible: hasReferralLink,
+                    discountAmount: referralOffer.rewardDollarValue,
                     conditions: {
-                        emailVerified: {
-                            passed: hasVerifiedEmail,
-                            label: "Email verified",
-                            helpText: hasVerifiedEmail
-                                ? "Your email is verified."
-                                : "Verify your email in Account Settings first.",
-                        },
-                        completedOrders: {
-                            passed: hasEnoughCompletedOrders,
-                            label: "At least 3 completed orders",
-                            current: Math.min(completedMatches, 3),
-                            required: 3,
-                            helpText: hasEnoughCompletedOrders
-                                ? "You have enough completed orders."
-                                : `Complete ${Math.max(0, 3 - completedMatches)} more order(s) to unlock referrals.`,
-                        },
                         referralLinkReady: {
                             passed: hasReferralLink,
                             label: "Referral link ready",

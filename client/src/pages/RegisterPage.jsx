@@ -250,7 +250,7 @@ function RegisterPage({
                           <p className="private-invite-error">{referralInviteError}</p>
                         ) : (
                           <p>
-                            Register with this private link and verify your email to unlock the referral reward.
+                            Register with this private link to receive 10% off your first purchase.
                           </p>
                         )}
                       </div>
@@ -258,11 +258,11 @@ function RegisterPage({
 
                     <div className="private-invite-reward-box">
                       <div>
-                        <strong>Reward</strong>
-                        <span>Both users receive 50 gold = $5 discount.</span>
+                        <strong>Refer a Friend</strong>
+                        <span>Complete a first purchase of $50 or more and both accounts receive 50 gold = $5.</span>
                       </div>
 
-                      <div className="private-invite-gold-pill">+50 gold</div>
+                      <div className="private-invite-gold-pill">50 gold next</div>
                     </div>
 
                     <div className="private-invite-condition-list">
@@ -273,18 +273,13 @@ function RegisterPage({
 
                       <div className="private-invite-condition">
                         <span className="condition-dot success">✓</span>
-                        <p>You verify your email after creating the account.</p>
+                        <p>Receive 10% off your first purchase.</p>
                       </div>
 
                       <div className="private-invite-condition">
-                        <span
-                          className={`condition-dot ${referralInvite?.eligibility?.eligible ? "success" : "warning"
-                            }`}
-                        >
-                          {referralInvite?.eligibility?.eligible ? "✓" : "!"}
-                        </span>
+                        <span className="condition-dot success">✓</span>
                         <p>
-                          Inviter must have verified email and at least 3 completed orders.
+                          After a paid and completed $50+ first order, you and your referrer each receive 50 gold ($5). Your gold is for a future purchase.
                         </p>
                       </div>
                     </div>

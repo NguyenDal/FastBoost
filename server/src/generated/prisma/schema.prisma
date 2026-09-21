@@ -66,6 +66,8 @@ model Service {
 
   priceRules ServicePriceRule[]
   sales      ServiceSale[]
+
+  @@index([title])
 }
 
 model ServicePriceRule {
@@ -88,6 +90,8 @@ model ServicePriceRule {
   @@index([serviceId])
   @@index([game])
   @@index([pricingType])
+  @@index([serviceId, active, updatedAt])
+  @@index([game, pricingType, active, updatedAt])
 }
 
 model ServiceSale {
@@ -115,6 +119,7 @@ model ServiceSale {
   @@index([active])
   @@index([startsAt])
   @@index([endsAt])
+  @@index([scope, serviceId, active, createdAt])
 }
 
 enum SaleScope {
@@ -179,9 +184,10 @@ model Order {
   highMMRDuo             Boolean @default(false)
   championPreferenceTier String  @default("4+")
 
-  basePrice  Float @default(0)
-  addonPrice Float @default(0)
-  totalPrice Float @default(0)
+  basePrice        Float @default(0)
+  addonPrice       Float @default(0)
+  referralDiscount Float @default(0)
+  totalPrice       Float @default(0)
 
   customer           User                @relation(fields: [customerId], references: [id], onDelete: Cascade)
   service            Service             @relation(fields: [serviceId], references: [id], onDelete: Cascade)
@@ -189,6 +195,8 @@ model Order {
   assignments        OrderAssignment[]
   assignmentRequests AssignmentRequest[]
   conversation       Conversation?
+
+  @@index([customerId, paymentStatus, paidAt])
 }
 
 /// Link assigned boosters/providers to an order
