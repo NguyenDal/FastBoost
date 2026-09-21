@@ -89,7 +89,7 @@ export default function ContactPage() {
         setAuthSuccessTitle("Login Successful");
         setAuthSuccessText("Welcome to FastBoost.");
 
-        window.setTimeout(resetAuthState, 1200);
+        window.setTimeout(resetAuthState, 350);
     };
 
     const handleLoginSubmit = async (event) => {
@@ -144,6 +144,11 @@ export default function ContactPage() {
                 return;
             }
 
+            if (data?.token) {
+                finishLogin(data);
+                return;
+            }
+
             const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -159,7 +164,7 @@ export default function ContactPage() {
                     setAuthSuccess(false);
                     setAuthMode("login");
                     setLoginForm({ email, password: "" });
-                }, 1200);
+                }, 350);
                 return;
             }
 

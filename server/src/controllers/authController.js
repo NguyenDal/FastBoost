@@ -181,9 +181,12 @@ const registerUser = async (req, res) => {
       },
     });
 
+    const token = signToken(user);
+
     return res.status(201).json({
       ok: true,
       message: "User registered successfully",
+      token,
       user: {
         id: user.id,
         email: user.email,

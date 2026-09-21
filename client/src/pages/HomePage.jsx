@@ -523,7 +523,7 @@ function HomePage() {
 
     setTimeout(() => {
       closeAuthModal();
-    }, 1200);
+    }, 350);
   };
 
   const handleLoginSubmit = async (event) => {
@@ -632,6 +632,18 @@ function HomePage() {
         return;
       }
 
+      if (registerData?.token) {
+        finishLogin({
+          token: registerData.token,
+          user: {
+            ...(registerData.user || {}),
+            email: registerData?.user?.email || registerForm.email,
+            role: registerData?.user?.role || "CUSTOMER",
+          },
+        });
+        return;
+      }
+
       const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -668,7 +680,7 @@ function HomePage() {
           });
           setAuthSuccessTitle("");
           setAuthSuccessText("");
-        }, 1200);
+        }, 350);
 
         return;
       }

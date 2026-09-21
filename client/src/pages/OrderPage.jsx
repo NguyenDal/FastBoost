@@ -921,7 +921,7 @@ function OrderPage() {
 
     setTimeout(() => {
       closeAuthModal();
-    }, 1200);
+    }, 350);
   };
 
   const handleLoginSubmit = async (event) => {
@@ -987,6 +987,51 @@ function OrderPage() {
       if (!response.ok) {
         setRegisterErrors({ email: true, password: true });
         setAuthMessage(data.message || "Registration failed");
+        return;
+      }
+
+      if (!data?.token) {
+        const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: registerForm.email,
+            password: registerForm.password,
+          }),
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (!loginResponse.ok) {
+          setAuthSuccess(true);
+          setAuthSuccessTitle("Registration Successful");
+          setAuthSuccessText("Your account was created. Please log in.");
+          setAuthMessage("");
+          setTimeout(() => {
+            setAuthSuccess(false);
+            setAuthMode("login");
+            setLoginForm({
+              email: registerForm.email,
+              password: "",
+            });
+            setAuthSuccessTitle("");
+            setAuthSuccessText("");
+          }, 350);
+          return;
+        }
+
+        finishLogin({
+          token: loginData?.token,
+          email: loginData?.user?.email || loginData?.email || registerForm.email,
+          profileImage:
+            loginData?.user?.profileImage ||
+            loginData?.user?.avatar ||
+            loginData?.user?.photoUrl ||
+            "",
+          role: loginData?.user?.role || "CUSTOMER",
+        });
         return;
       }
 
