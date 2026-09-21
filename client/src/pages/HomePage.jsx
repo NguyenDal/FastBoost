@@ -4,7 +4,7 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -15,6 +15,10 @@ import "../styles/HomePage.css";
 
 const SERVICES_CACHE_KEY = "fastboost:services:v1";
 const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+const SERVICE_TITLES_BY_GAME = {
+  lol: ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"],
+  tft: ["TFT Rank Boost", "TFT Win Boost", "TFT Placement Boost"],
+};
 
 function getCachedServices() {
   try {
@@ -373,35 +377,37 @@ function HomePage() {
     return () => clearTimeout(closeTimer);
   }, [selectedGame]);
 
-  const lolServiceTitles = ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"];
+  const servicesByTitle = useMemo(() => {
+    const servicesByTitleMap = new Map();
 
-  const tftServiceTitles = [
-    "TFT Rank Boost",
-    "TFT Win Boost",
-    "TFT Placement Boost",
-  ];
+    for (const service of services) {
+      const matchingServices = servicesByTitleMap.get(service.title);
 
-  const servicePriority = {
-    "Rank Boost": 1,
-    "Placement Boost": 2,
-    "Win Boost": 3,
-    "Pro Duo": 4,
+      if (matchingServices) {
+        matchingServices.push(service);
+      } else {
+        servicesByTitleMap.set(service.title, [service]);
+      }
+    }
 
-    "TFT Rank Boost": 1,
-    "TFT Win Boost": 2,
-    "TFT Placement Boost": 3,
-  };
+    return servicesByTitleMap;
+  }, [services]);
 
-  const selectedServiceTitles =
-    visibleGame === "tft" ? tftServiceTitles : lolServiceTitles;
+  const featuredServices = useMemo(() => {
+    const serviceTitles =
+      SERVICE_TITLES_BY_GAME[visibleGame] || SERVICE_TITLES_BY_GAME.lol;
+    const matchingServices = [];
 
-  const featuredServices = [...services]
-    .filter((service) => selectedServiceTitles.includes(service.title))
-    .sort((a, b) => {
-      const aPriority = servicePriority[a.title] ?? 999;
-      const bPriority = servicePriority[b.title] ?? 999;
-      return aPriority - bPriority;
-    });
+    for (const title of serviceTitles) {
+      const servicesForTitle = servicesByTitle.get(title);
+
+      if (servicesForTitle) {
+        matchingServices.push(...servicesForTitle);
+      }
+    }
+
+    return matchingServices;
+  }, [servicesByTitle, visibleGame]);
 
   const handleOrderNow = (service) => {
     navigate(`/order/${service.id}`);
