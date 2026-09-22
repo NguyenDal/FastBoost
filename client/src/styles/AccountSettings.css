@@ -197,7 +197,8 @@
     font-weight: 800;
 }
 
-.account-settings-form input {
+.account-settings-form input,
+.account-settings-form select {
     width: 100%;
     min-height: 46px;
     padding: 0 14px;
@@ -209,7 +210,8 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.account-settings-form input:focus {
+.account-settings-form input:focus,
+.account-settings-form select:focus {
     border-color: rgba(124, 58, 237, 0.65);
     box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
 }
@@ -747,3 +749,6 @@
         grid-template-columns: 1fr;
     }
 }
+.settings-country-picker { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.settings-country-picker select { min-width: 0; flex: 1; }
+.settings-country-flag { width: 28px; height: 20px; object-fit: contain; }

@@ -8,264 +8,94 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### Dashboard, loyalty, referrals, and profile updates
 
-### Latest session update — Global/service sales, critical sale confirmation safety, and Render schema deployment
+This section describes the current behavior and supersedes conflicting details in
+the historical session notes below, particularly older referral eligibility rules.
 
-#### Global and service-specific sale architecture
-- `ServiceSale` now supports two scopes through a Prisma enum:
-  - `SERVICE`
-  - `GLOBAL`
-- `ServiceSale.serviceId` is nullable:
-  - service sale → `scope = SERVICE`, `serviceId = <service id>`
-  - global sale → `scope = GLOBAL`, `serviceId = null`
-- New Prisma migration:
-  - `server/prisma/migrations/20260822205028_add_global_sale_scope/migration.sql`
-- The migration:
-  - creates the `SaleScope` enum
-  - adds `ServiceSale.scope` with default `SERVICE`
-  - makes `ServiceSale.serviceId` nullable
-  - adds an index on `ServiceSale.scope`
-- Existing sale rows remain service sales because the new scope defaults to `SERVICE`.
+#### Dashboard layout and account details
 
-#### Backend sale behavior
-- `server/src/controllers/priceController.js` now supports creating both `SERVICE` and `GLOBAL` sales.
-- `GET /api/admin/prices` returns the current global sale separately as `globalSale` while continuing to attach service-specific sale data to each pricing rule.
-- Expired sales are excluded from current active/scheduled sale displays.
-- Only one current active/scheduled global sale should exist at a time.
-- `server/src/controllers/pricingController.js` and `server/src/controllers/orderController.js` use the same sale precedence:
-  1. active service-specific sale
-  2. otherwise active global sale
-  3. otherwise no sale
-- Sales do **not** stack. A service-specific sale overrides the global sale for that service.
-- The same sale selection logic must remain in both the customer quote path and authoritative order creation path so displayed price and checkout price cannot diverge.
+- Wide desktop layout now places cards in three rows:
+  1. New Notifications, New Messages, Wallet
+  2. Loyalty Rewards Status, Refer a Friend, My Orders
+  3. Account Overview, Quick Actions, Platform Status
+- Existing dashboard card styling is preserved, with responsive two-column and
+  single-column layouts for smaller screens.
+- My Orders shows the latest three orders, keeps the **Pending** label, and uses
+  the S3 assets `logos/lol-logo.jpg` and `logos/tft-logo.png`.
+- Account Overview reads live profile data and shows membership age instead of
+  Discord, plus country with its flag and the saved birthday.
+- Profile settings now provide a country dropdown with a flag preview. Birthday
+  display avoids timezone shifts; server validation rejects invalid/future dates.
+- Main additions: `client/src/components/DashboardOverview.jsx` and
+  `client/src/utils/countries.js`.
 
-#### Price Management sale UI
-- `client/src/pages/PriceManagementPage.jsx` now separates:
-  - **Create Global Sale** — creates a campaign for all FastBoost services
-  - **Sale Control** — displays the current global campaign, status, discount, target, expiration, and countdown
-  - each service card's **Sale Settings** — creates a sale for that service only
-- Global sale creation is disabled while another active/scheduled global sale exists.
-- The sale form supports:
-  - title
-  - discount percentage
-  - base-price-only or whole-order-total discount target
-  - optional start time
-  - optional end time
-- `PriceManagement.css` contains dedicated global sale cards, status pills, countdown, sale metadata, and sale-scope preview styles.
+#### Notifications and order status
 
-#### Critical sale confirmation requirement — next safety step
-Creating or ending a sale is considered a critical admin action and must use the same review-first philosophy as price editing.
+- Each dashboard activity card keeps its latest three entries, including read
+  entries. Purple dots indicate unread items; reading does not remove an entry.
+- Dashboard queries fetch the two categories independently through
+  `GET /api/notifications?view=dashboard`, with periodic and focus refreshes.
+- Message rows use the sender's current profile picture when available and fall
+  back to initials when a picture is missing or fails to load.
+- Unread conversation previews update to the newest message. View all opens the
+  existing notification/message panel.
+- Order completion and cancellation create customer notifications with checkmark
+  and X icons. Retrying the operation preserves existing notification read state.
+- Order detail chat displays a centered completion/cancellation notice in the
+  same style as the order-placed message. This notice is derived from the order
+  when loading the page, rather than stored as a separate chat message.
 
-Required behavior before calling sale management complete:
-```text
-Configure / choose sale action
-        ↓
-Review confirmation modal
-        ↓
-Show exact scope, title, discount, target, start, and end
-        ↓
-Admin checks explicit confirmation checkbox
-        ↓
-Confirm create / confirm end
-        ↓
-Only then call the backend mutation
-```
+#### Referral benefits and loyalty
 
-- The current uploaded frontend still performs the sale mutation directly from `saveSale()` and performs global cancellation directly from `endGlobalSale()`.
-- Next implementation should split these into request-confirmation and confirmed-mutation functions.
-- Service-specific sale cancellation should use the same confirmation flow as global sale cancellation.
-- Do not use a browser `confirm()` dialog; keep the existing FastBoost full-screen modal design.
+- **10% off the first purchase belongs to the referred friend.** Only that friend
+  receives the first-purchase discount notification; sending an invitation alone
+  does not qualify the inviter for it.
+- After the friend's first qualifying order of at least **$50 before the referral
+  discount** is paid and completed, **both people receive 50 gold ($5)** toward a
+  future purchase and each receives a reward notification.
+- Reward records and both notices are written together, with duplicate-safe IDs
+  and preserved read state on retry.
+- Loyalty benefits use compact gold amounts/icons and cash-back wording. Current
+  tiers are:
 
-#### Render production schema deployment rule
-"Push the DB to Render" means **commit a forward Prisma migration and push the code to `main`**. Do not use `prisma db push` against the production database.
+| Tier | Completed spend | Tier gold bonus | Displayed cash back |
+| --- | ---: | ---: | ---: |
+| Bronze | $0 | — | — |
+| Silver | $200 | +200 | 3% |
+| Gold | $500 | +500 | 5% |
+| Platinum | $1,000 | +1,000 | 10% |
+| Diamond | $1,500 | +1,500 | 15% |
 
-For the current sale-scope change:
-```text
-0_init                                      already applied
-20260822205028_add_global_sale_scope        new forward migration
-```
+- The full tier breakdown remains on the Loyalty page. Dashboard loyalty is a
+  compact rank/progress card with the spend-to-next-tier message.
+- Removed View My Orders from Loyalty. Reward history shows at most five page
+  buttons, merges already-sorted sources linearly, and reuses the existing order
+  count. Database retrieval still grows with page depth.
 
-Render backend startup remains:
-```bash
-npx prisma migrate deploy && npm start
-```
+#### Current implementation limits
 
-When the migration and schema are committed and pushed to `main`, Render automatically runs `prisma migrate deploy` against its production `DATABASE_URL`.
+- Wallet cash balance remains a **$0.00 placeholder** and Top Up is disabled.
+  Gold balance is connected; Redeem Gold leads to service selection for checkout.
+  Cash-back labels do not yet implement wallet funding or cash-back settlement.
+- Platform Status explicitly marks order processing, Stripe, and chat as
+  **Not monitored**; external health monitoring is not connected.
+- Latest verification: client production build, targeted dashboard lint, server
+  syntax check, and all six server tests passed. Browser visual and full referral
+  end-to-end checks remain separate from these automated checks.
 
-See **Database / Prisma → Deploy schema changes to Render production** below for the full procedure.
+#### Database changes and local continuity
 
----
-
-
-### Latest session update — Homepage performance, server-authoritative pricing, Prisma baseline recovery, and Price Management editing
-
-#### Homepage service-card loading optimization
-- Homepage service loading was optimized so repeat visits do not wait on the production API before rendering service cards.
-- `client/src/pages/HomePage.jsx` now:
-  - caches the service list in `localStorage` under `fastboost:services:v1`
-  - uses a 6-hour cache TTL
-  - initializes React state from cached services
-  - skips `/api/services` entirely while the cache is fresh
-  - keeps cached services visible if a later refresh request fails
-- `server/src/controllers/serviceController.js` now:
-  - selects only `id`, `title`, and `description`
-  - sends `Cache-Control: public, max-age=300, stale-while-revalidate=3600`
-- The first uncached visit can still show the skeleton while `/api/services` loads; repeat visits should be much faster.
-- `CleanIcon` remains in the codebase for other uses. The homepage optimization should continue to avoid unnecessary client-side image processing for already-clean transparent service assets.
-
-#### Server-authoritative pricing is now in the backend
-- Added/committed:
-  - `server/src/utils/pricingCalculator.js`
-- `server/src/controllers/orderController.js` now imports and uses `calculateOrderPrice(...)`.
-- New order creation now:
-  - resolves the selected service from `boostType`
-  - loads the active `ServicePriceRule` from PostgreSQL
-  - loads same-game reference rules
-  - loads any currently-active service sale
-  - calculates `basePrice`, `addonPrice`, `subtotal`, `saleDiscount`, and `totalPrice` on the server
-  - stores the server-calculated price snapshot on the `Order`
-  - derives `amountCents` from the server-calculated total
-- Browser-submitted `basePrice`, `addonPrice`, and `totalPrice` are no longer the authority for new orders.
-- This is important for Stripe safety because checkout continues to charge from the amount stored on the order.
-- The central calculator reads actual price values from `ServicePriceRule.config` instead of embedding the full price table in the backend.
-- Placement pricing in the central calculator uses:
-  - `fullSetPrice / fullSetGames * requestedGames`
-  - this fixes the earlier TFT placement inconsistency where full-set prices could be treated as per-game prices.
-
-#### New order option fields
-`Order` now includes:
-- `untrackableDuo Boolean @default(false)`
-- `championPreferenceTier String @default("4+")`
-
-`championPreferenceTier` corresponds to the configured champion-preference pricing tiers:
-- `1` champion → configured higher restriction surcharge
-- `2-3` champions → configured smaller surcharge
-- `4+` champions → no surcharge in the current seeded config
-
-#### Prisma migration history was baselined
-The previous migration directory did not accurately represent the already-existing production schema, so Prisma production deployment hit `P3005`, then the first Render baseline attempt hit `P3018` / `P3009`.
-
-Current active migration structure:
-```text
-server/prisma/
-  migrations/
-    migration_lock.toml
-    0_init/
-      migration.sql
-    20260822205028_add_global_sale_scope/
-      migration.sql
-
-  legacy_migrations_backup/
-    20260320050007_init/
-    20260321040314_remove_price_from_service/
-    20260321041954_remove_ownerid_from_service/
-    20260715_sync_current_schema/
-```
-
-- `0_init` was generated from the current Prisma schema using:
-```bash
-npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script
-```
-- The old four migration folders are retained under `legacy_migrations_backup` for historical reference but are no longer active Prisma migrations.
-- The Prisma-hosted development/shared database and the Render production database were discovered to be separate databases.
-- The Render production database is:
-  - database: `fastboost`
-  - Render PostgreSQL host in Ohio
-- The Render production schema was missing only:
-  - `Order.championPreferenceTier`
-  - `Order.untrackableDuo`
-- A temporary forward-only SQL file was generated from the Render database to `schema.prisma`, reviewed, and executed with:
-```bash
-npx prisma db execute --file render_forward.sql
-```
-- After applying those two columns:
-```text
-npx prisma migrate diff ...  → -- This is an empty migration.
-npx prisma migrate status    → Database schema is up to date!
-npx prisma migrate deploy    → No pending migrations to apply.
-```
-- The temporary `render_forward.sql` file was deleted after recovery.
-- Render can continue using:
-```text
-npx prisma migrate deploy && npm start
-```
-- Never run `prisma migrate reset` against production.
-- When temporarily overriding `DATABASE_URL` to the Render External Database URL from a local terminal, unset it or close that terminal after the production operation so later development commands do not accidentally target production.
-
-#### Detailed Price Management display
-- `client/src/pages/PriceManagementPage.jsx` now has expandable detailed rule cards instead of only the old flat summary table.
-- Detailed display supports the existing rule shapes:
-  - `RANK_BASED`
-  - `PLACEMENT_BASED`
-  - `PER_WIN`
-  - `DUO_ADDON`
-- It can display:
-  - division-step prices
-  - Master LP prices
-  - placement full-set prices
-  - per-win prices
-  - LP-progress modifiers
-  - LP-gain modifiers
-  - formulas
-  - shared add-ons
-  - champion-preference tiers
-  - Bonus Win rules
-  - Pro Duo source pricing/multiplier
-- Game filters, status filters, search, and expand/collapse behavior are present.
-
-#### Price editing is implemented
-- `PriceManagementPage.jsx` supports editing detailed pricing values directly from the expanded pricing boards.
-- `server/src/controllers/priceController.js` includes validated `updatePriceRule`.
-- `server/src/routes/priceRoutes.js` exposes:
-  - `GET /api/admin/prices`
-  - `POST /api/admin/prices/sales`
-  - `PATCH /api/admin/prices/sales/:id/disable`
-  - `PATCH /api/admin/prices/rules/:id`
-- Price edits use a dedicated confirmation modal before saving.
-- The modal lists each detected change and requires the admin to check the exact changes to apply.
-- A **Check All** option is available.
-- Unchecked changes are discarded and keep their existing production values.
-- Price Management changes update `ServicePriceRule.config`; the order pricing backend remains authoritative.
-
-#### Important Pro Duo single-source issue
-- The desired direction is for Pro Duo to follow LoL Win Boost pricing automatically.
-- The current seed stores a copied `perWinPrices` table inside the Pro Duo rule.
-- The current central `calculateDuoAddonPrice(...)` also reads `rule.config.perWinPrices`.
-- Therefore editing Win Boost alone will not automatically update Pro Duo until this duplication is removed/refactored.
-- Recommended fix:
-  - make Pro Duo resolve the active LoL `PER_WIN` rule from `referenceRules`
-  - use the Win Boost rule's `perWinPrices` and LP-gain modifiers
-  - keep only the Pro Duo-specific multiplier (`0.75`) in the Pro Duo rule
-  - keep Pro Duo's displayed source prices read-only in Admin Price Management
-  - edit the source Win Boost prices only once
-
-#### Customer OrderPage live-price direction
-- A public/current pricing quote path is used so customer-visible pricing can come from the same `ServicePriceRule` data managed by Admin Price Management.
-- The intended production architecture is:
-```text
-Admin Price Management
-        ↓
-ServicePriceRule.config in PostgreSQL
-        ↓
-POST /api/pricing/quote
-        ↓
-OrderPage live preview
-        ↓
-POST /orders
-        ↓
-server recalculates independently
-        ↓
-saved Order amount
-        ↓
-Stripe
-```
-- Backend order creation remains the final authority even when the customer preview is live.
-- Remaining cleanup/performance work should remove obsolete hardcoded fallback pricing only after the live quote path is verified across every service.
-- OrderPage startup should reuse stable service metadata/cache where possible, while pricing quotes, order state, and payment state remain fresh.
+- Added forward migrations `20260922040000_dashboard_notifications` and
+  `20260922050000_referral_reward_notifications`; regenerated the tracked Prisma
+  client. These were applied and recorded on the configured Prisma-hosted database.
+  Other environments must apply their forward migrations through the normal
+  deployment process; this session did not deploy to Render or push to GitHub.
+- Private session context lives in `.agent-handoff/HANDOFF.md`. A local root
+  `AGENTS.md` points future Codex sessions to it. Both are gitignored and are not
+  part of a clone or production deployment. Keep credentials out of handoff notes.
 
 ---
-
-### Previous session update — Production pricing, admin bootstrap, and auth-role verification
 
 #### Production pricing update
 - Real service price rules are maintained through:

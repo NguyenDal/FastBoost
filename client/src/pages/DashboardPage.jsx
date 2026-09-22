@@ -2,18 +2,24 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications, markNotificationRead } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
+import { getMyAccount } from "../api/accountSettings";
+import { customerListMyOrders } from "../api/customerOrders";
+import { DashboardOrders, DashboardAccount, DashboardQuickActions, DashboardPlatform } from "../components/DashboardOverview";
 import {
     Skeleton,
     SkeletonButton,
     SkeletonCircle,
 } from "../components/Skeleton";
 import "../styles/Dashboard.css";
+import DashboardIcon from "../components/DashboardIcon";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
 
     const [notifications, setNotifications] = useState([]);
     const [loyalty, setLoyalty] = useState(null);
+    const [account, setAccount] = useState(null);
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copiedReferral, setCopiedReferral] = useState(false);
     const [error, setError] = useState("");
@@ -26,14 +32,18 @@ export default function DashboardPage() {
                 setLoading(true);
                 setError("");
 
-                const [notificationItems, loyaltyData] = await Promise.all([
+                const [notificationItems, loyaltyData, accountData, orderItems] = await Promise.all([
                     listMyNotifications({ dashboard: true }),
                     getMyLoyalty({ rewardPage: 1, rewardLimit: 5 }),
+                    getMyAccount(),
+                    customerListMyOrders(),
                 ]);
 
                 if (!cancelled) {
                     setNotifications(notificationItems || []);
                     setLoyalty(loyaltyData);
+                    setAccount(accountData);
+                    setOrders(orderItems);
                 }
             } catch (e) {
                 if (!cancelled) {
@@ -94,16 +104,16 @@ export default function DashboardPage() {
 
     const referralSteps = [
         {
-            label: "Share your private invite link",
-            helpText: `Your friend receives ${referralDiscountPercent}% off their first purchase when they join through it.`,
+            label: "Share your invite link",
+            helpText: `Your friend gets ${referralDiscountPercent}% off their first purchase.`,
         },
         {
-            label: `Your friend completes a $${referralQualifyingPurchaseMinimum.toFixed(2)}+ first purchase`,
-            helpText: "The order must be paid and completed before the gold rewards are added.",
+            label: `Friend completes a $${referralQualifyingPurchaseMinimum}+ purchase`,
+            helpText: "Their first order must be paid and completed.",
         },
         {
-            label: `Both accounts receive ${referralRewardGold} gold ($5)`,
-            helpText: "Your friend's gold is ready for a future purchase.",
+            label: `Both receive ${referralRewardGold} gold ($${referralRewardGold / 10})`,
+            helpText: "Use your gold on a future purchase.",
         },
     ];
 
@@ -116,6 +126,8 @@ export default function DashboardPage() {
     };
 
     const progressPercent = Number(loyalty?.progressPercent || 0);
+    const benefitTier = loyalty?.tiers?.find((tier) => tier.name === (tierInfo.nextTier || tierInfo.name));
+    const completedSpend = Number(loyalty?.totalCompletedSpend || 0);
 
     const handleCopyReferralLink = async () => {
         if (!canUseReferral || !referralLink) return;
@@ -167,7 +179,7 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <>
-                    <section className="dashboard-grid dashboard-grid-top">
+                    <section className="dashboard-grid dashboard-overview-grid">
                         <DashboardListCard
                             title="New Notifications"
                             emptyText="No notifications yet."
@@ -182,14 +194,16 @@ export default function DashboardPage() {
                             onItemClick={openNotificationTarget}
                             isMessage
                         />
-                    </section>
 
-                    <section className="dashboard-grid dashboard-grid-bottom">
-                        <div className="dashboard-account-stack">
                             <section className="dashboard-card dashboard-wallet-card">
-                                <p className="dashboard-eyebrow purple">Wallet</p>
-                                <p className="dashboard-wallet-label">Available balance</p>
-                                <strong className="dashboard-wallet-balance">$0.00</strong>
+                                <div className="dashboard-wallet-heading">
+                                    <DashboardIcon kind="wallet" />
+                                    <h2>Wallet</h2>
+                                </div>
+                                <div className="dashboard-wallet-amount">
+                                    <p className="dashboard-wallet-label">Available balance</p>
+                                    <strong className="dashboard-wallet-balance">$0.00</strong>
+                                </div>
                                 <Link to="/account/loyalty" className="dashboard-wallet-gold">
                                     <span className="dashboard-wallet-coin" aria-hidden="true">🪙</span>
                                     <span>Gold Balance</span>
@@ -223,19 +237,27 @@ export default function DashboardPage() {
                                         style={{ width: progressPercent + "%" }}
                                     />
                                 </div>
+                                <p className="dashboard-loyalty-spend">
+                                    ${completedSpend.toFixed(2)}{tierInfo.nextTier ? ` / $${(completedSpend + tierInfo.spendToNext).toFixed(2)}` : " completed spend"}
+                                </p>
+                                {benefitTier && <div className="dashboard-loyalty-benefits">
+                                    <p className="dashboard-loyalty-benefits-heading">
+                                        {tierInfo.nextTier ? `Next tier: ${tierInfo.nextTier}` : `${tierInfo.name} benefits`}
+                                    </p>
+                                    <div><span className="dashboard-benefit-icon gold" aria-hidden="true">🪙</span><div><strong>+{benefitTier.bonusCoins} Gold</strong><small>{tierInfo.nextTier ? `On reaching ${tierInfo.nextTier}` : "Tier reward"}</small></div></div>
+                                    <div><span className="dashboard-benefit-icon blue" aria-hidden="true">↩</span><div><strong>{benefitTier.topUpBonusPercent}% Cash Back</strong><small>{tierInfo.nextTier ? `At ${tierInfo.nextTier}` : "Current tier"}</small></div></div>
+                                </div>}
                             </Link>
-                        </div>
 
                         <section className={`dashboard-card dashboard-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
                             <div className="dashboard-card-header">
                                 <div>
-                                    <p className="dashboard-eyebrow green">Refer a Friend</p>
                                     <h2>Refer a Friend</h2>
+                                    <p className="dashboard-referral-intro">Share your link and earn rewards together!</p>
                                 </div>
 
                                 <div className="dashboard-referral-count">
-                                    <strong>{referralCount}</strong>
-                                    <small>Invited</small>
+                                    <strong>{referralCount} Invited</strong>
                                 </div>
                             </div>
 
@@ -273,6 +295,10 @@ export default function DashboardPage() {
                                 </button>
                             </div>
                         </section>
+                        <DashboardOrders orders={orders} />
+                        <DashboardAccount account={account} />
+                        <DashboardQuickActions />
+                        <DashboardPlatform />
                     </section>
                 </>
             )}
@@ -282,24 +308,18 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
     return (
-        <>
-            <section className="dashboard-grid dashboard-grid-top">
-                <DashboardListSkeleton />
-                <DashboardListSkeleton />
+        <section className="dashboard-grid dashboard-overview-grid">
+            <DashboardListSkeleton />
+            <DashboardListSkeleton />
+            <section className="dashboard-card dashboard-wallet-card dashboard-skeleton-card">
+                <Skeleton width={100} height={24} />
+                <Skeleton width={140} height={12} />
+                <Skeleton width={160} height={44} />
             </section>
-
-            <section className="dashboard-grid dashboard-grid-bottom">
-                <div className="dashboard-account-stack">
-                    <section className="dashboard-card dashboard-wallet-card dashboard-skeleton-card">
-                        <Skeleton width={100} height={24} />
-                        <Skeleton width={140} height={12} />
-                        <Skeleton width={160} height={44} />
-                    </section>
-                    <DashboardLoyaltySkeleton />
-                </div>
-                <DashboardReferralSkeleton />
-            </section>
-        </>
+            <DashboardLoyaltySkeleton />
+            <DashboardReferralSkeleton />
+            {Array.from({ length: 4 }, (_, index) => <DashboardListSkeleton key={index} />)}
+        </section>
     );
 }
 

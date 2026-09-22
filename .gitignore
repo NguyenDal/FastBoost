@@ -11,3 +11,7 @@ server/dist/
 
 *.log
 .DS_Store
+
+# Local AI session context; never publish with the application.
+/.agent-handoff/
+/AGENTS.md

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { COUNTRIES, findCountry } from "../utils/countries";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
     getMyAccount,
@@ -685,13 +686,14 @@ export default function AccountSettingsPage() {
 
                                     <label>
                                         Country
-                                        <input
-                                            type="text"
-                                            name="country"
-                                            value={accountForm.country}
-                                            onChange={handleAccountChange}
-                                            placeholder="Country"
-                                        />
+                                        <div className="settings-country-picker">
+                                            {findCountry(accountForm.country) && <img className="settings-country-flag" src={"https://flagcdn.com/w40/" + findCountry(accountForm.country).code.toLowerCase() + ".png"} alt="" />}
+                                            <select name="country" value={accountForm.country} onChange={handleAccountChange}>
+                                                <option value="">Select country</option>
+                                                {accountForm.country && !COUNTRIES.some(country => country.name === accountForm.country) && <option value={accountForm.country}>{accountForm.country}</option>}
+                                                {COUNTRIES.map(country => <option key={country.code} value={country.name}>{country.flag} {country.name}</option>)}
+                                            </select>
+                                        </div>
                                     </label>
                                 </div>
 
@@ -700,6 +702,7 @@ export default function AccountSettingsPage() {
                                         Birthday
                                         <input
                                             type="date"
+                                            max={new Date().toLocaleDateString("en-CA")}
                                             name="birthday"
                                             value={accountForm.birthday}
                                             onChange={handleAccountChange}

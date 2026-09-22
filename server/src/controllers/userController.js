@@ -152,7 +152,12 @@ module.exports.updateMyAccount = async (req, res) => {
     if (birthdayRaw) {
       const parsedBirthday = new Date(`${birthdayRaw}T00:00:00.000Z`);
 
-      if (Number.isNaN(parsedBirthday.getTime())) {
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(birthdayRaw) ||
+        Number.isNaN(parsedBirthday.getTime()) ||
+        parsedBirthday.toISOString().slice(0, 10) !== birthdayRaw ||
+        parsedBirthday > new Date()
+      ) {
         return res.status(400).json({
           ok: false,
           field: "birthday",
