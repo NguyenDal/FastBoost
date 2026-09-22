@@ -2,6 +2,7 @@ const prisma = require("../prisma");
 const { queueOrderConfirmation, validEmail } = require("../utils/orderConfirmationEmail");
 const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
+const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
 const {
     grantReferralCompletionRewards,
 } = require("../utils/referralProgram");
@@ -80,8 +81,8 @@ function getClientUrl(req) {
     );
 }
 
-async function getAvailableGold(userId) {
-    const completedOrders = await prisma.order.findMany({
+async function getAvailableGold(userId, db = prisma) {
+    const completedOrders = await db.order.findMany({
         where: {
             customerId: userId,
             status: "COMPLETED",
@@ -96,7 +97,7 @@ async function getAvailableGold(userId) {
         return sum + Math.floor(Number(order.totalPrice || 0));
     }, 0);
 
-    const rewardStats = await prisma.rewardHistory.aggregate({
+    const rewardStats = await db.rewardHistory.aggregate({
         where: {
             userId,
         },
@@ -152,11 +153,13 @@ async function completeCheckoutSessionPayment(order, session) {
             : session.payment_intent?.id || null;
 
     const paymentApplied = await prisma.$transaction(async (transaction) => {
+        await lockCheckout(transaction, order.customerId, order.id);
         const updateResult = await transaction.order.updateMany({
             where: {
                 id: order.id,
                 stripeCheckoutSessionId: session.id,
                 paymentStatus: { not: "PAID" },
+                status: { not: "CANCELLED" },
             },
             data: {
                 paymentStatus: "PAID",
@@ -203,10 +206,10 @@ async function completeCheckoutSessionPayment(order, session) {
     return paymentApplied;
 }
 
-const createCheckoutSession = async (req, res) => {
+const buildCheckoutSession = async (req, res, db, createdSessions) => {
     try {
         const userId = getUserId(req);
-        const { orderId, goldToUse, deferGoldOnly, contactEmail } = req.body || {};
+        const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode } = req.body || {};
 
         if (!userId) {
             return res.status(401).json({
@@ -222,7 +225,7 @@ const createCheckoutSession = async (req, res) => {
             });
         }
 
-        const order = await prisma.order.findUnique({
+        const order = await db.order.findUnique({
             where: { id: orderId },
             include: {
                 service: true,
@@ -258,10 +261,24 @@ const createCheckoutSession = async (req, res) => {
             return res.status(400).json({ ok: false, message: "This order has been cancelled" });
         }
 
+        // Check for a payment already in flight before changing its price snapshot.
+        const previousCoupon = order.couponCode;
+        const previousAmount = order.amountCents;
+        let previousSession;
+        if (order.stripeCheckoutSessionId) {
+            previousSession = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
+            if (previousSession.status === "complete") return res.json({ ok: true, completed: true, sessionId: previousSession.id,
+                summary: checkoutSummary(order, order.goldRedeemed || 0, order.goldDiscountCents || 0, order.cashAmountCents ?? order.amountCents) });
+        }
+        const availableRule = await db.servicePriceRule.findFirst({ where: { serviceId: order.serviceId, active: true }, select: { id: true } });
+        if (!availableRule) return res.status(409).json({ ok: false, code: "SERVICE_UNAVAILABLE", message: "This service is currently unavailable. Please choose another service or check back later." });
+        const couponNotice = await applyCheckoutCoupon(db, order, couponCode, stripe);
+        res.couponNotice = couponNotice;
+
         const amountCents =
             order.amountCents || Math.round(Number(order.totalPrice || 0) * 100);
 
-        const availableGold = await getAvailableGold(userId);
+        const availableGold = await getAvailableGold(userId, db);
 
         const {
             goldRedeemed,
@@ -282,15 +299,16 @@ const createCheckoutSession = async (req, res) => {
 
         // Reuse an open session on refresh. Expire it before changing the amount.
         if (order.stripeCheckoutSessionId) {
-            const existingSession = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId);
+            const existingSession = previousCoupon === order.couponCode && previousAmount === order.amountCents
+                ? previousSession : await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
             if (existingSession.status === "complete") {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.metadata?.orderNumber === order.orderNumber && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
+                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.metadata?.orderNumber === order.orderNumber && (existingSession.metadata?.couponCode || "") === (order.couponCode || "") && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
-                await stripe.checkout.sessions.expire(existingSession.id);
+                await stripe.checkout.sessions.expire(existingSession.id, {}, stripeOptions);
             }
         }
 
@@ -301,7 +319,7 @@ const createCheckoutSession = async (req, res) => {
             if (!validEmail(contactEmail)) {
                 return res.status(400).json({ ok: false, message: "Please enter a valid email address before paying with gold." });
             }
-            const applied = await prisma.$transaction(async transaction => {
+            const applied = await (async transaction => {
                 const result = await transaction.order.updateMany({
                     where: { id: order.id, paymentStatus: { not: "PAID" } },
                     data: {
@@ -329,9 +347,8 @@ const createCheckoutSession = async (req, res) => {
                 }
                 await queueOrderConfirmation(transaction, order.id, contactEmail);
                 return true;
-            });
-
-            if (applied) await grantReferralCompletionRewards(order.id);
+            })(db);
+            res.rewardOrderId = applied ? order.id : null;
 
             return res.json({
                 ok: true,
@@ -372,15 +389,18 @@ const createCheckoutSession = async (req, res) => {
                 goldRedeemed: String(goldRedeemed),
                 goldDiscountCents: String(goldDiscountCents),
                 cashAmountCents: String(cashAmountCents),
+                couponCode: order.couponCode || "",
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
-            payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber } },
-        }, { idempotencyKey: `checkout-email-v1-${order.id}-${goldRedeemed}-${order.stripeCheckoutSessionId || "new"}` });
+            payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber, couponCode: order.couponCode || "" } },
+        }, { ...stripeOptions, idempotencyKey: `checkout-coupon-v1-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}` });
+        createdSessions.push(session.id);
 
-        await prisma.order.update({
+        await db.order.update({
             where: { id: order.id },
             data: {
                 stripeCheckoutSessionId: session.id,
+                paymentStatus: "PENDING",
                 amountCents,
                 cashAmountCents,
                 goldRedeemed,
@@ -396,6 +416,7 @@ const createCheckoutSession = async (req, res) => {
             summary,
         });
     } catch (error) {
+        if (error.code === "COUPON_UNAVAILABLE") return res.status(error.status).json({ ok: false, code: error.code, message: error.message });
         console.error("createCheckoutSession error:", error);
 
         return res.status(500).json({
@@ -563,7 +584,8 @@ const handleStripeWebhook = async (req, res) => {
             const orderId = session.metadata?.orderId;
 
             if (orderId) {
-                await prisma.order.updateMany({
+                const expiringOrder = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, customerId: true } });
+                if (expiringOrder) await mutateCheckoutOrder(prisma, expiringOrder, stripe, db => db.order.updateMany({
                     where: {
                         id: orderId,
                         stripeCheckoutSessionId: session.id,
@@ -572,7 +594,7 @@ const handleStripeWebhook = async (req, res) => {
                     data: {
                         paymentStatus: "CANCELLED",
                     },
-                });
+                }), false);
 
                 console.log(`Stripe checkout expired for order ${orderId}`);
             }
@@ -585,9 +607,36 @@ const handleStripeWebhook = async (req, res) => {
     }
 };
 
-module.exports = {
-    createCheckoutSession,
-    verifyCheckoutSession,
-    handleStripeWebhook,
+const createCheckoutSession = async (req, res) => {
+    const userId = getUserId(req);
+    const orderId = req.body?.orderId;
+    if (!userId || !orderId || typeof orderId !== "string") return res.status(400).json({ ok: false, message: "A valid user and order are required." });
+    const response = { code: 200, body: null, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
+    const createdSessions = [];
+    try {
+        await prisma.$transaction(async db => {
+            await lockCheckout(db, userId, orderId);
+            await buildCheckoutSession(req, response, db, createdSessions);
+            // Expected validation failures must roll back coupon and price changes too.
+            if (response.code >= 400) throw Object.assign(new Error("Checkout rejected"), { checkoutResponse: true });
+        }, { maxWait: 15000, timeout: 60000 });
+    } catch (error) {
+        for (const id of createdSessions) {
+            try { await stripe.checkout.sessions.expire(id, {}, stripeOptions); }
+            catch { console.error("Could not expire rolled-back checkout session", id); }
+        }
+        if (!error.checkoutResponse) {
+            console.error("Checkout transaction failed:", error.code || error.name);
+            return res.status(503).json({ ok: false, message: "Checkout is busy. Please try again shortly." });
+        }
+        return res.status(response.code).json(response.body);
+    }
+    if (response.rewardOrderId) {
+        try { await grantReferralCompletionRewards(response.rewardOrderId); }
+        catch { console.error("Referral reward sync deferred", response.rewardOrderId); }
+    }
+    return res.status(response.code).json({ ...response.body, ...(response.couponNotice ? { couponNotice: response.couponNotice } : {}) });
 };
+
+module.exports = { createCheckoutSession, verifyCheckoutSession, handleStripeWebhook };
 

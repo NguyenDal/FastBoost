@@ -2,9 +2,9 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
     const cents = (value) => Math.round(Number(value || 0) * 100);
     const addonPriceCents = cents(order.addonPrice);
     const referralDiscountCents = cents(order.referralDiscount);
-    const orderAmountCents = order.amountCents || cents(order.totalPrice);
+    const orderAmountCents = order.amountCents ?? cents(order.totalPrice);
     // Older orders may have no stored pricing breakdown.
-    const basePriceCents = Math.max(cents(order.basePrice), orderAmountCents + referralDiscountCents - addonPriceCents);
+    const basePriceCents = Math.max(cents(order.basePrice), (order.couponOriginalAmountCents ?? orderAmountCents) + cents(order.couponOriginalReferralDiscount ?? order.referralDiscount) - addonPriceCents);
     const title = order.boostType || order.service?.title || "FastBoost Order";
     const serviceType = title.replace(/^TFT\s+/i, "");
     const currentRank = serviceType === "Placement Boost" ? order.peakRank : [order.currentRank, order.currentDivision].filter(Boolean).join(" ");
@@ -30,7 +30,8 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
         currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
         basePriceCents,
         addonPriceCents,
-        saleDiscountCents: Math.max(0, basePriceCents + addonPriceCents - referralDiscountCents - orderAmountCents),
+        saleDiscountCents: order.couponSaleId ? 0 : Math.max(0, basePriceCents + addonPriceCents - referralDiscountCents - orderAmountCents),
+        promoDiscount: order.couponSaleId ? { title: order.couponTitle, code: order.couponCode, amountCents: order.couponDiscountCents } : null,
         referralDiscountCents,
         goldRedeemed,
         goldDiscountCents,

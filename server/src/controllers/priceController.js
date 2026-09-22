@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { saleOptions } = require("../utils/saleOptions");
 const {
     invalidatePricingCatalog,
 } = require("../utils/pricingCatalogCache");
@@ -38,6 +39,7 @@ exports.listPriceRules = async (req, res) => {
         });
 
         const sales = await prisma.serviceSale.findMany({
+            include: { recipientAccount: { select: { email: true } } },
             where: {
                 active: true,
             },
@@ -51,7 +53,7 @@ exports.listPriceRules = async (req, res) => {
         const globalSale =
             sales.find(
                 (sale) =>
-                    sale.scope === "GLOBAL" &&
+                    sale.scope === "GLOBAL" && !sale.couponCode &&
                     getSaleStatus(sale) !== "EXPIRED"
             ) || null;
 
@@ -59,7 +61,7 @@ exports.listPriceRules = async (req, res) => {
 
         for (const sale of sales) {
             if (
-                sale.scope !== "SERVICE" ||
+                sale.scope !== "SERVICE" || sale.couponCode ||
                 getSaleStatus(sale) === "EXPIRED"
             ) {
                 continue;
@@ -103,10 +105,12 @@ exports.listPriceRules = async (req, res) => {
         return res.json({
             ok: true,
             items,
+            coupons: sales.filter(sale => sale.couponCode).map(sale => ({ ...sale, serviceTitle: rules.find(rule => rule.serviceId === sale.serviceId)?.service?.title, status: getSaleStatus(sale) })),
 
             globalSale: globalSale
                 ? {
                     id: globalSale.id,
+                    footerDecoration: globalSale.footerDecoration,
                     title: globalSale.title,
                     discountPercent:
                         globalSale.discountPercent,
@@ -141,7 +145,6 @@ exports.createSale = async (req, res) => {
             scope = "SERVICE",
             title,
             discountPercent,
-            appliesTo,
             startsAt,
             endsAt,
         } = req.body || {};
@@ -180,7 +183,20 @@ exports.createSale = async (req, res) => {
             });
         }
 
+        let options;
+        try { options = saleOptions({ ...req.body, scope }); }
+        catch (error) { return res.status(400).json({ ok: false, message: error.message }); }
+
         let service = null;
+        let recipient = null;
+        if (req.body.personalCoupon === true) {
+            if (!options.couponCode) return res.status(400).json({ ok: false, message: "Personal coupons require a coupon code." });
+            const email = String(req.body.recipientEmail || "").trim();
+            if (!email || email.length > 254) return res.status(400).json({ ok: false, message: "Enter the customer's account email." });
+            recipient = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" }, role: "CUSTOMER" }, select: { id: true } });
+            if (!recipient) return res.status(404).json({ ok: false, message: "No customer account matches that email." });
+            if (!["MANUAL", "NEGOTIATED"].includes(req.body.personalReason)) return res.status(400).json({ ok: false, message: "Choose a personal coupon reason." });
+        }
 
         if (scope === "SERVICE") {
             service = await prisma.service.findUnique({
@@ -197,13 +213,14 @@ exports.createSale = async (req, res) => {
             }
         }
 
-        if (scope === "GLOBAL") {
+        if (scope === "GLOBAL" && !options.couponCode) {
             const now = new Date();
 
             const existingGlobalSale =
                 await prisma.serviceSale.findFirst({
                     where: {
                         scope: "GLOBAL",
+                        couponCode: null,
                         active: true,
 
                         OR: [
@@ -240,7 +257,11 @@ exports.createSale = async (req, res) => {
                     ),
 
                 discountPercent: discount,
-                appliesTo: appliesTo || "BASE_PRICE",
+                appliesTo: "BASE_PRICE",
+                couponCode: options.couponCode,
+                recipientAccountId: recipient?.id || null,
+                personalReason: recipient ? req.body.personalReason : null,
+                footerDecoration: recipient ? false : options.footerDecoration,
 
                 startsAt:
                     startsAt
@@ -263,12 +284,29 @@ exports.createSale = async (req, res) => {
             sale,
         });
     } catch (error) {
+        if (error.code === "P2002") return res.status(409).json({ ok: false, message: "That coupon code already exists. Generate or enter another code." });
         console.error("createSale error:", error);
 
         return res.status(500).json({
             ok: false,
             message: "Failed to create sale.",
         });
+    }
+};
+
+exports.setServiceAvailability = async (req, res) => {
+    if (typeof req.body?.active !== "boolean") return res.status(400).json({ ok: false, message: "Choose activated or deactivated." });
+    try {
+        const rule = await prisma.servicePriceRule.findUnique({ where: { id: req.params.id }, select: { serviceId: true } });
+        if (!rule) return res.status(404).json({ ok: false, message: "Service not found." });
+        // A service may have older pricing rules. Toggle all of them so an older
+        // active rule cannot accidentally keep a deactivated service available.
+        await prisma.servicePriceRule.updateMany({ where: { serviceId: rule.serviceId }, data: { active: req.body.active } });
+        invalidatePricingCatalog();
+        return res.json({ ok: true, serviceId: rule.serviceId, active: req.body.active });
+    } catch (error) {
+        console.error("setServiceAvailability:", error.code || error.name);
+        return res.status(500).json({ ok: false, message: "Could not update service availability. Please try again." });
     }
 };
 

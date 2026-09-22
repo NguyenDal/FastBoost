@@ -1,4 +1,6 @@
 const prisma = require("../prisma");
+const stripe = require("../utils/stripeClient");
+const { mutateCheckoutOrder } = require("../utils/checkoutCoupon");
 const { notifyOrderStatus } = require("../utils/orderNotifications");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
@@ -267,12 +269,13 @@ const createOrder = async (req, res) => {
         if (!priceRule) {
             return res.status(400).json({
                 ok: false,
-                message: "No active pricing rule is configured for this service.",
+                message: "This service is currently unavailable. Please choose another service or check back later.",
             });
         }
 
         /*
-         * Load other active rules for the same game.
+         * Keep reference prices for add-ons even when that standalone service
+         * is deactivated. The purchased service itself must be active above.
          *
          * This is needed for linked pricing such as Bonus Win,
          * which follows the game's Win Boost pricing.
@@ -280,8 +283,8 @@ const createOrder = async (req, res) => {
         const referenceRules = await prisma.servicePriceRule.findMany({
             where: {
                 game: priceRule.game,
-                active: true,
             },
+            orderBy: { updatedAt: "desc" },
         });
 
         const now = new Date();
@@ -314,6 +317,7 @@ const createOrder = async (req, res) => {
         const serviceSale = await prisma.serviceSale.findFirst({
             where: {
                 ...saleTimeWindow,
+                couponCode: null,
                 scope: "SERVICE",
                 serviceId: selectedService.id,
             },
@@ -328,6 +332,7 @@ const createOrder = async (req, res) => {
             : await prisma.serviceSale.findFirst({
                 where: {
                     ...saleTimeWindow,
+                couponCode: null,
                     scope: "GLOBAL",
                     serviceId: null,
                 },
@@ -839,7 +844,7 @@ const deleteUnpaidCheckoutOrder = async (req, res) => {
             });
         }
 
-        const deleteResult = await prisma.order.deleteMany({
+        const deleteResult = await mutateCheckoutOrder(prisma, order, stripe, db => db.order.deleteMany({
             where: {
                 id: order.id,
                 customerId: order.customerId,
@@ -849,18 +854,19 @@ const deleteUnpaidCheckoutOrder = async (req, res) => {
                 paidAt: null,
                 stripePaymentIntentId: null,
             },
-        });
+        }));
 
         return res.json({
             ok: true,
-            deleted: deleteResult.count > 0,
+            deleted: (deleteResult?.count || 0) > 0,
             message:
-                deleteResult.count > 0
+                (deleteResult?.count || 0) > 0
                     ? "Unpaid checkout order removed."
                     : "Unpaid checkout order already removed or not eligible for removal.",
         });
     } catch (error) {
         console.error("deleteUnpaidCheckoutOrder error:", error);
+        if (error.code === "COUPON_UNAVAILABLE") return res.status(409).json({ ok: false, message: error.message });
 
         return res.status(500).json({
             ok: false,
@@ -1018,7 +1024,7 @@ module.exports.updateOrderStatus = async (req, res) => {
             });
         }
 
-        const updated = await prisma.order.update({
+        const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, db => db.order.update({
             where: { id },
             data: { status },
             include: {
@@ -1055,7 +1061,9 @@ module.exports.updateOrderStatus = async (req, res) => {
                 },
                 conversation: true,
             },
-        });
+        }), status === "CANCELLED");
+
+        if (!updated) return res.status(404).json({ ok: false, message: "Order not found" });
 
         await notifyOrderStatus(prisma, updated);
 
@@ -1106,6 +1114,7 @@ module.exports.updateOrderStatus = async (req, res) => {
         });
     } catch (error) {
         console.error("updateOrderStatus error:", error);
+        if (error.code === "COUPON_UNAVAILABLE") return res.status(409).json({ ok: false, message: error.message });
 
         if (String(error?.code || "").includes("P2025")) {
             return res.status(404).json({

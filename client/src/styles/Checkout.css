@@ -190,3 +190,7 @@
   .checkout-confirmed-game > img { width: 64px; height: 72px; }
   .checkout-paid-content .checkout-paid-notice { font-size: 14px; padding: 12px; gap: 12px; }
 }
+
+.checkout-coupon-applied { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; color:#c4b5fd; font-size:13px; }
+.checkout-coupon-applied button { min-height:44px; padding:8px 12px; border:1px solid #65409c; border-radius:8px; background:#24173d; color:#eee5ff; cursor:pointer; }
+.checkout-coupon-applied button:disabled { opacity:.5; cursor:default; }

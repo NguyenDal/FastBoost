@@ -227,17 +227,10 @@ function OrderPage() {
       setLoading(true);
     }
 
-    // Fresh HomePage cache = no reason to wait on Render again.
-    if (cached?.isFresh) {
-      return () => {
-        cancelled = true;
-      };
-    }
-
     const fetchService = async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/services/${serviceId}`
+          `${API_BASE_URL}/services/${serviceId}`, { cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -277,6 +270,25 @@ function OrderPage() {
   }, [serviceId]);
 
   const serviceType = selectedBoostType || service?.title || "";
+  const [serviceAvailability, setServiceAvailability] = useState({});
+  useEffect(() => {
+    const controller = new AbortController();
+    const refresh = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/services`, { cache: "no-store", signal: controller.signal });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!controller.signal.aborted) setServiceAvailability(Object.fromEntries((data.services || []).map(item => [item.title, item.active])));
+      } catch { /* Order creation still verifies current availability on the server. */ }
+    };
+    void refresh();
+    const onVisible = () => { if (!document.hidden) void refresh(); };
+    const timer = setInterval(onVisible, 15000);
+    window.addEventListener("focus", onVisible);
+    window.addEventListener("storage", onVisible);
+    return () => { controller.abort(); clearInterval(timer); window.removeEventListener("focus", onVisible); window.removeEventListener("storage", onVisible); };
+  }, []);
+  const serviceUnavailable = (serviceAvailability[serviceType] ?? service?.active) === false;
   const isTftService = serviceType.startsWith("TFT ");
   const normalizedServiceType = serviceType.replace("TFT ", "");
 
@@ -1139,7 +1151,7 @@ function OrderPage() {
     );
   }
 
-  if (loadError || !service) {
+  if (loadError || !service || serviceUnavailable) {
     return (
       <div className="order-page-shell order-page-lol">
         <Navbar
@@ -1159,7 +1171,7 @@ function OrderPage() {
           handleLogout={handleLogout}
         />
         <div className="order-page-container">
-          <p className="error-message">{loadError || "Service not found."}</p>
+          <p className="error-message">{serviceUnavailable ? "This service is currently unavailable. Please choose another service or check back later." : loadError || "Service not found."}</p>
           <Link to="/" className="secondary-btn details-link-btn">
             Back to homepage
           </Link>
@@ -1212,6 +1224,8 @@ function OrderPage() {
                     type="button"
                     className={`boost-type-tab ${selectedBoostType === type.value ? "active" : ""}`}
                     onClick={() => setSelectedBoostType(type.value)}
+                    disabled={serviceAvailability[type.value] !== true}
+                    title={serviceAvailability[type.value] === false ? "Currently unavailable" : undefined}
                   >
                     {type.label}
                   </button>

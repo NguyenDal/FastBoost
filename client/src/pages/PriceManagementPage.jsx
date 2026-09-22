@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../api/config";
 import "../styles/Admin.css";
 import "../styles/PriceManagement.css";
@@ -798,6 +798,9 @@ const EMPTY_SALE_FORM = {
     startsAt: "",
     endsAt: "",
     appliesTo: "BASE_PRICE",
+    saleMode: "WITHOUT_COUPON",
+    couponCode: "",
+    footerDecoration: false,
 };
 
 function getSaleDisplayStatus(sale, nowMs = Date.now()) {
@@ -859,6 +862,43 @@ export default function PriceManagementPage() {
     const [pricingServices, setPricingServices] = useState([]);
     const [pricesLoading, setPricesLoading] = useState(true);
     const [pricesError, setPricesError] = useState("");
+    const [availabilitySaving, setAvailabilitySaving] = useState(null);
+    const [availabilityError, setAvailabilityError] = useState("");
+    const [pendingAvailability, setPendingAvailability] = useState(null);
+    const availabilityDialog = useRef(null);
+
+    useEffect(() => {
+        if (!pendingAvailability) return;
+        const previousFocus = document.activeElement;
+        availabilityDialog.current?.querySelector("button")?.focus();
+        return () => previousFocus?.focus();
+    }, [pendingAvailability]);
+
+    const closeAvailabilityConfirmation = () => {
+        if (availabilitySaving) return;
+        setPendingAvailability(null);
+        setAvailabilityError("");
+    };
+
+    const confirmAvailability = async () => {
+        if (availabilitySaving || !pendingAvailability) return;
+        const item = pendingAvailability;
+        setAvailabilitySaving(item.serviceId);
+        setAvailabilityError("");
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/prices/rules/${item.id}/availability`, {
+                method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+                body: JSON.stringify({ active: item.nextActive }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data.ok) throw new Error(data.message || "Could not update this service.");
+            setPricingServices(items => items.map(rule => rule.serviceId === item.serviceId ? { ...rule, active: data.active } : rule));
+            localStorage.removeItem("fastboost:services:v1");
+            window.dispatchEvent(new Event("fastboost:services-updated"));
+            setPendingAvailability(null);
+        } catch (error) { setAvailabilityError(error.message); }
+        finally { setAvailabilitySaving(null); }
+    };
 
     const [editingRuleId, setEditingRuleId] = useState(null);
     const [draftConfig, setDraftConfig] = useState(null);
@@ -876,6 +916,7 @@ export default function PriceManagementPage() {
     const [selectedService, setSelectedService] = useState(null);
 
     const [globalSale, setGlobalSale] = useState(null);
+    const [coupons, setCoupons] = useState([]);
     const [saleScope, setSaleScope] = useState("SERVICE");
 
     const [saleForm, setSaleForm] = useState(
@@ -893,7 +934,7 @@ export default function PriceManagementPage() {
         Date.now()
     );
 
-    const [gameFilter, setGameFilter] = useState("ALL");
+    const [gameFilter, setGameFilter] = useState("LoL");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [searchTerm, setSearchTerm] = useState("");
     const [expandedRuleIds, setExpandedRuleIds] = useState(() => new Set());
@@ -933,6 +974,7 @@ export default function PriceManagementPage() {
 
             setPricingServices(data.items || []);
             setGlobalSale(data.globalSale || null);
+            setCoupons(data.coupons || []);
         } catch (error) {
             setPricesError(error.message || "Failed to load price rules.");
         } finally {
@@ -1168,13 +1210,18 @@ export default function PriceManagementPage() {
 
     const openSaleModal = (
         service = null,
-        scope = "SERVICE"
+        scope = "SERVICE",
+        personalCoupon = false
     ) => {
         setSelectedService(service);
         setSaleScope(scope);
 
         setSaleForm({
             ...EMPTY_SALE_FORM,
+            personalCoupon,
+            recipientEmail: "",
+            personalReason: "MANUAL",
+            ...(personalCoupon ? { saleMode: "WITH_COUPON" } : {}),
         });
 
         setSaleError("");
@@ -1201,6 +1248,8 @@ export default function PriceManagementPage() {
 
             const discount = Number(saleForm.discountPercent);
 
+            if (saleForm.personalCoupon && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(saleForm.recipientEmail?.trim() || "")) throw new Error("Enter the customer's account email.");
+
             if (!Number.isFinite(discount) || discount <= 0 || discount > 90) {
                 throw new Error("Discount must be between 1 and 90.");
             }
@@ -1217,7 +1266,15 @@ export default function PriceManagementPage() {
                 throw new Error("No service was selected.");
             }
 
+            {
+                if (saleForm.saleMode === "WITHOUT_COUPON" && (!saleForm.startsAt || !saleForm.endsAt)) throw new Error("Set sale start and end for a sale without a coupon.");
+                if (saleScope === "GLOBAL" && saleForm.saleMode === "WITHOUT_COUPON" && hasCurrentGlobalSale) throw new Error("End the existing global sale first, or choose With coupon.");
+                if (saleForm.saleMode === "WITH_COUPON" && !/^[A-Z0-9][A-Z0-9-]{3,31}$/.test(saleForm.couponCode.trim().toUpperCase())) throw new Error("Enter or generate a coupon code of 4–32 letters, numbers or hyphens.");
+            }
             const pending = {
+                personalCoupon: Boolean(saleForm.personalCoupon),
+                recipientEmail: saleForm.recipientEmail?.trim() || "",
+                personalReason: saleForm.personalReason || "MANUAL",
                 type: "CREATE",
                 scope: saleScope,
                 serviceId:
@@ -1234,7 +1291,10 @@ export default function PriceManagementPage() {
                         ? `${discount}% off all services`
                         : `${discount}% off ${selectedService?.service?.title || "Service"}`),
                 discountPercent: discount,
-                appliesTo: saleForm.appliesTo,
+                appliesTo: "BASE_PRICE",
+                saleMode: saleForm.saleMode,
+                couponCode: saleForm.saleMode === "WITH_COUPON" ? saleForm.couponCode.trim().toUpperCase() : null,
+                footerDecoration: saleForm.footerDecoration,
                 startsAt: saleForm.startsAt || null,
                 endsAt: saleForm.endsAt || null,
             };
@@ -1272,11 +1332,17 @@ export default function PriceManagementPage() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
+                        personalCoupon: pendingSaleAction.personalCoupon,
+                        recipientEmail: pendingSaleAction.recipientEmail,
+                        personalReason: pendingSaleAction.personalReason,
                         scope: pendingSaleAction.scope,
                         serviceId: pendingSaleAction.serviceId,
                         title: pendingSaleAction.title,
                         discountPercent: pendingSaleAction.discountPercent,
                         appliesTo: pendingSaleAction.appliesTo,
+                        saleMode: pendingSaleAction.saleMode,
+                        couponCode: pendingSaleAction.couponCode,
+                        footerDecoration: pendingSaleAction.footerDecoration,
                         startsAt: pendingSaleAction.startsAt
                             ? new Date(pendingSaleAction.startsAt).toISOString()
                             : null,
@@ -1322,6 +1388,8 @@ export default function PriceManagementPage() {
             title: sale.title || `${Number(sale.discountPercent).toFixed(0)}% OFF`,
             discountPercent: Number(sale.discountPercent),
             appliesTo: sale.appliesTo,
+            couponCode: sale.couponCode,
+            footerDecoration: sale.footerDecoration,
             startsAt: sale.startsAt || null,
             endsAt: sale.endsAt || null,
         });
@@ -1398,14 +1466,14 @@ export default function PriceManagementPage() {
     const activeServices = pricingServices.filter((item) => item.active).length;
     const activeSales =
         pricingServices.filter((item) => item.sale?.status === "ACTIVE").length +
-        (globalSaleStatus === "ACTIVE" ? 1 : 0);
+        (globalSaleStatus === "ACTIVE" ? 1 : 0) + coupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "ACTIVE").length;
     const upcomingSales =
         pricingServices.filter((item) => item.sale?.status === "SCHEDULED").length +
-        (globalSaleStatus === "SCHEDULED" ? 1 : 0);
+        (globalSaleStatus === "SCHEDULED" ? 1 : 0) + coupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "SCHEDULED").length;
 
     const filteredPricingServices = pricingServices.filter((item) => {
         const matchesGame =
-            gameFilter === "ALL" || item.game === gameFilter;
+            item.game === gameFilter;
 
         const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -1457,7 +1525,6 @@ export default function PriceManagementPage() {
                         <div>
                             <p>Pricing Rules</p>
                             <strong>{pricingServices.length}</strong>
-                            <span>Configured service rules</span>
                         </div>
                     </article>
 
@@ -1466,7 +1533,6 @@ export default function PriceManagementPage() {
                         <div>
                             <p>Active Services</p>
                             <strong>{activeServices}</strong>
-                            <span>Available to customers</span>
                         </div>
                     </article>
 
@@ -1475,7 +1541,6 @@ export default function PriceManagementPage() {
                         <div>
                             <p>Active Sales</p>
                             <strong>{activeSales}</strong>
-                            <span>Current sale campaigns</span>
                         </div>
                     </article>
 
@@ -1484,7 +1549,6 @@ export default function PriceManagementPage() {
                         <div>
                             <p>Upcoming Sales</p>
                             <strong>{upcomingSales}</strong>
-                            <span>Scheduled promotions</span>
                         </div>
                     </article>
                 </section>
@@ -1495,15 +1559,8 @@ export default function PriceManagementPage() {
                             <div className="price-tabs">
                                 <button
                                     type="button"
-                                    className={`price-tab ${gameFilter === "ALL" ? "price-tab-active" : ""}`}
-                                    onClick={() => setGameFilter("ALL")}
-                                >
-                                    All Games
-                                </button>
-
-                                <button
-                                    type="button"
                                     className={`price-tab ${gameFilter === "LoL" ? "price-tab-active" : ""}`}
+                                    aria-pressed={gameFilter === "LoL"}
                                     onClick={() => setGameFilter("LoL")}
                                 >
                                     League of Legends
@@ -1512,6 +1569,7 @@ export default function PriceManagementPage() {
                                 <button
                                     type="button"
                                     className={`price-tab ${gameFilter === "TFT" ? "price-tab-active" : ""}`}
+                                    aria-pressed={gameFilter === "TFT"}
                                     onClick={() => setGameFilter("TFT")}
                                 >
                                     Teamfight Tactics
@@ -1539,22 +1597,7 @@ export default function PriceManagementPage() {
                             </div>
                         </div>
 
-                        <div className="price-rules-panel">
-                            <div className="price-table-header">
-                                <div>
-                                    <h2>Service Pricing Rules</h2>
-                                    <p>
-                                        Expand a service to inspect every rank price, modifier,
-                                        formula, and add-on used by the pricing calculator.
-                                    </p>
-                                </div>
-
-                                <span className="price-result-count">
-                                    {filteredPricingServices.length} rule
-                                    {filteredPricingServices.length === 1 ? "" : "s"}
-                                </span>
-                            </div>
-
+                        <>
                             {pricesLoading && (
                                 <div className="price-empty-state">
                                     Loading pricing rules...
@@ -1585,7 +1628,7 @@ export default function PriceManagementPage() {
                                             return (
                                                 <article
                                                     key={item.id}
-                                                    className={`price-rule-card ${expanded ? "price-rule-card-expanded" : ""
+                                                    className={`price-rule-card ${!item.active ? "price-rule-card-inactive" : ""} ${expanded ? "price-rule-card-expanded" : ""
                                                         }`}
                                                 >
                                                     <div className="price-rule-card-main">
@@ -1596,14 +1639,6 @@ export default function PriceManagementPage() {
                                                                         "Unknown Service"}
                                                                 </h3>
 
-                                                                <span
-                                                                    className={`price-game-pill ${item.game === "LoL"
-                                                                        ? "lol"
-                                                                        : "tft"
-                                                                        }`}
-                                                                >
-                                                                    {item.game}
-                                                                </span>
                                                             </div>
 
                                                             <div className="price-rule-meta">
@@ -1633,21 +1668,13 @@ export default function PriceManagementPage() {
                                                                 </span>
                                                             )}
 
-                                                            <span
-                                                                className={`price-status-pill ${item.active
-                                                                    ? "active"
-                                                                    : "inactive"
-                                                                    }`}
-                                                            >
-                                                                {item.sale?.status === "ACTIVE"
-                                                                    ? "On Sale"
-                                                                    : item.sale?.status ===
-                                                                        "SCHEDULED"
-                                                                        ? "Scheduled"
-                                                                        : item.active
-                                                                            ? "Active"
-                                                                            : "Inactive"}
-                                                            </span>
+                                                            <button type="button" role="switch" aria-checked={item.active}
+                                                                aria-label={`${item.service?.title || "Service"} availability`}
+                                                                className={`price-availability-toggle ${item.active ? "is-active" : "is-inactive"}`}
+                                                                disabled={Boolean(availabilitySaving)} onClick={() => { setAvailabilityError(""); setPendingAvailability({ ...item, nextActive: !item.active }); }}>
+                                                                <span className="price-availability-track" aria-hidden="true"><span /></span>
+                                                                {availabilitySaving === item.serviceId ? "Saving…" : item.active ? "Activated" : "Deactivated"}
+                                                            </button>
                                                         </div>
                                                     </div>
 
@@ -1705,7 +1732,7 @@ export default function PriceManagementPage() {
                                                                 openSaleModal(item, "SERVICE")
                                                             }
                                                         >
-                                                            Sale Settings
+                                                            Create Sale
                                                         </button>
 
                                                         {item.sale && (
@@ -1784,7 +1811,7 @@ export default function PriceManagementPage() {
                                         })}
                                     </div>
                                 )}
-                        </div>
+                        </>
                     </div>
 
                     <aside className="price-side-panel">
@@ -1803,11 +1830,9 @@ export default function PriceManagementPage() {
                                 type="button"
                                 className="price-primary-btn price-full-btn"
                                 onClick={() => openSaleModal(null, "GLOBAL")}
-                                disabled={hasCurrentGlobalSale}
+
                             >
-                                {hasCurrentGlobalSale
-                                    ? "Global Sale Already Exists"
-                                    : "Create Global Sale"}
+                                Create Global Sale
                             </button>
                         </section>
 
@@ -1815,7 +1840,6 @@ export default function PriceManagementPage() {
                             <div className="price-sale-control-header">
                                 <div>
                                     <h3>Sale Control</h3>
-                                    <p>Current global campaign status.</p>
                                 </div>
 
                                 {hasCurrentGlobalSale && (
@@ -1831,12 +1855,7 @@ export default function PriceManagementPage() {
                             </div>
 
                             {!hasCurrentGlobalSale ? (
-                                <div className="price-sale-empty">
-                                    <span>No Global Campaign</span>
-                                    <strong>
-                                        No global sale is currently active or scheduled.
-                                    </strong>
-                                </div>
+                                !coupons.length && <p className="price-sale-empty-text">No sale created yet.</p>
                             ) : (
                                 <>
                                     <div className="price-sale-preview">
@@ -1900,10 +1919,68 @@ export default function PriceManagementPage() {
                                     </button>
                                 </>
                             )}
+                            {coupons.filter(coupon => !coupon.recipientAccountId).map(coupon => <div className="price-sale-preview" key={coupon.id}>
+                                <strong>{coupon.title}</strong><p><code>{coupon.couponCode}</code></p>
+                                <p>{coupon.scope === "GLOBAL" ? "All services" : coupon.serviceTitle || "Selected service"}</p>
+                                <p>{Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
+                                <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "No start timer"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
+                                <p>Footer decoration: {coupon.footerDecoration ? "Yes (coming later)" : "No"}</p>
+                                <button type="button" className="price-secondary-btn" onClick={() => requestEndSale({ sale: coupon, scope: coupon.scope, serviceName: coupon.serviceTitle || "All services" })}>Disable Coupon</button>
+                            </div>)}
+                        </section>
+                        <section className="price-side-card">
+                            <h3>Create Personal Coupon</h3>
+                            <p>Create an account-only coupon for an individual customer.</p>
+                            <button type="button" className="price-primary-btn price-full-btn" onClick={() => openSaleModal(null, "GLOBAL", true)}>Create Personal Coupon</button>
+                        </section>
+                        <section className="price-side-card">
+                            <h3>Personal Coupons</h3>
+                            <p>Birthday and account anniversary coupons will be automated later.</p>
+                            {!coupons.some(coupon => coupon.recipientAccountId) && <p className="price-sale-empty-copy">No personal coupons created yet.</p>}
+                            {coupons.filter(coupon => coupon.recipientAccountId).map(coupon => <div className="price-sale-preview" key={coupon.id}>
+                                <strong>{coupon.title}</strong>
+                                <p><code>{coupon.couponCode}</code></p>
+                                <p>{coupon.recipientAccount?.email}</p>
+                                <p>{coupon.personalReason === "NEGOTIATED" ? "Negotiated" : "Manual"} · {Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
+                                <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "Immediately"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
+                                <button type="button" className="price-secondary-btn" onClick={() => requestEndSale({ sale: coupon, scope: coupon.scope, serviceName: coupon.recipientAccount?.email || "Selected account" })}>Disable Coupon</button>
+                            </div>)}
                         </section>
                     </aside>
                 </section>
             </main>
+
+            {pendingAvailability && (
+                <div className="price-modal-backdrop" onClick={closeAvailabilityConfirmation}>
+                    <section className="price-modal" ref={availabilityDialog} role="dialog" aria-modal="true" aria-labelledby="availability-confirm-title" aria-describedby="availability-confirm-description"
+                        onClick={event => event.stopPropagation()}
+                        onKeyDown={event => {
+                            if (event.key === "Escape") { event.preventDefault(); closeAvailabilityConfirmation(); }
+                            if (event.key !== "Tab") return;
+                            const buttons = [...event.currentTarget.querySelectorAll("button:not(:disabled)")];
+                            const first = buttons[0]; const last = buttons[buttons.length - 1];
+                            if (!first) { event.preventDefault(); return; }
+                            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+                        }}>
+                        <div className="price-modal-header">
+                            <div>
+                                <p className="admin-eyebrow">Confirm Service Availability</p>
+                                <h2 id="availability-confirm-title">{pendingAvailability.nextActive ? "Activate" : "Deactivate"} {pendingAvailability.service?.title || "service"}?</h2>
+                                <p id="availability-confirm-description">{pendingAvailability.nextActive
+                                    ? "Customers will be able to select this service and place new orders again."
+                                    : "This service will be greyed out for customers and unavailable for new orders. Existing paid orders will remain accessible."}</p>
+                            </div>
+                            <button type="button" className="price-modal-close" aria-label="Close confirmation" disabled={Boolean(availabilitySaving)} onClick={closeAvailabilityConfirmation}>×</button>
+                        </div>
+                        {availabilityError && <p role="alert" className="price-save-error">{availabilityError}</p>}
+                        <div className="price-modal-actions">
+                            <button type="button" className="price-secondary-btn" disabled={Boolean(availabilitySaving)} onClick={closeAvailabilityConfirmation}>Cancel</button>
+                            <button type="button" className="price-primary-btn" disabled={Boolean(availabilitySaving)} onClick={confirmAvailability}>{availabilitySaving ? "Saving…" : pendingAvailability.nextActive ? "Confirm Activation" : "Confirm Deactivation"}</button>
+                        </div>
+                    </section>
+                </div>
+            )}
 
             {priceConfirmOpen && pendingPriceItem && (
                 <div
@@ -2086,6 +2163,10 @@ export default function PriceManagementPage() {
                         </div>
 
                         <div className="price-sale-confirm-list">
+                            {pendingSaleAction.personalCoupon && <>
+                                <div className="price-sale-confirm-row"><span>Customer account</span><strong>{pendingSaleAction.recipientEmail}</strong></div>
+                                <div className="price-sale-confirm-row"><span>Reason</span><strong>{pendingSaleAction.personalReason === "NEGOTIATED" ? "Negotiated" : "Manual"}</strong></div>
+                            </>}
                             <div className="price-sale-confirm-row">
                                 <span>Action</span>
                                 <strong>
@@ -2120,6 +2201,11 @@ export default function PriceManagementPage() {
                                         : "Base price only"}
                                 </strong>
                             </div>
+                            <>
+                                <div className="price-sale-confirm-row"><span>Sale Type</span><strong>{pendingSaleAction.couponCode ? "With coupon" : "Without coupon"}</strong></div>
+                                {pendingSaleAction.couponCode && <div className="price-sale-confirm-row"><span>Coupon</span><strong>{pendingSaleAction.couponCode}</strong></div>}
+                                <div className="price-sale-confirm-row"><span>Footer decoration</span><strong>{pendingSaleAction.footerDecoration ? "Yes (coming later)" : "No"}</strong></div>
+                            </>
                             <div className="price-sale-confirm-row">
                                 <span>Starts</span>
                                 <strong>
@@ -2218,19 +2304,19 @@ export default function PriceManagementPage() {
                         <div className="price-modal-header">
                             <div>
                                 <p className="admin-eyebrow">
-                                    {saleScope === "GLOBAL"
+                                    {saleForm.personalCoupon ? "Personal Coupon" : saleScope === "GLOBAL"
                                         ? "Global Campaign"
                                         : "Service Campaign"}
                                 </p>
 
                                 <h2>
-                                    {saleScope === "GLOBAL"
+                                    {saleForm.personalCoupon ? "Create Personal Coupon" : saleScope === "GLOBAL"
                                         ? "Create Global Sale"
                                         : `Create ${selectedService?.service?.title || "Service"} Sale`}
                                 </h2>
 
                                 <p>
-                                    {saleScope === "GLOBAL"
+                                    {saleForm.personalCoupon ? "Only the selected customer account can redeem this coupon." : saleScope === "GLOBAL"
                                         ? "Apply one temporary discount across every FastBoost service."
                                         : `This discount applies only to ${selectedService?.service?.title || "this service"}.`}
                                 </p>
@@ -2256,6 +2342,10 @@ export default function PriceManagementPage() {
                         </div>
 
                         <div className="price-modal-grid">
+                            {saleForm.personalCoupon && <>
+                                <label className="price-modal-field price-modal-field-wide"><span>Customer account email</span><input type="email" maxLength={254} value={saleForm.recipientEmail} onChange={event => setSaleForm(current => ({ ...current, recipientEmail: event.target.value }))} placeholder="customer@example.com" /></label>
+                                <label className="price-modal-field price-modal-field-wide"><span>Reason</span><select value={saleForm.personalReason} onChange={event => setSaleForm(current => ({ ...current, personalReason: event.target.value }))}><option value="MANUAL">Manual gift</option><option value="NEGOTIATED">Negotiated discount</option></select></label>
+                            </>}
                             <label className="price-modal-field price-modal-field-wide">
                                 <span>Sale Title</span>
                                 <input
@@ -2292,20 +2382,24 @@ export default function PriceManagementPage() {
                             </label>
 
                             <label className="price-modal-field">
-                                <span>Apply Discount To</span>
-                                <select
-                                    value={saleForm.appliesTo}
-                                    onChange={(event) =>
-                                        setSaleForm((current) => ({
-                                            ...current,
-                                            appliesTo: event.target.value,
-                                        }))
-                                    }
-                                >
-                                    <option value="BASE_PRICE">Base price only</option>
-                                    <option value="TOTAL">Whole order total</option>
+                                <span>Sale Type</span>
+                                <select disabled={saleForm.personalCoupon} value={saleForm.saleMode} onChange={event => setSaleForm(current => ({ ...current, saleMode: event.target.value }))}>
+                                    <option value="WITHOUT_COUPON">Without coupon</option>
+                                    <option value="WITH_COUPON">With coupon</option>
                                 </select>
                             </label>
+                            {saleForm.saleMode === "WITH_COUPON" && <label className="price-modal-field price-modal-field-full">
+                                <span>Coupon Code</span>
+                                <div className="price-coupon-input">
+                                    <input value={saleForm.couponCode} maxLength={32} placeholder="WELCOME15" onChange={event => setSaleForm(current => ({ ...current, couponCode: event.target.value.toUpperCase() }))} />
+                                    <button type="button" className="price-secondary-btn" onClick={() => {
+                                        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                                        const bytes = crypto.getRandomValues(new Uint8Array(10));
+                                        setSaleForm(current => ({ ...current, couponCode: Array.from(bytes, byte => alphabet[byte % 32]).join("") }));
+                                    }}>Generate Coupon</button>
+                                </div>
+                                <small>Customers can redeem this code at checkout while the coupon is active.</small>
+                            </label>}
 
                             <label className="price-modal-field">
                                 <span>Sale Start</span>
@@ -2336,12 +2430,19 @@ export default function PriceManagementPage() {
                             </label>
                         </div>
 
+                        <>
+                            <p className="price-coupon-help">{saleForm.saleMode === "WITH_COUPON" ? "Set Sale Start to schedule when this coupon becomes available, or leave it blank to start immediately. Leave Sale End blank for no expiration, even with a scheduled start." : "Set Sale Start and Sale End to schedule this automatic sale."} Discounts apply to the base price only.</p>
+                            <label className="price-sale-critical-check">
+                                <input type="checkbox" disabled={saleForm.personalCoupon} checked={saleForm.footerDecoration} onChange={event => setSaleForm(current => ({ ...current, footerDecoration: event.target.checked }))} />
+                                <div><strong>Footer decoration</strong><span>Save this campaign for a future sale display in the footer. The footer display will be implemented later.</span></div>
+                            </label>
+                        </>
                         <div className="price-modal-note">
-                            <strong>Safe behavior:</strong>
+                            <strong>Sale behavior:</strong>
                             <span>
-                                {saleScope === "GLOBAL"
-                                    ? "The global sale applies automatically unless a service has its own specific sale. Service-specific sales take priority."
-                                    : "This service-specific sale overrides the global sale for this service while it is active."}
+                                {saleForm.saleMode === "WITH_COUPON" ? "Customers can enter this coupon at checkout for the selected scope. The larger sale or coupon discount applies; discounts do not stack."
+                                    : saleScope === "GLOBAL" ? "The global sale applies automatically unless a service has its own specific sale. Service-specific sales take priority."
+                                        : "This service-specific sale overrides the global sale for this service while it is active."}
                             </span>
                         </div>
 
@@ -2369,7 +2470,7 @@ export default function PriceManagementPage() {
                             >
                                 {saleSaving
                                     ? "Creating Sale..."
-                                    : saleScope === "GLOBAL"
+                                    : saleForm.personalCoupon ? "Create Personal Coupon" : saleScope === "GLOBAL"
                                         ? "Create Global Sale"
                                         : "Create Service Sale"}
                             </button>

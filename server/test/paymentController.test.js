@@ -30,6 +30,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
             }),
         },
         $transaction: async (callback) => callback({
+            $queryRaw: async () => [],
             order: {
                 updateMany: async ({ where, data }) => {
                     assert.equal(where.id, orderId);

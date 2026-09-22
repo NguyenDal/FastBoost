@@ -6,11 +6,13 @@ const {
     createSale,
     disableSale,
     updatePriceRule,
+    setServiceAvailability,
 } = require("../controllers/priceController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 router.get("/", protect, adminOnly, listPriceRules);
+router.patch("/rules/:id/availability", protect, adminOnly, setServiceAvailability);
 
 router.patch(
     "/rules/:id",

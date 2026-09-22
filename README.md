@@ -8,6 +8,74 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### September 22, 2026 — pricing, checkout, and coupons
+
+This section records the latest implementation and supersedes older session
+notes below where they conflict. The changes are local; no commit, push, or
+Render deployment was performed for this work.
+
+#### Admin pricing and availability
+
+- Price Management has League of Legends and Teamfight Tactics filters only,
+  defaults to LoL, and shows service cards directly below the filters. The extra
+  rules wrapper, heading, description, count badge, and per-card game tags were
+  removed. The title is white; service cards have increased vertical spacing.
+- Green/red availability switches open an activation/deactivation confirmation.
+  Cancel preserves the current state; only Confirm saves it. Disabled services
+  are greyed out and blocked from new orders and new checkout sessions. Existing
+  paid orders remain accessible. Public availability refreshes on focus and
+  periodically; checkout checks availability again before confirmation.
+- Deactivation updates all pricing rules for that service and invalidates the
+  pricing cache. Inactive standalone Win Boost prices remain available as
+  references for other services' bonus-win calculations.
+- Global and service-level Create Sale flows support automatic sales or coupons,
+  base-price-only discounts, and a final review popup. Automatic sales require
+  start/end dates. Coupon dates are independent: blank start means immediate;
+  a scheduled start with blank end activates later and never expires.
+- General coupons appear in Sale Control. Separate Create Personal Coupon and
+  Personal Coupons cards support manual gifts and negotiated discounts for an
+  existing customer's account email. The backend binds the coupon to that
+  account's ID and rejects redemption by other accounts. Personal coupons are
+  excluded from footer decoration.
+- Birthday and account-anniversary coupon automation and the promotional footer
+  display are **not implemented**. The general sale footer checkbox only stores
+  a preference for future implementation.
+
+#### Checkout and customer communication
+
+- Coupon checkout keeps the larger automatic sale or coupon discount and explains
+  the result in a popup. Usage is recorded only after successful payment;
+  cancellation permits reuse. See [Checkout coupon redemption](#checkout-coupon-redemption).
+- Checkout has service-specific summaries, skeleton loading, progress transitions,
+  editable contact email, and friendly payment error dialogs. Successful payment
+  stays on checkout with a paid-order summary and an explicit Go to Order button.
+- FastBoost confirmation emails cover card/wallet and gold-only payments, with a
+  branded layout and service-specific order overview. The Stripe-receipt footer
+  was removed. Stripe receipts remain separate and do not cover gold-only orders.
+- The frontend build requires `STRIPE_PUBLISHABLE_KEY` in its own build environment;
+  setting it only in a local/backend `.env` does not configure the deployed bundle.
+- Public order numbers and origin-aware referral links are documented below.
+
+#### Database status and verification
+
+- The configured database has migrations `20260922210000_sale_coupons`,
+  `20260922220000_checkout_coupon_redemption`, and
+  `20260922230000_personal_coupons` applied and recorded. The personal-coupon
+  migration was explicitly approved and applied on September 22 after a `P2022`
+  missing-column error; the actual pricing controller then returned all 7 rules.
+- Deploy matching schema, backend, and frontend to other environments. The
+  unrelated pending `20260921200000_optimize_loyalty_history` was not applied;
+  review pending migrations before running a blanket deployment command.
+- Latest full server run: 39 passing tests, 2 optional database tests skipped.
+  Coupon database lifecycle checks were separately verified in a rolled-back
+  isolated schema earlier in the session. Focused pricing lint and client builds
+  passed after the UI edits; Vite retains its existing bundle-size warning.
+- No real coupon, payment, or email was created for these checks. Browser review
+  covered the global/service sale confirmation flow; not every later UI edit
+  received a fresh visual check. Existing HomePage/OrderPage lint findings remain.
+- Disabling a service does not centrally expire previously issued Stripe sessions.
+  Previously issued sessions keep their quoted discounts until expired/replaced.
+
 ### Dashboard, loyalty, referrals, and profile updates
 
 This section describes the current behavior and supersedes conflicting details in
@@ -91,9 +159,14 @@ the historical session notes below, particularly older referral eligibility rule
   client. These were applied and recorded on the configured Prisma-hosted database.
   Other environments must apply their forward migrations through the normal
   deployment process; this session did not deploy to Render or push to GitHub.
-- Private session context lives in `.agent-handoff/HANDOFF.md`. A local root
-  `AGENTS.md` points future Codex sessions to it. Both are gitignored and are not
-  part of a clone or production deployment. Keep credentials out of handoff notes.
+- Private session context uses one `.agent-handoff/HANDOFF_YYYY-MM-DD.md` per
+  local calendar day (America/Winnipeg). Keep one **Latest update** at the top;
+  move its previous entry into **Done** below (newest first) before replacing it.
+  Keep current constraints and unresolved gaps up to date. Reuse the same daily
+  file; do not append new updates at the bottom or create numbered/time duplicates.
+  `.agent-handoff/HANDOFF.md` is only the index pointing to the latest daily file.
+  A local root `AGENTS.md` records this workflow. These files are gitignored and
+  are not part of a clone or production deployment. Keep credentials out of notes.
 
 ---
 
@@ -529,10 +602,11 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `PATCH /api/admin/users/:userId/suspension` — admin-only suspend/restore account status update
 
 ### Admin price management
-- `GET /api/admin/prices` — admin-only detailed `ServicePriceRule` list, service-sale metadata, and current `globalSale`
-- `POST /api/admin/prices/sales` — create a `SERVICE` or `GLOBAL` sale
+- `GET /api/admin/prices` — admin-only detailed `ServicePriceRule` list, sale metadata, current `globalSale`, and general/personal coupons
+- `POST /api/admin/prices/sales` — create a `SERVICE` or `GLOBAL` sale/coupon; personal coupons require `personalCoupon: true`, an existing `recipientEmail`, and `personalReason` (`MANUAL` or `NEGOTIATED`)
 - `PATCH /api/admin/prices/sales/:id/disable` — disable/end an existing service or global sale
 - `PATCH /api/admin/prices/rules/:id` — update validated pricing config from the admin website
+- `PATCH /api/admin/prices/rules/:id/availability` — set boolean `active` for every pricing rule belonging to the selected service
 
 ### Provider / booster orders
 - `GET /api/orders/provider/assigned` — provider assigned order list
@@ -1495,3 +1569,13 @@ Database allocator test: `RUN_ORDER_NUMBER_DB_TEST=1 node --test test/orderNumbe
 
 Referral links displayed and copied in the dashboard use the browser's current origin, so deployed links use the public website domain and localhost links appear only during local browsing.
 
+
+### Checkout coupon redemption
+
+Active admin coupons are entered in checkout's Coupon code field. They discount the base price only. The larger of the order's existing automatic sale and the coupon wins; they never stack. An explanatory popup tells customers which discount was retained. The existing referral percentage, when present, is calculated after the winning discount. Gold is applied after these discounts. Applied coupon titles appear in checkout and confirmation emails.
+
+`CouponUse.usedAt` is set atomically with verified payment, including gold-only payment. Applying a coupon or loading an unpaid draft does not consume it. An unpaid checkout claim can move to another draft after its old Stripe session is expired. A unique account/coupon constraint plus serialized checkout mutations prevent two payable sessions from redeeming the same coupon for one account. Cancellation releases the use; completed orders retain it. Coupon price snapshots remain on the order for history.
+
+Schema: `20260922210000_sale_coupons` and `20260922220000_checkout_coupon_redemption`, both applied and recorded on the configured database September 22, 2026. Deploy the matching backend and frontend together. Do not automatically apply the unrelated pending loyalty-history migration. Scheduled cleanup preserves coupon drafts; session expiry releases unpaid claims, and customers can remove or move an unpaid coupon. Disabled/expired coupons are removed with an explanation on checkout refresh. Already issued payment sessions honor their quoted price until expired/replaced.
+
+Verification: `npm test` in `server`; `RUN_COUPON_DB_TEST=1 node --test test/couponDatabase.test.js` runs the database trigger/uniqueness lifecycle checks inside a completely rolled-back isolated schema. No Stripe charge or email send is needed for these tests.

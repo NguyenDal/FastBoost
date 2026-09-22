@@ -1880,3 +1880,5 @@
   font-size: 0.78rem;
   font-weight: 700;
 }
+
+.boost-type-tab:disabled { filter: grayscale(1); opacity: .4; cursor: not-allowed; }

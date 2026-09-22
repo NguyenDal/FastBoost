@@ -39,6 +39,7 @@ const getAllServices = async (req, res) => {
         id: true,
         title: true,
         description: true,
+        priceRules: { where: { active: true }, select: { id: true }, take: 1 },
       },
       orderBy: {
         createdAt: "desc",
@@ -47,12 +48,12 @@ const getAllServices = async (req, res) => {
 
     res.set(
       "Cache-Control",
-      "public, max-age=300, stale-while-revalidate=3600"
+      "no-store"
     );
 
     return res.status(200).json({
       ok: true,
-      services,
+      services: services.map(({ priceRules, ...service }) => ({ ...service, active: priceRules.length > 0 })),
     });
   } catch (error) {
     console.error("Get services error:", error);
@@ -70,6 +71,7 @@ const getServiceById = async (req, res) => {
 
     const service = await prisma.service.findUnique({
       where: { id },
+      include: { priceRules: { where: { active: true }, select: { id: true }, take: 1 } },
     });
 
     if (!service) {
@@ -79,9 +81,11 @@ const getServiceById = async (req, res) => {
       });
     }
 
+    res.set("Cache-Control", "no-store");
+    const { priceRules, ...details } = service;
     return res.status(200).json({
       ok: true,
-      service,
+      service: { ...details, active: priceRules.length > 0 },
     });
   } catch (error) {
     console.error("Get service by id error:", error);

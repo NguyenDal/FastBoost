@@ -9,7 +9,7 @@ import { paymentErrorMessage } from "../utils/paymentError";
 import PaymentResultPage from "./PaymentResultPage";
 import Navbar from "../components/Navbar";
 import CleanIcon from "../components/CleanIcon";
-import { createCheckoutSession, verifyCheckoutSession } from "../api/orders";
+import { createCheckoutSession, verifyCheckoutSession, checkServiceAvailability } from "../api/orders";
 import "../styles/Checkout.css";
 
 const publishableKey = import.meta.env.STRIPE_PUBLISHABLE_KEY?.trim();
@@ -41,6 +41,7 @@ export default function CheckoutPage() {
     const [goldConfirmation, setGoldConfirmation] = useState(null);
     const [goldError, setGoldError] = useState("");
     const [contactEmail, setContactEmail] = useState(null);
+    const [couponNotice, setCouponNotice] = useState(null);
     const request = useRef(null);
     const gold = Math.max(0, Math.floor(Number(params.get("gold")) || 0));
 
@@ -50,6 +51,7 @@ export default function CheckoutPage() {
         if (request.current?.key !== key) request.current = { key, promise: createCheckoutSession(orderId, gold) };
         request.current.promise.then(async (result) => {
             if (cancelled) return;
+            if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paid) {
                 setData(result);
                 setPaid(true);
@@ -104,6 +106,26 @@ export default function CheckoutPage() {
         setParams({ gold: String(value) }, { replace: true });
         setAttempt(value => value + 1);
     };
+    const applyCoupon = async code => {
+        if (paymentBusy) return;
+        setPaymentBusy(true);
+        try {
+            let result = await createCheckoutSession(orderId, data?.summary.goldRedeemed || 0, true, undefined, code);
+            const notice = result.couponNotice;
+            if (result.goldOnlyReady) {
+                const goldAmount = result.summary.goldRedeemed;
+                result = await createCheckoutSession(orderId, 0);
+                setGoldConfirmation(goldAmount);
+            }
+            setData(result);
+            if (result.paid) setPaid(true);
+            if (result.completed) setVerification({ session_id: result.sessionId });
+            if (notice) setCouponNotice(notice);
+        } catch (failure) {
+            setCouponNotice({ title: "Coupon not applied", message: failure.code === "COUPON_UNAVAILABLE" ? failure.message : "We couldn’t update your coupon. Please try again shortly. Your coupon has not been used." });
+            if (failure.code !== "COUPON_UNAVAILABLE") { setData(null); setAttempt(value => value + 1); }
+        } finally { setPaymentBusy(false); }
+    };
     const payWithGold = async () => {
         if (paymentBusy || goldConfirmation === null) return;
         setGoldError("");
@@ -112,6 +134,7 @@ export default function CheckoutPage() {
             const email = (contactEmail ?? data?.summary.email ?? "").trim();
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
+            if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paidWithGoldOnly) {
                 setGoldConfirmation(null);
                 setVerification({ orderId: result.orderId, gold: "1" });
@@ -135,15 +158,16 @@ export default function CheckoutPage() {
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
                         {!showPaid && data?.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
-                            <CheckoutPaymentForm email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} />
+                            <CheckoutPaymentForm email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} onBeforeConfirm={() => checkServiceAvailability(data.summary.serviceId)} />
                         </CheckoutElementsProvider> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
                     </section>
-                    <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
+                    <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
         </main>
         {verification && <PaymentResultPage type="success" overlayOnly verification={verification} onVerified={markPaid} onComplete={completeConfirmation} />}
-        {error && !paid && <PaymentErrorDialog message="We couldn’t load checkout. Please try again. If this continues, contact support." action="Retry Checkout" onClose={() => { setError(""); setAttempt(value => value + 1); }} />}
+        {error && !paid && <PaymentErrorDialog message={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? error : "We couldn’t load checkout. Please try again. If this continues, contact support."} action={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? "Back to Services" : "Retry Checkout"} onClose={() => { if (error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" })) navigate("/"); else { setError(""); setAttempt(value => value + 1); } }} />}
         {goldError && <PaymentErrorDialog message={goldError} onClose={() => setGoldError("")} />}
+        {couponNotice && <PaymentErrorDialog informational title={couponNotice.title} message={couponNotice.message} action="Got it" onClose={() => setCouponNotice(null)} />}
         {goldConfirmation !== null && <GoldConfirmation gold={goldConfirmation} busy={paymentBusy} onConfirm={payWithGold} onBack={() => { if (!paymentBusy) setGoldConfirmation(null); }} />}
     </div>;
 }
@@ -169,9 +193,8 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     </dialog>;
 }
 
-function OrderSummary({ summary, onApplyGold, paymentBusy, paid, onGoToOrder }) {
+function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, onGoToOrder }) {
     const [promoCode, setPromoCode] = useState("");
-    const [promoSubmitted, setPromoSubmitted] = useState(false);
     const enteredCode = promoCode.trim();
     const price = value => money(value, summary.currency);
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
@@ -200,10 +223,11 @@ function OrderSummary({ summary, onApplyGold, paymentBusy, paid, onGoToOrder }) 
         </div> : <>
         <div className="checkout-order-details"><OrderTracker summary={summary} /></div>
         {!paid && <GoldRedemption key={summary.goldRedeemed} summary={summary} onApply={onApplyGold} disabled={paymentBusy} />}
-        <form className="checkout-promo" onSubmit={event => { event.preventDefault(); if (enteredCode && !paymentBusy) setPromoSubmitted(true); }}>
-            <label className="checkout-field-label" htmlFor="checkout-promo-code">Promo code</label>
-            <div className="checkout-promo-controls"><div className="checkout-input"><input id="checkout-promo-code" placeholder="Enter your discount code" autoComplete="off" spellCheck={false} maxLength={64} value={promoCode} disabled={paymentBusy} onChange={event => { setPromoCode(event.target.value); setPromoSubmitted(false); }} aria-describedby="checkout-promo-help" /></div><button type="submit" disabled={!enteredCode || paymentBusy}>Apply</button></div>
-            <p id="checkout-promo-help" role="status">{promoSubmitted ? "Promo codes aren't available yet. Your total hasn't changed." : "Promo codes are coming soon. No discount has been applied."}</p>
+        <form className="checkout-promo" onSubmit={event => { event.preventDefault(); if (enteredCode && !paymentBusy) onApplyCoupon(enteredCode); }}>
+            <label className="checkout-field-label" htmlFor="checkout-promo-code">Coupon code</label>
+            <div className="checkout-promo-controls"><div className="checkout-input"><input id="checkout-promo-code" placeholder="Enter your coupon code" autoComplete="off" spellCheck={false} maxLength={32} value={promoCode} disabled={paymentBusy} onChange={event => setPromoCode(event.target.value)} aria-describedby="checkout-promo-help" /></div><button type="submit" disabled={!enteredCode || paymentBusy}>Apply</button></div>
+            <p id="checkout-promo-help">Coupons count as used only after successful payment. We apply the larger sale or coupon discount.</p>
+            {summary.promoDiscount && <div className="checkout-coupon-applied"><span>{summary.promoDiscount.title} applied</span><button type="button" disabled={paymentBusy} onClick={() => onApplyCoupon("")}>Remove</button></div>}
         </form>
         <dl className="checkout-totals">
             <div><dt>Base Price</dt><dd>{price(summary.basePriceCents)}</dd></div>

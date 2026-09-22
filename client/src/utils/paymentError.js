@@ -1,6 +1,7 @@
 // Only approved customer-facing copy may leave the payment boundary.
 export function paymentErrorMessage(error) {
     const messages = {
+        SERVICE_UNAVAILABLE: "This service is currently unavailable. Please choose another service or check back later.",
         email_required: "Please enter a valid email address so we can send your payment confirmation.",
         incomplete_number: "Please enter your full card number.",
         incorrect_number: "Please check your card number and try again.",

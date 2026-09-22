@@ -3,7 +3,7 @@
 }
 
 .price-hero .admin-order-title span {
-    color: #a78bfa;
+    color: #fff;
 }
 
 .price-hero-actions {
@@ -98,7 +98,7 @@
 
 .price-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 34%);
     gap: 20px;
     align-items: start;
 }
@@ -114,7 +114,7 @@
 }
 
 .price-main-panel {
-    padding: 18px;
+    padding: 20px 14px;
 }
 
 .price-toolbar {
@@ -122,7 +122,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .price-tabs {
@@ -488,6 +488,9 @@
 
 .price-modal {
     width: min(720px, 100%);
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+    color-scheme: dark;
     border-radius: 26px;
     border: 1px solid rgba(167, 139, 250, 0.24);
     background:
@@ -532,6 +535,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
 }
+
+.price-modal-field-full { grid-column: 1 / -1; }
+.price-coupon-input { display: flex; gap: 10px; flex-wrap: wrap; }
+.price-coupon-input input { flex: 1; min-width: 160px; }
+.price-coupon-input button { flex-shrink: 0; }
+.price-coupon-help { color: #b8b5cd; font-size: 13px; line-height: 1.6; }
+.price-modal-field input[type="datetime-local"], .price-modal-field select { color-scheme: dark; }
 
 .price-modal-field {
     display: flex;
@@ -593,40 +603,9 @@
    Detailed pricing rule cards
    ========================================= */
 
-.price-rules-panel {
-    padding: 20px;
-    border: 1px solid rgba(167, 139, 250, 0.16);
-    border-radius: 24px;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(15, 23, 42, 0.76),
-            rgba(10, 15, 32, 0.76)
-        );
-    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.28);
-}
-
-.price-rules-panel .price-table-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.price-result-count {
-    flex-shrink: 0;
-    padding: 7px 11px;
-    border-radius: 999px;
-    color: #c4b5fd;
-    background: rgba(124, 58, 237, 0.12);
-    border: 1px solid rgba(167, 139, 250, 0.18);
-    font-size: 0.8rem;
-    font-weight: 800;
-}
-
 .price-rule-card-list {
     display: grid;
-    gap: 14px;
+    gap: 20px;
 }
 
 .price-rule-card {
@@ -657,8 +636,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    padding: 20px;
+    gap: 12px;
+    padding: 18px 16px;
 }
 
 .price-rule-card-info {
@@ -682,7 +661,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: 4px;
     flex-wrap: wrap;
     color: #94a3b8;
     font-size: 0.9rem;
@@ -727,7 +706,7 @@
     align-items: center;
     gap: 24px;
     flex-wrap: wrap;
-    padding: 0 20px 15px;
+    padding: 0 16px 10px;
     color: #94a3b8;
     font-size: 0.84rem;
 }
@@ -739,9 +718,9 @@
 .price-rule-card-actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 20px;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 16px;
     border-top: 1px solid rgba(148, 163, 184, 0.08);
     background: rgba(2, 6, 23, 0.2);
 }
@@ -751,6 +730,8 @@
     align-items: center;
     gap: 9px;
     padding: 0;
+    min-height: 40px;
+    margin-right: auto;
     border: 0;
     background: transparent;
     color: #c4b5fd;
@@ -1001,9 +982,6 @@
         grid-template-columns: 1fr;
     }
 
-    .price-rules-panel .price-table-header {
-        flex-direction: column;
-    }
 }
 
 @media (max-width: 640px) {
@@ -1501,3 +1479,15 @@
     }
 }
 
+.price-sale-empty-text { margin: 18px 0 0; color: #94a3b8; }
+.price-availability-toggle { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 0; padding: 8px 0; min-height: 44px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.price-availability-toggle.is-active { color: #34d399; }
+.price-availability-toggle.is-inactive { color: #f87171; }
+.price-availability-toggle:disabled { cursor: wait; opacity: .6; }
+.price-availability-track { display: block; width: 34px; height: 20px; border-radius: 20px; background: #b91c1c; padding: 3px; box-sizing: border-box; }
+.price-availability-track > span { display: block; width: 14px; height: 14px; border-radius: 50%; background: white; transition: transform .18s ease; }
+.price-availability-toggle.is-active .price-availability-track { background: #059669; }
+.price-availability-toggle.is-active .price-availability-track > span { transform: translateX(14px); }
+.price-rule-card-inactive { background: #11131b; border-color: #353746; }
+.price-rule-card-inactive .price-rule-card-info, .price-rule-card-inactive .price-rule-sale-row { filter: grayscale(1); opacity: .5; }
+.price-side-panel, .price-main-panel { min-width: 0; }

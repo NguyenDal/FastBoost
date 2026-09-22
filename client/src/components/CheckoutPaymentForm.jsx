@@ -23,7 +23,7 @@ export function CheckoutIcon({ type }) {
     return <svg className="checkout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
 
-export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, stripePromise, onBusyChange, onSuccess }) {
+export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, stripePromise, onBusyChange, onSuccess, onBeforeConfirm }) {
     const state = useCheckoutElements();
     const cardFields = useRef(null);
     const numberNode = useRef(null);
@@ -81,6 +81,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
                 confirmation = { ...confirmation, paymentMethod: result.paymentMethod.id, email: contactEmail };
             }
             stage = "confirming checkout";
+            await onBeforeConfirm?.();
             const result = await state.checkout.confirm(confirmation);
             if (result.type === "error") throw result.error;
             else onSuccess({ session_id: sessionId });

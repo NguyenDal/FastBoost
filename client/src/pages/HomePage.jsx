@@ -14,7 +14,6 @@ import { API_BASE_URL } from "../api/config";
 import "../styles/HomePage.css";
 
 const SERVICES_CACHE_KEY = "fastboost:services:v1";
-const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 const SERVICE_TITLES_BY_GAME = {
   lol: ["Rank Boost", "Placement Boost", "Win Boost", "Pro Duo"],
   tft: ["TFT Rank Boost", "TFT Win Boost", "TFT Placement Boost"],
@@ -284,16 +283,6 @@ function HomePage() {
       const cached = getCachedServices();
       const hasCachedServices = Boolean(cached?.services?.length);
 
-      const cacheIsFresh =
-        hasCachedServices &&
-        Date.now() - cached.savedAt < SERVICES_CACHE_TTL;
-
-      // Fresh cache = display immediately and skip backend request.
-      if (cacheIsFresh) {
-        setServicesLoading(false);
-        return;
-      }
-
       // Only show skeleton if we have nothing cached.
       if (!hasCachedServices) {
         setServicesLoading(true);
@@ -302,6 +291,7 @@ function HomePage() {
       try {
         const response = await fetch(`${API_BASE_URL}/services`, {
           signal: controller.signal,
+          cache: "no-store",
         });
 
         if (!response.ok) {
@@ -334,9 +324,18 @@ function HomePage() {
     };
 
     fetchServices();
+    const refresh = () => { if (!document.hidden) void fetchServices(); };
+    const timer = setInterval(refresh, 15000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("storage", refresh);
+    window.addEventListener("fastboost:services-updated", refresh);
 
     return () => {
       controller.abort();
+      clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("fastboost:services-updated", refresh);
     };
   }, []);
 
@@ -418,6 +417,7 @@ function HomePage() {
   }, [servicesByTitle, visibleGame]);
 
   const handleOrderNow = (service) => {
+    if (service.active === false) return;
     navigate(`/order/${service.id}`);
   };
 
@@ -799,7 +799,7 @@ function HomePage() {
                     fallbackImages[index % fallbackImages.length];
 
                   return (
-                    <article key={service.id} className="hover-service-card">
+                    <article key={service.id} className={`hover-service-card${service.active === false ? " service-unavailable" : ""}`}>
 
                       <div className="service-card-icon">
                         <CleanIcon src={serviceImage} alt={`${service.title} icon`} />
@@ -813,8 +813,9 @@ function HomePage() {
                         <button
                           className="card-btn primary-card-btn"
                           onClick={() => handleOrderNow(service)}
+                          disabled={service.active === false}
                         >
-                          Buy Now
+                          {service.active === false ? "Currently unavailable" : "Buy Now"}
                         </button>
                       </div>
                     </article>

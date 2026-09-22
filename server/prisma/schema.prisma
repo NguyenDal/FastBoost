@@ -8,6 +8,8 @@ datasource db {
 }
 
 model User {
+  personalCoupons     ServiceSale[] @relation("PersonalCouponRecipient")
+  couponUses          CouponUse[]
   id                  String               @id @default(cuid())
   email               String               @unique
   username            String?              @unique
@@ -95,7 +97,14 @@ model ServicePriceRule {
 }
 
 model ServiceSale {
+  recipientAccountId String?
+  recipientAccount User? @relation("PersonalCouponRecipient", fields: [recipientAccountId], references: [id], onDelete: Restrict)
+  personalReason String?
+  couponOrders    Order[] @relation("OrderCoupon")
+  couponUses      CouponUse[]
   id              String    @id @default(cuid())
+  couponCode      String?   @unique
+  footerDecoration Boolean  @default(false)
 
   serviceId       String?
   service         Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
@@ -115,6 +124,7 @@ model ServiceSale {
   updatedAt        DateTime  @updatedAt
 
   @@index([serviceId])
+  @@index([recipientAccountId])
   @@index([scope])
   @@index([active])
   @@index([startsAt])
@@ -128,6 +138,14 @@ enum SaleScope {
 }
 
 model Order {
+  couponSaleId      String?
+  couponSale        ServiceSale? @relation("OrderCoupon", fields: [couponSaleId], references: [id], onDelete: Restrict)
+  couponCode        String?
+  couponTitle       String?
+  couponDiscountCents Int @default(0)
+  couponOriginalAmountCents Int?
+  couponOriginalReferralDiscount Float?
+  couponUse         CouponUse?
   confirmationEmail OrderConfirmationEmail?
   id                String      @id @default(cuid())
   orderNumber       String      @unique @default(dbgenerated())
@@ -213,6 +231,20 @@ model OrderConfirmationEmail {
   createdAt     DateTime @default(now())
 
   @@index([sentAt, nextAttemptAt])
+}
+
+model CouponUse {
+  id        String @id @default(cuid())
+  accountId String
+  account   User @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  saleId    String
+  sale      ServiceSale @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  orderId   String @unique
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([accountId, saleId])
 }
 
 // Permanent reservations prevent suffix reuse even if an unpaid order is deleted.

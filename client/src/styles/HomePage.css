@@ -702,3 +702,6 @@
     padding-bottom: 32px;
   }
 }
+
+.hover-service-card.service-unavailable { filter: grayscale(1); opacity: .45; }
+.hover-service-card.service-unavailable .card-btn { cursor: not-allowed; box-shadow: none; }

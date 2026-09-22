@@ -169,7 +169,11 @@ exports.Prisma.ServicePriceRuleScalarFieldEnum = {
 };
 
 exports.Prisma.ServiceSaleScalarFieldEnum = {
+  recipientAccountId: 'recipientAccountId',
+  personalReason: 'personalReason',
   id: 'id',
+  couponCode: 'couponCode',
+  footerDecoration: 'footerDecoration',
   serviceId: 'serviceId',
   scope: 'scope',
   title: 'title',
@@ -183,6 +187,12 @@ exports.Prisma.ServiceSaleScalarFieldEnum = {
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
+  couponSaleId: 'couponSaleId',
+  couponCode: 'couponCode',
+  couponTitle: 'couponTitle',
+  couponDiscountCents: 'couponDiscountCents',
+  couponOriginalAmountCents: 'couponOriginalAmountCents',
+  couponOriginalReferralDiscount: 'couponOriginalReferralDiscount',
   id: 'id',
   orderNumber: 'orderNumber',
   customerId: 'customerId',
@@ -246,6 +256,15 @@ exports.Prisma.OrderConfirmationEmailScalarFieldEnum = {
   sentAt: 'sentAt',
   claim: 'claim',
   lastError: 'lastError',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CouponUseScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  saleId: 'saleId',
+  orderId: 'orderId',
+  usedAt: 'usedAt',
   createdAt: 'createdAt'
 };
 
@@ -442,6 +461,7 @@ exports.Prisma.ModelName = {
   ServiceSale: 'ServiceSale',
   Order: 'Order',
   OrderConfirmationEmail: 'OrderConfirmationEmail',
+  CouponUse: 'CouponUse',
   OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',
   RewardHistory: 'RewardHistory',

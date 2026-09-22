@@ -20,6 +20,7 @@ function buildConfirmation(order, email) {
         ["Service", summary.serviceType], ...summary.details,
         ["Base price", money(summary.basePriceCents)],
         ...(summary.addonPriceCents ? [["Add-ons", money(summary.addonPriceCents)]] : []),
+        ...(summary.promoDiscount ? [[summary.promoDiscount.title, `−${money(summary.promoDiscount.amountCents)}`]] : []),
         ...[["Sale discount", summary.saleDiscountCents], ["Referral discount", summary.referralDiscountCents], ["Gold discount", summary.goldDiscountCents]].filter(([, amount]) => amount > 0).map(([label, amount]) => [label, `−${money(amount)}`]),
         ["Gold used", String(summary.goldRedeemed)],
         ["Amount paid by card / wallet", money(summary.totalCents)],

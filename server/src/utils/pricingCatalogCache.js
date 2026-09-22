@@ -81,6 +81,7 @@ async function loadPricingCatalog(boostType) {
         prisma.serviceSale.findFirst({
             where: {
                 ...saleTimeWindow,
+                couponCode: null,
                 scope: "SERVICE",
                 serviceId: priceRule.serviceId,
             },
@@ -91,6 +92,7 @@ async function loadPricingCatalog(boostType) {
         prisma.serviceSale.findFirst({
             where: {
                 ...saleTimeWindow,
+                couponCode: null,
                 scope: "GLOBAL",
                 serviceId: null,
             },
@@ -104,7 +106,6 @@ async function loadPricingCatalog(boostType) {
                 where: {
                     game: priceRule.game,
                     pricingType: "PER_WIN",
-                    active: true,
                 },
                 orderBy: {
                     updatedAt: "desc",

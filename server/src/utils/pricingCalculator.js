@@ -262,7 +262,6 @@ function calculateBasePrice(rule, options) {
 function findReferenceWinRule(rule, referenceRules = []) {
     return referenceRules.find(
         (candidate) =>
-            candidate.active !== false &&
             candidate.game === rule.game &&
             candidate.pricingType === "PER_WIN"
     );

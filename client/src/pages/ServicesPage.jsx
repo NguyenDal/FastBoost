@@ -51,11 +51,13 @@ export default function ServicesPage() {
                 borderRadius: "12px",
                 padding: "1rem",
                 background: "#fff",
+                opacity: service.active === false ? 0.45 : 1,
+                filter: service.active === false ? "grayscale(1)" : undefined,
               }}
             >
               <h2>{service.title}</h2>
               <p>{service.description || "No description available."}</p>
-              <button style={{ marginTop: "1rem" }}>Order Now</button>
+              <button disabled={service.active === false} style={{ marginTop: "1rem" }}>{service.active === false ? "Currently unavailable" : "Order Now"}</button>
             </div>
           ))}
         </div>

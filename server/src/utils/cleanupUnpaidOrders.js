@@ -11,6 +11,10 @@ async function cleanupOldUnpaidOrders() {
             },
             paidAt: null,
             stripePaymentIntentId: null,
+            // Coupon drafts may still have a payable Stripe session. Its checkout
+            // claim can be moved safely by the next redemption; never cascade it
+            // away merely because the draft was created over a day ago.
+            couponSaleId: null,
             createdAt: {
                 lt: cutoff,
             },

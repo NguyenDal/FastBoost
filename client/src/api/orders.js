@@ -25,7 +25,7 @@ export async function updateOrderLoginInfo(orderId, payload) {
     return data.order;
 }
 
-export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail) {
+export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail, couponCode) {
   const res = await fetch(`${API_BASE_URL}/payments/create-checkout-session`, {
     method: "POST",
     headers: authHeaders(),
@@ -34,13 +34,14 @@ export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnl
       goldToUse,
       deferGoldOnly,
       contactEmail,
+      couponCode,
     }),
   });
 
   const data = await res.json();
 
   if (!res.ok || data.ok === false) {
-    throw new Error(data.message || "Failed to create checkout session");
+    throw Object.assign(new Error(data.message || "Failed to create checkout session"), { code: data.code });
   }
 
   return data;
@@ -82,4 +83,11 @@ export async function deleteUnpaidCheckoutOrder(orderId) {
   }
 
   return data;
+}
+
+export async function checkServiceAvailability(serviceId) {
+  const response = await fetch(`${API_BASE_URL}/services/${encodeURIComponent(serviceId)}`, { cache: "no-store" });
+  if (!response.ok) throw new Error("Service availability could not be verified.");
+  const data = await response.json();
+  if (data.service?.active !== true) throw Object.assign(new Error(), { code: "SERVICE_UNAVAILABLE" });
 }
