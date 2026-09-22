@@ -591,7 +591,7 @@ stripeCheckoutSessionId = cs_test_...
 Important:
 - Keep the Stripe CLI terminal running while testing webhook fulfillment.
 - Do not commit Stripe keys or webhook secrets.
-- Do not trust `/payment/success` alone; the database should be updated by the webhook.
+- Do not trust `/payment/success` alone. The webhook is the primary fulfillment path, and the authenticated verification endpoint may reconcile a pending order only after retrieving the Checkout Session from Stripe server-to-server.
 
 
 ### Live chat quick test
@@ -742,7 +742,7 @@ Stripe production note:
 - Use `sk_live_...` only after Stripe live account verification is complete.
 - Configure a live webhook endpoint in Stripe Dashboard for production deployments.
 - The local `whsec_...` from `stripe listen` is only for local testing and changes when a new listen session is created.
-- Keep payment fulfillment dependent on Stripe webhooks, not the frontend success redirect.
+- Keep the webhook as the primary payment fulfillment path. Redirect-time reconciliation must verify the session with Stripe on the backend and must never trust frontend query parameters alone.
 
 Production note:
 - Keep `AWS_REGION` and `ORDER_PASSWORD_KMS_KEY_ID`.
@@ -787,7 +787,7 @@ When `stripe listen` starts, copy the shown `whsec_...` value into `server/.env`
 
 ### Payment safety rules
 - The frontend success URL is not proof of payment.
-- The database should only mark an order as `PAID` after Stripe webhook verification.
+- The database should only mark an order as `PAID` after a signed Stripe webhook or an authenticated server-to-server Checkout Session retrieval confirms payment.
 - Gold should only be permanently spent after payment succeeds.
 - Backend must always validate `orderId`, customer ownership, payment status, amount, and gold use.
 - Do not expose `STRIPE_SECRET_KEY` or `STRIPE_WEBHOOK_SECRET` to the frontend.

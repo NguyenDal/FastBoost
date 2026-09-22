@@ -143,6 +143,65 @@ function normalizeGoldToUse(rawGoldToUse, availableGold, totalAmountCents) {
     };
 }
 
+async function completeCheckoutSessionPayment(order, session) {
+    const paymentIntentId =
+        typeof session.payment_intent === "string"
+            ? session.payment_intent
+            : session.payment_intent?.id || null;
+
+    const paymentApplied = await prisma.$transaction(async (transaction) => {
+        const updateResult = await transaction.order.updateMany({
+            where: {
+                id: order.id,
+                stripeCheckoutSessionId: session.id,
+                paymentStatus: { not: "PAID" },
+            },
+            data: {
+                paymentStatus: "PAID",
+                stripePaymentIntentId: paymentIntentId,
+                paidAt: new Date(),
+                amountCents: session.amount_subtotal
+                    ? Number(session.amount_subtotal) +
+                    Number(order.goldDiscountCents || 0)
+                    : undefined,
+                cashAmountCents: session.amount_total || 0,
+                currency: session.currency || "cad",
+            },
+        });
+
+        if (updateResult.count === 0) {
+            return false;
+        }
+
+        if (Number(order.goldRedeemed || 0) > 0) {
+            await transaction.rewardHistory.createMany({
+                data: [
+                    {
+                        userId: order.customerId,
+                        type: "ORDER_REDEMPTION",
+                        goldAmount: -Number(order.goldRedeemed),
+                        title: "Gold redeemed for order",
+                        description: `Used ${order.goldRedeemed} gold for order #${order.id
+                            .slice(0, 8)
+                            .toUpperCase()}.`,
+                        sourceUserId: order.id,
+                    },
+                ],
+                skipDuplicates: true,
+            });
+        }
+
+        return true;
+    });
+
+    if (paymentApplied) {
+        await grantReferralCompletionRewards(order.id);
+        console.log(`Stripe payment completed for order ${order.id}.`);
+    }
+
+    return paymentApplied;
+}
+
 const createCheckoutSession = async (req, res) => {
     try {
         const userId = getUserId(req);
@@ -350,6 +409,8 @@ const verifyCheckoutSession = async (req, res) => {
                 status: true,
                 paidAt: true,
                 stripeCheckoutSessionId: true,
+                goldRedeemed: true,
+                goldDiscountCents: true,
             },
         });
 
@@ -360,13 +421,42 @@ const verifyCheckoutSession = async (req, res) => {
             });
         }
 
+        if (sessionId && order.paymentStatus !== "PAID") {
+            try {
+                const session = await stripe.checkout.sessions.retrieve(sessionId);
+                const sessionOrderId = session.metadata?.orderId;
+
+                if (
+                    session.payment_status === "paid" &&
+                    String(sessionOrderId) === String(order.id)
+                ) {
+                    await completeCheckoutSessionPayment(order, session);
+                }
+            } catch (error) {
+                console.error(
+                    `Stripe session reconciliation failed for order ${order.id}:`,
+                    error.message
+                );
+            }
+        }
+
+        const verifiedOrder = await prisma.order.findUnique({
+            where: { id: order.id },
+            select: {
+                id: true,
+                paymentStatus: true,
+                status: true,
+                paidAt: true,
+            },
+        });
+
         return res.json({
             ok: true,
-            orderId: order.id,
-            paymentStatus: order.paymentStatus,
-            paid: order.paymentStatus === "PAID",
-            orderStatus: order.status,
-            paidAt: order.paidAt,
+            orderId: verifiedOrder.id,
+            paymentStatus: verifiedOrder.paymentStatus,
+            paid: verifiedOrder.paymentStatus === "PAID",
+            orderStatus: verifiedOrder.status,
+            paidAt: verifiedOrder.paidAt,
         });
     } catch (error) {
         console.error("verifyCheckoutSession error:", error);
@@ -398,17 +488,20 @@ const handleStripeWebhook = async (req, res) => {
     }
 
     try {
-        if (event.type === "checkout.session.completed") {
+        if (
+            event.type === "checkout.session.completed" ||
+            event.type === "checkout.session.async_payment_succeeded"
+        ) {
             const session = event.data.object;
 
             const orderId = session.metadata?.orderId;
-            const paymentIntentId =
-                typeof session.payment_intent === "string"
-                    ? session.payment_intent
-                    : session.payment_intent?.id || null;
 
             if (!orderId) {
-                console.warn("Stripe checkout.session.completed missing orderId metadata");
+                console.warn(`${event.type} missing orderId metadata`);
+                return res.json({ received: true });
+            }
+
+            if (session.payment_status !== "paid") {
                 return res.json({ received: true });
             }
 
@@ -430,43 +523,7 @@ const handleStripeWebhook = async (req, res) => {
                 return res.json({ received: true });
             }
 
-            await prisma.$transaction([
-                prisma.order.update({
-                    where: {
-                        id: order.id,
-                    },
-                    data: {
-                        paymentStatus: "PAID",
-                        stripePaymentIntentId: paymentIntentId,
-                        paidAt: new Date(),
-                        amountCents: session.amount_subtotal
-                            ? Number(session.amount_subtotal) + Number(order.goldDiscountCents || 0)
-                            : undefined,
-                        cashAmountCents: session.amount_total || 0,
-                        currency: session.currency || "cad",
-                    },
-                }),
-                ...(Number(order.goldRedeemed || 0) > 0
-                    ? [
-                        prisma.rewardHistory.create({
-                            data: {
-                                userId: order.customerId,
-                                type: "ORDER_REDEMPTION",
-                                goldAmount: -Number(order.goldRedeemed || 0),
-                                title: "Gold redeemed for order",
-                                description: `Used ${order.goldRedeemed} gold for order #${order.id
-                                    .slice(0, 8)
-                                    .toUpperCase()}.`,
-                                sourceUserId: order.id,
-                            },
-                        }),
-                    ]
-                    : []),
-            ]);
-
-                    await grantReferralCompletionRewards(order.id);
-
-            console.log(`Stripe payment completed for order ${orderId}.`);
+            await completeCheckoutSessionPayment(order, session);
         }
 
         if (event.type === "checkout.session.expired") {
