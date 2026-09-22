@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
@@ -17,14 +17,6 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [copiedReferral, setCopiedReferral] = useState(false);
     const [error, setError] = useState("");
-
-    const user = useMemo(() => {
-        try {
-            return JSON.parse(localStorage.getItem("user") || "null");
-        } catch {
-            return null;
-        }
-    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -69,8 +61,6 @@ export default function DashboardPage() {
         .filter((item) => !item.read && item.type === "CHAT_MESSAGE")
         .slice(0, 5);
 
-    const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
-    const totalGold = Number(loyalty?.totalGold || 0);
     const referralLink = loyalty?.referralLink || "";
     const referralCount = loyalty?.referralCount || 0;
     const referralOffer = loyalty?.referralOffer || {};
@@ -107,7 +97,6 @@ export default function DashboardPage() {
     };
 
     const progressPercent = Number(loyalty?.progressPercent || 0);
-    const loyaltyTiers = loyalty?.tiers || DASHBOARD_FALLBACK_TIERS;
 
     const handleCopyReferralLink = async () => {
         if (!canUseReferral || !referralLink) return;
@@ -132,10 +121,6 @@ export default function DashboardPage() {
         if (targetPath) {
             navigate(targetPath);
         }
-    };
-
-    const openLoyaltyPage = () => {
-        navigate("/account/loyalty");
     };
 
     return (
@@ -174,59 +159,46 @@ export default function DashboardPage() {
                     </section>
 
                     <section className="dashboard-grid dashboard-grid-bottom">
-                        <Link
-                            to="/account/loyalty"
-                            className={`dashboard-card dashboard-loyalty-card dashboard-loyalty-${tierInfo.key}`}
-                        >
-                            <div className="dashboard-card-header">
-                                <div>
-                                    <p className="dashboard-eyebrow gold">Loyalty Rewards Status</p>
-                                    <h2>{tierInfo.name} Rank</h2>
-                                    <p className="dashboard-subtitle">
-                                        {tierInfo.nextTier
-                                            ? `Spend $${tierInfo.spendToNext.toFixed(2)} more to reach ${tierInfo.nextTier} tier.`
-                                            : "You reached the highest loyalty tier."}
-                                    </p>
+                        <div className="dashboard-account-stack">
+                            <section className="dashboard-card dashboard-wallet-card">
+                                <p className="dashboard-eyebrow purple">Wallet</p>
+                                <p className="dashboard-wallet-label">Available balance</p>
+                                <strong className="dashboard-wallet-balance">$0.00</strong>
+                                <Link to="/account/loyalty" className="dashboard-wallet-gold">
+                                    <span className="dashboard-wallet-coin" aria-hidden="true">🪙</span>
+                                    <span>Gold Balance</span>
+                                    <strong>{Math.max(0, Number(loyalty?.totalGold || 0)).toLocaleString()}</strong>
+                                    <span className="dashboard-wallet-chevron" aria-hidden="true">›</span>
+                                </Link>
+                                <div className="dashboard-wallet-actions">
+                                    <button type="button" className="dashboard-wallet-topup" disabled title="Wallet top-ups are not available yet">Top Up</button>
+                                    <Link to="/" className="dashboard-wallet-redeem" title="Choose a service to redeem gold at checkout">Redeem Gold</Link>
                                 </div>
-
-                                <span className="dashboard-tier-badge">
-                                    {tierInfo.icon}
-                                </span>
-                            </div>
-
-                            <div className="dashboard-track">
-                                <div
-                                    className={`dashboard-track-fill dashboard-fill-${tierInfo.key}`}
-                                    style={{ width: `${progressPercent}%` }}
-                                />
-                            </div>
-
-                            <div className="dashboard-tier-row">
-                                {loyaltyTiers.map((tier) => (
-                                    <div
-                                        key={tier.key}
-                                        className={`dashboard-tier-step tier-${tier.key} ${totalSpent >= tier.minSpend ? "active" : ""
-                                            } ${tier.key === tierInfo.key ? "current" : ""}`}
-                                    >
-                                        <span>{tier.icon}</span>
-                                        <strong>{tier.name}</strong>
-                                        <small>${tier.minSpend}+ spend</small>
-
-                                        <div>
-                                            {tier.bonusCoins > 0 ? (
-                                                <em aria-label={`+${tier.bonusCoins} gold`}>+{tier.bonusCoins} <span role="img" aria-label="gold">🪙</span></em>
-                                            ) : (
-                                                <em>No bonus</em>
-                                            )}
-
-                                            {tier.topUpBonusPercent > 0 && (
-                                                <em>{tier.topUpBonusPercent}% cash back</em>
-                                            )}
-                                        </div>
+                            </section>
+                            <Link
+                                to="/account/loyalty"
+                                className={"dashboard-card dashboard-loyalty-card dashboard-loyalty-" + tierInfo.key}
+                            >
+                                <div className="dashboard-card-header">
+                                    <div>
+                                        <p className="dashboard-eyebrow gold">Loyalty Rewards Status</p>
+                                        <h2>{tierInfo.name} Rank</h2>
+                                        <p className="dashboard-subtitle">
+                                            {tierInfo.nextTier
+                                                ? `Spend $${tierInfo.spendToNext.toFixed(2)} more to reach ${tierInfo.nextTier} tier.`
+                                                : "You reached the highest loyalty tier."}
+                                        </p>
                                     </div>
-                                ))}
-                            </div>
-                        </Link>
+                                    <span className="dashboard-tier-badge">{tierInfo.icon}</span>
+                                </div>
+                                <div className="dashboard-track" role="progressbar" aria-label="Loyalty tier progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}>
+                                    <div
+                                        className={"dashboard-track-fill dashboard-fill-" + tierInfo.key}
+                                        style={{ width: progressPercent + "%" }}
+                                    />
+                                </div>
+                            </Link>
+                        </div>
 
                         <section className={`dashboard-card dashboard-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
                             <div className="dashboard-card-header">
@@ -291,7 +263,14 @@ function DashboardSkeleton() {
             </section>
 
             <section className="dashboard-grid dashboard-grid-bottom">
-                <DashboardLoyaltySkeleton />
+                <div className="dashboard-account-stack">
+                    <section className="dashboard-card dashboard-wallet-card dashboard-skeleton-card">
+                        <Skeleton width={100} height={24} />
+                        <Skeleton width={140} height={12} />
+                        <Skeleton width={160} height={44} />
+                    </section>
+                    <DashboardLoyaltySkeleton />
+                </div>
                 <DashboardReferralSkeleton />
             </section>
         </>
@@ -336,8 +315,6 @@ function DashboardLoyaltySkeleton() {
                     <Skeleton width={150} height={12} />
                     <div style={{ height: 10 }} />
                     <Skeleton width={220} height={26} />
-                    <div style={{ height: 12 }} />
-                    <Skeleton width={320} height={14} />
                 </div>
 
                 <SkeletonCircle size={58} />
@@ -347,18 +324,6 @@ function DashboardLoyaltySkeleton() {
 
             <Skeleton width="100%" height={14} radius={999} />
 
-            <div style={{ height: 22 }} />
-
-            <div className="dashboard-tier-row">
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <div className="dashboard-tier-step dashboard-skeleton-tier-step" key={index}>
-                        <SkeletonCircle size={34} />
-                        <Skeleton width="70%" height={14} />
-                        <Skeleton width="82%" height={11} />
-                        <Skeleton width={index === 0 ? "50%" : "68%"} height={11} />
-                    </div>
-                ))}
-            </div>
         </section>
     );
 }
@@ -434,46 +399,3 @@ function DashboardListCard({ eyebrow, title, emptyText, items, onItemClick, isMe
         </section>
     );
 }
-
-const DASHBOARD_FALLBACK_TIERS = [
-    {
-        key: "bronze",
-        name: "Bronze",
-        icon: "🥉",
-        minSpend: 0,
-        bonusCoins: 0,
-        topUpBonusPercent: 0,
-    },
-    {
-        key: "silver",
-        name: "Silver",
-        icon: "🥈",
-        minSpend: 200,
-        bonusCoins: 200,
-        topUpBonusPercent: 3,
-    },
-    {
-        key: "gold",
-        name: "Gold",
-        icon: "🥇",
-        minSpend: 500,
-        bonusCoins: 500,
-        topUpBonusPercent: 5,
-    },
-    {
-        key: "platinum",
-        name: "Platinum",
-        icon: "💎",
-        minSpend: 1000,
-        bonusCoins: 1000,
-        topUpBonusPercent: 10,
-    },
-    {
-        key: "diamond",
-        name: "Diamond",
-        icon: "🔷",
-        minSpend: 1500,
-        bonusCoins: 1500,
-        topUpBonusPercent: 15,
-    },
-];

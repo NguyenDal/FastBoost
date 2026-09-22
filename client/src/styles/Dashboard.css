@@ -220,8 +220,10 @@
 
 .dashboard-loyalty-card {
     cursor: pointer;
-    min-height: 356px;
-    display: block;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     color: inherit;
     text-decoration: none;
 }
@@ -309,85 +311,6 @@
 
 .dashboard-fill-diamond {
     background: linear-gradient(90deg, #4f8cff, #93c5fd);
-}
-
-.dashboard-tier-row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.dashboard-tier-step {
-    min-height: 142px;
-    padding: 13px;
-    border-radius: 16px;
-    opacity: 0.55;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.032);
-}
-
-.dashboard-tier-step.active {
-    opacity: 1;
-}
-
-.dashboard-tier-step.current {
-    border-color: rgba(255, 255, 255, 0.20);
-}
-
-.dashboard-tier-step.tier-bronze.current {
-    border-color: rgba(180, 105, 70, 0.55);
-    box-shadow: 0 0 0 3px rgba(180, 105, 70, 0.10);
-}
-
-.dashboard-tier-step.tier-silver.current {
-    border-color: rgba(170, 190, 205, 0.55);
-    box-shadow: 0 0 0 3px rgba(170, 190, 205, 0.10);
-}
-
-.dashboard-tier-step.tier-gold.current {
-    border-color: rgba(245, 180, 75, 0.55);
-    box-shadow: 0 0 0 3px rgba(245, 180, 75, 0.10);
-}
-
-.dashboard-tier-step.tier-platinum.current {
-    border-color: rgba(70, 210, 220, 0.55);
-    box-shadow: 0 0 0 3px rgba(70, 210, 220, 0.10);
-}
-
-.dashboard-tier-step.tier-diamond.current {
-    border-color: rgba(100, 145, 255, 0.55);
-    box-shadow: 0 0 0 3px rgba(100, 145, 255, 0.10);
-}
-
-.dashboard-tier-step span,
-.dashboard-tier-step strong,
-.dashboard-tier-step small,
-.dashboard-tier-step em {
-    display: block;
-}
-
-.dashboard-tier-step span {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.dashboard-tier-step strong {
-    font-weight: 950;
-}
-
-.dashboard-tier-step small {
-    margin-top: 4px;
-    color: #9ca3af;
-    font-size: 12px;
-}
-
-.dashboard-tier-step em {
-    margin-top: 6px;
-    color: #b8c2d8;
-    font-size: 12px;
-    font-style: normal;
-    line-height: 1.35;
 }
 
 .dashboard-referral-card {
@@ -534,16 +457,6 @@
     min-width: 0;
 }
 
-.dashboard-skeleton-tier-step {
-    opacity: 1;
-    pointer-events: none;
-}
-
-.dashboard-skeleton-tier-step .fb-skeleton {
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .dashboard-skeleton-condition {
     display: flex;
     gap: 11px;
@@ -611,10 +524,6 @@
         grid-template-columns: 1fr;
     }
 
-    .dashboard-tier-row {
-        grid-template-columns: 1fr;
-    }
-
     .dashboard-mini-item {
         flex-direction: column;
     }
@@ -630,8 +539,110 @@
     }
 }
 
-.dashboard-tier-step em span {
-    display: inline;
-    font-size: inherit;
+
+.dashboard-account-stack {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.dashboard-wallet-card {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+}
+.dashboard-wallet-label {
     margin: 0;
+    color: #9ca3af;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.dashboard-wallet-card .dashboard-eyebrow.purple {
+    margin: 0;
+    color: #a78bfa;
+}
+.dashboard-wallet-balance {
+    font-size: 34px;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+}
+.dashboard-wallet-gold {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #dce2ef;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.dashboard-wallet-gold strong {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+}
+.dashboard-wallet-coin {
+    font-size: 21px;
+    line-height: 1;
+}
+.dashboard-wallet-chevron {
+    color: #9ca3af;
+    font-size: 22px;
+    line-height: 1;
+}
+.dashboard-wallet-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 2px;
+}
+.dashboard-wallet-actions > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #e5e7eb;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.dashboard-wallet-topup {
+    background: linear-gradient(135deg, #7c3aed, #4f46ff);
+}
+.dashboard-wallet-topup:disabled {
+    cursor: not-allowed;
+}
+.dashboard-wallet-redeem {
+    background: rgba(255, 255, 255, 0.055);
+}
+.dashboard-wallet-gold:hover,
+.dashboard-wallet-redeem:hover {
+    border-color: rgba(167, 139, 250, 0.5);
+}
+.dashboard-wallet-card a:focus-visible {
+    outline: 2px solid #a5b4fc;
+    outline-offset: 3px;
+}
+.dashboard-loyalty-card:focus-visible {
+    outline: 2px solid #a5b4fc;
+    outline-offset: 3px;
+}
+@media (max-width: 900px) {
+    .dashboard-account-stack {
+        grid-template-rows: auto auto;
+    }
+    .dashboard-account-stack > .dashboard-card {
+        min-height: 180px;
+    }
 }
