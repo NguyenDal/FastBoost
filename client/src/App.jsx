@@ -20,6 +20,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PaymentResultPage from "./pages/PaymentResultPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import ContactPage from "./pages/ContactPage";
 import PriceManagementPage from "./pages/PriceManagementPage";
 import AdminLayout from "./layouts/AdminLayout";
@@ -90,6 +91,7 @@ function App() {
       <DynamicTitle />
 
       <Routes>
+        <Route path="/checkout/:orderId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         <Route path="/r/:referralCode" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />

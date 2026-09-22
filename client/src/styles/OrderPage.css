@@ -1062,7 +1062,7 @@
   font-weight: 800;
 }
 
-.order-submit-btn {
+.order-page-shell .order-submit-btn {
   width: 100%;
   border: none;
   cursor: pointer;
@@ -1070,9 +1070,9 @@
   font-size: 1rem;
   font-weight: 800;
   border-radius: 18px;
-  background: linear-gradient(135deg, #ff8a4d, #ff6b3d);
+  background: linear-gradient(110deg, #a333ef, #493cff);
   color: white;
-  box-shadow: none;
+  box-shadow: 0 5px 20px #7838ef33;
   margin-top: 8px;
 }
 

@@ -7,7 +7,7 @@ import {
 } from "../api/orders";
 import "../styles/PaymentResultPage.css";
 
-function PaymentResultPage({ type }) {
+function PaymentResultPage({ type, overlayOnly = false, verification, onVerified, onComplete }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,8 +19,9 @@ function PaymentResultPage({ type }) {
   });
 
   const params = useMemo(() => {
+    if (verification) return new URLSearchParams(verification);
     return new URLSearchParams(location.search);
-  }, [location.search]);
+  }, [location.search, verification]);
 
   useEffect(() => {
     if (type !== "cancelled") return;
@@ -86,6 +87,7 @@ function PaymentResultPage({ type }) {
           if (cancelled) return;
 
           if (data.paid) {
+            onVerified?.();
             setState({
               loading: false,
               error: "",
@@ -105,12 +107,12 @@ function PaymentResultPage({ type }) {
           orderId: lastData?.orderId || "",
           paid: false,
         });
-      } catch (error) {
+      } catch {
         if (cancelled) return;
 
         setState({
           loading: false,
-          error: error.message || "Unable to verify payment.",
+          error: "We couldn’t confirm your payment yet. Check your order status before trying another payment, or contact support.",
           orderId: "",
           paid: false,
         });
@@ -122,20 +124,22 @@ function PaymentResultPage({ type }) {
     return () => {
       cancelled = true;
     };
-  }, [type, params]);
+  }, [type, params, onVerified]);
 
   useEffect(() => {
     if (type !== "success") return;
     if (state.loading || state.error || !state.paid || !state.orderId) return;
 
     const timer = window.setTimeout(() => {
-      navigate(`/match/${state.orderId}`, { replace: true });
+      if (onComplete) onComplete();
+      else navigate(`/checkout/${state.orderId}`, { replace: true });
     }, 1800);
 
     return () => window.clearTimeout(timer);
-  }, [type, state.loading, state.error, state.paid, state.orderId, navigate]);
+  }, [type, state.loading, state.error, state.paid, state.orderId, navigate, onComplete]);
 
   const isSuccess = type === "success";
+  const isGoldPayment = params.get("gold") === "1";
   const confirmedSuccess = isSuccess && state.paid && !state.error;
   const showNeedsReview = isSuccess && !state.loading && !state.paid;
 
@@ -147,7 +151,7 @@ function PaymentResultPage({ type }) {
 
   return (
     <>
-      <OrderPage />
+      {!overlayOnly && <OrderPage />}
 
       <div className="payment-result-floating-layer">
         <div
@@ -157,6 +161,10 @@ function PaymentResultPage({ type }) {
               ? "payment-result-review"
               : "payment-result-cancelled"
             }`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="payment-result-title"
+          aria-describedby="payment-result-description"
         >
           <div className="payment-result-orb" aria-hidden>
             {state.loading ? (
@@ -193,7 +201,7 @@ function PaymentResultPage({ type }) {
                   : "Payment Cancelled"}
           </p>
 
-          <h2>
+          <h2 id="payment-result-title">
             {state.loading
               ? "Confirming your order..."
               : confirmedSuccess
@@ -203,11 +211,15 @@ function PaymentResultPage({ type }) {
                   : "Checkout was cancelled"}
           </h2>
 
-          <p className="payment-result-text">
+          <p id="payment-result-description" className="payment-result-text" aria-live="polite">
             {state.loading
-              ? "Please wait while FastBoost confirms your payment with Stripe."
+              ? isGoldPayment
+                ? "Please wait while FastBoost confirms your gold payment."
+                : "Please wait while FastBoost confirms your payment with Stripe."
               : confirmedSuccess
-                ? "Your order is ready. Transferring you to the Match Page..."
+                ? isGoldPayment
+                  ? "Your gold payment is complete. Your order is ready."
+                  : "Your payment is complete. Your order is ready."
                 : showNeedsReview
                   ? state.error ||
                   "The payment was not confirmed. Review your order and try again."

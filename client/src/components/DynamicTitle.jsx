@@ -21,6 +21,8 @@ export default function DynamicTitle() {
       title = "Reset Password | FastBoost";
     } else if (path === "/contact") {
       title = "Contact | FastBoost";
+    } else if (path.startsWith("/checkout/")) {
+      title = "Secure Payment | FastBoost";
     } else if (path.startsWith("/order/")) {
       title = "Order | FastBoost";
     } else if (path.startsWith("/payment/success/")) {

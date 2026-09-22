@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@intl-tel-input/react": "^28.0.7",
+    "@stripe/react-stripe-js": "^6.11.0",
+    "@stripe/stripe-js": "^9.17.0",
     "axios": "^1.13.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

@@ -25,13 +25,14 @@ export async function updateOrderLoginInfo(orderId, payload) {
     return data.order;
 }
 
-export async function createCheckoutSession(orderId, goldToUse = 0) {
+export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true) {
   const res = await fetch(`${API_BASE_URL}/payments/create-checkout-session`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
       orderId,
       goldToUse,
+      deferGoldOnly,
     }),
   });
 

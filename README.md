@@ -382,6 +382,44 @@ http://localhost:5173/
 ```
 
 ### Stripe local payment testing
+Checkout now stays on FastBoost at `/checkout/:orderId`, using Stripe's
+Checkout Sessions API (`ui_mode: elements`) with separate secure Stripe card
+number, expiry, and CVC Elements plus Express Checkout Element. Card details
+stay in Stripe's iframes; only a Stripe PaymentMethod ID is passed to session
+confirmation. Cardholder name and country are sent as billing details. The pay
+button displays Stripe's current total as required by its confirmation API.
+The bulky inline Link signup is replaced by a compact prompt to use Link express
+checkout. The responsive summary lists base price, add-ons, sale,
+referral, and gold discounts before the final server-calculated total. Eligible
+wallet buttons are supplied by Stripe. Bank authentication can still require a
+redirect; ordinary card checkout no longer opens Stripe's hosted payment page.
+
+Set `VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...` in `client/.env` and the matching
+`STRIPE_SECRET_KEY=sk_test_...` in `server/.env`, then restart both dev servers.
+Only the publishable key belongs in frontend configuration. Production also
+needs the matching frontend build variable, Link enabled in Stripe payment
+method settings, and an HTTPS domain registered with Stripe for Apple Pay.
+The current test account reports Link inactive for live mode and the localhost
+domain unregistered for Apple Pay.
+
+Stripe consumer terms and privacy links are displayed in the security card.
+FastBoost Terms of Service are not implemented yet; set `VITE_TERMS_URL` when
+the page exists to include its agreement link below the payment button.
+
+Checkout session creation enforces order ownership and rejects cancelled orders.
+Refreshing reuses an open session when its amount and gold redemption match;
+changing those values expires the previous open session. Payment fulfillment
+still requires Stripe webhook or authenticated server-to-server reconciliation.
+Gold redemption is selected on the payment page with available balance, Max,
+and Apply controls; the order configurator shows Subtotal and a purple Buy Boost
+button. Applying gold refreshes the Stripe payment form and recalculates the
+server-authoritative amount. Fully covered orders show an explicit Pay with gold
+button: previewing a zero-cash checkout never spends gold. The session endpoint
+accepts `deferGoldOnly: true` for this preview; final confirmation uses `false`.
+
+References: [Stripe Elements with Checkout Sessions](https://docs.stripe.com/payments/quickstart?client=react)
+and [Embedded Checkout](https://docs.stripe.com/checkout/embedded/quickstart?client=react).
+
 Stripe webhooks require a separate local forwarding process during development.
 
 1. Start the backend:

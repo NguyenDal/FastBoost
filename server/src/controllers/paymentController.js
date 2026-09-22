@@ -1,5 +1,6 @@
 const prisma = require("../prisma");
 const stripe = require("../utils/stripeClient");
+const { checkoutSummary } = require("../utils/checkoutSummary");
 const {
     grantReferralCompletionRewards,
 } = require("../utils/referralProgram");
@@ -205,7 +206,7 @@ async function completeCheckoutSessionPayment(order, session) {
 const createCheckoutSession = async (req, res) => {
     try {
         const userId = getUserId(req);
-        const { orderId, goldToUse } = req.body || {};
+        const { orderId, goldToUse, deferGoldOnly } = req.body || {};
 
         if (!userId) {
             return res.status(401).json({
@@ -249,10 +250,12 @@ const createCheckoutSession = async (req, res) => {
         }
 
         if (order.paymentStatus === "PAID") {
-            return res.status(400).json({
-                ok: false,
-                message: "This order has already been paid",
-            });
+            return res.json({ ok: true, paid: true, orderId: order.id,
+                summary: checkoutSummary(order, order.goldRedeemed || 0, order.goldDiscountCents || 0, order.cashAmountCents ?? order.amountCents) });
+        }
+
+        if (order.status === "CANCELLED") {
+            return res.status(400).json({ ok: false, message: "This order has been cancelled" });
         }
 
         const amountCents =
@@ -274,8 +277,27 @@ const createCheckoutSession = async (req, res) => {
         }
 
         const clientUrl = getClientUrl(req);
+        const summary = checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents);
+        summary.availableGold = availableGold;
+
+        // Reuse an open session on refresh. Expire it before changing the amount.
+        if (order.stripeCheckoutSessionId) {
+            const existingSession = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId);
+            if (existingSession.status === "complete") {
+                return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
+            }
+            if (existingSession.status === "open") {
+                if (existingSession.ui_mode === "elements" && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
+                    return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
+                }
+                await stripe.checkout.sessions.expire(existingSession.id);
+            }
+        }
 
         if (cashAmountCents <= 0) {
+            if (deferGoldOnly === true) {
+                return res.json({ ok: true, goldOnlyReady: true, summary });
+            }
             await prisma.$transaction([
                 prisma.order.update({
                     where: { id: order.id },
@@ -319,8 +341,10 @@ const createCheckoutSession = async (req, res) => {
 
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
+            ui_mode: "elements",
             customer_email: order.customer?.email || undefined,
-            payment_method_types: ["card"],
+            payment_method_types: ["card", "link"],
+            adaptive_pricing: { enabled: false },
             line_items: [
                 {
                     quantity: 1,
@@ -344,9 +368,8 @@ const createCheckoutSession = async (req, res) => {
                 goldDiscountCents: String(goldDiscountCents),
                 cashAmountCents: String(cashAmountCents),
             },
-            success_url: `${clientUrl}/payment/success/${order.serviceId}?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${clientUrl}/payment/cancelled/${order.serviceId}?orderId=${order.id}`,
-        });
+            return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
+        }, { idempotencyKey: `checkout-${order.id}-${goldRedeemed}-${order.stripeCheckoutSessionId || "new"}` });
 
         await prisma.order.update({
             where: { id: order.id },
@@ -362,8 +385,9 @@ const createCheckoutSession = async (req, res) => {
 
         return res.json({
             ok: true,
-            checkoutUrl: session.url,
+            clientSecret: session.client_secret,
             sessionId: session.id,
+            summary,
         });
     } catch (error) {
         console.error("createCheckoutSession error:", error);
