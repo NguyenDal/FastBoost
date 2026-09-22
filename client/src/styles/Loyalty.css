@@ -488,3 +488,8 @@
         text-align: left;
     }
 }
+.loyalty-tier-step em span {
+    display: inline;
+    font-size: inherit;
+    margin: 0;
+}

@@ -116,6 +116,8 @@ export default function LoyaltyPage() {
     };
 
     const totalRewardPages = Math.max(1, rewardPagination.totalPages || 1);
+    const firstVisiblePage = Math.max(1, Math.min(rewardPage - 2, totalRewardPages - 4));
+    const visiblePageCount = Math.min(5, totalRewardPages);
     const completedMatches = loyalty?.completedMatches || 0;
     const totalGold = loyalty?.totalGold || 0;
     const totalSpent = Number(loyalty?.totalCompletedSpend || 0);
@@ -207,13 +209,13 @@ export default function LoyaltyPage() {
 
                                         <div className="loyalty-tier-benefits">
                                             {tier.bonusCoins > 0 ? (
-                                                <em>{tier.bonusCoins} bonus gold</em>
+                                                <em aria-label={`+${tier.bonusCoins} gold`}>+{tier.bonusCoins} <span role="img" aria-label="gold">🪙</span></em>
                                             ) : (
                                                 <em>No bonus</em>
                                             )}
 
                                             {tier.topUpBonusPercent > 0 && (
-                                                <em>{tier.topUpBonusPercent}% top-up bonus</em>
+                                                <em>{tier.topUpBonusPercent}% cash back</em>
                                             )}
                                         </div>
                                     </div>
@@ -247,9 +249,6 @@ export default function LoyaltyPage() {
                                     <p>Your latest completed-order, referral, and bonus gold. Referral gold is added after a qualifying first order is completed and can be used on a future purchase.</p>
                                 </div>
 
-                                <Link to="/account/orders" className="loyalty-secondary-btn">
-                                    View My Orders
-                                </Link>
                             </div>
 
                             {rewardHistory.length > 0 ? (
@@ -291,8 +290,8 @@ export default function LoyaltyPage() {
                                             </button>
 
                                             <div className="loyalty-page-numbers">
-                                                {Array.from({ length: totalRewardPages }, (_, index) => {
-                                                    const pageNumber = index + 1;
+                                                {Array.from({ length: visiblePageCount }, (_, index) => {
+                                                    const pageNumber = firstVisiblePage + index;
 
                                                     return (
                                                         <button
@@ -357,7 +356,7 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
-        benefits: ["200 bonus gold", "3% top-up bonus"],
+        benefits: ["200 bonus gold", "3% cash back"],
     },
     {
         key: "gold",
@@ -367,7 +366,7 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
-        benefits: ["500 bonus gold", "5% top-up bonus"],
+        benefits: ["500 bonus gold", "5% cash back"],
     },
     {
         key: "platinum",
@@ -375,9 +374,9 @@ const LOYALTY_TIERS = [
         icon: "💎",
         minSpend: 1000,
         nextTier: "Diamond",
-        bonusCoins: 800,
-        topUpBonusPercent: 8,
-        benefits: ["800 bonus gold", "8% top-up bonus"],
+        bonusCoins: 1000,
+        topUpBonusPercent: 10,
+        benefits: ["1000 bonus gold", "10% cash back"],
     },
     {
         key: "diamond",
@@ -386,7 +385,7 @@ const LOYALTY_TIERS = [
         minSpend: 1500,
         nextTier: null,
         bonusCoins: 1500,
-        topUpBonusPercent: 10,
-        benefits: ["1500 bonus gold", "10% top-up bonus"],
+        topUpBonusPercent: 15,
+        benefits: ["1500 bonus gold", "15% cash back"],
     },
 ];

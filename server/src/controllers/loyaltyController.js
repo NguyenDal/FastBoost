@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { mergeRewardPage } = require("../utils/loyaltyRewards");
 const { generateReferralCode } = require("../utils/referralCode");
 const {
     getReferralFirstPurchaseOffer,
@@ -96,7 +97,7 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
-        benefits: ["200 bonus coins", "3% top-up bonus"],
+        benefits: ["200 bonus coins", "3% cash back"],
     },
     {
         key: "gold",
@@ -106,7 +107,7 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
-        benefits: ["500 bonus coins", "5% top-up bonus"],
+        benefits: ["500 bonus coins", "5% cash back"],
     },
     {
         key: "platinum",
@@ -114,9 +115,9 @@ const LOYALTY_TIERS = [
         icon: "💎",
         minSpend: 1000,
         nextTier: "Diamond",
-        bonusCoins: 800,
-        topUpBonusPercent: 8,
-        benefits: ["800 bonus coins", "8% top-up bonus"],
+        bonusCoins: 1000,
+        topUpBonusPercent: 10,
+        benefits: ["1000 bonus coins", "10% cash back"],
     },
     {
         key: "diamond",
@@ -125,8 +126,8 @@ const LOYALTY_TIERS = [
         minSpend: 1500,
         nextTier: null,
         bonusCoins: 1500,
-        topUpBonusPercent: 10,
-        benefits: ["1500 bonus coins", "10% top-up bonus"],
+        topUpBonusPercent: 15,
+        benefits: ["1500 bonus coins", "15% cash back"],
     },
 ];
 
@@ -203,7 +204,6 @@ exports.getMyLoyalty = async (req, res) => {
             completedOrdersStats,
             recentCompletedOrders,
             rewardRecords,
-            completedOrderRewardCount,
             rewardRecordCount,
             rewardGoldStats,
             completedOrderGoldRows,
@@ -242,10 +242,6 @@ exports.getMyLoyalty = async (req, res) => {
                 orderBy: {
                     createdAt: "desc",
                 },
-            }),
-
-            prisma.order.count({
-                where: completedOrderWhere,
             }),
 
             prisma.rewardHistory.count({
@@ -307,15 +303,14 @@ exports.getMyLoyalty = async (req, res) => {
             createdAt: reward.createdAt,
         }));
 
-        const allRewardHistory = [...completedOrderRewards, ...bonusRewards]
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        const totalRewardItems = completedOrderRewardCount + rewardRecordCount;
+        const totalRewardItems = completedMatches + rewardRecordCount;
         const totalRewardPages = Math.max(1, Math.ceil(totalRewardItems / rewardLimit));
 
-        const rewardHistory = allRewardHistory.slice(
+        const rewardHistory = mergeRewardPage(
+            completedOrderRewards,
+            bonusRewards,
             rewardStartIndex,
-            rewardStartIndex + rewardLimit
+            rewardLimit
         );
 
         return res.json({

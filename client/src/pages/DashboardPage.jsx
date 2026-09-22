@@ -214,13 +214,13 @@ export default function DashboardPage() {
 
                                         <div>
                                             {tier.bonusCoins > 0 ? (
-                                                <em>{tier.bonusCoins} bonus gold</em>
+                                                <em aria-label={`+${tier.bonusCoins} gold`}>+{tier.bonusCoins} <span role="img" aria-label="gold">🪙</span></em>
                                             ) : (
                                                 <em>No bonus</em>
                                             )}
 
                                             {tier.topUpBonusPercent > 0 && (
-                                                <em>{tier.topUpBonusPercent}% top-up bonus</em>
+                                                <em>{tier.topUpBonusPercent}% cash back</em>
                                             )}
                                         </div>
                                     </div>
@@ -465,8 +465,8 @@ const DASHBOARD_FALLBACK_TIERS = [
         name: "Platinum",
         icon: "💎",
         minSpend: 1000,
-        bonusCoins: 800,
-        topUpBonusPercent: 8,
+        bonusCoins: 1000,
+        topUpBonusPercent: 10,
     },
     {
         key: "diamond",
@@ -474,6 +474,6 @@ const DASHBOARD_FALLBACK_TIERS = [
         icon: "🔷",
         minSpend: 1500,
         bonusCoins: 1500,
-        topUpBonusPercent: 10,
+        topUpBonusPercent: 15,
     },
 ];

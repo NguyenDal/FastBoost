@@ -54,7 +54,7 @@ const LOYALTY_TIER_BONUS_REWARDS = [
         key: "platinum",
         name: "Platinum",
         minSpend: 1000,
-        bonusGold: 800,
+        bonusGold: 1000,
     },
     {
         key: "diamond",
