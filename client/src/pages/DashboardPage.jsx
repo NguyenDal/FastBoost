@@ -428,7 +428,7 @@ function DashboardListCard({ title, emptyText, items, onItemClick, isMessage = f
                     {items.map((item) => {
                         const kind = item.type === "ORDER_COMPLETED" ? "completed" :
                             item.type.includes("CANCELLED") ? "cancelled" :
-                            item.type === "FIRST_PURCHASE_DISCOUNT" ? "discount" : "notification";
+                            ["FIRST_PURCHASE_DISCOUNT", "REFERRAL_REWARD"].includes(item.type) ? "discount" : "notification";
                         return (
                             <button key={item.id} type="button" className="dashboard-activity-item" onClick={() => onItemClick(item)}>
                                 <span className={"dashboard-activity-icon " + (isMessage ? "avatar" : kind)}>

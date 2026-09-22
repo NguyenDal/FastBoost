@@ -207,6 +207,20 @@ async function grantReferralCompletionRewards(orderId) {
                 sourceUserId: order.id,
             },
         }),
+        ...[inviterId, order.customerId].map((userId) => prisma.notification.upsert({
+            where: { id: `referral-reward-${order.id}-${userId}` },
+            update: {},
+            create: {
+                id: `referral-reward-${order.id}-${userId}`,
+                userId,
+                type: "REFERRAL_REWARD",
+                title: `$${rewardDetails.rewardDollarValue} off your next purchase`,
+                message: userId === inviterId
+                    ? `Your friend completed their qualifying first order. You both earned ${REFERRAL_REWARD_GOLD} gold ($${rewardDetails.rewardDollarValue}) for a future purchase.`
+                    : `You completed your qualifying first order. You and your friend both earned ${REFERRAL_REWARD_GOLD} gold ($${rewardDetails.rewardDollarValue}) for a future purchase.`,
+                data: { targetPath: "/account/loyalty", goldAmount: REFERRAL_REWARD_GOLD },
+            },
+        })),
     ]);
 
     return {

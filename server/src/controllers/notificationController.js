@@ -26,7 +26,7 @@ exports.listMyNotifications = async (req, res) => {
           userId,
           type: "FIRST_PURCHASE_DISCOUNT",
           title: `${offer.firstPurchaseDiscountPercent}% First Purchase Discount`,
-          message: "Your referral discount applies to your first purchase.",
+          message: `You joined through a friend's referral link. You get ${offer.firstPurchaseDiscountPercent}% off your first purchase.`,
           data: { targetPath: "/" },
         },
       });

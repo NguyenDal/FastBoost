@@ -163,6 +163,7 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 export const NotificationType: {
   FIRST_PURCHASE_DISCOUNT: 'FIRST_PURCHASE_DISCOUNT',
+  REFERRAL_REWARD: 'REFERRAL_REWARD',
   ORDER_COMPLETED: 'ORDER_COMPLETED',
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ASSIGNMENT_REQUEST: 'ASSIGNMENT_REQUEST',
