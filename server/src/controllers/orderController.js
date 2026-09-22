@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { notifyOrderStatus } = require("../utils/orderNotifications");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
 const {
@@ -1055,6 +1056,8 @@ module.exports.updateOrderStatus = async (req, res) => {
             },
         });
 
+        await notifyOrderStatus(prisma, updated);
+
         let loyaltyBonusSync = {
             createdBonuses: [],
             removedBonuses: [],
@@ -1524,6 +1527,8 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
                 conversation: true,
             },
         });
+
+        await notifyOrderStatus(prisma, updated);
 
         let loyaltyBonusSync = {
             createdBonuses: [],

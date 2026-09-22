@@ -410,6 +410,18 @@ function MatchPage() {
 
                 // 4. Load real saved messages
                 const savedMessages = await getConversationMessages(loadedConversation.id);
+                const terminalStatusText = loadedOrder.status === "COMPLETED"
+                    ? "Your order has been completed. Thank you for choosing FastBoost!"
+                    : loadedOrder.status === "CANCELLED"
+                        ? "Your order has been cancelled. Please contact support if you need assistance."
+                        : null;
+                const statusNotice = terminalStatusText ? {
+                    id: `system-${loadedOrder.status.toLowerCase()}`,
+                    sender: "system",
+                    text: terminalStatusText,
+                    createdAt: loadedOrder.updatedAt || loadedOrder.createdAt,
+                    timestamp: formatChatTime(loadedOrder.updatedAt || loadedOrder.createdAt),
+                } : null;
 
                 if (savedMessages.length > 0) {
                     const currentUserRaw = localStorage.getItem("user");
@@ -439,11 +451,11 @@ function MatchPage() {
                                 senderName: getSenderDisplayName(msg.sender),
                                 senderAvatar: getSenderAvatar(msg.sender),
                             };
-                        })
+                        }).concat(statusNotice ? [statusNotice] : [])
                     );
                 } else {
                     setMessages([
-                        {
+                        statusNotice || {
                             id: "system-waiting",
                             sender: "system",
                             text: realBooster
@@ -782,7 +794,7 @@ function MatchPage() {
 
                     <div className="service-banner-right">
                         <span className="service-status-badge">
-                            {matchedBooster ? "Matched" : "Searching"}
+                            {order?.status === "COMPLETED" ? "Completed" : order?.status === "CANCELLED" ? "Cancelled" : matchedBooster ? "Matched" : "Searching"}
                         </span>
                     </div>
                 </section>
@@ -818,7 +830,7 @@ function MatchPage() {
                                     ) : (
                                         <div className="chat-header-info">
                                             <p className="chat-header-title">Chat</p>
-                                            <p className="chat-header-subtitle">Waiting for booster match</p>
+                                            <p className="chat-header-subtitle">{order?.status === "COMPLETED" ? "Order completed" : order?.status === "CANCELLED" ? "Order cancelled" : "Waiting for booster match"}</p>
                                         </div>
                                     )}
                                 </div>
@@ -1003,7 +1015,7 @@ function MatchPage() {
                         <div className="match-side-card">
 
                             {!matchedBooster ? (
-                                <p className="section-description">Searching for booster...</p>
+                                <p className="section-description">{order?.status === "COMPLETED" ? "Order completed." : order?.status === "CANCELLED" ? "Order cancelled." : "Searching for booster..."}</p>
                             ) : (
                                 <div className="booster-profile-card">
                                     <div className="booster-profile-top">

@@ -27,8 +27,8 @@ async function request(path, options = {}) {
   return data;
 }
 
-export async function listMyNotifications() {
-  const data = await request("/notifications");
+export async function listMyNotifications({ dashboard = false } = {}) {
+  const data = await request(dashboard ? "/notifications?view=dashboard" : "/notifications");
   return data.notifications || [];
 }
 

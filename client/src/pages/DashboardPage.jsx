@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { listMyNotifications } from "../api/notifications";
+import { listMyNotifications, markNotificationRead } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
 import {
     Skeleton,
@@ -27,7 +27,7 @@ export default function DashboardPage() {
                 setError("");
 
                 const [notificationItems, loyaltyData] = await Promise.all([
-                    listMyNotifications(),
+                    listMyNotifications({ dashboard: true }),
                     getMyLoyalty({ rewardPage: 1, rewardLimit: 5 }),
                 ]);
 
@@ -53,13 +53,32 @@ export default function DashboardPage() {
         };
     }, []);
 
+    useEffect(() => {
+        let cancelled = false;
+        const refresh = async () => {
+            try {
+                const items = await listMyNotifications({ dashboard: true });
+                if (!cancelled) setNotifications(items);
+            } catch { /* Keep the last successful activity list. */ }
+        };
+        const interval = window.setInterval(refresh, 30000);
+        window.addEventListener("unread:update", refresh);
+        window.addEventListener("focus", refresh);
+        return () => {
+            cancelled = true;
+            window.clearInterval(interval);
+            window.removeEventListener("unread:update", refresh);
+            window.removeEventListener("focus", refresh);
+        };
+    }, []);
+
     const newNotifications = notifications
-        .filter((item) => !item.read && item.type !== "CHAT_MESSAGE")
-        .slice(0, 5);
+        .filter((item) => item.type !== "CHAT_MESSAGE")
+        .slice(0, 3);
 
     const newMessages = notifications
-        .filter((item) => !item.read && item.type === "CHAT_MESSAGE")
-        .slice(0, 5);
+        .filter((item) => item.type === "CHAT_MESSAGE")
+        .slice(0, 3);
 
     const referralLink = loyalty?.referralLink || "";
     const referralCount = loyalty?.referralCount || 0;
@@ -113,7 +132,16 @@ export default function DashboardPage() {
         }
     };
 
-    const openNotificationTarget = (item) => {
+    const openNotificationTarget = async (item) => {
+        if (!item.read) {
+            try {
+                await markNotificationRead(item.id);
+                setNotifications((items) => items.map((entry) => entry.id === item.id ? { ...entry, read: true } : entry));
+                window.dispatchEvent(new Event("unread:update"));
+            } catch {
+                return;
+            }
+        }
         const targetPath =
             item.data?.targetPath ||
             (item.data?.orderId ? `/match/${item.data.orderId}` : null);
@@ -141,17 +169,15 @@ export default function DashboardPage() {
                 <>
                     <section className="dashboard-grid dashboard-grid-top">
                         <DashboardListCard
-                            eyebrow="Updates"
                             title="New Notifications"
-                            emptyText="No new notifications."
+                            emptyText="No notifications yet."
                             items={newNotifications}
                             onItemClick={openNotificationTarget}
                         />
 
                         <DashboardListCard
-                            eyebrow="Messages"
                             title="New Messages"
-                            emptyText="No new messages."
+                            emptyText="No messages yet."
                             items={newMessages}
                             onItemClick={openNotificationTarget}
                             isMessage
@@ -363,37 +389,62 @@ function DashboardReferralSkeleton() {
     );
 }
 
-function DashboardListCard({ eyebrow, title, emptyText, items, onItemClick, isMessage = false }) {
+function activityTime(createdAt) {
+    const date = new Date(createdAt);
+    if (!Number.isFinite(date.getTime())) return "";
+    const minutes = Math.max(0, Math.floor((Date.now() - date.getTime()) / 60000));
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return minutes + "m ago";
+    if (minutes < 1440) return Math.floor(minutes / 60) + "h ago";
+    return Math.floor(minutes / 1440) + "d ago";
+}
+
+function ActivityIcon({ kind }) {
     return (
-        <section className={`dashboard-card dashboard-list-card ${isMessage ? "message-card" : ""}`}>
-            <div className="dashboard-card-header">
-                <div>
-                    <p className="dashboard-eyebrow">{eyebrow}</p>
-                    <h2>{title}</h2>
-                </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {kind === "message" ? <><path d="M4 4h16v12H9l-5 4V4Z" /><path d="M8 8h8M8 12h5" /></> :
+                kind === "completed" ? <path d="m5 12 4 4L19 6" /> :
+                kind === "cancelled" ? <path d="m6 6 12 12M18 6 6 18" /> :
+                kind === "discount" ? <><path d="m6 18 12-12" /><circle cx="7" cy="7" r="2" /><circle cx="17" cy="17" r="2" /></> :
+                <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>}
+        </svg>
+    );
+}
 
-                <span className="dashboard-count-pill">{items.length}</span>
+function DashboardListCard({ title, emptyText, items, onItemClick, isMessage = false }) {
+    const unreadCount = items.filter((item) => !item.read).length;
+    return (
+        <section className="dashboard-card dashboard-list-card">
+            <div className="dashboard-activity-header">
+                <span className="dashboard-activity-heading-icon"><ActivityIcon kind={isMessage ? "message" : "notification"} /></span>
+                <h2>{title}</h2>
+                <button type="button" className="dashboard-view-all" onClick={() => window.dispatchEvent(new CustomEvent("dashboard:open-activity", { detail: isMessage ? "messages" : "notifications" }))}>View all</button>
+                <span className="dashboard-count-pill" aria-label={unreadCount + " unread"}>{unreadCount}</span>
             </div>
-
             {items.length === 0 ? (
                 <div className="dashboard-empty-line">{emptyText}</div>
             ) : (
-                <div className="dashboard-mini-list">
-                    {items.map((item) => (
-                        <button
-                            key={item.id}
-                            type="button"
-                            className="dashboard-mini-item"
-                            onClick={() => onItemClick(item)}
-                        >
-                            <div>
-                                <strong>{item.title || (isMessage ? "New message" : "Notification")}</strong>
-                                <p>{item.message || "Open to view details."}</p>
-                            </div>
-
-                            <small>{new Date(item.createdAt).toLocaleString()}</small>
-                        </button>
-                    ))}
+                <div className="dashboard-activity-list">
+                    {items.map((item) => {
+                        const kind = item.type === "ORDER_COMPLETED" ? "completed" :
+                            item.type.includes("CANCELLED") ? "cancelled" :
+                            item.type === "FIRST_PURCHASE_DISCOUNT" ? "discount" : "notification";
+                        return (
+                            <button key={item.id} type="button" className="dashboard-activity-item" onClick={() => onItemClick(item)}>
+                                <span className={"dashboard-activity-icon " + (isMessage ? "avatar" : kind)}>
+                                    {isMessage ? (item.data?.senderInitial || item.title?.charAt(0) || "?") : <ActivityIcon kind={kind} />}
+                                </span>
+                                <span className="dashboard-activity-copy">
+                                    <strong>{item.title || (isMessage ? "New message" : "Notification")}</strong>
+                                    <span>{item.message || "Open to view details."}</span>
+                                </span>
+                                <span className="dashboard-activity-meta">
+                                    <time dateTime={item.createdAt} title={new Date(item.createdAt).toLocaleString()}>{activityTime(item.createdAt)}</time>
+                                    {!item.read && <span className="dashboard-unread-dot" role="img" aria-label="Unread" />}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             )}
         </section>

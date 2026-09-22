@@ -74,10 +74,23 @@ async function createChatMessageNotifications({
       },
     });
 
-    // Important:
-    // If there is already an unread chat notification for this same conversation,
-    // do not create another one. Keep the first sender + first message preview.
+    // Keep one unread preview per conversation, updated to its latest message.
     if (existingUnreadChatNotification) {
+      await prisma.notification.update({
+        where: { id: existingUnreadChatNotification.id },
+        data: {
+          title: senderName,
+          message: shortMessage,
+          createdAt: message.createdAt || new Date(),
+          data: {
+            ...(existingUnreadChatNotification.data || {}),
+            messageId: message.id,
+            senderId,
+            senderName,
+            senderInitial: senderName.charAt(0).toUpperCase(),
+          },
+        },
+      });
       continue;
     }
 

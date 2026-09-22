@@ -374,6 +374,14 @@ function Navbar({
         } catch { }
     };
 
+    useEffect(() => {
+        const openActivity = (event) => {
+            if (["notifications", "messages"].includes(event.detail)) openSidePanel(event.detail);
+        };
+        window.addEventListener("dashboard:open-activity", openActivity);
+        return () => window.removeEventListener("dashboard:open-activity", openActivity);
+    });
+
     const closeSidePanel = () => {
         const closingPanel = openPanel;
 

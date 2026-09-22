@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { getReferralFirstPurchaseOffer } = require("../utils/referralProgram");
 
 function getUserId(req) {
   return req.user?.id || req.user?.userId;
@@ -15,7 +16,35 @@ exports.listMyNotifications = async (req, res) => {
       });
     }
 
-    const notifications = await prisma.notification.findMany({
+    const offer = await getReferralFirstPurchaseOffer(userId);
+    if (offer.eligible) {
+      await prisma.notification.upsert({
+        where: { id: `first-purchase-${userId}` },
+        update: {},
+        create: {
+          id: `first-purchase-${userId}`,
+          userId,
+          type: "FIRST_PURCHASE_DISCOUNT",
+          title: `${offer.firstPurchaseDiscountPercent}% First Purchase Discount`,
+          message: "Your referral discount applies to your first purchase.",
+          data: { targetPath: "/" },
+        },
+      });
+    }
+
+    const dashboard = req.query.view === "dashboard";
+    const notifications = dashboard ? (await Promise.all([
+      prisma.notification.findMany({
+        where: { userId, active: true, type: { not: "CHAT_MESSAGE" } },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 3,
+      }),
+      prisma.notification.findMany({
+        where: { userId, active: true, type: "CHAT_MESSAGE" },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 3,
+      }),
+    ])).flat() : await prisma.notification.findMany({
       where: {
         userId,
         active: true,
