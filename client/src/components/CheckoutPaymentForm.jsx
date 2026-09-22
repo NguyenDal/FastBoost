@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ExpressCheckoutElement, useCheckoutElements } from "@stripe/react-stripe-js/checkout";
 import { COUNTRIES } from "../utils/countries";
+import { PaymentFormSkeleton } from "./CheckoutSkeleton";
 import PaymentErrorDialog from "./PaymentErrorDialog";
 import { paymentErrorMessage } from "../utils/paymentError";
 
@@ -16,6 +17,8 @@ export function CheckoutIcon({ type }) {
         user: <><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></>,
         globe: <><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></>,
         arrow: <path d="M4 12h16m-6-6 6 6-6 6"/>,
+        shield: <path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/>,
+        chat: <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-2 2 1.5-7A8.5 8.5 0 1 1 21 11.5Z"/>,
     };
     return <svg className="checkout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
@@ -26,6 +29,8 @@ export default function CheckoutPaymentForm({ summary, sessionId, stripePromise,
     const numberNode = useRef(null);
     const expiryNode = useRef(null);
     const cvcNode = useRef(null);
+    const emailNode = useRef(null);
+    const [email, setEmail] = useState(summary.email || "");
     const [ready, setReady] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -59,25 +64,41 @@ export default function CheckoutPaymentForm({ summary, sessionId, stripePromise,
         setBusy(true);
         onBusyChange?.(true);
         setError("");
+        let stage = "validating contact details";
         try {
+            const contactEmail = email.trim();
+            if (!contactEmail || !emailNode.current?.validity.valid) throw Object.assign(new Error(), { code: "email_required" });
+            // Wallets supply their own contact email; card checkout uses ours.
             let confirmation = { redirect: "if_required" };
             if (expressEvent) confirmation.expressCheckoutConfirmEvent = expressEvent;
             else {
-                const billing = { name: name.trim(), email: summary.email, address: { country } };
+                const billing = { name: name.trim(), email: contactEmail, address: { country } };
                 if (!billing.name || !country) throw Object.assign(new Error(), { code: "billing_required" });
+                stage = "creating card payment method";
                 const result = await cardFields.current.stripe.createPaymentMethod({ type: "card", card: cardFields.current.number, billing_details: billing });
                 if (result.error) throw result.error;
                 // Billing details are already attached to this PaymentMethod. Stripe
                 // rejects a separate billingAddress when confirming with its ID.
-                confirmation = { ...confirmation, paymentMethod: result.paymentMethod.id };
+                confirmation = { ...confirmation, paymentMethod: result.paymentMethod.id, email: contactEmail };
             }
+            stage = "confirming checkout";
             const result = await state.checkout.confirm(confirmation);
-            if (result.type === "error") setError(paymentErrorMessage(result.error));
+            if (result.type === "error") throw result.error;
             else onSuccess({ session_id: sessionId });
-        } catch (failure) { setError(paymentErrorMessage(failure)); }
+        } catch (failure) {
+            // Keep technical diagnostics in the local developer console, never in
+            // the customer popup. Do not log payment objects or entered details.
+            if (import.meta.env.DEV) console.error("[FastBoost payment]", {
+                stage,
+                type: failure?.type || failure?.name,
+                code: failure?.code,
+                message: String(failure?.message || "No error message returned").replace(/(?:sk|pk|cs|pi)_(?:test_|live_)?[A-Za-z0-9_]+/g, "[redacted]"),
+            });
+            setError(paymentErrorMessage(failure));
+        }
         finally { submitting.current = false; setBusy(false); onBusyChange?.(false); }
     };
-    if (state.type === "loading") return <p role="status">Loading payment form…</p>;
+    if (state.type === "loading") return <PaymentFormSkeleton />;
     if (state.type === "error") return <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />;
     // Stripe requires reading and displaying its current total before confirmation.
     const total = state.checkout.total.total.amount;
@@ -91,7 +112,8 @@ export default function CheckoutPaymentForm({ summary, sessionId, stripePromise,
         <form noValidate onSubmit={event => { event.preventDefault(); confirm(); }}>
             <h3>Contact Information</h3>
             <p className="checkout-help">We’ll use this email to send your order confirmation.</p>
-            <div className="checkout-input checkout-contact"><CheckoutIcon type="mail"/><span>{summary.email}</span></div>
+            <label className="checkout-sr-only" htmlFor="checkout-email">Email address</label>
+            <div className="checkout-input checkout-contact"><CheckoutIcon type="mail"/><input ref={emailNode} id="checkout-email" type="email" inputMode="email" autoComplete="email" placeholder="Enter your email address" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} disabled={busy} /></div>
             <h3>Card Information</h3>
             <label className="checkout-sr-only" htmlFor="checkout-card-number">Card number</label>
             <div className="checkout-input checkout-card-number"><CheckoutIcon type="card"/><div className="StripeElement" id="checkout-card-number" ref={numberNode}/><span className="checkout-networks" aria-label="Visa, Mastercard, American Express, Discover"><b className="network-visa">VISA</b><b className="network-mastercard" aria-label="Mastercard"><i/><i/></b><b className="network-amex">AMEX</b><b className="network-discover">DISCOVER</b></span></div>

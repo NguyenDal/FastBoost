@@ -1455,3 +1455,5 @@ npx prisma studio
 **An Nguyen Nguyen**
 
 Portfolio full-stack project built for learning, practice, and professional presentation on GitHub and LinkedIn.
+
+Checkout follow-up: confirmed payments stay on checkout. The order summary expands into a paid order card with the order number, game/service, a borderless service-specific tracker, and an explicit Go to Order button. Placement summaries show peak rank and placement matches; Win Boost and Pro Duo show their requested quantities instead of a target rank.

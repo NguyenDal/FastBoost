@@ -287,7 +287,7 @@ const createCheckoutSession = async (req, res) => {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (existingSession.ui_mode === "elements" && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
+                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
                 await stripe.checkout.sessions.expire(existingSession.id);
@@ -342,7 +342,8 @@ const createCheckoutSession = async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             ui_mode: "elements",
-            customer_email: order.customer?.email || undefined,
+            // Collect contact email in the editable checkout form. Setting
+            // customer_email here locks it and rejects confirm({ email }).
             payment_method_types: ["card", "link"],
             adaptive_pricing: { enabled: false },
             line_items: [
@@ -362,6 +363,7 @@ const createCheckoutSession = async (req, res) => {
                 },
             ],
             metadata: {
+                editableEmail: "1",
                 orderId: order.id,
                 customerId: order.customerId,
                 goldRedeemed: String(goldRedeemed),
@@ -369,7 +371,7 @@ const createCheckoutSession = async (req, res) => {
                 cashAmountCents: String(cashAmountCents),
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
-        }, { idempotencyKey: `checkout-${order.id}-${goldRedeemed}-${order.stripeCheckoutSessionId || "new"}` });
+        }, { idempotencyKey: `checkout-email-v1-${order.id}-${goldRedeemed}-${order.stripeCheckoutSessionId || "new"}` });
 
         await prisma.order.update({
             where: { id: order.id },

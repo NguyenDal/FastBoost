@@ -10,6 +10,7 @@ import "../styles/PaymentResultPage.css";
 function PaymentResultPage({ type, overlayOnly = false, verification, onVerified, onComplete }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [closing, setClosing] = useState(false);
 
   const [state, setState] = useState({
     loading: type === "success",
@@ -130,12 +131,13 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
     if (type !== "success") return;
     if (state.loading || state.error || !state.paid || !state.orderId) return;
 
+    const fadeTimer = window.setTimeout(() => setClosing(true), 1550);
     const timer = window.setTimeout(() => {
       if (onComplete) onComplete();
       else navigate(`/checkout/${state.orderId}`, { replace: true });
     }, 1800);
 
-    return () => window.clearTimeout(timer);
+    return () => { window.clearTimeout(fadeTimer); window.clearTimeout(timer); };
   }, [type, state.loading, state.error, state.paid, state.orderId, navigate, onComplete]);
 
   const isSuccess = type === "success";
@@ -153,7 +155,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
     <>
       {!overlayOnly && <OrderPage />}
 
-      <div className="payment-result-floating-layer">
+      <div className={`payment-result-floating-layer${closing ? " payment-result-closing" : ""}`}>
         <div
           className={`payment-result-modal ${confirmedSuccess
             ? "payment-result-success"

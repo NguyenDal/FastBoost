@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
-import CheckoutPaymentForm from "../components/CheckoutPaymentForm";
+import CheckoutPaymentForm, { CheckoutIcon } from "../components/CheckoutPaymentForm";
+import CheckoutSkeleton from "../components/CheckoutSkeleton";
 import PaymentErrorDialog from "../components/PaymentErrorDialog";
 import { paymentErrorMessage } from "../utils/paymentError";
 import PaymentResultPage from "./PaymentResultPage";
@@ -119,20 +120,20 @@ export default function CheckoutPage() {
         <Navbar />
         <main className="checkout-container">
             <h1>Secure Payment</h1>
-            <ol className={`checkout-steps${celebratePaid ? " checkout-steps-completing" : ""}`} aria-label="Order progress">
+            <ol className={`checkout-steps checkout-steps-entering${celebratePaid ? " checkout-steps-completing" : ""}`} aria-label="Order progress">
                 <li className="done"><span>✓</span><strong>Order Details</strong><small>Completed</small></li>
                 <li className={showPaid ? "done active" : "active"} aria-current={showPaid ? undefined : "step"}><span>{showPaid ? "✓" : "2"}</span><strong>Payment</strong><small>{showPaid ? "Completed" : "Complete your payment"}</small></li>
                 <li className={showPaid ? "active" : undefined} aria-current={showPaid ? "step" : undefined}><span>3</span><strong>Boost Begins</strong><small>{showPaid ? "Ready to start" : "After payment"}</small></li>
             </ol>
-            {showPaid ? <section className={`checkout-card${celebratePaid ? " checkout-paid-reveal" : ""}`} aria-live="polite"><p>{celebratePaid ? "Your order has been paid. Your boost is ready to begin." : "This order has already been paid."}</p><button className="checkout-pay" onClick={() => navigate(`/match/${orderId}`)}>Go to Order</button></section> : error ? <section className="checkout-card"><button className="checkout-pay" onClick={() => { setError(""); setAttempt(value => value + 1); }}>Try again</button></section> : !data ? <section className="checkout-card" role="status">Preparing your secure checkout…</section> :
-                <div className="checkout-grid">
-                    <section className="checkout-card checkout-payment">
+            {error && !showPaid ? <section className="checkout-card"><button className="checkout-pay" onClick={() => { setError(""); setAttempt(value => value + 1); }}>Try again</button></section> : !data && !showPaid ? <CheckoutSkeleton /> :
+                <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
+                    <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {paid ? <><p>This order has already been paid.</p><button className="checkout-pay" onClick={() => navigate(`/match/${orderId}`)}>Go to Order</button></> : data.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
                             <CheckoutPaymentForm summary={data.summary} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} />
-                        </CheckoutElementsProvider> : <p role="alert">Payment is temporarily unavailable. Please contact support.</p>}
+                        </CheckoutElementsProvider> : !showPaid && <p role="status">Confirming your payment…</p>}
                     </section>
-                    <OrderSummary summary={data.summary} onApplyGold={applyGold} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={paid} />
+                    <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
         </main>
         {verification && <PaymentResultPage type="success" overlayOnly verification={verification} onVerified={markPaid} onComplete={completeConfirmation} />}
@@ -163,17 +164,36 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     </dialog>;
 }
 
-function OrderSummary({ summary, onApplyGold, paymentBusy, paid }) {
+function OrderSummary({ summary, onApplyGold, paymentBusy, paid, onGoToOrder }) {
     const [promoCode, setPromoCode] = useState("");
     const [promoSubmitted, setPromoSubmitted] = useState(false);
     const enteredCode = promoCode.trim();
     const price = value => money(value, summary.currency);
-    return <aside className="checkout-card checkout-summary">
-        <div className="checkout-summary-heading"><h2>Order Summary</h2><Link to={"/order/" + summary.serviceId}>Edit Order</Link></div>
-        <div className="checkout-game"><CleanIcon src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p>{summary.title}</p></div></div>
-        <dl className="checkout-order-details">
-            {[["Current Rank", summary.currentRank], ["Target Rank", summary.targetRank], ["Queue Type", summary.queueType], ["Server / Region", summary.region]].filter(([, value]) => value).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-        </dl>
+    return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
+        <div className="checkout-summary-heading"><h2>{paid ? `Order #${summary.orderId?.slice(0, 8).toUpperCase()}` : "Order Summary"}</h2>{!paid && <Link to={"/order/" + summary.serviceId}>Edit Order</Link>}</div>
+        {!paid && <div className="checkout-game"><CleanIcon src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p className="checkout-service-meta">{[summary.serviceType || summary.title?.replace(/^TFT\s+/i, ""), summary.queueType, summary.region].filter(Boolean).map((value, index) => <span key={index}>{value}</span>)}</p></div></div>}
+        {paid ? <div className="checkout-paid-content">
+            <div className="checkout-confirmed-layout">
+                <div className="checkout-confirmed-game">
+                    <CleanIcon src={`https://fastboost-assets.s3.amazonaws.com/logos/${summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg"}`} alt="" />
+                    <div><h3>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</h3><p>{summary.serviceType || summary.title?.replace(/^TFT\s+/i, "")}</p>
+                        <div className="checkout-confirmed-tags">
+                            {summary.queueType && <span><CheckoutIcon type="shield" />{summary.queueType}</span>}
+                            {summary.region && <span><CheckoutIcon type="globe" />{summary.region}</span>}
+                        </div>
+                    </div>
+                </div>
+                <div className="checkout-confirmed-progress"><OrderTracker summary={summary} /></div>
+                <section className="checkout-next-steps">
+                    <h3>What Happens Next</h3>
+                    <div><span className="checkout-next-icon"><CheckoutIcon type="user" /></span><div><strong>Booster Assigned Soon</strong><p>We’ll match you with a booster shortly.</p></div></div>
+                    <div><span className="checkout-next-icon"><CheckoutIcon type="chat" /></span><div><strong>Track Progress in Chat</strong><p>Open your order page to message support.</p></div></div>
+                </section>
+            </div>
+            <p className="checkout-paid-notice" role="status"><span aria-hidden="true">✓</span>Your order has been paid. Your boost is ready to begin.</p>
+            <button className="checkout-pay checkout-confirmed-button" onClick={onGoToOrder}>Go to Order <CheckoutIcon type="arrow" /></button>
+        </div> : <>
+        <div className="checkout-order-details"><OrderTracker summary={summary} /></div>
         {!paid && <GoldRedemption key={summary.goldRedeemed} summary={summary} onApply={onApplyGold} disabled={paymentBusy} />}
         <form className="checkout-promo" onSubmit={event => { event.preventDefault(); if (enteredCode && !paymentBusy) setPromoSubmitted(true); }}>
             <label className="checkout-field-label" htmlFor="checkout-promo-code">Promo code</label>
@@ -188,7 +208,24 @@ function OrderSummary({ summary, onApplyGold, paymentBusy, paid }) {
             <div className="checkout-total"><dt>Total</dt><dd>{price(summary.totalCents)}</dd></div>
         </dl>
         <div className="checkout-security"><strong>Secure Payment</strong><p>Powered by Stripe. FastBoost does not receive or store your full card details.</p><p><a href="https://stripe.com/legal/consumer" target="_blank" rel="noreferrer">Stripe Terms</a> · <a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></p></div>
+        </>}
     </aside>;
+}
+
+function OrderTracker({ summary }) {
+    const rankIcon = rank => {
+        const tier = rank?.split(" ")[0]?.toLowerCase();
+        if (!["unranked", "iron", "bronze", "silver", "gold", "platinum", "emerald", "diamond", "master", "grandmaster", "challenger"].includes(tier)) return null;
+        return <img src={`https://fastboost-assets.s3.amazonaws.com/services/ranks/${tier}.${tier === "unranked" ? "webp" : "png"}`} alt="" />;
+    };
+    const quantityLabel = summary.quantity?.label === "Placement Matches" ? "Matches" : summary.quantity?.label === "Ranked Wins" ? "Wins" : "Games";
+    const quantityText = summary.quantity ? `${summary.quantity.value} ${Number(summary.quantity.value) === 1 ? quantityLabel.slice(0, quantityLabel === "Matches" ? -2 : -1) : quantityLabel}` : "";
+    return <div className="checkout-order-tracker">
+        {summary.currentRank && <div aria-label={`${summary.serviceType === "Placement Boost" ? "Peak" : "Current"} rank: ${summary.currentRank}`}>{rankIcon(summary.currentRank)}<span>{summary.currentRank}</span></div>}
+        {(summary.targetRank || summary.quantity) && <span className="checkout-tracker-arrow" aria-hidden="true">→</span>}
+        {summary.targetRank && <div aria-label={`Target rank: ${summary.targetRank}`}>{rankIcon(summary.targetRank)}<span>{summary.targetRank}</span></div>}
+        {summary.quantity && <div><span>{quantityText}</span></div>}
+    </div>;
 }
 
 function GoldRedemption({ summary, onApply, disabled }) {
@@ -213,5 +250,6 @@ function GoldRedemption({ summary, onApply, disabled }) {
         <p id="checkout-gold-help" aria-live="polite" className={valid ? undefined : "checkout-gold-error"}>{warning || "Gold is spent only after payment succeeds."}</p>
     </form>;
 }
+
 
 

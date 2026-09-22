@@ -16,6 +16,8 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
         create:async(args,options)=>{
             creates++;
             assert.equal(args.ui_mode,'elements');
+            assert.equal(args.customer_email,undefined);
+            assert.equal(args.metadata.editableEmail,'1');
             assert.equal(args.line_items[0].price_data.unit_amount,2600);
             assert.equal(args.metadata.goldRedeemed,'10');
             assert.equal(args.success_url,undefined);
@@ -46,6 +48,11 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     await createCheckoutSession(req,res);
     assert.equal(creates,1);
     assert.equal(res.body.sessionId,'cs_test_1');
+    // Older sessions have their email fixed at creation and must be replaced.
+    delete existing.metadata.editableEmail;
+    await createCheckoutSession(req,res);
+    assert.equal(creates,2);
+    assert.equal(res.body.sessionId,'cs_test_2');
     existing.status='complete';
     await createCheckoutSession(req,res);
     assert.equal(res.body.completed,true);
@@ -56,7 +63,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     order.status='CANCELLED';
     await createCheckoutSession(req,res);
     assert.equal(res.code,400);
-    assert.equal(creates,1);
+    assert.equal(creates,2);
     order.status='PENDING';
     order.amountCents=500;
     existing.status='open';
@@ -77,5 +84,5 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.code,200);
     assert.equal(res.body.paid,true);
     assert.equal(res.body.orderId,order.id);
-    assert.equal(creates,1);
+    assert.equal(creates,2);
 });
