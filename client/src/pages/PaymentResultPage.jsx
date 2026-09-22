@@ -101,7 +101,7 @@ function PaymentResultPage({ type }) {
         setState({
           loading: false,
           error:
-            "The payment was not marked as paid yet. Please check your orders.",
+            "The payment was not confirmed. Review your order and try again.",
           orderId: lastData?.orderId || "",
           paid: false,
         });
@@ -139,14 +139,10 @@ function PaymentResultPage({ type }) {
   const confirmedSuccess = isSuccess && state.paid && !state.error;
   const showNeedsReview = isSuccess && !state.loading && !state.paid;
 
-  function handleCancelledClose() {
+  function handleContinueOrder() {
     navigate(`/order/${getServiceIdFromPath(location.pathname)}`, {
       replace: true,
     });
-  }
-
-  function handleViewOrders() {
-    navigate("/account/orders", { replace: true });
   }
 
   return (
@@ -214,29 +210,19 @@ function PaymentResultPage({ type }) {
                 ? "Your order is ready. Transferring you to the Match Page..."
                 : showNeedsReview
                   ? state.error ||
-                  "The payment was not marked as paid yet. Please check your orders."
+                  "The payment was not confirmed. Review your order and try again."
                   : "No payment was taken. You can adjust your order and try again."}
           </p>
 
           {!confirmedSuccess && !state.loading && (
             <div className="payment-result-actions">
-              {isSuccess ? (
-                <button
-                  type="button"
-                  className="payment-result-primary"
-                  onClick={handleViewOrders}
-                >
-                  View My Orders
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="payment-result-primary"
-                  onClick={handleCancelledClose}
-                >
-                  Continue Editing Order
-                </button>
-              )}
+              <button
+                type="button"
+                className="payment-result-primary"
+                onClick={handleContinueOrder}
+              >
+                {isSuccess ? "Review Order & Try Again" : "Continue Editing Order"}
+              </button>
             </div>
           )}
         </div>
