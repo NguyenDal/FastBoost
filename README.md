@@ -399,6 +399,10 @@ Set `VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...` in `client/.env` and the matching
 Only the publishable key belongs in frontend configuration. Production also
 needs the matching frontend build variable, Link enabled in Stripe payment
 method settings, and an HTTPS domain registered with Stripe for Apple Pay.
+On Render, add `VITE_STRIPE_PUBLISHABLE_KEY` to the **frontend static site's**
+Environment settings, then rebuild/redeploy that site. Adding it only to the
+backend or local `.env` does not update deployed JavaScript. Vite embeds this
+value at build time; builds now fail if it is missing or not a publishable key.
 The current test account reports Link inactive for live mode and the localhost
 domain unregistered for Apple Pay.
 

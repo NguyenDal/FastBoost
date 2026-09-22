@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
 import CheckoutPaymentForm, { CheckoutIcon } from "../components/CheckoutPaymentForm";
-import CheckoutSkeleton from "../components/CheckoutSkeleton";
+import CheckoutSkeleton, { PaymentFormSkeleton } from "../components/CheckoutSkeleton";
 import PaymentErrorDialog from "../components/PaymentErrorDialog";
 import { paymentErrorMessage } from "../utils/paymentError";
 import PaymentResultPage from "./PaymentResultPage";
@@ -12,8 +12,8 @@ import CleanIcon from "../components/CleanIcon";
 import { createCheckoutSession, verifyCheckoutSession } from "../api/orders";
 import "../styles/Checkout.css";
 
-const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim();
+const stripePromise = /^pk_(test|live)_\S+$/.test(publishableKey || "") ? loadStripe(publishableKey) : null;
 const appearance = {
     theme: "night",
     variables: { colorPrimary: "#a855f7", colorBackground: "#111827", colorText: "#e5e7eb", colorDanger: "#fb7185", borderRadius: "10px", fontFamily: "Arial, sans-serif" },
@@ -63,9 +63,11 @@ export default function CheckoutPage() {
                 const cardCheckout = await createCheckoutSession(orderId, 0);
                 if (cancelled) return;
                 if (!cardCheckout.clientSecret) throw new Error("Unable to load card payment.");
+                if (!stripePromise) throw new Error("Payment form is unavailable.");
                 setData(cardCheckout);
                 setGoldConfirmation(result.summary.goldRedeemed);
             } else if (result.clientSecret) {
+                if (!stripePromise) throw new Error("Payment form is unavailable.");
                 setData(result);
             } else setError("Unable to start payment. Please try again.");
         }).catch(async (failure) => {
@@ -134,7 +136,7 @@ export default function CheckoutPage() {
                         <h2>Payment Method</h2>
                         {!showPaid && data?.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
                             <CheckoutPaymentForm email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} />
-                        </CheckoutElementsProvider> : !showPaid && <p role="status">Confirming your payment…</p>}
+                        </CheckoutElementsProvider> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
                     </section>
                     <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}

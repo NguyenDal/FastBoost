@@ -1,10 +1,10 @@
 const nodemailer = require("nodemailer");
 const { randomUUID } = require("node:crypto");
 const { checkoutSummary } = require("./checkoutSummary");
+const { renderConfirmation } = require("./orderConfirmationTemplate");
 
 const enabled = () => process.env.ORDER_CONFIRMATION_EMAILS_ENABLED === "true";
 const validEmail = value => typeof value === "string" && value.trim().length <= 254 && /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(value.trim());
-const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 
 function buildConfirmation(order, email) {
     if (order.paymentStatus !== "PAID") throw new Error("Confirmation requires a paid order");
@@ -29,8 +29,8 @@ function buildConfirmation(order, email) {
     const intro = "Your payment is confirmed. Open your order to view progress and chat with our team.";
     return {
         to: email.trim(), subject,
-        text: [subject, "", intro, "", ...rows.map(([label, value]) => `${label}: ${value}`), "", `Go to Order: ${url}`, "", "This is your FastBoost order confirmation. Stripe sends a separate receipt for card or wallet charges when enabled."].join("\n"),
-        html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#1f2937"><h1 style="color:#7c3aed">FastBoost</h1><h2>Order #${escapeHtml(order.orderNumber)}</h2><p>${intro}</p><table style="width:100%;border-collapse:collapse">${rows.map(([label, value]) => `<tr><td style="padding:9px;border-bottom:1px solid #e5e7eb">${escapeHtml(label)}</td><td style="padding:9px;border-bottom:1px solid #e5e7eb;text-align:right">${escapeHtml(value)}</td></tr>`).join("")}</table><p style="margin:28px 0"><a style="background:#7c3aed;color:white;padding:14px 24px;border-radius:8px;text-decoration:none" href="${escapeHtml(url)}">Go to Order</a></p><p style="font-size:12px;color:#64748b">This is your FastBoost order confirmation. Stripe sends a separate receipt for card or wallet charges when enabled.</p></div>`,
+        text: [subject, "", intro, "", ...rows.map(([label, value]) => `${label}: ${value}`), "", `Go to Order: ${url}`].join("\n"),
+        html: renderConfirmation({ orderNumber: order.orderNumber, summary, rows, url }),
     };
 }
 

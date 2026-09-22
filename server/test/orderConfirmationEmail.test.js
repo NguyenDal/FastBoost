@@ -39,6 +39,26 @@ test("queue stores one immutable confirmation per paid order", async t => {
     assert.equal(rows.get(order.id).payload.to, "checkout@example.com");
 });
 
+test("email overview adapts to LoL and TFT boost services", t => {
+    configure(t);
+    for (const [boostType, fields, expected] of [
+        ["Rank Boost", { currentRank: "Silver", currentDivision: "I", desiredRank: "Gold", desiredDivision: "IV" }, "Gold IV"],
+        ["Placement Boost", { peakRank: "Silver I", placementGames: 5 }, "Placement Matches"],
+        ["Win Boost", { currentRank: "Silver", desiredWins: 7 }, "Ranked Wins"],
+        ["Pro Duo", { currentRank: "Silver", numberOfGames: 3 }, "Games"],
+        ["TFT Rank Boost", { currentRank: "Silver", desiredRank: "Gold", desiredDivision: "IV" }, "Gold IV"],
+        ["TFT Win Boost", { currentRank: "Silver", desiredWins: 4 }, "Ranked Wins"],
+    ]) {
+        const html = buildConfirmation({ ...order, desiredRank: "Diamond", desiredDivision: "I", boostType, ...fields }, "a@example.com").html;
+        assert.ok(html.includes(expected), boostType);
+        assert.ok(html.includes(boostType.startsWith("TFT") ? "Teamfight Tactics" : "League of Legends"));
+        if (!boostType.endsWith("Rank Boost")) {
+            assert.doesNotMatch(html, /Target rank|Diamond I/);
+        }
+        assert.match(html, /What happens next\?/);
+    }
+});
+
 test("worker retries failed delivery and claims prevent concurrent duplicate sends", async t => {
     configure(t);
     const now = new Date();
