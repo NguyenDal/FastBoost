@@ -411,6 +411,15 @@ function ActivityIcon({ kind }) {
     );
 }
 
+function MessageAvatar({ item }) {
+    const [failedSource, setFailedSource] = useState(null);
+    const source = item.data?.senderAvatar;
+    if (source && source !== failedSource) {
+        return <img src={source} alt="" className="dashboard-message-avatar" onError={() => setFailedSource(source)} />;
+    }
+    return item.data?.senderInitial || item.title?.charAt(0) || "?";
+}
+
 function DashboardListCard({ title, emptyText, items, onItemClick, isMessage = false }) {
     const unreadCount = items.filter((item) => !item.read).length;
     return (
@@ -432,7 +441,7 @@ function DashboardListCard({ title, emptyText, items, onItemClick, isMessage = f
                         return (
                             <button key={item.id} type="button" className="dashboard-activity-item" onClick={() => onItemClick(item)}>
                                 <span className={"dashboard-activity-icon " + (isMessage ? "avatar" : kind)}>
-                                    {isMessage ? (item.data?.senderInitial || item.title?.charAt(0) || "?") : <ActivityIcon kind={kind} />}
+                                    {isMessage ? <MessageAvatar item={item} /> : <ActivityIcon kind={kind} />}
                                 </span>
                                 <span className="dashboard-activity-copy">
                                     <strong>{item.title || (isMessage ? "New message" : "Notification")}</strong>

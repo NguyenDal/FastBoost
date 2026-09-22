@@ -55,6 +55,23 @@ exports.listMyNotifications = async (req, res) => {
       take: 30,
     });
 
+    // Resolve current avatars in one query, including older chat notifications.
+    const senderIds = [...new Set(notifications
+      .filter((item) => item.type === "CHAT_MESSAGE" && item.data?.senderId)
+      .map((item) => item.data.senderId))];
+    if (senderIds.length > 0) {
+      const senders = await prisma.user.findMany({
+        where: { id: { in: senderIds } },
+        select: { id: true, profile: { select: { profileImageUrl: true } } },
+      });
+      const avatars = new Map(senders.map((sender) => [sender.id, sender.profile?.profileImageUrl || null]));
+      for (const item of notifications) {
+        if (item.type === "CHAT_MESSAGE") {
+          item.data = { ...item.data, senderAvatar: avatars.get(item.data?.senderId) || null };
+        }
+      }
+    }
+
     return res.json({
       ok: true,
       notifications,
