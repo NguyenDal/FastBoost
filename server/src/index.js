@@ -4,6 +4,7 @@ const http = require("http");
 const app = require("./app");
 const { initSocket } = require("./socket");
 const { cleanupOldUnpaidOrders } = require("./utils/cleanupUnpaidOrders");
+const { startConfirmationWorker } = require("./utils/orderConfirmationEmail");
 
 const PORT = process.env.PORT || 5000;
 
@@ -14,6 +15,8 @@ initSocket(server);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  // Delivery retries run independently of payment requests.
+  startConfirmationWorker(require("./prisma"));
 
   cleanupOldUnpaidOrders().catch((error) => {
     console.error("[Cleanup] Failed initial unpaid order cleanup:", error);

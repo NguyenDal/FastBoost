@@ -40,6 +40,7 @@ export default function CheckoutPage() {
     const [paymentBusy, setPaymentBusy] = useState(false);
     const [goldConfirmation, setGoldConfirmation] = useState(null);
     const [goldError, setGoldError] = useState("");
+    const [contactEmail, setContactEmail] = useState(null);
     const request = useRef(null);
     const gold = Math.max(0, Math.floor(Number(params.get("gold")) || 0));
 
@@ -106,7 +107,9 @@ export default function CheckoutPage() {
         setGoldError("");
         setPaymentBusy(true);
         try {
-            const result = await createCheckoutSession(orderId, goldConfirmation, false);
+            const email = (contactEmail ?? data?.summary.email ?? "").trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
+            const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
             if (result.paidWithGoldOnly) {
                 setGoldConfirmation(null);
                 setVerification({ orderId: result.orderId, gold: "1" });
@@ -130,7 +133,7 @@ export default function CheckoutPage() {
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
                         {!showPaid && data?.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
-                            <CheckoutPaymentForm summary={data.summary} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} />
+                            <CheckoutPaymentForm email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} />
                         </CheckoutElementsProvider> : !showPaid && <p role="status">Confirming your payment…</p>}
                     </section>
                     <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />

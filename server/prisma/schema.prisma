@@ -128,6 +128,7 @@ enum SaleScope {
 }
 
 model Order {
+  confirmationEmail OrderConfirmationEmail?
   id                String      @id @default(cuid())
   orderNumber       String      @unique @default(dbgenerated())
   customerId        String
@@ -198,6 +199,20 @@ model Order {
   conversation      Conversation?
 
   @@index([customerId, paymentStatus, paidAt])
+}
+
+model OrderConfirmationEmail {
+  orderId       String   @id
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  payload       Json
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now())
+  sentAt        DateTime?
+  claim         String?
+  lastError     String?
+  createdAt     DateTime @default(now())
+
+  @@index([sentAt, nextAttemptAt])
 }
 
 // Permanent reservations prevent suffix reuse even if an unpaid order is deleted.

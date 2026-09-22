@@ -4,11 +4,12 @@ const assert = require('node:assert/strict');
 test('on-site checkout uses server pricing, reuses sessions, and enforces ownership', async (t) => {
     let existing = null;
     let creates = 0;
+    const queued = [];
     const order = {id:'order-test',orderNumber:'LOL-RNK-CXBE6',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'cad',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
     const prisma = {
-        order: {findUnique:async()=>order,findMany:async()=>[],update:async({data})=>Object.assign(order,data)},
+        order: {findUnique:async()=>order,findMany:async()=>[],update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},
         rewardHistory:{aggregate:async()=>({_sum:{goldAmount:100}}),create:async()=>({})},
-        $transaction:async operations=>Promise.all(operations),
+        $transaction:async callback=>callback(prisma),
     };
     const stripe = {checkout:{sessions:{
         retrieve:async()=>existing,
@@ -34,6 +35,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
         [require.resolve('../src/prisma'),prisma],
         [require.resolve('../src/utils/stripeClient'),stripe],
         [require.resolve('../src/utils/referralProgram'),{grantReferralCompletionRewards:async()=>{}}],
+        [require.resolve('../src/utils/orderConfirmationEmail'),{validEmail:require('../src/utils/orderConfirmationEmail').validEmail,queueOrderConfirmation:async(tx,id,email)=>{assert.equal(order.paymentStatus,'PAID');queued.push({id,email});}}],
     ]);
     const saved = new Map();
     for(const [path,exports] of replacements) {saved.set(path,require.cache[path]);require.cache[path]={id:path,filename:path,loaded:true,exports};}
@@ -79,13 +81,21 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.body.summary.totalCents,0);
     assert.equal(order.paymentStatus,'PENDING');
     assert.equal(existing.status,'expired');
+    assert.equal(queued.length,0);
     req.body.deferGoldOnly=false;
+    await createCheckoutSession(req,res);
+    assert.equal(res.code,400);
+    assert.equal(order.paymentStatus,'PENDING');
+    res.code=200;
+    req.body.contactEmail='receipt@example.com';
     await createCheckoutSession(req,res);
     assert.equal(res.body.paidWithGoldOnly,true);
     assert.equal(order.paymentStatus,'PAID');
+    assert.deepEqual(queued,[{id:order.id,email:'receipt@example.com'}]);
     await createCheckoutSession(req,res);
     assert.equal(res.code,200);
     assert.equal(res.body.paid,true);
+    assert.equal(queued.length,1);
     assert.equal(res.body.orderId,order.id);
     assert.equal(creates,2);
 });

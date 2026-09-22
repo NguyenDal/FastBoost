@@ -23,14 +23,13 @@ export function CheckoutIcon({ type }) {
     return <svg className="checkout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
 
-export default function CheckoutPaymentForm({ summary, sessionId, stripePromise, onBusyChange, onSuccess }) {
+export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, stripePromise, onBusyChange, onSuccess }) {
     const state = useCheckoutElements();
     const cardFields = useRef(null);
     const numberNode = useRef(null);
     const expiryNode = useRef(null);
     const cvcNode = useRef(null);
     const emailNode = useRef(null);
-    const [email, setEmail] = useState(summary.email || "");
     const [ready, setReady] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -113,7 +112,7 @@ export default function CheckoutPaymentForm({ summary, sessionId, stripePromise,
             <h3>Contact Information</h3>
             <p className="checkout-help">We’ll use this email to send your order confirmation.</p>
             <label className="checkout-sr-only" htmlFor="checkout-email">Email address</label>
-            <div className="checkout-input checkout-contact"><CheckoutIcon type="mail"/><input ref={emailNode} id="checkout-email" type="email" inputMode="email" autoComplete="email" placeholder="Enter your email address" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} disabled={busy} /></div>
+            <div className="checkout-input checkout-contact"><CheckoutIcon type="mail"/><input ref={emailNode} id="checkout-email" type="email" inputMode="email" autoComplete="email" placeholder="Enter your email address" value={email} onChange={event => onEmailChange(event.target.value)} required maxLength={254} disabled={busy} /></div>
             <h3>Card Information</h3>
             <label className="checkout-sr-only" htmlFor="checkout-card-number">Card number</label>
             <div className="checkout-input checkout-card-number"><CheckoutIcon type="card"/><div className="StripeElement" id="checkout-card-number" ref={numberNode}/><span className="checkout-networks" aria-label="Visa, Mastercard, American Express, Discover"><b className="network-visa">VISA</b><b className="network-mastercard" aria-label="Mastercard"><i/><i/></b><b className="network-amex">AMEX</b><b className="network-discover">DISCOVER</b></span></div>

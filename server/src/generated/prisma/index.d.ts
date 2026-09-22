@@ -44,6 +44,11 @@ export type ServiceSale = $Result.DefaultSelection<Prisma.$ServiceSalePayload>
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model OrderConfirmationEmail
+ * 
+ */
+export type OrderConfirmationEmail = $Result.DefaultSelection<Prisma.$OrderConfirmationEmailPayload>
+/**
  * Model OrderNumberReservation
  * 
  */
@@ -397,6 +402,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderConfirmationEmail`: Exposes CRUD operations for the **OrderConfirmationEmail** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderConfirmationEmails
+    * const orderConfirmationEmails = await prisma.orderConfirmationEmail.findMany()
+    * ```
+    */
+  get orderConfirmationEmail(): Prisma.OrderConfirmationEmailDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderNumberReservation`: Exposes CRUD operations for the **OrderNumberReservation** model.
@@ -937,6 +952,7 @@ export namespace Prisma {
     ServicePriceRule: 'ServicePriceRule',
     ServiceSale: 'ServiceSale',
     Order: 'Order',
+    OrderConfirmationEmail: 'OrderConfirmationEmail',
     OrderNumberReservation: 'OrderNumberReservation',
     OrderAssignment: 'OrderAssignment',
     RewardHistory: 'RewardHistory',
@@ -962,7 +978,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1407,6 +1423,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrderConfirmationEmail: {
+        payload: Prisma.$OrderConfirmationEmailPayload<ExtArgs>
+        fields: Prisma.OrderConfirmationEmailFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderConfirmationEmailFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderConfirmationEmailFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderConfirmationEmailFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderConfirmationEmailFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          findMany: {
+            args: Prisma.OrderConfirmationEmailFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>[]
+          }
+          create: {
+            args: Prisma.OrderConfirmationEmailCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          createMany: {
+            args: Prisma.OrderConfirmationEmailCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderConfirmationEmailCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderConfirmationEmailDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          update: {
+            args: Prisma.OrderConfirmationEmailUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderConfirmationEmailDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderConfirmationEmailUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderConfirmationEmailUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderConfirmationEmailUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderConfirmationEmailPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderConfirmationEmailAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderConfirmationEmail>
+          }
+          groupBy: {
+            args: Prisma.OrderConfirmationEmailGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderConfirmationEmailGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderConfirmationEmailCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderConfirmationEmailCountAggregateOutputType> | number
           }
         }
       }
@@ -2264,6 +2354,7 @@ export namespace Prisma {
     servicePriceRule?: ServicePriceRuleOmit
     serviceSale?: ServiceSaleOmit
     order?: OrderOmit
+    orderConfirmationEmail?: OrderConfirmationEmailOmit
     orderNumberReservation?: OrderNumberReservationOmit
     orderAssignment?: OrderAssignmentOmit
     rewardHistory?: RewardHistoryOmit
@@ -9333,6 +9424,7 @@ export namespace Prisma {
     addonPrice?: boolean
     referralDiscount?: boolean
     totalPrice?: boolean
+    confirmationEmail?: boolean | Order$confirmationEmailArgs<ExtArgs>
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
@@ -9515,6 +9607,7 @@ export namespace Prisma {
 
   export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    confirmationEmail?: boolean | Order$confirmationEmailArgs<ExtArgs>
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
@@ -9534,6 +9627,7 @@ export namespace Prisma {
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
     objects: {
+      confirmationEmail: Prisma.$OrderConfirmationEmailPayload<ExtArgs> | null
       customer: Prisma.$UserPayload<ExtArgs>
       service: Prisma.$ServicePayload<ExtArgs>
       assignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
@@ -9988,6 +10082,7 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    confirmationEmail<T extends Order$confirmationEmailArgs<ExtArgs> = {}>(args?: Subset<T, Order$confirmationEmailArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     customer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignments<T extends Order$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10476,6 +10571,25 @@ export namespace Prisma {
   }
 
   /**
+   * Order.confirmationEmail
+   */
+  export type Order$confirmationEmailArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    where?: OrderConfirmationEmailWhereInput
+  }
+
+  /**
    * Order.assignments
    */
   export type Order$assignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10558,6 +10672,1138 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrderConfirmationEmail
+   */
+
+  export type AggregateOrderConfirmationEmail = {
+    _count: OrderConfirmationEmailCountAggregateOutputType | null
+    _avg: OrderConfirmationEmailAvgAggregateOutputType | null
+    _sum: OrderConfirmationEmailSumAggregateOutputType | null
+    _min: OrderConfirmationEmailMinAggregateOutputType | null
+    _max: OrderConfirmationEmailMaxAggregateOutputType | null
+  }
+
+  export type OrderConfirmationEmailAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type OrderConfirmationEmailSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type OrderConfirmationEmailMinAggregateOutputType = {
+    orderId: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    sentAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type OrderConfirmationEmailMaxAggregateOutputType = {
+    orderId: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    sentAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type OrderConfirmationEmailCountAggregateOutputType = {
+    orderId: number
+    payload: number
+    attempts: number
+    nextAttemptAt: number
+    sentAt: number
+    claim: number
+    lastError: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type OrderConfirmationEmailAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type OrderConfirmationEmailSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type OrderConfirmationEmailMinAggregateInputType = {
+    orderId?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type OrderConfirmationEmailMaxAggregateInputType = {
+    orderId?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type OrderConfirmationEmailCountAggregateInputType = {
+    orderId?: true
+    payload?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type OrderConfirmationEmailAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderConfirmationEmail to aggregate.
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderConfirmationEmails to fetch.
+     */
+    orderBy?: OrderConfirmationEmailOrderByWithRelationInput | OrderConfirmationEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrderConfirmationEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderConfirmationEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderConfirmationEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrderConfirmationEmails
+    **/
+    _count?: true | OrderConfirmationEmailCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: OrderConfirmationEmailAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OrderConfirmationEmailSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderConfirmationEmailMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderConfirmationEmailMaxAggregateInputType
+  }
+
+  export type GetOrderConfirmationEmailAggregateType<T extends OrderConfirmationEmailAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderConfirmationEmail]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderConfirmationEmail[P]>
+      : GetScalarType<T[P], AggregateOrderConfirmationEmail[P]>
+  }
+
+
+
+
+  export type OrderConfirmationEmailGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderConfirmationEmailWhereInput
+    orderBy?: OrderConfirmationEmailOrderByWithAggregationInput | OrderConfirmationEmailOrderByWithAggregationInput[]
+    by: OrderConfirmationEmailScalarFieldEnum[] | OrderConfirmationEmailScalarFieldEnum
+    having?: OrderConfirmationEmailScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderConfirmationEmailCountAggregateInputType | true
+    _avg?: OrderConfirmationEmailAvgAggregateInputType
+    _sum?: OrderConfirmationEmailSumAggregateInputType
+    _min?: OrderConfirmationEmailMinAggregateInputType
+    _max?: OrderConfirmationEmailMaxAggregateInputType
+  }
+
+  export type OrderConfirmationEmailGroupByOutputType = {
+    orderId: string
+    payload: JsonValue
+    attempts: number
+    nextAttemptAt: Date
+    sentAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date
+    _count: OrderConfirmationEmailCountAggregateOutputType | null
+    _avg: OrderConfirmationEmailAvgAggregateOutputType | null
+    _sum: OrderConfirmationEmailSumAggregateOutputType | null
+    _min: OrderConfirmationEmailMinAggregateOutputType | null
+    _max: OrderConfirmationEmailMaxAggregateOutputType | null
+  }
+
+  type GetOrderConfirmationEmailGroupByPayload<T extends OrderConfirmationEmailGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderConfirmationEmailGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderConfirmationEmailGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderConfirmationEmailGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderConfirmationEmailGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderConfirmationEmailSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    payload?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderConfirmationEmail"]>
+
+  export type OrderConfirmationEmailSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    payload?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderConfirmationEmail"]>
+
+  export type OrderConfirmationEmailSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    payload?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderConfirmationEmail"]>
+
+  export type OrderConfirmationEmailSelectScalar = {
+    orderId?: boolean
+    payload?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+  }
+
+  export type OrderConfirmationEmailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"orderId" | "payload" | "attempts" | "nextAttemptAt" | "sentAt" | "claim" | "lastError" | "createdAt", ExtArgs["result"]["orderConfirmationEmail"]>
+  export type OrderConfirmationEmailInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type OrderConfirmationEmailIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type OrderConfirmationEmailIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $OrderConfirmationEmailPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderConfirmationEmail"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      orderId: string
+      payload: Prisma.JsonValue
+      attempts: number
+      nextAttemptAt: Date
+      sentAt: Date | null
+      claim: string | null
+      lastError: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["orderConfirmationEmail"]>
+    composites: {}
+  }
+
+  type OrderConfirmationEmailGetPayload<S extends boolean | null | undefined | OrderConfirmationEmailDefaultArgs> = $Result.GetResult<Prisma.$OrderConfirmationEmailPayload, S>
+
+  type OrderConfirmationEmailCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderConfirmationEmailFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderConfirmationEmailCountAggregateInputType | true
+    }
+
+  export interface OrderConfirmationEmailDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderConfirmationEmail'], meta: { name: 'OrderConfirmationEmail' } }
+    /**
+     * Find zero or one OrderConfirmationEmail that matches the filter.
+     * @param {OrderConfirmationEmailFindUniqueArgs} args - Arguments to find a OrderConfirmationEmail
+     * @example
+     * // Get one OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderConfirmationEmailFindUniqueArgs>(args: SelectSubset<T, OrderConfirmationEmailFindUniqueArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderConfirmationEmail that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderConfirmationEmailFindUniqueOrThrowArgs} args - Arguments to find a OrderConfirmationEmail
+     * @example
+     * // Get one OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderConfirmationEmailFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderConfirmationEmailFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderConfirmationEmail that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailFindFirstArgs} args - Arguments to find a OrderConfirmationEmail
+     * @example
+     * // Get one OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderConfirmationEmailFindFirstArgs>(args?: SelectSubset<T, OrderConfirmationEmailFindFirstArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderConfirmationEmail that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailFindFirstOrThrowArgs} args - Arguments to find a OrderConfirmationEmail
+     * @example
+     * // Get one OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderConfirmationEmailFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderConfirmationEmailFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderConfirmationEmails that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderConfirmationEmails
+     * const orderConfirmationEmails = await prisma.orderConfirmationEmail.findMany()
+     * 
+     * // Get first 10 OrderConfirmationEmails
+     * const orderConfirmationEmails = await prisma.orderConfirmationEmail.findMany({ take: 10 })
+     * 
+     * // Only select the `orderId`
+     * const orderConfirmationEmailWithOrderIdOnly = await prisma.orderConfirmationEmail.findMany({ select: { orderId: true } })
+     * 
+     */
+    findMany<T extends OrderConfirmationEmailFindManyArgs>(args?: SelectSubset<T, OrderConfirmationEmailFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderConfirmationEmail.
+     * @param {OrderConfirmationEmailCreateArgs} args - Arguments to create a OrderConfirmationEmail.
+     * @example
+     * // Create one OrderConfirmationEmail
+     * const OrderConfirmationEmail = await prisma.orderConfirmationEmail.create({
+     *   data: {
+     *     // ... data to create a OrderConfirmationEmail
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrderConfirmationEmailCreateArgs>(args: SelectSubset<T, OrderConfirmationEmailCreateArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderConfirmationEmails.
+     * @param {OrderConfirmationEmailCreateManyArgs} args - Arguments to create many OrderConfirmationEmails.
+     * @example
+     * // Create many OrderConfirmationEmails
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrderConfirmationEmailCreateManyArgs>(args?: SelectSubset<T, OrderConfirmationEmailCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderConfirmationEmails and returns the data saved in the database.
+     * @param {OrderConfirmationEmailCreateManyAndReturnArgs} args - Arguments to create many OrderConfirmationEmails.
+     * @example
+     * // Create many OrderConfirmationEmails
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrderConfirmationEmails and only return the `orderId`
+     * const orderConfirmationEmailWithOrderIdOnly = await prisma.orderConfirmationEmail.createManyAndReturn({
+     *   select: { orderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrderConfirmationEmailCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderConfirmationEmailCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderConfirmationEmail.
+     * @param {OrderConfirmationEmailDeleteArgs} args - Arguments to delete one OrderConfirmationEmail.
+     * @example
+     * // Delete one OrderConfirmationEmail
+     * const OrderConfirmationEmail = await prisma.orderConfirmationEmail.delete({
+     *   where: {
+     *     // ... filter to delete one OrderConfirmationEmail
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrderConfirmationEmailDeleteArgs>(args: SelectSubset<T, OrderConfirmationEmailDeleteArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderConfirmationEmail.
+     * @param {OrderConfirmationEmailUpdateArgs} args - Arguments to update one OrderConfirmationEmail.
+     * @example
+     * // Update one OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrderConfirmationEmailUpdateArgs>(args: SelectSubset<T, OrderConfirmationEmailUpdateArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderConfirmationEmails.
+     * @param {OrderConfirmationEmailDeleteManyArgs} args - Arguments to filter OrderConfirmationEmails to delete.
+     * @example
+     * // Delete a few OrderConfirmationEmails
+     * const { count } = await prisma.orderConfirmationEmail.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrderConfirmationEmailDeleteManyArgs>(args?: SelectSubset<T, OrderConfirmationEmailDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderConfirmationEmails.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderConfirmationEmails
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrderConfirmationEmailUpdateManyArgs>(args: SelectSubset<T, OrderConfirmationEmailUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderConfirmationEmails and returns the data updated in the database.
+     * @param {OrderConfirmationEmailUpdateManyAndReturnArgs} args - Arguments to update many OrderConfirmationEmails.
+     * @example
+     * // Update many OrderConfirmationEmails
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OrderConfirmationEmails and only return the `orderId`
+     * const orderConfirmationEmailWithOrderIdOnly = await prisma.orderConfirmationEmail.updateManyAndReturn({
+     *   select: { orderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrderConfirmationEmailUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderConfirmationEmailUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderConfirmationEmail.
+     * @param {OrderConfirmationEmailUpsertArgs} args - Arguments to update or create a OrderConfirmationEmail.
+     * @example
+     * // Update or create a OrderConfirmationEmail
+     * const orderConfirmationEmail = await prisma.orderConfirmationEmail.upsert({
+     *   create: {
+     *     // ... data to create a OrderConfirmationEmail
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderConfirmationEmail we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderConfirmationEmailUpsertArgs>(args: SelectSubset<T, OrderConfirmationEmailUpsertArgs<ExtArgs>>): Prisma__OrderConfirmationEmailClient<$Result.GetResult<Prisma.$OrderConfirmationEmailPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderConfirmationEmails.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailCountArgs} args - Arguments to filter OrderConfirmationEmails to count.
+     * @example
+     * // Count the number of OrderConfirmationEmails
+     * const count = await prisma.orderConfirmationEmail.count({
+     *   where: {
+     *     // ... the filter for the OrderConfirmationEmails we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderConfirmationEmailCountArgs>(
+      args?: Subset<T, OrderConfirmationEmailCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderConfirmationEmailCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderConfirmationEmail.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderConfirmationEmailAggregateArgs>(args: Subset<T, OrderConfirmationEmailAggregateArgs>): Prisma.PrismaPromise<GetOrderConfirmationEmailAggregateType<T>>
+
+    /**
+     * Group by OrderConfirmationEmail.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderConfirmationEmailGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrderConfirmationEmailGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderConfirmationEmailGroupByArgs['orderBy'] }
+        : { orderBy?: OrderConfirmationEmailGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderConfirmationEmailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderConfirmationEmailGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderConfirmationEmail model
+   */
+  readonly fields: OrderConfirmationEmailFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderConfirmationEmail.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderConfirmationEmailClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderConfirmationEmail model
+   */
+  interface OrderConfirmationEmailFieldRefs {
+    readonly orderId: FieldRef<"OrderConfirmationEmail", 'String'>
+    readonly payload: FieldRef<"OrderConfirmationEmail", 'Json'>
+    readonly attempts: FieldRef<"OrderConfirmationEmail", 'Int'>
+    readonly nextAttemptAt: FieldRef<"OrderConfirmationEmail", 'DateTime'>
+    readonly sentAt: FieldRef<"OrderConfirmationEmail", 'DateTime'>
+    readonly claim: FieldRef<"OrderConfirmationEmail", 'String'>
+    readonly lastError: FieldRef<"OrderConfirmationEmail", 'String'>
+    readonly createdAt: FieldRef<"OrderConfirmationEmail", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrderConfirmationEmail findUnique
+   */
+  export type OrderConfirmationEmailFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderConfirmationEmail to fetch.
+     */
+    where: OrderConfirmationEmailWhereUniqueInput
+  }
+
+  /**
+   * OrderConfirmationEmail findUniqueOrThrow
+   */
+  export type OrderConfirmationEmailFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderConfirmationEmail to fetch.
+     */
+    where: OrderConfirmationEmailWhereUniqueInput
+  }
+
+  /**
+   * OrderConfirmationEmail findFirst
+   */
+  export type OrderConfirmationEmailFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderConfirmationEmail to fetch.
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderConfirmationEmails to fetch.
+     */
+    orderBy?: OrderConfirmationEmailOrderByWithRelationInput | OrderConfirmationEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderConfirmationEmails.
+     */
+    cursor?: OrderConfirmationEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderConfirmationEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderConfirmationEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderConfirmationEmails.
+     */
+    distinct?: OrderConfirmationEmailScalarFieldEnum | OrderConfirmationEmailScalarFieldEnum[]
+  }
+
+  /**
+   * OrderConfirmationEmail findFirstOrThrow
+   */
+  export type OrderConfirmationEmailFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderConfirmationEmail to fetch.
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderConfirmationEmails to fetch.
+     */
+    orderBy?: OrderConfirmationEmailOrderByWithRelationInput | OrderConfirmationEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderConfirmationEmails.
+     */
+    cursor?: OrderConfirmationEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderConfirmationEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderConfirmationEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderConfirmationEmails.
+     */
+    distinct?: OrderConfirmationEmailScalarFieldEnum | OrderConfirmationEmailScalarFieldEnum[]
+  }
+
+  /**
+   * OrderConfirmationEmail findMany
+   */
+  export type OrderConfirmationEmailFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderConfirmationEmails to fetch.
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderConfirmationEmails to fetch.
+     */
+    orderBy?: OrderConfirmationEmailOrderByWithRelationInput | OrderConfirmationEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrderConfirmationEmails.
+     */
+    cursor?: OrderConfirmationEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderConfirmationEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderConfirmationEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderConfirmationEmails.
+     */
+    distinct?: OrderConfirmationEmailScalarFieldEnum | OrderConfirmationEmailScalarFieldEnum[]
+  }
+
+  /**
+   * OrderConfirmationEmail create
+   */
+  export type OrderConfirmationEmailCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrderConfirmationEmail.
+     */
+    data: XOR<OrderConfirmationEmailCreateInput, OrderConfirmationEmailUncheckedCreateInput>
+  }
+
+  /**
+   * OrderConfirmationEmail createMany
+   */
+  export type OrderConfirmationEmailCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderConfirmationEmails.
+     */
+    data: OrderConfirmationEmailCreateManyInput | OrderConfirmationEmailCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderConfirmationEmail createManyAndReturn
+   */
+  export type OrderConfirmationEmailCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderConfirmationEmails.
+     */
+    data: OrderConfirmationEmailCreateManyInput | OrderConfirmationEmailCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderConfirmationEmail update
+   */
+  export type OrderConfirmationEmailUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrderConfirmationEmail.
+     */
+    data: XOR<OrderConfirmationEmailUpdateInput, OrderConfirmationEmailUncheckedUpdateInput>
+    /**
+     * Choose, which OrderConfirmationEmail to update.
+     */
+    where: OrderConfirmationEmailWhereUniqueInput
+  }
+
+  /**
+   * OrderConfirmationEmail updateMany
+   */
+  export type OrderConfirmationEmailUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderConfirmationEmails.
+     */
+    data: XOR<OrderConfirmationEmailUpdateManyMutationInput, OrderConfirmationEmailUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderConfirmationEmails to update
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * Limit how many OrderConfirmationEmails to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderConfirmationEmail updateManyAndReturn
+   */
+  export type OrderConfirmationEmailUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderConfirmationEmails.
+     */
+    data: XOR<OrderConfirmationEmailUpdateManyMutationInput, OrderConfirmationEmailUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderConfirmationEmails to update
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * Limit how many OrderConfirmationEmails to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderConfirmationEmail upsert
+   */
+  export type OrderConfirmationEmailUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrderConfirmationEmail to update in case it exists.
+     */
+    where: OrderConfirmationEmailWhereUniqueInput
+    /**
+     * In case the OrderConfirmationEmail found by the `where` argument doesn't exist, create a new OrderConfirmationEmail with this data.
+     */
+    create: XOR<OrderConfirmationEmailCreateInput, OrderConfirmationEmailUncheckedCreateInput>
+    /**
+     * In case the OrderConfirmationEmail was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderConfirmationEmailUpdateInput, OrderConfirmationEmailUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderConfirmationEmail delete
+   */
+  export type OrderConfirmationEmailDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
+    /**
+     * Filter which OrderConfirmationEmail to delete.
+     */
+    where: OrderConfirmationEmailWhereUniqueInput
+  }
+
+  /**
+   * OrderConfirmationEmail deleteMany
+   */
+  export type OrderConfirmationEmailDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderConfirmationEmails to delete
+     */
+    where?: OrderConfirmationEmailWhereInput
+    /**
+     * Limit how many OrderConfirmationEmails to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderConfirmationEmail without action
+   */
+  export type OrderConfirmationEmailDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderConfirmationEmail
+     */
+    select?: OrderConfirmationEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderConfirmationEmail
+     */
+    omit?: OrderConfirmationEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderConfirmationEmailInclude<ExtArgs> | null
   }
 
 
@@ -21641,6 +22887,20 @@ export namespace Prisma {
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+  export const OrderConfirmationEmailScalarFieldEnum: {
+    orderId: 'orderId',
+    payload: 'payload',
+    attempts: 'attempts',
+    nextAttemptAt: 'nextAttemptAt',
+    sentAt: 'sentAt',
+    claim: 'claim',
+    lastError: 'lastError',
+    createdAt: 'createdAt'
+  };
+
+  export type OrderConfirmationEmailScalarFieldEnum = (typeof OrderConfirmationEmailScalarFieldEnum)[keyof typeof OrderConfirmationEmailScalarFieldEnum]
+
+
   export const OrderNumberReservationScalarFieldEnum: {
     suffix: 'suffix'
   };
@@ -21779,6 +23039,13 @@ export namespace Prisma {
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -22505,6 +23772,7 @@ export namespace Prisma {
     addonPrice?: FloatFilter<"Order"> | number
     referralDiscount?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
+    confirmationEmail?: XOR<OrderConfirmationEmailNullableScalarRelationFilter, OrderConfirmationEmailWhereInput> | null
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
@@ -22566,6 +23834,7 @@ export namespace Prisma {
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
     totalPrice?: SortOrder
+    confirmationEmail?: OrderConfirmationEmailOrderByWithRelationInput
     customer?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
     assignments?: OrderAssignmentOrderByRelationAggregateInput
@@ -22630,6 +23899,7 @@ export namespace Prisma {
     addonPrice?: FloatFilter<"Order"> | number
     referralDiscount?: FloatFilter<"Order"> | number
     totalPrice?: FloatFilter<"Order"> | number
+    confirmationEmail?: XOR<OrderConfirmationEmailNullableScalarRelationFilter, OrderConfirmationEmailWhereInput> | null
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
@@ -22755,6 +24025,78 @@ export namespace Prisma {
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
     referralDiscount?: FloatWithAggregatesFilter<"Order"> | number
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
+  }
+
+  export type OrderConfirmationEmailWhereInput = {
+    AND?: OrderConfirmationEmailWhereInput | OrderConfirmationEmailWhereInput[]
+    OR?: OrderConfirmationEmailWhereInput[]
+    NOT?: OrderConfirmationEmailWhereInput | OrderConfirmationEmailWhereInput[]
+    orderId?: StringFilter<"OrderConfirmationEmail"> | string
+    payload?: JsonFilter<"OrderConfirmationEmail">
+    attempts?: IntFilter<"OrderConfirmationEmail"> | number
+    nextAttemptAt?: DateTimeFilter<"OrderConfirmationEmail"> | Date | string
+    sentAt?: DateTimeNullableFilter<"OrderConfirmationEmail"> | Date | string | null
+    claim?: StringNullableFilter<"OrderConfirmationEmail"> | string | null
+    lastError?: StringNullableFilter<"OrderConfirmationEmail"> | string | null
+    createdAt?: DateTimeFilter<"OrderConfirmationEmail"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type OrderConfirmationEmailOrderByWithRelationInput = {
+    orderId?: SortOrder
+    payload?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    claim?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type OrderConfirmationEmailWhereUniqueInput = Prisma.AtLeast<{
+    orderId?: string
+    AND?: OrderConfirmationEmailWhereInput | OrderConfirmationEmailWhereInput[]
+    OR?: OrderConfirmationEmailWhereInput[]
+    NOT?: OrderConfirmationEmailWhereInput | OrderConfirmationEmailWhereInput[]
+    payload?: JsonFilter<"OrderConfirmationEmail">
+    attempts?: IntFilter<"OrderConfirmationEmail"> | number
+    nextAttemptAt?: DateTimeFilter<"OrderConfirmationEmail"> | Date | string
+    sentAt?: DateTimeNullableFilter<"OrderConfirmationEmail"> | Date | string | null
+    claim?: StringNullableFilter<"OrderConfirmationEmail"> | string | null
+    lastError?: StringNullableFilter<"OrderConfirmationEmail"> | string | null
+    createdAt?: DateTimeFilter<"OrderConfirmationEmail"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "orderId">
+
+  export type OrderConfirmationEmailOrderByWithAggregationInput = {
+    orderId?: SortOrder
+    payload?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    claim?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: OrderConfirmationEmailCountOrderByAggregateInput
+    _avg?: OrderConfirmationEmailAvgOrderByAggregateInput
+    _max?: OrderConfirmationEmailMaxOrderByAggregateInput
+    _min?: OrderConfirmationEmailMinOrderByAggregateInput
+    _sum?: OrderConfirmationEmailSumOrderByAggregateInput
+  }
+
+  export type OrderConfirmationEmailScalarWhereWithAggregatesInput = {
+    AND?: OrderConfirmationEmailScalarWhereWithAggregatesInput | OrderConfirmationEmailScalarWhereWithAggregatesInput[]
+    OR?: OrderConfirmationEmailScalarWhereWithAggregatesInput[]
+    NOT?: OrderConfirmationEmailScalarWhereWithAggregatesInput | OrderConfirmationEmailScalarWhereWithAggregatesInput[]
+    orderId?: StringWithAggregatesFilter<"OrderConfirmationEmail"> | string
+    payload?: JsonWithAggregatesFilter<"OrderConfirmationEmail">
+    attempts?: IntWithAggregatesFilter<"OrderConfirmationEmail"> | number
+    nextAttemptAt?: DateTimeWithAggregatesFilter<"OrderConfirmationEmail"> | Date | string
+    sentAt?: DateTimeNullableWithAggregatesFilter<"OrderConfirmationEmail"> | Date | string | null
+    claim?: StringNullableWithAggregatesFilter<"OrderConfirmationEmail"> | string | null
+    lastError?: StringNullableWithAggregatesFilter<"OrderConfirmationEmail"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"OrderConfirmationEmail"> | Date | string
   }
 
   export type OrderNumberReservationWhereInput = {
@@ -23944,6 +25286,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -24005,6 +25348,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
@@ -24062,6 +25406,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -24123,6 +25468,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
@@ -24292,6 +25638,82 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type OrderConfirmationEmailCreateInput = {
+    payload: JsonNullValueInput | InputJsonValue
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutConfirmationEmailInput
+  }
+
+  export type OrderConfirmationEmailUncheckedCreateInput = {
+    orderId: string
+    payload: JsonNullValueInput | InputJsonValue
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type OrderConfirmationEmailUpdateInput = {
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutConfirmationEmailNestedInput
+  }
+
+  export type OrderConfirmationEmailUncheckedUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderConfirmationEmailCreateManyInput = {
+    orderId: string
+    payload: JsonNullValueInput | InputJsonValue
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type OrderConfirmationEmailUpdateManyMutationInput = {
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderConfirmationEmailUncheckedUpdateManyInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderNumberReservationCreateInput = {
@@ -25609,6 +27031,11 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type OrderConfirmationEmailNullableScalarRelationFilter = {
+    is?: OrderConfirmationEmailWhereInput | null
+    isNot?: OrderConfirmationEmailWhereInput | null
+  }
+
   export type ConversationNullableScalarRelationFilter = {
     is?: ConversationWhereInput | null
     isNot?: ConversationWhereInput | null
@@ -25879,6 +27306,99 @@ export namespace Prisma {
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type OrderScalarRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
+  }
+
+  export type OrderConfirmationEmailCountOrderByAggregateInput = {
+    orderId?: SortOrder
+    payload?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderConfirmationEmailAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type OrderConfirmationEmailMaxOrderByAggregateInput = {
+    orderId?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderConfirmationEmailMinOrderByAggregateInput = {
+    orderId?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderConfirmationEmailSumOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
 
   export type OrderNumberReservationCountOrderByAggregateInput = {
     suffix?: SortOrder
@@ -25890,11 +27410,6 @@ export namespace Prisma {
 
   export type OrderNumberReservationMinOrderByAggregateInput = {
     suffix?: SortOrder
-  }
-
-  export type OrderScalarRelationFilter = {
-    is?: OrderWhereInput
-    isNot?: OrderWhereInput
   }
 
   export type OrderAssignmentOrderIdBoosterIdCompoundUniqueInput = {
@@ -26999,6 +28514,12 @@ export namespace Prisma {
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutSalesInput, ServiceUpdateWithoutSalesInput>, ServiceUncheckedUpdateWithoutSalesInput>
   }
 
+  export type OrderConfirmationEmailCreateNestedOneWithoutOrderInput = {
+    create?: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderConfirmationEmailCreateOrConnectWithoutOrderInput
+    connect?: OrderConfirmationEmailWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutOrdersInput = {
     create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
@@ -27029,6 +28550,12 @@ export namespace Prisma {
     create?: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
     connectOrCreate?: ConversationCreateOrConnectWithoutOrderInput
     connect?: ConversationWhereUniqueInput
+  }
+
+  export type OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderConfirmationEmailCreateOrConnectWithoutOrderInput
+    connect?: OrderConfirmationEmailWhereUniqueInput
   }
 
   export type OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput = {
@@ -27081,6 +28608,16 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type OrderConfirmationEmailUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderConfirmationEmailCreateOrConnectWithoutOrderInput
+    upsert?: OrderConfirmationEmailUpsertWithoutOrderInput
+    disconnect?: OrderConfirmationEmailWhereInput | boolean
+    delete?: OrderConfirmationEmailWhereInput | boolean
+    connect?: OrderConfirmationEmailWhereUniqueInput
+    update?: XOR<XOR<OrderConfirmationEmailUpdateToOneWithWhereWithoutOrderInput, OrderConfirmationEmailUpdateWithoutOrderInput>, OrderConfirmationEmailUncheckedUpdateWithoutOrderInput>
   }
 
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
@@ -27137,6 +28674,16 @@ export namespace Prisma {
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutOrderInput, ConversationUpdateWithoutOrderInput>, ConversationUncheckedUpdateWithoutOrderInput>
   }
 
+  export type OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderConfirmationEmailCreateOrConnectWithoutOrderInput
+    upsert?: OrderConfirmationEmailUpsertWithoutOrderInput
+    disconnect?: OrderConfirmationEmailWhereInput | boolean
+    delete?: OrderConfirmationEmailWhereInput | boolean
+    connect?: OrderConfirmationEmailWhereUniqueInput
+    update?: XOR<XOR<OrderConfirmationEmailUpdateToOneWithWhereWithoutOrderInput, OrderConfirmationEmailUpdateWithoutOrderInput>, OrderConfirmationEmailUncheckedUpdateWithoutOrderInput>
+  }
+
   export type OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderAssignmentCreateWithoutOrderInput, OrderAssignmentUncheckedCreateWithoutOrderInput> | OrderAssignmentCreateWithoutOrderInput[] | OrderAssignmentUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderAssignmentCreateOrConnectWithoutOrderInput | OrderAssignmentCreateOrConnectWithoutOrderInput[]
@@ -27173,6 +28720,20 @@ export namespace Prisma {
     delete?: ConversationWhereInput | boolean
     connect?: ConversationWhereUniqueInput
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutOrderInput, ConversationUpdateWithoutOrderInput>, ConversationUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderCreateNestedOneWithoutConfirmationEmailInput = {
+    create?: XOR<OrderCreateWithoutConfirmationEmailInput, OrderUncheckedCreateWithoutConfirmationEmailInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmationEmailInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutConfirmationEmailNestedInput = {
+    create?: XOR<OrderCreateWithoutConfirmationEmailInput, OrderUncheckedCreateWithoutConfirmationEmailInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmationEmailInput
+    upsert?: OrderUpsertWithoutConfirmationEmailInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutConfirmationEmailInput, OrderUpdateWithoutConfirmationEmailInput>, OrderUncheckedUpdateWithoutConfirmationEmailInput>
   }
 
   export type OrderCreateNestedOneWithoutAssignmentsInput = {
@@ -27834,6 +29395,29 @@ export namespace Prisma {
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumRewardTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
@@ -27955,6 +29539,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
@@ -28014,6 +29599,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
@@ -29062,6 +30648,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
@@ -29121,6 +30708,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
@@ -29396,6 +30984,31 @@ export namespace Prisma {
     priceRules?: ServicePriceRuleUncheckedUpdateManyWithoutServiceNestedInput
   }
 
+  export type OrderConfirmationEmailCreateWithoutOrderInput = {
+    payload: JsonNullValueInput | InputJsonValue
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type OrderConfirmationEmailUncheckedCreateWithoutOrderInput = {
+    payload: JsonNullValueInput | InputJsonValue
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type OrderConfirmationEmailCreateOrConnectWithoutOrderInput = {
+    where: OrderConfirmationEmailWhereUniqueInput
+    create: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+  }
+
   export type UserCreateWithoutOrdersInput = {
     id?: string
     email: string
@@ -29549,6 +31162,37 @@ export namespace Prisma {
   export type ConversationCreateOrConnectWithoutOrderInput = {
     where: ConversationWhereUniqueInput
     create: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
+  }
+
+  export type OrderConfirmationEmailUpsertWithoutOrderInput = {
+    update: XOR<OrderConfirmationEmailUpdateWithoutOrderInput, OrderConfirmationEmailUncheckedUpdateWithoutOrderInput>
+    create: XOR<OrderConfirmationEmailCreateWithoutOrderInput, OrderConfirmationEmailUncheckedCreateWithoutOrderInput>
+    where?: OrderConfirmationEmailWhereInput
+  }
+
+  export type OrderConfirmationEmailUpdateToOneWithWhereWithoutOrderInput = {
+    where?: OrderConfirmationEmailWhereInput
+    data: XOR<OrderConfirmationEmailUpdateWithoutOrderInput, OrderConfirmationEmailUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderConfirmationEmailUpdateWithoutOrderInput = {
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderConfirmationEmailUncheckedUpdateWithoutOrderInput = {
+    payload?: JsonNullValueInput | InputJsonValue
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUpsertWithoutOrdersInput = {
@@ -29706,6 +31350,258 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
+  export type OrderCreateWithoutConfirmationEmailInput = {
+    id?: string
+    orderNumber?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    customer: UserCreateNestedOneWithoutOrdersInput
+    service: ServiceCreateNestedOneWithoutOrdersInput
+    assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
+    conversation?: ConversationCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutConfirmationEmailInput = {
+    id?: string
+    orderNumber?: string
+    customerId: string
+    serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
+    conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutConfirmationEmailInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutConfirmationEmailInput, OrderUncheckedCreateWithoutConfirmationEmailInput>
+  }
+
+  export type OrderUpsertWithoutConfirmationEmailInput = {
+    update: XOR<OrderUpdateWithoutConfirmationEmailInput, OrderUncheckedUpdateWithoutConfirmationEmailInput>
+    create: XOR<OrderCreateWithoutConfirmationEmailInput, OrderUncheckedCreateWithoutConfirmationEmailInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutConfirmationEmailInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutConfirmationEmailInput, OrderUncheckedUpdateWithoutConfirmationEmailInput>
+  }
+
+  export type OrderUpdateWithoutConfirmationEmailInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutConfirmationEmailInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
   export type OrderCreateWithoutAssignmentsInput = {
     id?: string
     orderNumber?: string
@@ -29758,6 +31654,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
@@ -29818,6 +31715,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -29947,6 +31845,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
@@ -30007,6 +31906,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -30246,6 +32146,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -30306,6 +32207,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -30492,6 +32394,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -30552,6 +32455,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -30734,6 +32638,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
@@ -30794,6 +32699,7 @@ export namespace Prisma {
     addonPrice?: number
     referralDiscount?: number
     totalPrice?: number
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
   }
@@ -30926,6 +32832,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
@@ -30986,6 +32893,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
   }
@@ -31930,6 +33838,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
@@ -31989,6 +33898,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
@@ -32495,6 +34405,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
@@ -32554,6 +34465,7 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput

@@ -238,6 +238,17 @@ exports.Prisma.OrderScalarFieldEnum = {
   totalPrice: 'totalPrice'
 };
 
+exports.Prisma.OrderConfirmationEmailScalarFieldEnum = {
+  orderId: 'orderId',
+  payload: 'payload',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  sentAt: 'sentAt',
+  claim: 'claim',
+  lastError: 'lastError',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.OrderNumberReservationScalarFieldEnum = {
   suffix: 'suffix'
 };
@@ -342,6 +353,10 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -426,6 +441,7 @@ exports.Prisma.ModelName = {
   ServicePriceRule: 'ServicePriceRule',
   ServiceSale: 'ServiceSale',
   Order: 'Order',
+  OrderConfirmationEmail: 'OrderConfirmationEmail',
   OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',
   RewardHistory: 'RewardHistory',

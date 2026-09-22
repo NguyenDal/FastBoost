@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { queueOrderConfirmation, validEmail } = require("../utils/orderConfirmationEmail");
 const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
 const {
@@ -190,6 +191,7 @@ async function completeCheckoutSessionPayment(order, session) {
             });
         }
 
+        await queueOrderConfirmation(transaction, order.id, session.customer_details?.email || session.customer_email);
         return true;
     });
 
@@ -204,7 +206,7 @@ async function completeCheckoutSessionPayment(order, session) {
 const createCheckoutSession = async (req, res) => {
     try {
         const userId = getUserId(req);
-        const { orderId, goldToUse, deferGoldOnly } = req.body || {};
+        const { orderId, goldToUse, deferGoldOnly, contactEmail } = req.body || {};
 
         if (!userId) {
             return res.status(401).json({
@@ -296,9 +298,12 @@ const createCheckoutSession = async (req, res) => {
             if (deferGoldOnly === true) {
                 return res.json({ ok: true, goldOnlyReady: true, summary });
             }
-            await prisma.$transaction([
-                prisma.order.update({
-                    where: { id: order.id },
+            if (!validEmail(contactEmail)) {
+                return res.status(400).json({ ok: false, message: "Please enter a valid email address before paying with gold." });
+            }
+            const applied = await prisma.$transaction(async transaction => {
+                const result = await transaction.order.updateMany({
+                    where: { id: order.id, paymentStatus: { not: "PAID" } },
                     data: {
                         paymentStatus: "PAID",
                         paidAt: new Date(),
@@ -308,10 +313,10 @@ const createCheckoutSession = async (req, res) => {
                         goldDiscountCents,
                         currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
                     },
-                }),
-                ...(goldRedeemed > 0
-                    ? [
-                        prisma.rewardHistory.create({
+                });
+                if (!result.count) return false;
+                if (goldRedeemed > 0) {
+                    await transaction.rewardHistory.create({
                             data: {
                                 userId,
                                 type: "ORDER_REDEMPTION",
@@ -320,12 +325,13 @@ const createCheckoutSession = async (req, res) => {
                                 description: `Used ${goldRedeemed} gold for order #${order.orderNumber}.`,
                                 sourceUserId: order.id,
                             },
-                        }),
-                    ]
-                    : []),
-            ]);
+                    });
+                }
+                await queueOrderConfirmation(transaction, order.id, contactEmail);
+                return true;
+            });
 
-                    await grantReferralCompletionRewards(order.id);
+            if (applied) await grantReferralCompletionRewards(order.id);
 
             return res.json({
                 ok: true,
@@ -433,6 +439,7 @@ const verifyCheckoutSession = async (req, res) => {
                 status: true,
                 paidAt: true,
                 stripeCheckoutSessionId: true,
+                orderNumber: true,
                 goldRedeemed: true,
                 goldDiscountCents: true,
             },
@@ -539,6 +546,7 @@ const handleStripeWebhook = async (req, res) => {
                     customerId: true,
                     paymentStatus: true,
                     goldRedeemed: true,
+                    orderNumber: true,
                     goldDiscountCents: true,
                 },
             });

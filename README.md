@@ -580,6 +580,7 @@ SMTP_SECURE="false"
 SMTP_USER="your_email_here"
 SMTP_PASS="your_google_app_password"
 SMTP_FROM="FastBoost <your_email_here>"
+ORDER_CONFIRMATION_EMAILS_ENABLED="false"
 
 TRUSTPILOT_AFS_EMAIL="fastboost.gg+your_code@invite.trustpilot.com"
 
@@ -596,6 +597,26 @@ AWS_SECRET_ACCESS_KEY="your_local_dev_secret_key"
 For deployment, set `CLIENT_URL` to the public client origin, for example
 `https://app.example.com`. A localhost value is accepted only when the checkout
 request originates from localhost.
+
+FastBoost order confirmation emails:
+- Reuses `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM`.
+- Apply `server/prisma/migrations/20260922200000_order_confirmation_emails/migration.sql`
+  before setting `ORDER_CONFIRMATION_EMAILS_ENABLED=true`, then restart the backend.
+  Apply this migration alone if unrelated migrations are pending; do not blindly deploy all pending migrations.
+- Set `CLIENT_URL` to the public HTTPS frontend origin in production. Email links use this
+  trusted configuration, not request headers. Localhost is permitted only outside production.
+- Paid card/wallet confirmations use Stripe's verified Checkout Session contact email;
+  gold-only confirmations use the validated email entered in checkout. Account email is unchanged.
+- The payment transaction queues one immutable confirmation per order. The backend worker
+  checks every 30 seconds and retries delivery up to eight times. No historical orders are emailed.
+  Inspect `OrderConfirmationEmail` for `sentAt`, `attempts`, `lastError`, and `nextAttemptAt`.
+  After fixing delivery configuration, an operator can reset attempts and nextAttemptAt for
+  unsent rows only. SMTP cannot guarantee exactly-once delivery after ambiguous network failure;
+  the unique queue row and stable Message-ID prevent ordinary webhook/revisit duplicates.
+- Keep Stripe's successful-payment receipts enabled for cash charges. FastBoost confirmations
+  include both gold redeemed and cash paid; gold-only orders do not create a Stripe receipt.
+- SMTP failure does not reverse payment. The database queue must be available whenever the
+  feature is enabled. Turning the flag off disables both new queue entries and the worker.
 
 Chat attachment S3 permission note:
 - The backend IAM user/role needs `s3:PutObject` and `s3:GetObject` on:

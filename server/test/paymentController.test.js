@@ -8,6 +8,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
     const paidAt = new Date("2026-09-21T12:00:00.000Z");
     let paymentStatus = "PENDING";
     let referralOrderId = null;
+    const queued = [];
 
     const prisma = {
         order: {
@@ -59,6 +60,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
                         amount_subtotal: 2500,
                         amount_total: 2500,
                         currency: "cad",
+                        customer_details: { email: "edited-checkout@example.com" },
                         metadata: { orderId },
                     };
                 },
@@ -69,6 +71,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
     const moduleMocks = new Map([
         [require.resolve("../src/prisma"), prisma],
         [require.resolve("../src/utils/stripeClient"), stripe],
+        [require.resolve("../src/utils/orderConfirmationEmail"), { queueOrderConfirmation: async (tx, id, email) => { assert.equal(paymentStatus, "PAID"); queued.push({ id, email }); } }],
         [
             require.resolve("../src/utils/referralProgram"),
             {
@@ -133,4 +136,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
     assert.equal(responseBody.paymentStatus, "PAID");
     assert.equal(responseBody.paid, true);
     assert.equal(referralOrderId, orderId);
+    assert.deepEqual(queued, [{ id: orderId, email: "edited-checkout@example.com" }]);
+    await verifyCheckoutSession({ user: { id: customerId }, query: { sessionId } }, response);
+    assert.equal(queued.length, 1);
 });
