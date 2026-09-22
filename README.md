@@ -394,15 +394,16 @@ referral, and gold discounts before the final server-calculated total. Eligible
 wallet buttons are supplied by Stripe. Bank authentication can still require a
 redirect; ordinary card checkout no longer opens Stripe's hosted payment page.
 
-Set `VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...` in `client/.env` and the matching
+Set `STRIPE_PUBLISHABLE_KEY=pk_test_...` in `client/.env` and the matching
 `STRIPE_SECRET_KEY=sk_test_...` in `server/.env`, then restart both dev servers.
 Only the publishable key belongs in frontend configuration. Production also
 needs the matching frontend build variable, Link enabled in Stripe payment
 method settings, and an HTTPS domain registered with Stripe for Apple Pay.
-On Render, add `VITE_STRIPE_PUBLISHABLE_KEY` to the **frontend static site's**
+On Render, add `STRIPE_PUBLISHABLE_KEY` to the **frontend static site's**
 Environment settings, then rebuild/redeploy that site. Adding it only to the
 backend or local `.env` does not update deployed JavaScript. Vite embeds this
-value at build time; builds now fail if it is missing or not a publishable key.
+value at build time; builds fail if it is missing or not a publishable key.
+Only the resolved publishable key is exposed; Stripe secret keys stay server-side.
 The current test account reports Link inactive for live mode and the localhost
 domain unregistered for Apple Pay.
 

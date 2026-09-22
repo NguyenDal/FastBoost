@@ -12,7 +12,7 @@ import CleanIcon from "../components/CleanIcon";
 import { createCheckoutSession, verifyCheckoutSession } from "../api/orders";
 import "../styles/Checkout.css";
 
-const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim();
+const publishableKey = import.meta.env.STRIPE_PUBLISHABLE_KEY?.trim();
 const stripePromise = /^pk_(test|live)_\S+$/.test(publishableKey || "") ? loadStripe(publishableKey) : null;
 const appearance = {
     theme: "night",
