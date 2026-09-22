@@ -146,7 +146,7 @@ export default function AdminOrdersPage() {
                             <tbody>
                                 {data.items.map((o) => (
                                     <tr key={o.id}>
-                                        <td className="mono order-id-cell">#{o.id.slice(0, 6)}</td>
+                                        <td className="mono order-id-cell">#{o.orderNumber}</td>
                                         <td>{new Date(o.createdAt).toLocaleString()}</td>
                                         <td><StatusBadge status={o.status} /></td>
                                         <td>
@@ -211,3 +211,4 @@ function StatusBadge({ status }) {
                 "status-badge status-pending";
     return <span className={cls}>{status}</span>;
 }
+

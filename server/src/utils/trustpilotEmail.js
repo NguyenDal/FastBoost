@@ -40,7 +40,7 @@ async function sendTrustpilotReviewInvite(order) {
         order.customer?.username ||
         customerEmail.split("@")[0];
 
-    const shortOrderId = order.id.slice(0, 8).toUpperCase();
+    const shortOrderId = order.orderNumber;
     const serviceTitle = order.service?.title || order.boostType || "FastBoost order";
 
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
@@ -48,7 +48,7 @@ async function sendTrustpilotReviewInvite(order) {
     const trustpilotPayload = {
         recipientName: customerName,
         recipientEmail: customerEmail,
-        referenceId: order.id,
+        referenceId: order.orderNumber,
     };
 
     await createTransporter().sendMail({
@@ -59,7 +59,7 @@ async function sendTrustpilotReviewInvite(order) {
             `FastBoost completed order #${shortOrderId}`,
             `Customer: ${customerName}`,
             `Email: ${customerEmail}`,
-            `Reference ID: ${order.id}`,
+            `Reference ID: ${order.orderNumber}`,
             `Service: ${serviceTitle}`,
             `Order Total: $${Number(order.totalPrice || 0).toFixed(2)} CAD`,
         ].join("\n"),
@@ -67,7 +67,7 @@ async function sendTrustpilotReviewInvite(order) {
         <p>FastBoost completed order #${shortOrderId}</p>
         <p><strong>Customer:</strong> ${customerName}</p>
         <p><strong>Email:</strong> ${customerEmail}</p>
-        <p><strong>Reference ID:</strong> ${order.id}</p>
+        <p><strong>Reference ID:</strong> ${order.orderNumber}</p>
         <p><strong>Service:</strong> ${serviceTitle}</p>
         <p><strong>Order Total:</strong> $${Number(order.totalPrice || 0).toFixed(2)} CAD</p>
 

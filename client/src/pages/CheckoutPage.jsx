@@ -170,7 +170,7 @@ function OrderSummary({ summary, onApplyGold, paymentBusy, paid, onGoToOrder }) 
     const enteredCode = promoCode.trim();
     const price = value => money(value, summary.currency);
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
-        <div className="checkout-summary-heading"><h2>{paid ? `Order #${summary.orderId?.slice(0, 8).toUpperCase()}` : "Order Summary"}</h2>{!paid && <Link to={"/order/" + summary.serviceId}>Edit Order</Link>}</div>
+        <div className="checkout-summary-heading"><h2>{paid ? `Order #${summary.orderNumber || "…"}` : "Order Summary"}</h2>{!paid && <Link to={"/order/" + summary.serviceId}>Edit Order</Link>}</div>
         {!paid && <div className="checkout-game"><CleanIcon src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p className="checkout-service-meta">{[summary.serviceType || summary.title?.replace(/^TFT\s+/i, ""), summary.queueType, summary.region].filter(Boolean).map((value, index) => <span key={index}>{value}</span>)}</p></div></div>}
         {paid ? <div className="checkout-paid-content">
             <div className="checkout-confirmed-layout">
@@ -250,6 +250,7 @@ function GoldRedemption({ summary, onApply, disabled }) {
         <p id="checkout-gold-help" aria-live="polite" className={valid ? undefined : "checkout-gold-error"}>{warning || "Gold is spent only after payment succeeds."}</p>
     </form>;
 }
+
 
 
 

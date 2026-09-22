@@ -184,6 +184,7 @@ exports.Prisma.ServiceSaleScalarFieldEnum = {
 
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
+  orderNumber: 'orderNumber',
   customerId: 'customerId',
   serviceId: 'serviceId',
   status: 'status',
@@ -235,6 +236,10 @@ exports.Prisma.OrderScalarFieldEnum = {
   addonPrice: 'addonPrice',
   referralDiscount: 'referralDiscount',
   totalPrice: 'totalPrice'
+};
+
+exports.Prisma.OrderNumberReservationScalarFieldEnum = {
+  suffix: 'suffix'
 };
 
 exports.Prisma.OrderAssignmentScalarFieldEnum = {
@@ -421,6 +426,7 @@ exports.Prisma.ModelName = {
   ServicePriceRule: 'ServicePriceRule',
   ServiceSale: 'ServiceSale',
   Order: 'Order',
+  OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',
   RewardHistory: 'RewardHistory',
   AssignmentRequest: 'AssignmentRequest',

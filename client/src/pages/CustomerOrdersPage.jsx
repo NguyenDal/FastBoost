@@ -164,7 +164,7 @@ export default function CustomerOrdersPage() {
                             {filteredOrders.map((order) => (
                                 <tr key={order.id}>
                                     <td className="mono order-id-cell">
-                                        #{order.id.slice(0, 8)}
+                                        #{order.orderNumber}
                                     </td>
 
                                     <td>

@@ -90,7 +90,10 @@ export default function DashboardPage() {
         .filter((item) => item.type === "CHAT_MESSAGE")
         .slice(0, 3);
 
-    const referralLink = loyalty?.referralLink || "";
+    // Share the site the customer is using, never a server-side localhost URL.
+    const referralLink = loyalty?.referralCode
+        ? new URL(`/r/${encodeURIComponent(loyalty.referralCode)}`, window.location.origin).href
+        : "";
     const referralCount = loyalty?.referralCount || 0;
     const referralOffer = loyalty?.referralOffer || {};
     const referralDiscountPercent = Number(

@@ -906,6 +906,7 @@ module.exports.listAllOrders = async (req, res) => {
         if (q) {
             where.OR = [
                 { id: { contains: q, mode: "insensitive" } },
+                { orderNumber: { contains: q, mode: "insensitive" } },
                 { customer: { email: { contains: q, mode: "insensitive" } } },
             ];
         }
@@ -1266,7 +1267,7 @@ module.exports.unassignBooster = async (req, res) => {
         }
 
         if (assignment) {
-            const shortOrderId = orderId.slice(0, 8).toUpperCase();
+            const shortOrderId = assignment.order.orderNumber;
 
             await prisma.notification.create({
                 data: {
@@ -1360,6 +1361,7 @@ module.exports.listAssignedOrdersForProvider = async (req, res) => {
                 ? {
                     OR: [
                         { id: { contains: q, mode: "insensitive" } },
+                { orderNumber: { contains: q, mode: "insensitive" } },
                         { customer: { email: { contains: q, mode: "insensitive" } } },
                         { customer: { username: { contains: q, mode: "insensitive" } } },
                         { service: { title: { contains: q, mode: "insensitive" } } },
@@ -1690,10 +1692,10 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
                     userId: admin.id,
                     type: "BOOSTER_LEFT_ORDER",
                     title: "Booster left order",
-                    message: `${boosterName} left ${orderTitle} for order #${orderId.slice(0, 8).toUpperCase()}.`,
+                    message: `${boosterName} left ${orderTitle} for order #${assignment.order.orderNumber}.`,
                     data: {
                         orderId,
-                        shortOrderId: orderId.slice(0, 8).toUpperCase(),
+                        shortOrderId: assignment.order.orderNumber,
                         boosterId: providerId,
                     },
                 })),

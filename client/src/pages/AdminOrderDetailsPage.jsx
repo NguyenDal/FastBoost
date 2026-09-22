@@ -251,7 +251,7 @@ export default function AdminOrderDetailsPage() {
                                 </h1>
 
                                 <div className="admin-order-meta">
-                                    <span className="admin-chip">Order #{id?.slice?.(0, 8)}</span>
+                                    <span className="admin-chip">Order #{order.orderNumber}</span>
                                     <StatusBadge status={order.status} />
                                     <span className="admin-chip">
                                         {new Date(order.createdAt).toLocaleString()}
@@ -678,3 +678,4 @@ function StatusBadge({ status }) {
 
     return <span className={cls}>{status}</span>;
 }
+

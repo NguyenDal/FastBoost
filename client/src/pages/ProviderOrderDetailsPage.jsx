@@ -137,7 +137,7 @@ export default function ProviderOrderDetailsPage() {
 
                                 <div className="admin-order-meta">
                                     <span className="admin-chip">
-                                        Order #{String(order.id || id).slice(0, 8)}
+                                        Order #{order.orderNumber}
                                     </span>
 
                                     <StatusBadge status={order.status} />

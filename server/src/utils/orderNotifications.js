@@ -10,10 +10,11 @@ async function notifyOrderStatus(prisma, order) {
             userId: order.customerId,
             type: completed ? "ORDER_COMPLETED" : "ORDER_CANCELLED",
             title: `Your order has been ${status}!`,
-            message: `Your ${order.service?.title || order.boostType || "service"} order #${order.id.slice(0, 8).toUpperCase()} is now ${status}.`,
-            data: { orderId: order.id, targetPath: `/match/${order.id}` },
+            message: `Your ${order.service?.title || order.boostType || "service"} order #${order.orderNumber} is now ${status}.`,
+            data: { orderId: order.id, orderNumber: order.orderNumber, targetPath: `/match/${order.id}` },
         },
     });
 }
 
 module.exports = { notifyOrderStatus };
+

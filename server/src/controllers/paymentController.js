@@ -182,9 +182,7 @@ async function completeCheckoutSessionPayment(order, session) {
                         type: "ORDER_REDEMPTION",
                         goldAmount: -Number(order.goldRedeemed),
                         title: "Gold redeemed for order",
-                        description: `Used ${order.goldRedeemed} gold for order #${order.id
-                            .slice(0, 8)
-                            .toUpperCase()}.`,
+                        description: `Used ${order.goldRedeemed} gold for order #${order.orderNumber}.`,
                         sourceUserId: order.id,
                     },
                 ],
@@ -287,7 +285,7 @@ const createCheckoutSession = async (req, res) => {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
+                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.metadata?.orderNumber === order.orderNumber && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
                 await stripe.checkout.sessions.expire(existingSession.id);
@@ -319,9 +317,7 @@ const createCheckoutSession = async (req, res) => {
                                 type: "ORDER_REDEMPTION",
                                 goldAmount: -goldRedeemed,
                                 title: "Gold redeemed for order",
-                                description: `Used ${goldRedeemed} gold for order #${order.id
-                                    .slice(0, 8)
-                                    .toUpperCase()}.`,
+                                description: `Used ${goldRedeemed} gold for order #${order.orderNumber}.`,
                                 sourceUserId: order.id,
                             },
                         }),
@@ -356,14 +352,15 @@ const createCheckoutSession = async (req, res) => {
                             name: order.service?.title || order.boostType || "FastBoost Order",
                             description:
                                 goldRedeemed > 0
-                                    ? `Order #${order.id.slice(0, 8).toUpperCase()} • ${goldRedeemed} gold applied`
-                                    : `Order #${order.id.slice(0, 8).toUpperCase()}`,
+                                    ? `Order #${order.orderNumber} • ${goldRedeemed} gold applied`
+                                    : `Order #${order.orderNumber}`,
                         },
                     },
                 },
             ],
             metadata: {
                 editableEmail: "1",
+                orderNumber: order.orderNumber,
                 orderId: order.id,
                 customerId: order.customerId,
                 goldRedeemed: String(goldRedeemed),
@@ -371,6 +368,7 @@ const createCheckoutSession = async (req, res) => {
                 cashAmountCents: String(cashAmountCents),
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
+            payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber } },
         }, { idempotencyKey: `checkout-email-v1-${order.id}-${goldRedeemed}-${order.stripeCheckoutSessionId || "new"}` });
 
         await prisma.order.update({
@@ -584,3 +582,4 @@ module.exports = {
     verifyCheckoutSession,
     handleStripeWebhook,
 };
+

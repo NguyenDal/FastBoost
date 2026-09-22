@@ -1457,3 +1457,15 @@ npx prisma studio
 Portfolio full-stack project built for learning, practice, and professional presentation on GitHub and LinkedIn.
 
 Checkout follow-up: confirmed payments stay on checkout. The order summary expands into a paid order card with the order number, game/service, a borderless service-specific tracker, and an explicit Go to Order button. Placement summaries show peak rank and placement matches; Win Boost and Pro Duo show their requested quantities instead of a target rank.
+
+### Public order numbers
+Orders use a permanent public number such as `LOL-RNK-CXBE6`. Prefixes are LOL/TFT plus RNK (rank), PLC (placements), WIN (wins), or DUO (pro duo). Internal IDs and route authorization remain unchanged. Customer/admin/provider screens, chat references, new notifications, review emails, Stripe Session/PaymentIntent metadata and admin search use `orderNumber`.
+
+Migration `20260922180000_public_order_numbers` backfills existing orders and installs a PostgreSQL trigger. Five characters are randomly selected from an unambiguous 32-symbol alphabet using cryptographically random UUID bytes. A permanent suffix reservation table enforces global uniqueness across games/services and prevents reuse after deletion. Conflicts retry atomically; exhaustion fails without issuing a duplicate. Capacity is 33,554,432 lifetime suffixes. Order numbers are immutable.
+
+Apply this migration before running the updated generated Prisma client. The configured database also has an unrelated pending `20260921200000_optimize_loyalty_history` migration; do not deploy all pending migrations accidentally. The public-order-number migration was explicitly approved and applied to the configured database on September 22, 2026; all 40 existing orders were backfilled and uniqueness verified. Already-sent emails and completed Stripe transactions are not rewritten. No standalone support-ticket subsystem currently exists; order-linked support chat uses the same number.
+
+Database allocator test: `RUN_ORDER_NUMBER_DB_TEST=1 node --test test/orderNumber.test.js`. It creates a separate schema inside a transaction and rolls everything back, covering backfill, prefixes, 2,000 allocations, forced collision retry, immutability and retained reservations.
+
+Referral links displayed and copied in the dashboard use the browser's current origin, so deployed links use the public website domain and localhost links appear only during local browsing.
+

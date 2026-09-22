@@ -1,9 +1,5 @@
 const prisma = require("../prisma");
 
-function shortOrderId(orderId) {
-  return orderId ? orderId.slice(0, 8) : "";
-}
-
 function getOrderTitle(order) {
   if (!order) return "order";
 
@@ -367,7 +363,7 @@ exports.acceptAssignmentRequest = async (req, res) => {
         userId: request.requestedBy,
         type: "ASSIGNMENT_ACCEPTED",
         title: "Assignment accepted",
-        message: `${request.booster.username || request.booster.email} accepted Order #${shortOrderId(request.orderId)}.`,
+        message: `${request.booster.username || request.booster.email} accepted Order #${request.order.orderNumber}.`,
         data: {
           requestId,
           orderId: request.orderId,
@@ -408,6 +404,7 @@ exports.declineAssignmentRequest = async (req, res) => {
     const request = await prisma.assignmentRequest.findUnique({
       where: { id: requestId },
       include: {
+        order: true,
         booster: {
           select: {
             id: true,
@@ -469,7 +466,7 @@ exports.declineAssignmentRequest = async (req, res) => {
         userId: request.requestedBy,
         type: "ASSIGNMENT_DECLINED",
         title: "Assignment declined",
-        message: `${request.booster.username || request.booster.email} declined Order #${shortOrderId(request.orderId)}.`,
+        message: `${request.booster.username || request.booster.email} declined Order #${request.order.orderNumber}.`,
         data: {
           requestId,
           orderId: request.orderId,

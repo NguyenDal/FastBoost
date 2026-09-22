@@ -788,7 +788,7 @@ function MatchPage() {
                         <p className="section-label">Order Status</p>
                         <h1 className="service-banner-title">{getOrderTitle(order)}</h1>
                         <p className="service-banner-meta">
-                            #{order.id} • Total ${order.totalPrice}
+                            #{order.orderNumber} • Total ${order.totalPrice}
                         </p>
                     </div>
 
@@ -1883,3 +1883,4 @@ function LockFieldIcon() {
 }
 
 export default MatchPage;
+

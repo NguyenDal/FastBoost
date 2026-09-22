@@ -44,6 +44,11 @@ export type ServiceSale = $Result.DefaultSelection<Prisma.$ServiceSalePayload>
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model OrderNumberReservation
+ * 
+ */
+export type OrderNumberReservation = $Result.DefaultSelection<Prisma.$OrderNumberReservationPayload>
+/**
  * Model OrderAssignment
  * Link assigned boosters/providers to an order
  */
@@ -392,6 +397,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderNumberReservation`: Exposes CRUD operations for the **OrderNumberReservation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderNumberReservations
+    * const orderNumberReservations = await prisma.orderNumberReservation.findMany()
+    * ```
+    */
+  get orderNumberReservation(): Prisma.OrderNumberReservationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderAssignment`: Exposes CRUD operations for the **OrderAssignment** model.
@@ -922,6 +937,7 @@ export namespace Prisma {
     ServicePriceRule: 'ServicePriceRule',
     ServiceSale: 'ServiceSale',
     Order: 'Order',
+    OrderNumberReservation: 'OrderNumberReservation',
     OrderAssignment: 'OrderAssignment',
     RewardHistory: 'RewardHistory',
     AssignmentRequest: 'AssignmentRequest',
@@ -946,7 +962,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1391,6 +1407,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrderNumberReservation: {
+        payload: Prisma.$OrderNumberReservationPayload<ExtArgs>
+        fields: Prisma.OrderNumberReservationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderNumberReservationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderNumberReservationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderNumberReservationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderNumberReservationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          findMany: {
+            args: Prisma.OrderNumberReservationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>[]
+          }
+          create: {
+            args: Prisma.OrderNumberReservationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          createMany: {
+            args: Prisma.OrderNumberReservationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderNumberReservationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderNumberReservationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          update: {
+            args: Prisma.OrderNumberReservationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderNumberReservationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderNumberReservationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderNumberReservationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderNumberReservationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderNumberReservationPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderNumberReservationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderNumberReservation>
+          }
+          groupBy: {
+            args: Prisma.OrderNumberReservationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderNumberReservationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderNumberReservationCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderNumberReservationCountAggregateOutputType> | number
           }
         }
       }
@@ -2174,6 +2264,7 @@ export namespace Prisma {
     servicePriceRule?: ServicePriceRuleOmit
     serviceSale?: ServiceSaleOmit
     order?: OrderOmit
+    orderNumberReservation?: OrderNumberReservationOmit
     orderAssignment?: OrderAssignmentOmit
     rewardHistory?: RewardHistoryOmit
     assignmentRequest?: AssignmentRequestOmit
@@ -8662,6 +8753,7 @@ export namespace Prisma {
 
   export type OrderMinAggregateOutputType = {
     id: string | null
+    orderNumber: string | null
     customerId: string | null
     serviceId: string | null
     status: $Enums.OrderStatus | null
@@ -8716,6 +8808,7 @@ export namespace Prisma {
 
   export type OrderMaxAggregateOutputType = {
     id: string | null
+    orderNumber: string | null
     customerId: string | null
     serviceId: string | null
     status: $Enums.OrderStatus | null
@@ -8770,6 +8863,7 @@ export namespace Prisma {
 
   export type OrderCountAggregateOutputType = {
     id: number
+    orderNumber: number
     customerId: number
     serviceId: number
     status: number
@@ -8859,6 +8953,7 @@ export namespace Prisma {
 
   export type OrderMinAggregateInputType = {
     id?: true
+    orderNumber?: true
     customerId?: true
     serviceId?: true
     status?: true
@@ -8913,6 +9008,7 @@ export namespace Prisma {
 
   export type OrderMaxAggregateInputType = {
     id?: true
+    orderNumber?: true
     customerId?: true
     serviceId?: true
     status?: true
@@ -8967,6 +9063,7 @@ export namespace Prisma {
 
   export type OrderCountAggregateInputType = {
     id?: true
+    orderNumber?: true
     customerId?: true
     serviceId?: true
     status?: true
@@ -9109,6 +9206,7 @@ export namespace Prisma {
 
   export type OrderGroupByOutputType = {
     id: string
+    orderNumber: string
     customerId: string
     serviceId: string
     status: $Enums.OrderStatus
@@ -9183,6 +9281,7 @@ export namespace Prisma {
 
   export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    orderNumber?: boolean
     customerId?: boolean
     serviceId?: boolean
     status?: boolean
@@ -9244,6 +9343,7 @@ export namespace Prisma {
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    orderNumber?: boolean
     customerId?: boolean
     serviceId?: boolean
     status?: boolean
@@ -9301,6 +9401,7 @@ export namespace Prisma {
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    orderNumber?: boolean
     customerId?: boolean
     serviceId?: boolean
     status?: boolean
@@ -9358,6 +9459,7 @@ export namespace Prisma {
 
   export type OrderSelectScalar = {
     id?: boolean
+    orderNumber?: boolean
     customerId?: boolean
     serviceId?: boolean
     status?: boolean
@@ -9411,7 +9513,7 @@ export namespace Prisma {
     totalPrice?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "totalPrice", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "totalPrice", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
@@ -9440,6 +9542,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      orderNumber: string
       customerId: string
       serviceId: string
       status: $Enums.OrderStatus
@@ -9920,6 +10023,7 @@ export namespace Prisma {
    */
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
+    readonly orderNumber: FieldRef<"Order", 'String'>
     readonly customerId: FieldRef<"Order", 'String'>
     readonly serviceId: FieldRef<"Order", 'String'>
     readonly status: FieldRef<"Order", 'OrderStatus'>
@@ -10454,6 +10558,954 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrderNumberReservation
+   */
+
+  export type AggregateOrderNumberReservation = {
+    _count: OrderNumberReservationCountAggregateOutputType | null
+    _min: OrderNumberReservationMinAggregateOutputType | null
+    _max: OrderNumberReservationMaxAggregateOutputType | null
+  }
+
+  export type OrderNumberReservationMinAggregateOutputType = {
+    suffix: string | null
+  }
+
+  export type OrderNumberReservationMaxAggregateOutputType = {
+    suffix: string | null
+  }
+
+  export type OrderNumberReservationCountAggregateOutputType = {
+    suffix: number
+    _all: number
+  }
+
+
+  export type OrderNumberReservationMinAggregateInputType = {
+    suffix?: true
+  }
+
+  export type OrderNumberReservationMaxAggregateInputType = {
+    suffix?: true
+  }
+
+  export type OrderNumberReservationCountAggregateInputType = {
+    suffix?: true
+    _all?: true
+  }
+
+  export type OrderNumberReservationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderNumberReservation to aggregate.
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNumberReservations to fetch.
+     */
+    orderBy?: OrderNumberReservationOrderByWithRelationInput | OrderNumberReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrderNumberReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNumberReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNumberReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrderNumberReservations
+    **/
+    _count?: true | OrderNumberReservationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderNumberReservationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderNumberReservationMaxAggregateInputType
+  }
+
+  export type GetOrderNumberReservationAggregateType<T extends OrderNumberReservationAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderNumberReservation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderNumberReservation[P]>
+      : GetScalarType<T[P], AggregateOrderNumberReservation[P]>
+  }
+
+
+
+
+  export type OrderNumberReservationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderNumberReservationWhereInput
+    orderBy?: OrderNumberReservationOrderByWithAggregationInput | OrderNumberReservationOrderByWithAggregationInput[]
+    by: OrderNumberReservationScalarFieldEnum[] | OrderNumberReservationScalarFieldEnum
+    having?: OrderNumberReservationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderNumberReservationCountAggregateInputType | true
+    _min?: OrderNumberReservationMinAggregateInputType
+    _max?: OrderNumberReservationMaxAggregateInputType
+  }
+
+  export type OrderNumberReservationGroupByOutputType = {
+    suffix: string
+    _count: OrderNumberReservationCountAggregateOutputType | null
+    _min: OrderNumberReservationMinAggregateOutputType | null
+    _max: OrderNumberReservationMaxAggregateOutputType | null
+  }
+
+  type GetOrderNumberReservationGroupByPayload<T extends OrderNumberReservationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderNumberReservationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderNumberReservationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderNumberReservationGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderNumberReservationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderNumberReservationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    suffix?: boolean
+  }, ExtArgs["result"]["orderNumberReservation"]>
+
+  export type OrderNumberReservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    suffix?: boolean
+  }, ExtArgs["result"]["orderNumberReservation"]>
+
+  export type OrderNumberReservationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    suffix?: boolean
+  }, ExtArgs["result"]["orderNumberReservation"]>
+
+  export type OrderNumberReservationSelectScalar = {
+    suffix?: boolean
+  }
+
+  export type OrderNumberReservationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"suffix", ExtArgs["result"]["orderNumberReservation"]>
+
+  export type $OrderNumberReservationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderNumberReservation"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      suffix: string
+    }, ExtArgs["result"]["orderNumberReservation"]>
+    composites: {}
+  }
+
+  type OrderNumberReservationGetPayload<S extends boolean | null | undefined | OrderNumberReservationDefaultArgs> = $Result.GetResult<Prisma.$OrderNumberReservationPayload, S>
+
+  type OrderNumberReservationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderNumberReservationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderNumberReservationCountAggregateInputType | true
+    }
+
+  export interface OrderNumberReservationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderNumberReservation'], meta: { name: 'OrderNumberReservation' } }
+    /**
+     * Find zero or one OrderNumberReservation that matches the filter.
+     * @param {OrderNumberReservationFindUniqueArgs} args - Arguments to find a OrderNumberReservation
+     * @example
+     * // Get one OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderNumberReservationFindUniqueArgs>(args: SelectSubset<T, OrderNumberReservationFindUniqueArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderNumberReservation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderNumberReservationFindUniqueOrThrowArgs} args - Arguments to find a OrderNumberReservation
+     * @example
+     * // Get one OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderNumberReservationFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderNumberReservationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderNumberReservation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationFindFirstArgs} args - Arguments to find a OrderNumberReservation
+     * @example
+     * // Get one OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderNumberReservationFindFirstArgs>(args?: SelectSubset<T, OrderNumberReservationFindFirstArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderNumberReservation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationFindFirstOrThrowArgs} args - Arguments to find a OrderNumberReservation
+     * @example
+     * // Get one OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderNumberReservationFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderNumberReservationFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderNumberReservations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderNumberReservations
+     * const orderNumberReservations = await prisma.orderNumberReservation.findMany()
+     * 
+     * // Get first 10 OrderNumberReservations
+     * const orderNumberReservations = await prisma.orderNumberReservation.findMany({ take: 10 })
+     * 
+     * // Only select the `suffix`
+     * const orderNumberReservationWithSuffixOnly = await prisma.orderNumberReservation.findMany({ select: { suffix: true } })
+     * 
+     */
+    findMany<T extends OrderNumberReservationFindManyArgs>(args?: SelectSubset<T, OrderNumberReservationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderNumberReservation.
+     * @param {OrderNumberReservationCreateArgs} args - Arguments to create a OrderNumberReservation.
+     * @example
+     * // Create one OrderNumberReservation
+     * const OrderNumberReservation = await prisma.orderNumberReservation.create({
+     *   data: {
+     *     // ... data to create a OrderNumberReservation
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrderNumberReservationCreateArgs>(args: SelectSubset<T, OrderNumberReservationCreateArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderNumberReservations.
+     * @param {OrderNumberReservationCreateManyArgs} args - Arguments to create many OrderNumberReservations.
+     * @example
+     * // Create many OrderNumberReservations
+     * const orderNumberReservation = await prisma.orderNumberReservation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrderNumberReservationCreateManyArgs>(args?: SelectSubset<T, OrderNumberReservationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderNumberReservations and returns the data saved in the database.
+     * @param {OrderNumberReservationCreateManyAndReturnArgs} args - Arguments to create many OrderNumberReservations.
+     * @example
+     * // Create many OrderNumberReservations
+     * const orderNumberReservation = await prisma.orderNumberReservation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrderNumberReservations and only return the `suffix`
+     * const orderNumberReservationWithSuffixOnly = await prisma.orderNumberReservation.createManyAndReturn({
+     *   select: { suffix: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrderNumberReservationCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderNumberReservationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderNumberReservation.
+     * @param {OrderNumberReservationDeleteArgs} args - Arguments to delete one OrderNumberReservation.
+     * @example
+     * // Delete one OrderNumberReservation
+     * const OrderNumberReservation = await prisma.orderNumberReservation.delete({
+     *   where: {
+     *     // ... filter to delete one OrderNumberReservation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrderNumberReservationDeleteArgs>(args: SelectSubset<T, OrderNumberReservationDeleteArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderNumberReservation.
+     * @param {OrderNumberReservationUpdateArgs} args - Arguments to update one OrderNumberReservation.
+     * @example
+     * // Update one OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrderNumberReservationUpdateArgs>(args: SelectSubset<T, OrderNumberReservationUpdateArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderNumberReservations.
+     * @param {OrderNumberReservationDeleteManyArgs} args - Arguments to filter OrderNumberReservations to delete.
+     * @example
+     * // Delete a few OrderNumberReservations
+     * const { count } = await prisma.orderNumberReservation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrderNumberReservationDeleteManyArgs>(args?: SelectSubset<T, OrderNumberReservationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderNumberReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderNumberReservations
+     * const orderNumberReservation = await prisma.orderNumberReservation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrderNumberReservationUpdateManyArgs>(args: SelectSubset<T, OrderNumberReservationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderNumberReservations and returns the data updated in the database.
+     * @param {OrderNumberReservationUpdateManyAndReturnArgs} args - Arguments to update many OrderNumberReservations.
+     * @example
+     * // Update many OrderNumberReservations
+     * const orderNumberReservation = await prisma.orderNumberReservation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OrderNumberReservations and only return the `suffix`
+     * const orderNumberReservationWithSuffixOnly = await prisma.orderNumberReservation.updateManyAndReturn({
+     *   select: { suffix: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrderNumberReservationUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderNumberReservationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderNumberReservation.
+     * @param {OrderNumberReservationUpsertArgs} args - Arguments to update or create a OrderNumberReservation.
+     * @example
+     * // Update or create a OrderNumberReservation
+     * const orderNumberReservation = await prisma.orderNumberReservation.upsert({
+     *   create: {
+     *     // ... data to create a OrderNumberReservation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderNumberReservation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderNumberReservationUpsertArgs>(args: SelectSubset<T, OrderNumberReservationUpsertArgs<ExtArgs>>): Prisma__OrderNumberReservationClient<$Result.GetResult<Prisma.$OrderNumberReservationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderNumberReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationCountArgs} args - Arguments to filter OrderNumberReservations to count.
+     * @example
+     * // Count the number of OrderNumberReservations
+     * const count = await prisma.orderNumberReservation.count({
+     *   where: {
+     *     // ... the filter for the OrderNumberReservations we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderNumberReservationCountArgs>(
+      args?: Subset<T, OrderNumberReservationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderNumberReservationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderNumberReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderNumberReservationAggregateArgs>(args: Subset<T, OrderNumberReservationAggregateArgs>): Prisma.PrismaPromise<GetOrderNumberReservationAggregateType<T>>
+
+    /**
+     * Group by OrderNumberReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderNumberReservationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrderNumberReservationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderNumberReservationGroupByArgs['orderBy'] }
+        : { orderBy?: OrderNumberReservationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderNumberReservationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderNumberReservationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderNumberReservation model
+   */
+  readonly fields: OrderNumberReservationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderNumberReservation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderNumberReservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderNumberReservation model
+   */
+  interface OrderNumberReservationFieldRefs {
+    readonly suffix: FieldRef<"OrderNumberReservation", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrderNumberReservation findUnique
+   */
+  export type OrderNumberReservationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter, which OrderNumberReservation to fetch.
+     */
+    where: OrderNumberReservationWhereUniqueInput
+  }
+
+  /**
+   * OrderNumberReservation findUniqueOrThrow
+   */
+  export type OrderNumberReservationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter, which OrderNumberReservation to fetch.
+     */
+    where: OrderNumberReservationWhereUniqueInput
+  }
+
+  /**
+   * OrderNumberReservation findFirst
+   */
+  export type OrderNumberReservationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter, which OrderNumberReservation to fetch.
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNumberReservations to fetch.
+     */
+    orderBy?: OrderNumberReservationOrderByWithRelationInput | OrderNumberReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderNumberReservations.
+     */
+    cursor?: OrderNumberReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNumberReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNumberReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderNumberReservations.
+     */
+    distinct?: OrderNumberReservationScalarFieldEnum | OrderNumberReservationScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNumberReservation findFirstOrThrow
+   */
+  export type OrderNumberReservationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter, which OrderNumberReservation to fetch.
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNumberReservations to fetch.
+     */
+    orderBy?: OrderNumberReservationOrderByWithRelationInput | OrderNumberReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrderNumberReservations.
+     */
+    cursor?: OrderNumberReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNumberReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNumberReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderNumberReservations.
+     */
+    distinct?: OrderNumberReservationScalarFieldEnum | OrderNumberReservationScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNumberReservation findMany
+   */
+  export type OrderNumberReservationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter, which OrderNumberReservations to fetch.
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrderNumberReservations to fetch.
+     */
+    orderBy?: OrderNumberReservationOrderByWithRelationInput | OrderNumberReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrderNumberReservations.
+     */
+    cursor?: OrderNumberReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrderNumberReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrderNumberReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrderNumberReservations.
+     */
+    distinct?: OrderNumberReservationScalarFieldEnum | OrderNumberReservationScalarFieldEnum[]
+  }
+
+  /**
+   * OrderNumberReservation create
+   */
+  export type OrderNumberReservationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a OrderNumberReservation.
+     */
+    data: XOR<OrderNumberReservationCreateInput, OrderNumberReservationUncheckedCreateInput>
+  }
+
+  /**
+   * OrderNumberReservation createMany
+   */
+  export type OrderNumberReservationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderNumberReservations.
+     */
+    data: OrderNumberReservationCreateManyInput | OrderNumberReservationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderNumberReservation createManyAndReturn
+   */
+  export type OrderNumberReservationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderNumberReservations.
+     */
+    data: OrderNumberReservationCreateManyInput | OrderNumberReservationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderNumberReservation update
+   */
+  export type OrderNumberReservationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a OrderNumberReservation.
+     */
+    data: XOR<OrderNumberReservationUpdateInput, OrderNumberReservationUncheckedUpdateInput>
+    /**
+     * Choose, which OrderNumberReservation to update.
+     */
+    where: OrderNumberReservationWhereUniqueInput
+  }
+
+  /**
+   * OrderNumberReservation updateMany
+   */
+  export type OrderNumberReservationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderNumberReservations.
+     */
+    data: XOR<OrderNumberReservationUpdateManyMutationInput, OrderNumberReservationUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderNumberReservations to update
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * Limit how many OrderNumberReservations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderNumberReservation updateManyAndReturn
+   */
+  export type OrderNumberReservationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderNumberReservations.
+     */
+    data: XOR<OrderNumberReservationUpdateManyMutationInput, OrderNumberReservationUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderNumberReservations to update
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * Limit how many OrderNumberReservations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderNumberReservation upsert
+   */
+  export type OrderNumberReservationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the OrderNumberReservation to update in case it exists.
+     */
+    where: OrderNumberReservationWhereUniqueInput
+    /**
+     * In case the OrderNumberReservation found by the `where` argument doesn't exist, create a new OrderNumberReservation with this data.
+     */
+    create: XOR<OrderNumberReservationCreateInput, OrderNumberReservationUncheckedCreateInput>
+    /**
+     * In case the OrderNumberReservation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderNumberReservationUpdateInput, OrderNumberReservationUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderNumberReservation delete
+   */
+  export type OrderNumberReservationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
+    /**
+     * Filter which OrderNumberReservation to delete.
+     */
+    where: OrderNumberReservationWhereUniqueInput
+  }
+
+  /**
+   * OrderNumberReservation deleteMany
+   */
+  export type OrderNumberReservationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderNumberReservations to delete
+     */
+    where?: OrderNumberReservationWhereInput
+    /**
+     * Limit how many OrderNumberReservations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderNumberReservation without action
+   */
+  export type OrderNumberReservationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderNumberReservation
+     */
+    select?: OrderNumberReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderNumberReservation
+     */
+    omit?: OrderNumberReservationOmit<ExtArgs> | null
   }
 
 
@@ -20532,6 +21584,7 @@ export namespace Prisma {
 
   export const OrderScalarFieldEnum: {
     id: 'id',
+    orderNumber: 'orderNumber',
     customerId: 'customerId',
     serviceId: 'serviceId',
     status: 'status',
@@ -20586,6 +21639,13 @@ export namespace Prisma {
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+  export const OrderNumberReservationScalarFieldEnum: {
+    suffix: 'suffix'
+  };
+
+  export type OrderNumberReservationScalarFieldEnum = (typeof OrderNumberReservationScalarFieldEnum)[keyof typeof OrderNumberReservationScalarFieldEnum]
 
 
   export const OrderAssignmentScalarFieldEnum: {
@@ -21393,6 +22453,7 @@ export namespace Prisma {
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: StringFilter<"Order"> | string
+    orderNumber?: StringFilter<"Order"> | string
     customerId?: StringFilter<"Order"> | string
     serviceId?: StringFilter<"Order"> | string
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
@@ -21453,6 +22514,7 @@ export namespace Prisma {
 
   export type OrderOrderByWithRelationInput = {
     id?: SortOrder
+    orderNumber?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
     status?: SortOrder
@@ -21513,6 +22575,7 @@ export namespace Prisma {
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    orderNumber?: string
     stripeCheckoutSessionId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
@@ -21572,10 +22635,11 @@ export namespace Prisma {
     assignments?: OrderAssignmentListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
-  }, "id" | "stripeCheckoutSessionId">
+  }, "id" | "orderNumber" | "stripeCheckoutSessionId">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
+    orderNumber?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
     status?: SortOrder
@@ -21639,6 +22703,7 @@ export namespace Prisma {
     OR?: OrderScalarWhereWithAggregatesInput[]
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Order"> | string
+    orderNumber?: StringWithAggregatesFilter<"Order"> | string
     customerId?: StringWithAggregatesFilter<"Order"> | string
     serviceId?: StringWithAggregatesFilter<"Order"> | string
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
@@ -21690,6 +22755,38 @@ export namespace Prisma {
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
     referralDiscount?: FloatWithAggregatesFilter<"Order"> | number
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
+  }
+
+  export type OrderNumberReservationWhereInput = {
+    AND?: OrderNumberReservationWhereInput | OrderNumberReservationWhereInput[]
+    OR?: OrderNumberReservationWhereInput[]
+    NOT?: OrderNumberReservationWhereInput | OrderNumberReservationWhereInput[]
+    suffix?: StringFilter<"OrderNumberReservation"> | string
+  }
+
+  export type OrderNumberReservationOrderByWithRelationInput = {
+    suffix?: SortOrder
+  }
+
+  export type OrderNumberReservationWhereUniqueInput = Prisma.AtLeast<{
+    suffix?: string
+    AND?: OrderNumberReservationWhereInput | OrderNumberReservationWhereInput[]
+    OR?: OrderNumberReservationWhereInput[]
+    NOT?: OrderNumberReservationWhereInput | OrderNumberReservationWhereInput[]
+  }, "suffix">
+
+  export type OrderNumberReservationOrderByWithAggregationInput = {
+    suffix?: SortOrder
+    _count?: OrderNumberReservationCountOrderByAggregateInput
+    _max?: OrderNumberReservationMaxOrderByAggregateInput
+    _min?: OrderNumberReservationMinOrderByAggregateInput
+  }
+
+  export type OrderNumberReservationScalarWhereWithAggregatesInput = {
+    AND?: OrderNumberReservationScalarWhereWithAggregatesInput | OrderNumberReservationScalarWhereWithAggregatesInput[]
+    OR?: OrderNumberReservationScalarWhereWithAggregatesInput[]
+    NOT?: OrderNumberReservationScalarWhereWithAggregatesInput | OrderNumberReservationScalarWhereWithAggregatesInput[]
+    suffix?: StringWithAggregatesFilter<"OrderNumberReservation"> | string
   }
 
   export type OrderAssignmentWhereInput = {
@@ -22797,6 +23894,7 @@ export namespace Prisma {
 
   export type OrderCreateInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22855,6 +23953,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     serviceId: string
     status?: $Enums.OrderStatus
@@ -22913,6 +24012,7 @@ export namespace Prisma {
 
   export type OrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22971,6 +24071,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -23029,6 +24130,7 @@ export namespace Prisma {
 
   export type OrderCreateManyInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     serviceId: string
     status?: $Enums.OrderStatus
@@ -23084,6 +24186,7 @@ export namespace Prisma {
 
   export type OrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23137,6 +24240,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -23188,6 +24292,34 @@ export namespace Prisma {
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
     totalPrice?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type OrderNumberReservationCreateInput = {
+    suffix: string
+  }
+
+  export type OrderNumberReservationUncheckedCreateInput = {
+    suffix: string
+  }
+
+  export type OrderNumberReservationUpdateInput = {
+    suffix?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderNumberReservationUncheckedUpdateInput = {
+    suffix?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderNumberReservationCreateManyInput = {
+    suffix: string
+  }
+
+  export type OrderNumberReservationUpdateManyMutationInput = {
+    suffix?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderNumberReservationUncheckedUpdateManyInput = {
+    suffix?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrderAssignmentCreateInput = {
@@ -24484,6 +25616,7 @@ export namespace Prisma {
 
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
+    orderNumber?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
     status?: SortOrder
@@ -24555,6 +25688,7 @@ export namespace Prisma {
 
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
+    orderNumber?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
     status?: SortOrder
@@ -24609,6 +25743,7 @@ export namespace Prisma {
 
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
+    orderNumber?: SortOrder
     customerId?: SortOrder
     serviceId?: SortOrder
     status?: SortOrder
@@ -24743,6 +25878,18 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type OrderNumberReservationCountOrderByAggregateInput = {
+    suffix?: SortOrder
+  }
+
+  export type OrderNumberReservationMaxOrderByAggregateInput = {
+    suffix?: SortOrder
+  }
+
+  export type OrderNumberReservationMinOrderByAggregateInput = {
+    suffix?: SortOrder
   }
 
   export type OrderScalarRelationFilter = {
@@ -26758,6 +27905,7 @@ export namespace Prisma {
 
   export type OrderCreateWithoutCustomerInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26815,6 +27963,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
     id?: string
+    orderNumber?: string
     serviceId: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
@@ -27305,6 +28454,7 @@ export namespace Prisma {
     OR?: OrderScalarWhereInput[]
     NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
     id?: StringFilter<"Order"> | string
+    orderNumber?: StringFilter<"Order"> | string
     customerId?: StringFilter<"Order"> | string
     serviceId?: StringFilter<"Order"> | string
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
@@ -27862,6 +29012,7 @@ export namespace Prisma {
 
   export type OrderCreateWithoutServiceInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27919,6 +29070,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutServiceInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
@@ -28556,6 +29708,7 @@ export namespace Prisma {
 
   export type OrderCreateWithoutAssignmentsInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28613,6 +29766,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutAssignmentsInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     serviceId: string
     status?: $Enums.OrderStatus
@@ -28743,6 +29897,7 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28800,6 +29955,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -29040,6 +30196,7 @@ export namespace Prisma {
 
   export type OrderCreateWithoutAssignmentRequestsInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -29097,6 +30254,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutAssignmentRequestsInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     serviceId: string
     status?: $Enums.OrderStatus
@@ -29284,6 +30442,7 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutAssignmentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29341,6 +30500,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutAssignmentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -29524,6 +30684,7 @@ export namespace Prisma {
 
   export type OrderCreateWithoutConversationInput = {
     id?: string
+    orderNumber?: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -29581,6 +30742,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutConversationInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     serviceId: string
     status?: $Enums.OrderStatus
@@ -29714,6 +30876,7 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29771,6 +30934,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -30564,6 +31728,7 @@ export namespace Prisma {
 
   export type OrderCreateManyCustomerInput = {
     id?: string
+    orderNumber?: string
     serviceId: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
@@ -30715,6 +31880,7 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30772,6 +31938,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30829,6 +31996,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31198,6 +32366,7 @@ export namespace Prisma {
 
   export type OrderCreateManyServiceInput = {
     id?: string
+    orderNumber?: string
     customerId: string
     status?: $Enums.OrderStatus
     createdAt?: Date | string
@@ -31276,6 +32445,7 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31333,6 +32503,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31390,6 +32561,7 @@ export namespace Prisma {
 
   export type OrderUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

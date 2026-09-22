@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 test('on-site checkout uses server pricing, reuses sessions, and enforces ownership', async (t) => {
     let existing = null;
     let creates = 0;
-    const order = {id:'order-test',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'cad',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
+    const order = {id:'order-test',orderNumber:'LOL-RNK-CXBE6',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'cad',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
     const prisma = {
         order: {findUnique:async()=>order,findMany:async()=>[],update:async({data})=>Object.assign(order,data)},
         rewardHistory:{aggregate:async()=>({_sum:{goldAmount:100}}),create:async()=>({})},
@@ -16,6 +16,9 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
         create:async(args,options)=>{
             creates++;
             assert.equal(args.ui_mode,'elements');
+            assert.equal(args.metadata.orderNumber,order.orderNumber);
+            assert.equal(args.payment_intent_data.metadata.orderNumber,order.orderNumber);
+            assert.ok(args.line_items[0].price_data.product_data.description.includes(order.orderNumber));
             assert.equal(args.customer_email,undefined);
             assert.equal(args.metadata.editableEmail,'1');
             assert.equal(args.line_items[0].price_data.unit_amount,2600);
@@ -86,3 +89,4 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.body.orderId,order.id);
     assert.equal(creates,2);
 });
+

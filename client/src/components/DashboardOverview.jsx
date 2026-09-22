@@ -22,7 +22,7 @@ export function DashboardOrders({ orders }) {
             const isTft = /tft|teamfight/i.test(title + " " + (order.boostType || ""));
             return <Link key={order.id} to={"/match/" + order.id} className="dashboard-order-row">
                 <CleanIcon className="dashboard-game-logo" src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (isTft ? "tft-logo.png" : "lol-logo.jpg")} alt={isTft ? "TFT" : "LoL"} />
-                <div className="dashboard-order-copy"><strong>#{order.id.slice(0, 8).toUpperCase()}</strong><small>{title}</small></div>
+                <div className="dashboard-order-copy"><strong>#{order.orderNumber}</strong><small>{title}</small></div>
                 <div className="dashboard-order-meta"><span className={"dashboard-order-status status-" + order.status?.toLowerCase()}>{labels[order.status] || order.status}</span><small>{new Date(order.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</small></div>
                 <span aria-hidden="true">›</span>
             </Link>;
@@ -82,3 +82,4 @@ export function DashboardPlatform() {
         </div>
     </section>;
 }
+

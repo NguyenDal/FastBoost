@@ -128,12 +128,13 @@ enum SaleScope {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  customerId String
-  serviceId  String
-  status     OrderStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String      @id @default(cuid())
+  orderNumber String      @unique @default(dbgenerated())
+  customerId  String
+  serviceId   String
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   paymentStatus           PaymentStatus @default(PENDING)
   stripeCheckoutSessionId String?       @unique
@@ -197,6 +198,11 @@ model Order {
   conversation       Conversation?
 
   @@index([customerId, paymentStatus, paidAt])
+}
+
+// Permanent reservations prevent suffix reuse even if an unpaid order is deleted.
+model OrderNumberReservation {
+  suffix String @id
 }
 
 /// Link assigned boosters/providers to an order

@@ -12,6 +12,7 @@ async function createChatMessageNotifications({
       order: {
         select: {
           id: true,
+          orderNumber: true,
           boostType: true,
           customerId: true,
         },
@@ -104,9 +105,7 @@ async function createChatMessageNotifications({
           conversationId,
           messageId: message.id,
           orderId: conversation.order?.id || null,
-          orderNumber: conversation.order?.id
-            ? conversation.order.id.slice(0, 8)
-            : null,
+          orderNumber: conversation.order?.orderNumber || null,
           boostType: boostTitle,
           senderId,
           senderName,

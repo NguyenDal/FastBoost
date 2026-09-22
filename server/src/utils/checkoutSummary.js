@@ -15,6 +15,7 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
     const details = [[serviceType === "Placement Boost" ? "Peak Rank" : "Current Rank", currentRank], ["Target Rank", targetRank], quantity, ["Queue Type", order.queueType], ["Server / Region", order.region]].filter(row => row && row[1]);
     return {
         orderId: order.id,
+        orderNumber: order.orderNumber,
         serviceId: order.serviceId,
         title,
         serviceType,

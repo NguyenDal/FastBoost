@@ -289,7 +289,7 @@ exports.getMyLoyalty = async (req, res) => {
             id: `order-${order.id}`,
             type: "COMPLETED_ORDER",
             title: order.service?.title || order.boostType || "Completed Order",
-            description: `#${String(order.id).slice(0, 8)} • Completed match reward`,
+            description: `#${order.orderNumber} • Completed match reward`,
             goldEarned: getGoldFromOrder(order),
             createdAt: order.updatedAt || order.createdAt,
         }));
