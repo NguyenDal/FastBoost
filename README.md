@@ -725,6 +725,10 @@ AWS_ACCESS_KEY_ID="your_local_dev_access_key"
 AWS_SECRET_ACCESS_KEY="your_local_dev_secret_key"
 ```
 
+For deployment, set `CLIENT_URL` to the public client origin, for example
+`https://app.example.com`. A localhost value is accepted only when the checkout
+request originates from localhost.
+
 Chat attachment S3 permission note:
 - The backend IAM user/role needs `s3:PutObject` and `s3:GetObject` on:
   - `arn:aws:s3:::fastboost-assets/profiles/*`

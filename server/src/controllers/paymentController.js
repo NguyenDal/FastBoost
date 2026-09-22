@@ -8,15 +8,52 @@ function getUserId(req) {
     return req.user?.id || req.user?.userId;
 }
 
-function getClientUrl() {
-    const clientUrl = process.env.CLIENT_URL;
-
-    if (clientUrl) {
-        return clientUrl.replace(/\/+$/, "");
+function isLocalhostUrl(value) {
+    if (!value) {
+        return false;
     }
 
-    if (process.env.NODE_ENV === "production") {
-        throw new Error("CLIENT_URL is not configured in production.");
+    try {
+        const { hostname } = new URL(value);
+
+        return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname);
+    } catch {
+        return false;
+    }
+}
+
+function isLocalCheckoutRequest(req) {
+    const origin = req.get("origin");
+    const host = req.hostname;
+
+    return (
+        isLocalhostUrl(origin) ||
+        ["localhost", "127.0.0.1", "::1", "[::1]"].includes(host)
+    );
+}
+
+function getClientUrl(req) {
+    const clientUrl = process.env.CLIENT_URL?.trim();
+
+    if (clientUrl) {
+        const normalizedClientUrl = clientUrl.replace(/\/+$/, "");
+
+        if (
+            isLocalhostUrl(normalizedClientUrl) &&
+            !isLocalCheckoutRequest(req)
+        ) {
+            throw new Error(
+                "CLIENT_URL points to localhost. Configure a public frontend URL for deployed checkout."
+            );
+        }
+
+        return normalizedClientUrl;
+    }
+
+    if (!isLocalCheckoutRequest(req)) {
+        throw new Error(
+            "CLIENT_URL must be configured with a public frontend URL for deployed checkout."
+        );
     }
 
     return "http://localhost:5173";
@@ -158,7 +195,7 @@ const createCheckoutSession = async (req, res) => {
             });
         }
 
-        const clientUrl = getClientUrl();
+        const clientUrl = getClientUrl(req);
 
         if (cashAmountCents <= 0) {
             await prisma.$transaction([
