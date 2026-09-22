@@ -4,7 +4,7 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -73,6 +73,14 @@ function HomePage() {
   const [servicesError, setServicesError] = useState("");
   const [selectedGame, setSelectedGame] = useState("");
   const [visibleGame, setVisibleGame] = useState("");
+  const [inlineServices, setInlineServices] = useState(() => window.matchMedia("(max-width: 1024px)").matches);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 1024px)");
+    const updateLayout = () => setInlineServices(media.matches);
+    media.addEventListener("change", updateLayout);
+    return () => media.removeEventListener("change", updateLayout);
+  }, []);
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -751,73 +759,7 @@ function HomePage() {
     currentUser?.photoUrl ||
     "";
 
-  return (
-    <div className="app-shell">
-      <Navbar
-        hasSession={hasSession}
-        currentUser={currentUser}
-        profileImage={profileImage}
-        showProfileMenu={showProfileMenu}
-        setShowProfileMenu={setShowProfileMenu}
-        setAuthMode={setAuthMode}
-        setAuthMessage={setAuthMessage}
-        setAuthSuccess={setAuthSuccess}
-        setLoginErrors={setLoginErrors}
-        setRegisterErrors={setRegisterErrors}
-        setForgotError={setForgotError}
-        setForgotEmail={setForgotEmail}
-        setShowAuthModal={setShowAuthModal}
-        handleLogout={handleLogout}
-      />
-      <main id="home">
-        <section className="hero-section hero-fullscreen-section">
-          <div className="hero-banner">
-
-            <div className="hero-game-picker">
-              <div className="hero-game-heading">
-                <h1>Choose Your Game, Start Your Boost</h1>
-                <p>
-                  FastBoost helps players order game services with a clean, simple, and secure flow.
-                </p>
-              </div>
-
-              <div className="hero-game-grid">
-                {gameOptions.map((game) => (
-                  <article
-                    key={game.key}
-                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""}`}
-                    onClick={() => {
-                      setSelectedGame((prevGame) => (prevGame === game.key ? "" : game.key));
-                    }}
-                  >
-                    <img src={game.image} alt={game.title} />
-
-                    <div className="hero-game-card-bottom">
-                      <h3>{game.shortTitle}</h3>
-
-                      <button
-                        type="button"
-                        className="hero-game-select-btn"
-                        disabled={false}
-                      >
-                        <span className="hero-game-btn-content">
-                          <span
-                            className={`hero-game-btn-arrow ${selectedGame === game.key ? "hero-game-btn-arrow-open" : ""
-                              }`}
-                          />
-                          <span>
-                            {selectedGame === game.key ? "Hide Services" : "Select Game"}
-                          </span>
-                        </span>
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
+  const servicesPanel = (
         <section
           id="services"
           className={`services-dropdown-section ${selectedGame ? "services-dropdown-section-open" : ""}`}
@@ -882,6 +824,79 @@ function HomePage() {
             )}
           </div>
         </section>
+  );
+
+  return (
+    <div className="app-shell">
+      <Navbar
+        hasSession={hasSession}
+        currentUser={currentUser}
+        profileImage={profileImage}
+        showProfileMenu={showProfileMenu}
+        setShowProfileMenu={setShowProfileMenu}
+        setAuthMode={setAuthMode}
+        setAuthMessage={setAuthMessage}
+        setAuthSuccess={setAuthSuccess}
+        setLoginErrors={setLoginErrors}
+        setRegisterErrors={setRegisterErrors}
+        setForgotError={setForgotError}
+        setForgotEmail={setForgotEmail}
+        setShowAuthModal={setShowAuthModal}
+        handleLogout={handleLogout}
+      />
+      <main id="home">
+        <section className="hero-section hero-fullscreen-section">
+          <div className="hero-banner">
+
+            <div className="hero-game-picker">
+              <div className="hero-game-heading">
+                <h1>Choose Your Game, Start Your Boost</h1>
+                <p>
+                  FastBoost helps players order game services with a clean, simple, and secure flow.
+                </p>
+              </div>
+
+              <div className="hero-game-grid">
+                {gameOptions.map((game) => (
+                  <Fragment key={game.key}>
+                  <article
+                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""}`}
+                    onClick={() => {
+                      setSelectedGame((prevGame) => (prevGame === game.key ? "" : game.key));
+                    }}
+                  >
+                    <img src={game.image} alt={game.title} />
+
+                    <div className="hero-game-card-bottom">
+                      <h3>{game.shortTitle}</h3>
+
+                      <button
+                        type="button"
+                        className="hero-game-select-btn"
+                        aria-expanded={selectedGame === game.key}
+                        aria-controls={visibleGame === game.key ? "services" : undefined}
+                      >
+                        <span className="hero-game-btn-content">
+                          <span
+                            className={`hero-game-btn-arrow ${selectedGame === game.key ? "hero-game-btn-arrow-open" : ""
+                              }`}
+                          />
+                          <span>
+                            {selectedGame === game.key ? "Hide Services" : "Select Game"}
+                          </span>
+                        </span>
+                      </button>
+                    </div>
+                  </article>
+                  {inlineServices && visibleGame === game.key && servicesPanel}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {!inlineServices && servicesPanel}
       </main>
 
       <RegisterPage

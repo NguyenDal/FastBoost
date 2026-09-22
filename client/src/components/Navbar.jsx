@@ -450,9 +450,9 @@ function Navbar({
                             />
                         </div>
 
-                        <div>
+                        <div className="brand-copy">
                             <p className="brand-title">FastBoost</p>
-                            <p className="brand-subtitle">League Services Platform</p>
+                            <p className="brand-subtitle">Play more. Worry less.</p>
                         </div>
                     </Link>
                 </div>

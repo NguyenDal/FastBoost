@@ -610,6 +610,28 @@
 }
 
 /* Responsive for Home */
+@media (max-width: 1024px) {
+  .hero-game-grid {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(680px, 100%);
+    gap: 24px;
+  }
+
+  .hero-game-grid > .services-dropdown-section-open {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .hero-game-grid .services-dropdown-inner {
+    width: 100%;
+    padding: 0 0 12px;
+  }
+
+  .hero-game-grid .hover-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1100px) {
   .hover-service-grid {
     grid-template-columns: repeat(2, 1fr);

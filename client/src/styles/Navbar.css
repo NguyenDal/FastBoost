@@ -849,7 +849,7 @@
   .topbar {
     height: auto;
     min-height: 76px;
-    align-items: flex-start;
+    align-items: center;
     padding: 12px 18px;
   }
 
@@ -859,9 +859,18 @@
   }
 
   .nav {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
     justify-content: flex-end;
     gap: 10px;
+  }
+
+  .profile-menu-wrap { min-height: 42px; flex-shrink: 0; }
+  .profile-identity { padding: 0; }
+  .profile-identity:hover .profile-username-ellipsis {
+    max-width: 0;
+    opacity: 0;
+    margin-right: 0;
   }
 
   .nav-pill,
@@ -877,4 +886,59 @@
     padding-left: 16px;
     padding-right: 16px;
   }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .topbar .brand-zone { flex-wrap: nowrap; flex: 1; min-width: 0; }
+  .topbar .brand, .topbar .brand-link { min-width: 0; gap: 6px; }
+  .topbar .brand-icon, .topbar .brand-logo-image { width: 40px; height: 40px; flex-shrink: 0; }
+  .topbar .brand-copy { display: block; min-width: 0; }
+  .topbar .brand-title { font-size: 14px; line-height: 1.25; }
+  .topbar .brand-subtitle { font-size: 10px; line-height: 1.3; max-width: 115px; }
+  .topbar .nav { width: auto; justify-content: flex-end; gap: 5px; }
+  .topbar .nav-pill, .topbar .nav-cta {
+    min-height: 38px;
+    padding: 0 10px;
+    gap: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .topbar .nav-pill {
+    box-sizing: border-box;
+    width: 90px;
+    min-width: 0;
+    height: 38px;
+    flex: 0 0 90px;
+    display: grid;
+    grid-template-columns: 16px auto;
+    justify-content: center;
+    align-items: center;
+    padding: 0 7px;
+    gap: 5px;
+    font-size: 12px;
+    line-height: 1;
+  }
+  .topbar .nav-pill > span:first-child { width: 16px; height: 16px; display: grid; place-items: center; transform: none; }
+  .topbar .nav-pill svg { width: 16px; height: 16px; }
+  .topbar .profile-menu-wrap { min-height: 38px; }
+  .topbar .profile-avatar-btn { width: 36px; height: 36px; }
+}
+
+@media (max-width: 400px) {
+  .topbar { padding: 8px; gap: 5px; }
+  .topbar .brand-icon, .topbar .brand-logo-image { width: 32px; height: 32px; }
+  .topbar .brand-title { font-size: 13px; }
+  .topbar .brand-subtitle { font-size: 9px; max-width: 80px; }
+  .topbar .nav { gap: 4px; }
+  .topbar .brand, .topbar .brand-link { gap: 4px; }
+  .topbar .nav-pill { width: 70px; flex-basis: 70px; padding: 0 4px; gap: 3px; font-size: 11px; }
+  .topbar .profile-avatar-btn { width: 30px; height: 30px; }
+  .topbar .nav-cta { padding: 0 6px; }
 }

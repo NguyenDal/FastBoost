@@ -144,21 +144,17 @@
     padding-right: 0;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
+    .admin-with-sidebar .topbar {
+        background: #0a0f18;
+    }
+
     .admin-layout {
         grid-template-columns: 1fr;
     }
 
     .admin-sidebar {
-        position: relative;
-        top: auto;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.10);
-    }
-
-    .admin-side-nav {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: none;
     }
 }
 

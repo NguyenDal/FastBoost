@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useRef } from "react";
 import { findCountry } from "../utils/countries";
 import CleanIcon from "./CleanIcon";
 import DashboardIcon from "./DashboardIcon";
@@ -54,11 +55,19 @@ export function DashboardAccount({ account }) {
 }
 
 export function DashboardQuickActions() {
+    const faqRef = useRef(null);
     return <section className="dashboard-card">
         <CardHeading title="Quick Actions" icon="lightning" />
         <div className="dashboard-quick-actions">
-            {[ ["New Order", "Purchase a service", "/", "🛒"], ["Browse Services", "View all services", "/", "▦"], ["Contact Support", "Get help", "/contact", "☏"], ["Account Settings", "Update your profile", "/account/settings", "⚙"] ].map(([title, detail, to, icon]) => <Link key={title} to={to}><span aria-hidden="true">{icon}</span><div><strong>{title}</strong><small>{detail}</small></div></Link>)}
+            {[ ["Browse Services", "View all services", "/", "▦"], ["Account Settings", "Update your profile", "/account/settings", "⚙"], ["Contact Support", "Get help", "/contact", "☏"] ].map(([title, detail, to, icon]) => <Link key={title} to={to}><span aria-hidden="true">{icon}</span><div><strong>{title}</strong><small>{detail}</small></div></Link>)}
+            <button type="button" onClick={() => faqRef.current?.showModal()}><span aria-hidden="true">?</span><div><strong>FAQ</strong><small>Common questions</small></div></button>
         </div>
+        <dialog ref={faqRef} className="dashboard-faq-dialog" aria-labelledby="dashboard-faq-title">
+            <div className="dashboard-card-header"><h2 id="dashboard-faq-title">Frequently Asked Questions</h2><button type="button" className="dashboard-view-all" onClick={() => faqRef.current?.close()} aria-label="Close FAQ">Close</button></div>
+            <details><summary>Where can I track my order?</summary><p>Open My Orders and select an order to see its status and chat.</p></details>
+            <details><summary>How do I use gold?</summary><p>Apply your available gold at checkout. Every 10 gold is worth $1 toward your purchase.</p></details>
+            <details><summary>How do referral rewards work?</summary><p>Your referred friend gets 10% off their first purchase. When their first qualifying order of $50 or more before the referral discount is paid and completed, you both receive 50 gold ($5) for a future purchase.</p></details>
+        </dialog>
     </section>;
 }
 
