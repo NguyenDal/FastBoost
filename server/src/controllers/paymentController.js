@@ -32,31 +32,50 @@ function isLocalCheckoutRequest(req) {
     );
 }
 
+function getRequestOrigin(req) {
+    const origin = req.get("origin");
+
+    if (!origin) {
+        return null;
+    }
+
+    try {
+        const url = new URL(origin);
+
+        if (!["http:", "https:"].includes(url.protocol)) {
+            return null;
+        }
+
+        return url.origin;
+    } catch {
+        return null;
+    }
+}
+
 function getClientUrl(req) {
     const clientUrl = process.env.CLIENT_URL?.trim();
+    const requestOrigin = getRequestOrigin(req);
+    const isLocalRequest = isLocalCheckoutRequest(req);
 
     if (clientUrl) {
         const normalizedClientUrl = clientUrl.replace(/\/+$/, "");
 
-        if (
-            isLocalhostUrl(normalizedClientUrl) &&
-            !isLocalCheckoutRequest(req)
-        ) {
-            throw new Error(
-                "CLIENT_URL points to localhost. Configure a public frontend URL for deployed checkout."
-            );
+        if (!isLocalhostUrl(normalizedClientUrl) || isLocalRequest) {
+            return normalizedClientUrl;
         }
-
-        return normalizedClientUrl;
     }
 
-    if (!isLocalCheckoutRequest(req)) {
-        throw new Error(
-            "CLIENT_URL must be configured with a public frontend URL for deployed checkout."
-        );
+    if (requestOrigin && !isLocalhostUrl(requestOrigin)) {
+        return requestOrigin;
     }
 
-    return "http://localhost:5173";
+    if (isLocalRequest) {
+        return "http://localhost:5173";
+    }
+
+    throw new Error(
+        "Unable to determine the public frontend URL for deployed checkout."
+    );
 }
 
 async function getAvailableGold(userId) {
