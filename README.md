@@ -10,7 +10,7 @@ This project is a **game services marketplace demo** where users can register, l
 
 ### September 22, 2026 — sale footer decoration
 
-- Dark fixed bottom sale bar with subtle purple accents on the homepage, referral
+- Full-width, edge-to-edge dark fixed bottom sale bar with subtle purple accents on the homepage, referral
   landing pages, Contact, and service order pages. Title, offer and optional timer
   form a centered group. Desktop height is about 44px; mobile content wraps.
   Global discounts read N% OFF ALL SERVICES; the extra scope/base-price line is removed.
