@@ -1,6 +1,7 @@
+import { authStorage } from "../utils/authStorage";
 export function getStoredUser() {
   try {
-    return JSON.parse(localStorage.getItem("user") || "null");
+    return JSON.parse(authStorage.getItem("user") || "null");
   } catch {
     return null;
   }
@@ -64,8 +65,8 @@ export function notifySessionExpired() {
 }
 
 export function clearExpiredSession({ showExpiredModal = true } = {}) {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  authStorage.removeItem("token");
+  authStorage.removeItem("user");
   localStorage.removeItem("unreadMessages");
   localStorage.removeItem("unreadNotifications");
 
@@ -82,8 +83,8 @@ export function clearExpiredSession({ showExpiredModal = true } = {}) {
 }
 
 export function clearLoggedOutSession() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  authStorage.removeItem("token");
+  authStorage.removeItem("user");
   localStorage.removeItem("unreadMessages");
   localStorage.removeItem("unreadNotifications");
 
@@ -117,7 +118,7 @@ export function getTokenExpiryTime(token) {
 }
 
 export function scheduleSessionExpiryCheck() {
-  const token = localStorage.getItem("token");
+  const token = authStorage.getItem("token");
 
   if (!token) {
     return null;
@@ -149,7 +150,7 @@ export function scheduleSessionExpiryCheck() {
 }
 
 export function hasValidSession() {
-  const token = localStorage.getItem("token");
+  const token = authStorage.getItem("token");
 
   if (!token) {
     return false;

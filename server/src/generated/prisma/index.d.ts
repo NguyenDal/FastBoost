@@ -19,6 +19,16 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model RegistrationConsent
+ * 
+ */
+export type RegistrationConsent = $Result.DefaultSelection<Prisma.$RegistrationConsentPayload>
+/**
+ * Model SocialIdentity
+ * 
+ */
+export type SocialIdentity = $Result.DefaultSelection<Prisma.$SocialIdentityPayload>
+/**
  * Model Profile
  * 
  */
@@ -357,6 +367,26 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.registrationConsent`: Exposes CRUD operations for the **RegistrationConsent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RegistrationConsents
+    * const registrationConsents = await prisma.registrationConsent.findMany()
+    * ```
+    */
+  get registrationConsent(): Prisma.RegistrationConsentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.socialIdentity`: Exposes CRUD operations for the **SocialIdentity** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SocialIdentities
+    * const socialIdentities = await prisma.socialIdentity.findMany()
+    * ```
+    */
+  get socialIdentity(): Prisma.SocialIdentityDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
@@ -962,6 +992,8 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    RegistrationConsent: 'RegistrationConsent',
+    SocialIdentity: 'SocialIdentity',
     Profile: 'Profile',
     Service: 'Service',
     ServicePriceRule: 'ServicePriceRule',
@@ -994,7 +1026,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "registrationConsent" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1069,6 +1101,154 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      RegistrationConsent: {
+        payload: Prisma.$RegistrationConsentPayload<ExtArgs>
+        fields: Prisma.RegistrationConsentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RegistrationConsentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RegistrationConsentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          findFirst: {
+            args: Prisma.RegistrationConsentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RegistrationConsentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          findMany: {
+            args: Prisma.RegistrationConsentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>[]
+          }
+          create: {
+            args: Prisma.RegistrationConsentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          createMany: {
+            args: Prisma.RegistrationConsentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RegistrationConsentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>[]
+          }
+          delete: {
+            args: Prisma.RegistrationConsentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          update: {
+            args: Prisma.RegistrationConsentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          deleteMany: {
+            args: Prisma.RegistrationConsentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RegistrationConsentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RegistrationConsentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>[]
+          }
+          upsert: {
+            args: Prisma.RegistrationConsentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RegistrationConsentPayload>
+          }
+          aggregate: {
+            args: Prisma.RegistrationConsentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRegistrationConsent>
+          }
+          groupBy: {
+            args: Prisma.RegistrationConsentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RegistrationConsentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RegistrationConsentCountArgs<ExtArgs>
+            result: $Utils.Optional<RegistrationConsentCountAggregateOutputType> | number
+          }
+        }
+      }
+      SocialIdentity: {
+        payload: Prisma.$SocialIdentityPayload<ExtArgs>
+        fields: Prisma.SocialIdentityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SocialIdentityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SocialIdentityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          findFirst: {
+            args: Prisma.SocialIdentityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SocialIdentityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          findMany: {
+            args: Prisma.SocialIdentityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>[]
+          }
+          create: {
+            args: Prisma.SocialIdentityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          createMany: {
+            args: Prisma.SocialIdentityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SocialIdentityCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>[]
+          }
+          delete: {
+            args: Prisma.SocialIdentityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          update: {
+            args: Prisma.SocialIdentityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          deleteMany: {
+            args: Prisma.SocialIdentityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SocialIdentityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SocialIdentityUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>[]
+          }
+          upsert: {
+            args: Prisma.SocialIdentityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SocialIdentityPayload>
+          }
+          aggregate: {
+            args: Prisma.SocialIdentityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSocialIdentity>
+          }
+          groupBy: {
+            args: Prisma.SocialIdentityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SocialIdentityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SocialIdentityCountArgs<ExtArgs>
+            result: $Utils.Optional<SocialIdentityCountAggregateOutputType> | number
           }
         }
       }
@@ -2439,6 +2619,8 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    registrationConsent?: RegistrationConsentOmit
+    socialIdentity?: SocialIdentityOmit
     profile?: ProfileOmit
     service?: ServiceOmit
     servicePriceRule?: ServicePriceRuleOmit
@@ -2536,6 +2718,7 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
+    socialIdentities: number
     personalCoupons: number
     couponUses: number
     orders: number
@@ -2552,6 +2735,7 @@ export namespace Prisma {
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    socialIdentities?: boolean | UserCountOutputTypeCountSocialIdentitiesArgs
     personalCoupons?: boolean | UserCountOutputTypeCountPersonalCouponsArgs
     couponUses?: boolean | UserCountOutputTypeCountCouponUsesArgs
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
@@ -2576,6 +2760,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSocialIdentitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SocialIdentityWhereInput
   }
 
   /**
@@ -3063,6 +3254,8 @@ export namespace Prisma {
     updatedAt?: boolean
     referralCode?: boolean
     referredById?: boolean
+    registrationConsent?: boolean | User$registrationConsentArgs<ExtArgs>
+    socialIdentities?: boolean | User$socialIdentitiesArgs<ExtArgs>
     personalCoupons?: boolean | User$personalCouponsArgs<ExtArgs>
     couponUses?: boolean | User$couponUsesArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
@@ -3130,6 +3323,8 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    registrationConsent?: boolean | User$registrationConsentArgs<ExtArgs>
+    socialIdentities?: boolean | User$socialIdentitiesArgs<ExtArgs>
     personalCoupons?: boolean | User$personalCouponsArgs<ExtArgs>
     couponUses?: boolean | User$couponUsesArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
@@ -3157,6 +3352,8 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      registrationConsent: Prisma.$RegistrationConsentPayload<ExtArgs> | null
+      socialIdentities: Prisma.$SocialIdentityPayload<ExtArgs>[]
       personalCoupons: Prisma.$ServiceSalePayload<ExtArgs>[]
       couponUses: Prisma.$CouponUsePayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
@@ -3580,6 +3777,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    registrationConsent<T extends User$registrationConsentArgs<ExtArgs> = {}>(args?: Subset<T, User$registrationConsentArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    socialIdentities<T extends User$socialIdentitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$socialIdentitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     personalCoupons<T extends User$personalCouponsArgs<ExtArgs> = {}>(args?: Subset<T, User$personalCouponsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     couponUses<T extends User$couponUsesArgs<ExtArgs> = {}>(args?: Subset<T, User$couponUsesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CouponUsePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4037,6 +4236,49 @@ export namespace Prisma {
   }
 
   /**
+   * User.registrationConsent
+   */
+  export type User$registrationConsentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    where?: RegistrationConsentWhereInput
+  }
+
+  /**
+   * User.socialIdentities
+   */
+  export type User$socialIdentitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    where?: SocialIdentityWhereInput
+    orderBy?: SocialIdentityOrderByWithRelationInput | SocialIdentityOrderByWithRelationInput[]
+    cursor?: SocialIdentityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SocialIdentityScalarFieldEnum | SocialIdentityScalarFieldEnum[]
+  }
+
+  /**
    * User.personalCoupons
    */
   export type User$personalCouponsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4402,6 +4644,2132 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RegistrationConsent
+   */
+
+  export type AggregateRegistrationConsent = {
+    _count: RegistrationConsentCountAggregateOutputType | null
+    _min: RegistrationConsentMinAggregateOutputType | null
+    _max: RegistrationConsentMaxAggregateOutputType | null
+  }
+
+  export type RegistrationConsentMinAggregateOutputType = {
+    userId: string | null
+    termsVersion: string | null
+    termsAcceptedAt: Date | null
+    promotionalEmails: boolean | null
+    promotionalConsentAt: Date | null
+  }
+
+  export type RegistrationConsentMaxAggregateOutputType = {
+    userId: string | null
+    termsVersion: string | null
+    termsAcceptedAt: Date | null
+    promotionalEmails: boolean | null
+    promotionalConsentAt: Date | null
+  }
+
+  export type RegistrationConsentCountAggregateOutputType = {
+    userId: number
+    termsVersion: number
+    termsAcceptedAt: number
+    promotionalEmails: number
+    promotionalConsentAt: number
+    _all: number
+  }
+
+
+  export type RegistrationConsentMinAggregateInputType = {
+    userId?: true
+    termsVersion?: true
+    termsAcceptedAt?: true
+    promotionalEmails?: true
+    promotionalConsentAt?: true
+  }
+
+  export type RegistrationConsentMaxAggregateInputType = {
+    userId?: true
+    termsVersion?: true
+    termsAcceptedAt?: true
+    promotionalEmails?: true
+    promotionalConsentAt?: true
+  }
+
+  export type RegistrationConsentCountAggregateInputType = {
+    userId?: true
+    termsVersion?: true
+    termsAcceptedAt?: true
+    promotionalEmails?: true
+    promotionalConsentAt?: true
+    _all?: true
+  }
+
+  export type RegistrationConsentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RegistrationConsent to aggregate.
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RegistrationConsents to fetch.
+     */
+    orderBy?: RegistrationConsentOrderByWithRelationInput | RegistrationConsentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RegistrationConsentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RegistrationConsents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RegistrationConsents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RegistrationConsents
+    **/
+    _count?: true | RegistrationConsentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RegistrationConsentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RegistrationConsentMaxAggregateInputType
+  }
+
+  export type GetRegistrationConsentAggregateType<T extends RegistrationConsentAggregateArgs> = {
+        [P in keyof T & keyof AggregateRegistrationConsent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRegistrationConsent[P]>
+      : GetScalarType<T[P], AggregateRegistrationConsent[P]>
+  }
+
+
+
+
+  export type RegistrationConsentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RegistrationConsentWhereInput
+    orderBy?: RegistrationConsentOrderByWithAggregationInput | RegistrationConsentOrderByWithAggregationInput[]
+    by: RegistrationConsentScalarFieldEnum[] | RegistrationConsentScalarFieldEnum
+    having?: RegistrationConsentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RegistrationConsentCountAggregateInputType | true
+    _min?: RegistrationConsentMinAggregateInputType
+    _max?: RegistrationConsentMaxAggregateInputType
+  }
+
+  export type RegistrationConsentGroupByOutputType = {
+    userId: string
+    termsVersion: string
+    termsAcceptedAt: Date
+    promotionalEmails: boolean
+    promotionalConsentAt: Date | null
+    _count: RegistrationConsentCountAggregateOutputType | null
+    _min: RegistrationConsentMinAggregateOutputType | null
+    _max: RegistrationConsentMaxAggregateOutputType | null
+  }
+
+  type GetRegistrationConsentGroupByPayload<T extends RegistrationConsentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RegistrationConsentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RegistrationConsentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RegistrationConsentGroupByOutputType[P]>
+            : GetScalarType<T[P], RegistrationConsentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RegistrationConsentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    termsVersion?: boolean
+    termsAcceptedAt?: boolean
+    promotionalEmails?: boolean
+    promotionalConsentAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["registrationConsent"]>
+
+  export type RegistrationConsentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    termsVersion?: boolean
+    termsAcceptedAt?: boolean
+    promotionalEmails?: boolean
+    promotionalConsentAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["registrationConsent"]>
+
+  export type RegistrationConsentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    termsVersion?: boolean
+    termsAcceptedAt?: boolean
+    promotionalEmails?: boolean
+    promotionalConsentAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["registrationConsent"]>
+
+  export type RegistrationConsentSelectScalar = {
+    userId?: boolean
+    termsVersion?: boolean
+    termsAcceptedAt?: boolean
+    promotionalEmails?: boolean
+    promotionalConsentAt?: boolean
+  }
+
+  export type RegistrationConsentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "termsVersion" | "termsAcceptedAt" | "promotionalEmails" | "promotionalConsentAt", ExtArgs["result"]["registrationConsent"]>
+  export type RegistrationConsentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RegistrationConsentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RegistrationConsentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $RegistrationConsentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RegistrationConsent"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      termsVersion: string
+      termsAcceptedAt: Date
+      promotionalEmails: boolean
+      promotionalConsentAt: Date | null
+    }, ExtArgs["result"]["registrationConsent"]>
+    composites: {}
+  }
+
+  type RegistrationConsentGetPayload<S extends boolean | null | undefined | RegistrationConsentDefaultArgs> = $Result.GetResult<Prisma.$RegistrationConsentPayload, S>
+
+  type RegistrationConsentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RegistrationConsentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RegistrationConsentCountAggregateInputType | true
+    }
+
+  export interface RegistrationConsentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RegistrationConsent'], meta: { name: 'RegistrationConsent' } }
+    /**
+     * Find zero or one RegistrationConsent that matches the filter.
+     * @param {RegistrationConsentFindUniqueArgs} args - Arguments to find a RegistrationConsent
+     * @example
+     * // Get one RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RegistrationConsentFindUniqueArgs>(args: SelectSubset<T, RegistrationConsentFindUniqueArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RegistrationConsent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RegistrationConsentFindUniqueOrThrowArgs} args - Arguments to find a RegistrationConsent
+     * @example
+     * // Get one RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RegistrationConsentFindUniqueOrThrowArgs>(args: SelectSubset<T, RegistrationConsentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RegistrationConsent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentFindFirstArgs} args - Arguments to find a RegistrationConsent
+     * @example
+     * // Get one RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RegistrationConsentFindFirstArgs>(args?: SelectSubset<T, RegistrationConsentFindFirstArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RegistrationConsent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentFindFirstOrThrowArgs} args - Arguments to find a RegistrationConsent
+     * @example
+     * // Get one RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RegistrationConsentFindFirstOrThrowArgs>(args?: SelectSubset<T, RegistrationConsentFindFirstOrThrowArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RegistrationConsents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RegistrationConsents
+     * const registrationConsents = await prisma.registrationConsent.findMany()
+     * 
+     * // Get first 10 RegistrationConsents
+     * const registrationConsents = await prisma.registrationConsent.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const registrationConsentWithUserIdOnly = await prisma.registrationConsent.findMany({ select: { userId: true } })
+     * 
+     */
+    findMany<T extends RegistrationConsentFindManyArgs>(args?: SelectSubset<T, RegistrationConsentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RegistrationConsent.
+     * @param {RegistrationConsentCreateArgs} args - Arguments to create a RegistrationConsent.
+     * @example
+     * // Create one RegistrationConsent
+     * const RegistrationConsent = await prisma.registrationConsent.create({
+     *   data: {
+     *     // ... data to create a RegistrationConsent
+     *   }
+     * })
+     * 
+     */
+    create<T extends RegistrationConsentCreateArgs>(args: SelectSubset<T, RegistrationConsentCreateArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RegistrationConsents.
+     * @param {RegistrationConsentCreateManyArgs} args - Arguments to create many RegistrationConsents.
+     * @example
+     * // Create many RegistrationConsents
+     * const registrationConsent = await prisma.registrationConsent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RegistrationConsentCreateManyArgs>(args?: SelectSubset<T, RegistrationConsentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RegistrationConsents and returns the data saved in the database.
+     * @param {RegistrationConsentCreateManyAndReturnArgs} args - Arguments to create many RegistrationConsents.
+     * @example
+     * // Create many RegistrationConsents
+     * const registrationConsent = await prisma.registrationConsent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RegistrationConsents and only return the `userId`
+     * const registrationConsentWithUserIdOnly = await prisma.registrationConsent.createManyAndReturn({
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RegistrationConsentCreateManyAndReturnArgs>(args?: SelectSubset<T, RegistrationConsentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RegistrationConsent.
+     * @param {RegistrationConsentDeleteArgs} args - Arguments to delete one RegistrationConsent.
+     * @example
+     * // Delete one RegistrationConsent
+     * const RegistrationConsent = await prisma.registrationConsent.delete({
+     *   where: {
+     *     // ... filter to delete one RegistrationConsent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RegistrationConsentDeleteArgs>(args: SelectSubset<T, RegistrationConsentDeleteArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RegistrationConsent.
+     * @param {RegistrationConsentUpdateArgs} args - Arguments to update one RegistrationConsent.
+     * @example
+     * // Update one RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RegistrationConsentUpdateArgs>(args: SelectSubset<T, RegistrationConsentUpdateArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RegistrationConsents.
+     * @param {RegistrationConsentDeleteManyArgs} args - Arguments to filter RegistrationConsents to delete.
+     * @example
+     * // Delete a few RegistrationConsents
+     * const { count } = await prisma.registrationConsent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RegistrationConsentDeleteManyArgs>(args?: SelectSubset<T, RegistrationConsentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RegistrationConsents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RegistrationConsents
+     * const registrationConsent = await prisma.registrationConsent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RegistrationConsentUpdateManyArgs>(args: SelectSubset<T, RegistrationConsentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RegistrationConsents and returns the data updated in the database.
+     * @param {RegistrationConsentUpdateManyAndReturnArgs} args - Arguments to update many RegistrationConsents.
+     * @example
+     * // Update many RegistrationConsents
+     * const registrationConsent = await prisma.registrationConsent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RegistrationConsents and only return the `userId`
+     * const registrationConsentWithUserIdOnly = await prisma.registrationConsent.updateManyAndReturn({
+     *   select: { userId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RegistrationConsentUpdateManyAndReturnArgs>(args: SelectSubset<T, RegistrationConsentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RegistrationConsent.
+     * @param {RegistrationConsentUpsertArgs} args - Arguments to update or create a RegistrationConsent.
+     * @example
+     * // Update or create a RegistrationConsent
+     * const registrationConsent = await prisma.registrationConsent.upsert({
+     *   create: {
+     *     // ... data to create a RegistrationConsent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RegistrationConsent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RegistrationConsentUpsertArgs>(args: SelectSubset<T, RegistrationConsentUpsertArgs<ExtArgs>>): Prisma__RegistrationConsentClient<$Result.GetResult<Prisma.$RegistrationConsentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RegistrationConsents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentCountArgs} args - Arguments to filter RegistrationConsents to count.
+     * @example
+     * // Count the number of RegistrationConsents
+     * const count = await prisma.registrationConsent.count({
+     *   where: {
+     *     // ... the filter for the RegistrationConsents we want to count
+     *   }
+     * })
+    **/
+    count<T extends RegistrationConsentCountArgs>(
+      args?: Subset<T, RegistrationConsentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RegistrationConsentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RegistrationConsent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RegistrationConsentAggregateArgs>(args: Subset<T, RegistrationConsentAggregateArgs>): Prisma.PrismaPromise<GetRegistrationConsentAggregateType<T>>
+
+    /**
+     * Group by RegistrationConsent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RegistrationConsentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RegistrationConsentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RegistrationConsentGroupByArgs['orderBy'] }
+        : { orderBy?: RegistrationConsentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RegistrationConsentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRegistrationConsentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RegistrationConsent model
+   */
+  readonly fields: RegistrationConsentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RegistrationConsent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RegistrationConsentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RegistrationConsent model
+   */
+  interface RegistrationConsentFieldRefs {
+    readonly userId: FieldRef<"RegistrationConsent", 'String'>
+    readonly termsVersion: FieldRef<"RegistrationConsent", 'String'>
+    readonly termsAcceptedAt: FieldRef<"RegistrationConsent", 'DateTime'>
+    readonly promotionalEmails: FieldRef<"RegistrationConsent", 'Boolean'>
+    readonly promotionalConsentAt: FieldRef<"RegistrationConsent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RegistrationConsent findUnique
+   */
+  export type RegistrationConsentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter, which RegistrationConsent to fetch.
+     */
+    where: RegistrationConsentWhereUniqueInput
+  }
+
+  /**
+   * RegistrationConsent findUniqueOrThrow
+   */
+  export type RegistrationConsentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter, which RegistrationConsent to fetch.
+     */
+    where: RegistrationConsentWhereUniqueInput
+  }
+
+  /**
+   * RegistrationConsent findFirst
+   */
+  export type RegistrationConsentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter, which RegistrationConsent to fetch.
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RegistrationConsents to fetch.
+     */
+    orderBy?: RegistrationConsentOrderByWithRelationInput | RegistrationConsentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RegistrationConsents.
+     */
+    cursor?: RegistrationConsentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RegistrationConsents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RegistrationConsents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RegistrationConsents.
+     */
+    distinct?: RegistrationConsentScalarFieldEnum | RegistrationConsentScalarFieldEnum[]
+  }
+
+  /**
+   * RegistrationConsent findFirstOrThrow
+   */
+  export type RegistrationConsentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter, which RegistrationConsent to fetch.
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RegistrationConsents to fetch.
+     */
+    orderBy?: RegistrationConsentOrderByWithRelationInput | RegistrationConsentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RegistrationConsents.
+     */
+    cursor?: RegistrationConsentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RegistrationConsents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RegistrationConsents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RegistrationConsents.
+     */
+    distinct?: RegistrationConsentScalarFieldEnum | RegistrationConsentScalarFieldEnum[]
+  }
+
+  /**
+   * RegistrationConsent findMany
+   */
+  export type RegistrationConsentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter, which RegistrationConsents to fetch.
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RegistrationConsents to fetch.
+     */
+    orderBy?: RegistrationConsentOrderByWithRelationInput | RegistrationConsentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RegistrationConsents.
+     */
+    cursor?: RegistrationConsentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RegistrationConsents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RegistrationConsents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RegistrationConsents.
+     */
+    distinct?: RegistrationConsentScalarFieldEnum | RegistrationConsentScalarFieldEnum[]
+  }
+
+  /**
+   * RegistrationConsent create
+   */
+  export type RegistrationConsentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RegistrationConsent.
+     */
+    data: XOR<RegistrationConsentCreateInput, RegistrationConsentUncheckedCreateInput>
+  }
+
+  /**
+   * RegistrationConsent createMany
+   */
+  export type RegistrationConsentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RegistrationConsents.
+     */
+    data: RegistrationConsentCreateManyInput | RegistrationConsentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RegistrationConsent createManyAndReturn
+   */
+  export type RegistrationConsentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * The data used to create many RegistrationConsents.
+     */
+    data: RegistrationConsentCreateManyInput | RegistrationConsentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RegistrationConsent update
+   */
+  export type RegistrationConsentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RegistrationConsent.
+     */
+    data: XOR<RegistrationConsentUpdateInput, RegistrationConsentUncheckedUpdateInput>
+    /**
+     * Choose, which RegistrationConsent to update.
+     */
+    where: RegistrationConsentWhereUniqueInput
+  }
+
+  /**
+   * RegistrationConsent updateMany
+   */
+  export type RegistrationConsentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RegistrationConsents.
+     */
+    data: XOR<RegistrationConsentUpdateManyMutationInput, RegistrationConsentUncheckedUpdateManyInput>
+    /**
+     * Filter which RegistrationConsents to update
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * Limit how many RegistrationConsents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RegistrationConsent updateManyAndReturn
+   */
+  export type RegistrationConsentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * The data used to update RegistrationConsents.
+     */
+    data: XOR<RegistrationConsentUpdateManyMutationInput, RegistrationConsentUncheckedUpdateManyInput>
+    /**
+     * Filter which RegistrationConsents to update
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * Limit how many RegistrationConsents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RegistrationConsent upsert
+   */
+  export type RegistrationConsentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RegistrationConsent to update in case it exists.
+     */
+    where: RegistrationConsentWhereUniqueInput
+    /**
+     * In case the RegistrationConsent found by the `where` argument doesn't exist, create a new RegistrationConsent with this data.
+     */
+    create: XOR<RegistrationConsentCreateInput, RegistrationConsentUncheckedCreateInput>
+    /**
+     * In case the RegistrationConsent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RegistrationConsentUpdateInput, RegistrationConsentUncheckedUpdateInput>
+  }
+
+  /**
+   * RegistrationConsent delete
+   */
+  export type RegistrationConsentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+    /**
+     * Filter which RegistrationConsent to delete.
+     */
+    where: RegistrationConsentWhereUniqueInput
+  }
+
+  /**
+   * RegistrationConsent deleteMany
+   */
+  export type RegistrationConsentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RegistrationConsents to delete
+     */
+    where?: RegistrationConsentWhereInput
+    /**
+     * Limit how many RegistrationConsents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RegistrationConsent without action
+   */
+  export type RegistrationConsentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RegistrationConsent
+     */
+    select?: RegistrationConsentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RegistrationConsent
+     */
+    omit?: RegistrationConsentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RegistrationConsentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SocialIdentity
+   */
+
+  export type AggregateSocialIdentity = {
+    _count: SocialIdentityCountAggregateOutputType | null
+    _min: SocialIdentityMinAggregateOutputType | null
+    _max: SocialIdentityMaxAggregateOutputType | null
+  }
+
+  export type SocialIdentityMinAggregateOutputType = {
+    id: string | null
+    provider: string | null
+    providerUserId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type SocialIdentityMaxAggregateOutputType = {
+    id: string | null
+    provider: string | null
+    providerUserId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type SocialIdentityCountAggregateOutputType = {
+    id: number
+    provider: number
+    providerUserId: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SocialIdentityMinAggregateInputType = {
+    id?: true
+    provider?: true
+    providerUserId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type SocialIdentityMaxAggregateInputType = {
+    id?: true
+    provider?: true
+    providerUserId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type SocialIdentityCountAggregateInputType = {
+    id?: true
+    provider?: true
+    providerUserId?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SocialIdentityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SocialIdentity to aggregate.
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialIdentities to fetch.
+     */
+    orderBy?: SocialIdentityOrderByWithRelationInput | SocialIdentityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SocialIdentityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialIdentities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialIdentities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SocialIdentities
+    **/
+    _count?: true | SocialIdentityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SocialIdentityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SocialIdentityMaxAggregateInputType
+  }
+
+  export type GetSocialIdentityAggregateType<T extends SocialIdentityAggregateArgs> = {
+        [P in keyof T & keyof AggregateSocialIdentity]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSocialIdentity[P]>
+      : GetScalarType<T[P], AggregateSocialIdentity[P]>
+  }
+
+
+
+
+  export type SocialIdentityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SocialIdentityWhereInput
+    orderBy?: SocialIdentityOrderByWithAggregationInput | SocialIdentityOrderByWithAggregationInput[]
+    by: SocialIdentityScalarFieldEnum[] | SocialIdentityScalarFieldEnum
+    having?: SocialIdentityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SocialIdentityCountAggregateInputType | true
+    _min?: SocialIdentityMinAggregateInputType
+    _max?: SocialIdentityMaxAggregateInputType
+  }
+
+  export type SocialIdentityGroupByOutputType = {
+    id: string
+    provider: string
+    providerUserId: string
+    userId: string
+    createdAt: Date
+    _count: SocialIdentityCountAggregateOutputType | null
+    _min: SocialIdentityMinAggregateOutputType | null
+    _max: SocialIdentityMaxAggregateOutputType | null
+  }
+
+  type GetSocialIdentityGroupByPayload<T extends SocialIdentityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SocialIdentityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SocialIdentityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SocialIdentityGroupByOutputType[P]>
+            : GetScalarType<T[P], SocialIdentityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SocialIdentitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    providerUserId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["socialIdentity"]>
+
+  export type SocialIdentitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    providerUserId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["socialIdentity"]>
+
+  export type SocialIdentitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    providerUserId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["socialIdentity"]>
+
+  export type SocialIdentitySelectScalar = {
+    id?: boolean
+    provider?: boolean
+    providerUserId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type SocialIdentityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "provider" | "providerUserId" | "userId" | "createdAt", ExtArgs["result"]["socialIdentity"]>
+  export type SocialIdentityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SocialIdentityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SocialIdentityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SocialIdentityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SocialIdentity"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      provider: string
+      providerUserId: string
+      userId: string
+      createdAt: Date
+    }, ExtArgs["result"]["socialIdentity"]>
+    composites: {}
+  }
+
+  type SocialIdentityGetPayload<S extends boolean | null | undefined | SocialIdentityDefaultArgs> = $Result.GetResult<Prisma.$SocialIdentityPayload, S>
+
+  type SocialIdentityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SocialIdentityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SocialIdentityCountAggregateInputType | true
+    }
+
+  export interface SocialIdentityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SocialIdentity'], meta: { name: 'SocialIdentity' } }
+    /**
+     * Find zero or one SocialIdentity that matches the filter.
+     * @param {SocialIdentityFindUniqueArgs} args - Arguments to find a SocialIdentity
+     * @example
+     * // Get one SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SocialIdentityFindUniqueArgs>(args: SelectSubset<T, SocialIdentityFindUniqueArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SocialIdentity that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SocialIdentityFindUniqueOrThrowArgs} args - Arguments to find a SocialIdentity
+     * @example
+     * // Get one SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SocialIdentityFindUniqueOrThrowArgs>(args: SelectSubset<T, SocialIdentityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SocialIdentity that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityFindFirstArgs} args - Arguments to find a SocialIdentity
+     * @example
+     * // Get one SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SocialIdentityFindFirstArgs>(args?: SelectSubset<T, SocialIdentityFindFirstArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SocialIdentity that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityFindFirstOrThrowArgs} args - Arguments to find a SocialIdentity
+     * @example
+     * // Get one SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SocialIdentityFindFirstOrThrowArgs>(args?: SelectSubset<T, SocialIdentityFindFirstOrThrowArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SocialIdentities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SocialIdentities
+     * const socialIdentities = await prisma.socialIdentity.findMany()
+     * 
+     * // Get first 10 SocialIdentities
+     * const socialIdentities = await prisma.socialIdentity.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const socialIdentityWithIdOnly = await prisma.socialIdentity.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SocialIdentityFindManyArgs>(args?: SelectSubset<T, SocialIdentityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SocialIdentity.
+     * @param {SocialIdentityCreateArgs} args - Arguments to create a SocialIdentity.
+     * @example
+     * // Create one SocialIdentity
+     * const SocialIdentity = await prisma.socialIdentity.create({
+     *   data: {
+     *     // ... data to create a SocialIdentity
+     *   }
+     * })
+     * 
+     */
+    create<T extends SocialIdentityCreateArgs>(args: SelectSubset<T, SocialIdentityCreateArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SocialIdentities.
+     * @param {SocialIdentityCreateManyArgs} args - Arguments to create many SocialIdentities.
+     * @example
+     * // Create many SocialIdentities
+     * const socialIdentity = await prisma.socialIdentity.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SocialIdentityCreateManyArgs>(args?: SelectSubset<T, SocialIdentityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SocialIdentities and returns the data saved in the database.
+     * @param {SocialIdentityCreateManyAndReturnArgs} args - Arguments to create many SocialIdentities.
+     * @example
+     * // Create many SocialIdentities
+     * const socialIdentity = await prisma.socialIdentity.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SocialIdentities and only return the `id`
+     * const socialIdentityWithIdOnly = await prisma.socialIdentity.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SocialIdentityCreateManyAndReturnArgs>(args?: SelectSubset<T, SocialIdentityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SocialIdentity.
+     * @param {SocialIdentityDeleteArgs} args - Arguments to delete one SocialIdentity.
+     * @example
+     * // Delete one SocialIdentity
+     * const SocialIdentity = await prisma.socialIdentity.delete({
+     *   where: {
+     *     // ... filter to delete one SocialIdentity
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SocialIdentityDeleteArgs>(args: SelectSubset<T, SocialIdentityDeleteArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SocialIdentity.
+     * @param {SocialIdentityUpdateArgs} args - Arguments to update one SocialIdentity.
+     * @example
+     * // Update one SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SocialIdentityUpdateArgs>(args: SelectSubset<T, SocialIdentityUpdateArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SocialIdentities.
+     * @param {SocialIdentityDeleteManyArgs} args - Arguments to filter SocialIdentities to delete.
+     * @example
+     * // Delete a few SocialIdentities
+     * const { count } = await prisma.socialIdentity.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SocialIdentityDeleteManyArgs>(args?: SelectSubset<T, SocialIdentityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SocialIdentities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SocialIdentities
+     * const socialIdentity = await prisma.socialIdentity.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SocialIdentityUpdateManyArgs>(args: SelectSubset<T, SocialIdentityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SocialIdentities and returns the data updated in the database.
+     * @param {SocialIdentityUpdateManyAndReturnArgs} args - Arguments to update many SocialIdentities.
+     * @example
+     * // Update many SocialIdentities
+     * const socialIdentity = await prisma.socialIdentity.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SocialIdentities and only return the `id`
+     * const socialIdentityWithIdOnly = await prisma.socialIdentity.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SocialIdentityUpdateManyAndReturnArgs>(args: SelectSubset<T, SocialIdentityUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SocialIdentity.
+     * @param {SocialIdentityUpsertArgs} args - Arguments to update or create a SocialIdentity.
+     * @example
+     * // Update or create a SocialIdentity
+     * const socialIdentity = await prisma.socialIdentity.upsert({
+     *   create: {
+     *     // ... data to create a SocialIdentity
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SocialIdentity we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SocialIdentityUpsertArgs>(args: SelectSubset<T, SocialIdentityUpsertArgs<ExtArgs>>): Prisma__SocialIdentityClient<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SocialIdentities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityCountArgs} args - Arguments to filter SocialIdentities to count.
+     * @example
+     * // Count the number of SocialIdentities
+     * const count = await prisma.socialIdentity.count({
+     *   where: {
+     *     // ... the filter for the SocialIdentities we want to count
+     *   }
+     * })
+    **/
+    count<T extends SocialIdentityCountArgs>(
+      args?: Subset<T, SocialIdentityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SocialIdentityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SocialIdentity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SocialIdentityAggregateArgs>(args: Subset<T, SocialIdentityAggregateArgs>): Prisma.PrismaPromise<GetSocialIdentityAggregateType<T>>
+
+    /**
+     * Group by SocialIdentity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SocialIdentityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SocialIdentityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SocialIdentityGroupByArgs['orderBy'] }
+        : { orderBy?: SocialIdentityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SocialIdentityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSocialIdentityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SocialIdentity model
+   */
+  readonly fields: SocialIdentityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SocialIdentity.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SocialIdentityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SocialIdentity model
+   */
+  interface SocialIdentityFieldRefs {
+    readonly id: FieldRef<"SocialIdentity", 'String'>
+    readonly provider: FieldRef<"SocialIdentity", 'String'>
+    readonly providerUserId: FieldRef<"SocialIdentity", 'String'>
+    readonly userId: FieldRef<"SocialIdentity", 'String'>
+    readonly createdAt: FieldRef<"SocialIdentity", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SocialIdentity findUnique
+   */
+  export type SocialIdentityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter, which SocialIdentity to fetch.
+     */
+    where: SocialIdentityWhereUniqueInput
+  }
+
+  /**
+   * SocialIdentity findUniqueOrThrow
+   */
+  export type SocialIdentityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter, which SocialIdentity to fetch.
+     */
+    where: SocialIdentityWhereUniqueInput
+  }
+
+  /**
+   * SocialIdentity findFirst
+   */
+  export type SocialIdentityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter, which SocialIdentity to fetch.
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialIdentities to fetch.
+     */
+    orderBy?: SocialIdentityOrderByWithRelationInput | SocialIdentityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SocialIdentities.
+     */
+    cursor?: SocialIdentityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialIdentities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialIdentities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialIdentities.
+     */
+    distinct?: SocialIdentityScalarFieldEnum | SocialIdentityScalarFieldEnum[]
+  }
+
+  /**
+   * SocialIdentity findFirstOrThrow
+   */
+  export type SocialIdentityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter, which SocialIdentity to fetch.
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialIdentities to fetch.
+     */
+    orderBy?: SocialIdentityOrderByWithRelationInput | SocialIdentityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SocialIdentities.
+     */
+    cursor?: SocialIdentityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialIdentities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialIdentities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialIdentities.
+     */
+    distinct?: SocialIdentityScalarFieldEnum | SocialIdentityScalarFieldEnum[]
+  }
+
+  /**
+   * SocialIdentity findMany
+   */
+  export type SocialIdentityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter, which SocialIdentities to fetch.
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SocialIdentities to fetch.
+     */
+    orderBy?: SocialIdentityOrderByWithRelationInput | SocialIdentityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SocialIdentities.
+     */
+    cursor?: SocialIdentityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SocialIdentities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SocialIdentities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SocialIdentities.
+     */
+    distinct?: SocialIdentityScalarFieldEnum | SocialIdentityScalarFieldEnum[]
+  }
+
+  /**
+   * SocialIdentity create
+   */
+  export type SocialIdentityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SocialIdentity.
+     */
+    data: XOR<SocialIdentityCreateInput, SocialIdentityUncheckedCreateInput>
+  }
+
+  /**
+   * SocialIdentity createMany
+   */
+  export type SocialIdentityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SocialIdentities.
+     */
+    data: SocialIdentityCreateManyInput | SocialIdentityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SocialIdentity createManyAndReturn
+   */
+  export type SocialIdentityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * The data used to create many SocialIdentities.
+     */
+    data: SocialIdentityCreateManyInput | SocialIdentityCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SocialIdentity update
+   */
+  export type SocialIdentityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SocialIdentity.
+     */
+    data: XOR<SocialIdentityUpdateInput, SocialIdentityUncheckedUpdateInput>
+    /**
+     * Choose, which SocialIdentity to update.
+     */
+    where: SocialIdentityWhereUniqueInput
+  }
+
+  /**
+   * SocialIdentity updateMany
+   */
+  export type SocialIdentityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SocialIdentities.
+     */
+    data: XOR<SocialIdentityUpdateManyMutationInput, SocialIdentityUncheckedUpdateManyInput>
+    /**
+     * Filter which SocialIdentities to update
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * Limit how many SocialIdentities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SocialIdentity updateManyAndReturn
+   */
+  export type SocialIdentityUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * The data used to update SocialIdentities.
+     */
+    data: XOR<SocialIdentityUpdateManyMutationInput, SocialIdentityUncheckedUpdateManyInput>
+    /**
+     * Filter which SocialIdentities to update
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * Limit how many SocialIdentities to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SocialIdentity upsert
+   */
+  export type SocialIdentityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SocialIdentity to update in case it exists.
+     */
+    where: SocialIdentityWhereUniqueInput
+    /**
+     * In case the SocialIdentity found by the `where` argument doesn't exist, create a new SocialIdentity with this data.
+     */
+    create: XOR<SocialIdentityCreateInput, SocialIdentityUncheckedCreateInput>
+    /**
+     * In case the SocialIdentity was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SocialIdentityUpdateInput, SocialIdentityUncheckedUpdateInput>
+  }
+
+  /**
+   * SocialIdentity delete
+   */
+  export type SocialIdentityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
+    /**
+     * Filter which SocialIdentity to delete.
+     */
+    where: SocialIdentityWhereUniqueInput
+  }
+
+  /**
+   * SocialIdentity deleteMany
+   */
+  export type SocialIdentityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SocialIdentities to delete
+     */
+    where?: SocialIdentityWhereInput
+    /**
+     * Limit how many SocialIdentities to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SocialIdentity without action
+   */
+  export type SocialIdentityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SocialIdentity
+     */
+    select?: SocialIdentitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SocialIdentity
+     */
+    omit?: SocialIdentityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SocialIdentityInclude<ExtArgs> | null
   }
 
 
@@ -24343,6 +26711,28 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const RegistrationConsentScalarFieldEnum: {
+    userId: 'userId',
+    termsVersion: 'termsVersion',
+    termsAcceptedAt: 'termsAcceptedAt',
+    promotionalEmails: 'promotionalEmails',
+    promotionalConsentAt: 'promotionalConsentAt'
+  };
+
+  export type RegistrationConsentScalarFieldEnum = (typeof RegistrationConsentScalarFieldEnum)[keyof typeof RegistrationConsentScalarFieldEnum]
+
+
+  export const SocialIdentityScalarFieldEnum: {
+    id: 'id',
+    provider: 'provider',
+    providerUserId: 'providerUserId',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type SocialIdentityScalarFieldEnum = (typeof SocialIdentityScalarFieldEnum)[keyof typeof SocialIdentityScalarFieldEnum]
+
+
   export const ProfileScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -24717,6 +27107,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -24741,13 +27138,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -24896,6 +27286,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referralCode?: StringNullableFilter<"User"> | string | null
     referredById?: StringNullableFilter<"User"> | string | null
+    registrationConsent?: XOR<RegistrationConsentNullableScalarRelationFilter, RegistrationConsentWhereInput> | null
+    socialIdentities?: SocialIdentityListRelationFilter
     personalCoupons?: ServiceSaleListRelationFilter
     couponUses?: CouponUseListRelationFilter
     orders?: OrderListRelationFilter
@@ -24926,6 +27318,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     referralCode?: SortOrderInput | SortOrder
     referredById?: SortOrderInput | SortOrder
+    registrationConsent?: RegistrationConsentOrderByWithRelationInput
+    socialIdentities?: SocialIdentityOrderByRelationAggregateInput
     personalCoupons?: ServiceSaleOrderByRelationAggregateInput
     couponUses?: CouponUseOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
@@ -24959,6 +27353,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referredById?: StringNullableFilter<"User"> | string | null
+    registrationConsent?: XOR<RegistrationConsentNullableScalarRelationFilter, RegistrationConsentWhereInput> | null
+    socialIdentities?: SocialIdentityListRelationFilter
     personalCoupons?: ServiceSaleListRelationFilter
     couponUses?: CouponUseListRelationFilter
     orders?: OrderListRelationFilter
@@ -25010,6 +27406,118 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     referralCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     referredById?: StringNullableWithAggregatesFilter<"User"> | string | null
+  }
+
+  export type RegistrationConsentWhereInput = {
+    AND?: RegistrationConsentWhereInput | RegistrationConsentWhereInput[]
+    OR?: RegistrationConsentWhereInput[]
+    NOT?: RegistrationConsentWhereInput | RegistrationConsentWhereInput[]
+    userId?: StringFilter<"RegistrationConsent"> | string
+    termsVersion?: StringFilter<"RegistrationConsent"> | string
+    termsAcceptedAt?: DateTimeFilter<"RegistrationConsent"> | Date | string
+    promotionalEmails?: BoolFilter<"RegistrationConsent"> | boolean
+    promotionalConsentAt?: DateTimeNullableFilter<"RegistrationConsent"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type RegistrationConsentOrderByWithRelationInput = {
+    userId?: SortOrder
+    termsVersion?: SortOrder
+    termsAcceptedAt?: SortOrder
+    promotionalEmails?: SortOrder
+    promotionalConsentAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type RegistrationConsentWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: RegistrationConsentWhereInput | RegistrationConsentWhereInput[]
+    OR?: RegistrationConsentWhereInput[]
+    NOT?: RegistrationConsentWhereInput | RegistrationConsentWhereInput[]
+    termsVersion?: StringFilter<"RegistrationConsent"> | string
+    termsAcceptedAt?: DateTimeFilter<"RegistrationConsent"> | Date | string
+    promotionalEmails?: BoolFilter<"RegistrationConsent"> | boolean
+    promotionalConsentAt?: DateTimeNullableFilter<"RegistrationConsent"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "userId">
+
+  export type RegistrationConsentOrderByWithAggregationInput = {
+    userId?: SortOrder
+    termsVersion?: SortOrder
+    termsAcceptedAt?: SortOrder
+    promotionalEmails?: SortOrder
+    promotionalConsentAt?: SortOrderInput | SortOrder
+    _count?: RegistrationConsentCountOrderByAggregateInput
+    _max?: RegistrationConsentMaxOrderByAggregateInput
+    _min?: RegistrationConsentMinOrderByAggregateInput
+  }
+
+  export type RegistrationConsentScalarWhereWithAggregatesInput = {
+    AND?: RegistrationConsentScalarWhereWithAggregatesInput | RegistrationConsentScalarWhereWithAggregatesInput[]
+    OR?: RegistrationConsentScalarWhereWithAggregatesInput[]
+    NOT?: RegistrationConsentScalarWhereWithAggregatesInput | RegistrationConsentScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"RegistrationConsent"> | string
+    termsVersion?: StringWithAggregatesFilter<"RegistrationConsent"> | string
+    termsAcceptedAt?: DateTimeWithAggregatesFilter<"RegistrationConsent"> | Date | string
+    promotionalEmails?: BoolWithAggregatesFilter<"RegistrationConsent"> | boolean
+    promotionalConsentAt?: DateTimeNullableWithAggregatesFilter<"RegistrationConsent"> | Date | string | null
+  }
+
+  export type SocialIdentityWhereInput = {
+    AND?: SocialIdentityWhereInput | SocialIdentityWhereInput[]
+    OR?: SocialIdentityWhereInput[]
+    NOT?: SocialIdentityWhereInput | SocialIdentityWhereInput[]
+    id?: StringFilter<"SocialIdentity"> | string
+    provider?: StringFilter<"SocialIdentity"> | string
+    providerUserId?: StringFilter<"SocialIdentity"> | string
+    userId?: StringFilter<"SocialIdentity"> | string
+    createdAt?: DateTimeFilter<"SocialIdentity"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type SocialIdentityOrderByWithRelationInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    providerUserId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type SocialIdentityWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    provider_providerUserId?: SocialIdentityProviderProviderUserIdCompoundUniqueInput
+    userId_provider?: SocialIdentityUserIdProviderCompoundUniqueInput
+    AND?: SocialIdentityWhereInput | SocialIdentityWhereInput[]
+    OR?: SocialIdentityWhereInput[]
+    NOT?: SocialIdentityWhereInput | SocialIdentityWhereInput[]
+    provider?: StringFilter<"SocialIdentity"> | string
+    providerUserId?: StringFilter<"SocialIdentity"> | string
+    userId?: StringFilter<"SocialIdentity"> | string
+    createdAt?: DateTimeFilter<"SocialIdentity"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "provider_providerUserId" | "userId_provider">
+
+  export type SocialIdentityOrderByWithAggregationInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    providerUserId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    _count?: SocialIdentityCountOrderByAggregateInput
+    _max?: SocialIdentityMaxOrderByAggregateInput
+    _min?: SocialIdentityMinOrderByAggregateInput
+  }
+
+  export type SocialIdentityScalarWhereWithAggregatesInput = {
+    AND?: SocialIdentityScalarWhereWithAggregatesInput | SocialIdentityScalarWhereWithAggregatesInput[]
+    OR?: SocialIdentityScalarWhereWithAggregatesInput[]
+    NOT?: SocialIdentityScalarWhereWithAggregatesInput | SocialIdentityScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SocialIdentity"> | string
+    provider?: StringWithAggregatesFilter<"SocialIdentity"> | string
+    providerUserId?: StringWithAggregatesFilter<"SocialIdentity"> | string
+    userId?: StringWithAggregatesFilter<"SocialIdentity"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"SocialIdentity"> | Date | string
   }
 
   export type ProfileWhereInput = {
@@ -26490,6 +28998,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -26520,6 +29030,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -26548,6 +29060,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -26578,6 +29092,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -26636,6 +29152,116 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type RegistrationConsentCreateInput = {
+    termsVersion: string
+    termsAcceptedAt?: Date | string
+    promotionalEmails?: boolean
+    promotionalConsentAt?: Date | string | null
+    user: UserCreateNestedOneWithoutRegistrationConsentInput
+  }
+
+  export type RegistrationConsentUncheckedCreateInput = {
+    userId: string
+    termsVersion: string
+    termsAcceptedAt?: Date | string
+    promotionalEmails?: boolean
+    promotionalConsentAt?: Date | string | null
+  }
+
+  export type RegistrationConsentUpdateInput = {
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutRegistrationConsentNestedInput
+  }
+
+  export type RegistrationConsentUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RegistrationConsentCreateManyInput = {
+    userId: string
+    termsVersion: string
+    termsAcceptedAt?: Date | string
+    promotionalEmails?: boolean
+    promotionalConsentAt?: Date | string | null
+  }
+
+  export type RegistrationConsentUpdateManyMutationInput = {
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RegistrationConsentUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SocialIdentityCreateInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutSocialIdentitiesInput
+  }
+
+  export type SocialIdentityUncheckedCreateInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type SocialIdentityUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutSocialIdentitiesNestedInput
+  }
+
+  export type SocialIdentityUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialIdentityCreateManyInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type SocialIdentityUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialIdentityUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProfileCreateInput = {
@@ -28309,6 +30935,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type RegistrationConsentNullableScalarRelationFilter = {
+    is?: RegistrationConsentWhereInput | null
+    isNot?: RegistrationConsentWhereInput | null
+  }
+
+  export type SocialIdentityListRelationFilter = {
+    every?: SocialIdentityWhereInput
+    some?: SocialIdentityWhereInput
+    none?: SocialIdentityWhereInput
+  }
+
   export type ServiceSaleListRelationFilter = {
     every?: ServiceSaleWhereInput
     some?: ServiceSaleWhereInput
@@ -28394,6 +31031,10 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type SocialIdentityOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ServiceSaleOrderByRelationAggregateInput = {
@@ -28563,9 +31204,80 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type RegistrationConsentCountOrderByAggregateInput = {
+    userId?: SortOrder
+    termsVersion?: SortOrder
+    termsAcceptedAt?: SortOrder
+    promotionalEmails?: SortOrder
+    promotionalConsentAt?: SortOrder
+  }
+
+  export type RegistrationConsentMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    termsVersion?: SortOrder
+    termsAcceptedAt?: SortOrder
+    promotionalEmails?: SortOrder
+    promotionalConsentAt?: SortOrder
+  }
+
+  export type RegistrationConsentMinOrderByAggregateInput = {
+    userId?: SortOrder
+    termsVersion?: SortOrder
+    termsAcceptedAt?: SortOrder
+    promotionalEmails?: SortOrder
+    promotionalConsentAt?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type SocialIdentityProviderProviderUserIdCompoundUniqueInput = {
+    provider: string
+    providerUserId: string
+  }
+
+  export type SocialIdentityUserIdProviderCompoundUniqueInput = {
+    userId: string
+    provider: string
+  }
+
+  export type SocialIdentityCountOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    providerUserId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SocialIdentityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    providerUserId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SocialIdentityMinOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    providerUserId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProfileCountOrderByAggregateInput = {
@@ -28675,11 +31387,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type ServiceScalarRelationFilter = {
     is?: ServiceWhereInput
     isNot?: ServiceWhereInput
@@ -28767,14 +31474,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type EnumSaleScopeFilter<$PrismaModel = never> = {
@@ -29792,6 +32491,19 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
+  export type RegistrationConsentCreateNestedOneWithoutUserInput = {
+    create?: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+    connectOrCreate?: RegistrationConsentCreateOrConnectWithoutUserInput
+    connect?: RegistrationConsentWhereUniqueInput
+  }
+
+  export type SocialIdentityCreateNestedManyWithoutUserInput = {
+    create?: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput> | SocialIdentityCreateWithoutUserInput[] | SocialIdentityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SocialIdentityCreateOrConnectWithoutUserInput | SocialIdentityCreateOrConnectWithoutUserInput[]
+    createMany?: SocialIdentityCreateManyUserInputEnvelope
+    connect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+  }
+
   export type ServiceSaleCreateNestedManyWithoutRecipientAccountInput = {
     create?: XOR<ServiceSaleCreateWithoutRecipientAccountInput, ServiceSaleUncheckedCreateWithoutRecipientAccountInput> | ServiceSaleCreateWithoutRecipientAccountInput[] | ServiceSaleUncheckedCreateWithoutRecipientAccountInput[]
     connectOrCreate?: ServiceSaleCreateOrConnectWithoutRecipientAccountInput | ServiceSaleCreateOrConnectWithoutRecipientAccountInput[]
@@ -29893,6 +32605,19 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type RegistrationConsentUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+    connectOrCreate?: RegistrationConsentCreateOrConnectWithoutUserInput
+    connect?: RegistrationConsentWhereUniqueInput
+  }
+
+  export type SocialIdentityUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput> | SocialIdentityCreateWithoutUserInput[] | SocialIdentityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SocialIdentityCreateOrConnectWithoutUserInput | SocialIdentityCreateOrConnectWithoutUserInput[]
+    createMany?: SocialIdentityCreateManyUserInputEnvelope
+    connect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
   }
 
   export type ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput = {
@@ -30010,6 +32735,30 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type RegistrationConsentUpdateOneWithoutUserNestedInput = {
+    create?: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+    connectOrCreate?: RegistrationConsentCreateOrConnectWithoutUserInput
+    upsert?: RegistrationConsentUpsertWithoutUserInput
+    disconnect?: RegistrationConsentWhereInput | boolean
+    delete?: RegistrationConsentWhereInput | boolean
+    connect?: RegistrationConsentWhereUniqueInput
+    update?: XOR<XOR<RegistrationConsentUpdateToOneWithWhereWithoutUserInput, RegistrationConsentUpdateWithoutUserInput>, RegistrationConsentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SocialIdentityUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput> | SocialIdentityCreateWithoutUserInput[] | SocialIdentityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SocialIdentityCreateOrConnectWithoutUserInput | SocialIdentityCreateOrConnectWithoutUserInput[]
+    upsert?: SocialIdentityUpsertWithWhereUniqueWithoutUserInput | SocialIdentityUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SocialIdentityCreateManyUserInputEnvelope
+    set?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    disconnect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    delete?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    connect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    update?: SocialIdentityUpdateWithWhereUniqueWithoutUserInput | SocialIdentityUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SocialIdentityUpdateManyWithWhereWithoutUserInput | SocialIdentityUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SocialIdentityScalarWhereInput | SocialIdentityScalarWhereInput[]
   }
 
   export type ServiceSaleUpdateManyWithoutRecipientAccountNestedInput = {
@@ -30214,6 +32963,30 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+    connectOrCreate?: RegistrationConsentCreateOrConnectWithoutUserInput
+    upsert?: RegistrationConsentUpsertWithoutUserInput
+    disconnect?: RegistrationConsentWhereInput | boolean
+    delete?: RegistrationConsentWhereInput | boolean
+    connect?: RegistrationConsentWhereUniqueInput
+    update?: XOR<XOR<RegistrationConsentUpdateToOneWithWhereWithoutUserInput, RegistrationConsentUpdateWithoutUserInput>, RegistrationConsentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SocialIdentityUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput> | SocialIdentityCreateWithoutUserInput[] | SocialIdentityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SocialIdentityCreateOrConnectWithoutUserInput | SocialIdentityCreateOrConnectWithoutUserInput[]
+    upsert?: SocialIdentityUpsertWithWhereUniqueWithoutUserInput | SocialIdentityUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SocialIdentityCreateManyUserInputEnvelope
+    set?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    disconnect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    delete?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    connect?: SocialIdentityWhereUniqueInput | SocialIdentityWhereUniqueInput[]
+    update?: SocialIdentityUpdateWithWhereUniqueWithoutUserInput | SocialIdentityUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SocialIdentityUpdateManyWithWhereWithoutUserInput | SocialIdentityUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SocialIdentityScalarWhereInput | SocialIdentityScalarWhereInput[]
+  }
+
   export type ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput = {
     create?: XOR<ServiceSaleCreateWithoutRecipientAccountInput, ServiceSaleUncheckedCreateWithoutRecipientAccountInput> | ServiceSaleCreateWithoutRecipientAccountInput[] | ServiceSaleUncheckedCreateWithoutRecipientAccountInput[]
     connectOrCreate?: ServiceSaleCreateOrConnectWithoutRecipientAccountInput | ServiceSaleCreateOrConnectWithoutRecipientAccountInput[]
@@ -30406,6 +33179,38 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutRegistrationConsentInput = {
+    create?: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRegistrationConsentInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type UserUpdateOneRequiredWithoutRegistrationConsentNestedInput = {
+    create?: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRegistrationConsentInput
+    upsert?: UserUpsertWithoutRegistrationConsentInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRegistrationConsentInput, UserUpdateWithoutRegistrationConsentInput>, UserUncheckedUpdateWithoutRegistrationConsentInput>
+  }
+
+  export type UserCreateNestedOneWithoutSocialIdentitiesInput = {
+    create?: XOR<UserCreateWithoutSocialIdentitiesInput, UserUncheckedCreateWithoutSocialIdentitiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSocialIdentitiesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutSocialIdentitiesNestedInput = {
+    create?: XOR<UserCreateWithoutSocialIdentitiesInput, UserUncheckedCreateWithoutSocialIdentitiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSocialIdentitiesInput
+    upsert?: UserUpsertWithoutSocialIdentitiesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSocialIdentitiesInput, UserUpdateWithoutSocialIdentitiesInput>, UserUncheckedUpdateWithoutSocialIdentitiesInput>
+  }
+
   export type UserCreateNestedOneWithoutProfileInput = {
     create?: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutProfileInput
@@ -30558,10 +33363,6 @@ export namespace Prisma {
     decrement?: Decimal | DecimalJsLike | number | string
     multiply?: Decimal | DecimalJsLike | number | string
     divide?: Decimal | DecimalJsLike | number | string
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type ServiceUpdateOneRequiredWithoutPriceRulesNestedInput = {
@@ -31469,6 +34270,19 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -31478,11 +34292,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -31522,14 +34331,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedEnumSaleScopeFilter<$PrismaModel = never> = {
@@ -31785,6 +34586,49 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
+  }
+
+  export type RegistrationConsentCreateWithoutUserInput = {
+    termsVersion: string
+    termsAcceptedAt?: Date | string
+    promotionalEmails?: boolean
+    promotionalConsentAt?: Date | string | null
+  }
+
+  export type RegistrationConsentUncheckedCreateWithoutUserInput = {
+    termsVersion: string
+    termsAcceptedAt?: Date | string
+    promotionalEmails?: boolean
+    promotionalConsentAt?: Date | string | null
+  }
+
+  export type RegistrationConsentCreateOrConnectWithoutUserInput = {
+    where: RegistrationConsentWhereUniqueInput
+    create: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+  }
+
+  export type SocialIdentityCreateWithoutUserInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    createdAt?: Date | string
+  }
+
+  export type SocialIdentityUncheckedCreateWithoutUserInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    createdAt?: Date | string
+  }
+
+  export type SocialIdentityCreateOrConnectWithoutUserInput = {
+    where: SocialIdentityWhereUniqueInput
+    create: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput>
+  }
+
+  export type SocialIdentityCreateManyUserInputEnvelope = {
+    data: SocialIdentityCreateManyUserInput | SocialIdentityCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ServiceSaleCreateWithoutRecipientAccountInput = {
@@ -32130,6 +34974,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -32159,6 +35005,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -32191,6 +35039,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -32219,6 +35069,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -32413,6 +35265,58 @@ export namespace Prisma {
   export type NotificationCreateManyUserInputEnvelope = {
     data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
+  }
+
+  export type RegistrationConsentUpsertWithoutUserInput = {
+    update: XOR<RegistrationConsentUpdateWithoutUserInput, RegistrationConsentUncheckedUpdateWithoutUserInput>
+    create: XOR<RegistrationConsentCreateWithoutUserInput, RegistrationConsentUncheckedCreateWithoutUserInput>
+    where?: RegistrationConsentWhereInput
+  }
+
+  export type RegistrationConsentUpdateToOneWithWhereWithoutUserInput = {
+    where?: RegistrationConsentWhereInput
+    data: XOR<RegistrationConsentUpdateWithoutUserInput, RegistrationConsentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RegistrationConsentUpdateWithoutUserInput = {
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RegistrationConsentUncheckedUpdateWithoutUserInput = {
+    termsVersion?: StringFieldUpdateOperationsInput | string
+    termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
+    promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SocialIdentityUpsertWithWhereUniqueWithoutUserInput = {
+    where: SocialIdentityWhereUniqueInput
+    update: XOR<SocialIdentityUpdateWithoutUserInput, SocialIdentityUncheckedUpdateWithoutUserInput>
+    create: XOR<SocialIdentityCreateWithoutUserInput, SocialIdentityUncheckedCreateWithoutUserInput>
+  }
+
+  export type SocialIdentityUpdateWithWhereUniqueWithoutUserInput = {
+    where: SocialIdentityWhereUniqueInput
+    data: XOR<SocialIdentityUpdateWithoutUserInput, SocialIdentityUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SocialIdentityUpdateManyWithWhereWithoutUserInput = {
+    where: SocialIdentityScalarWhereInput
+    data: XOR<SocialIdentityUpdateManyMutationInput, SocialIdentityUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SocialIdentityScalarWhereInput = {
+    AND?: SocialIdentityScalarWhereInput | SocialIdentityScalarWhereInput[]
+    OR?: SocialIdentityScalarWhereInput[]
+    NOT?: SocialIdentityScalarWhereInput | SocialIdentityScalarWhereInput[]
+    id?: StringFilter<"SocialIdentity"> | string
+    provider?: StringFilter<"SocialIdentity"> | string
+    providerUserId?: StringFilter<"SocialIdentity"> | string
+    userId?: StringFilter<"SocialIdentity"> | string
+    createdAt?: DateTimeFilter<"SocialIdentity"> | Date | string
   }
 
   export type ServiceSaleUpsertWithWhereUniqueWithoutRecipientAccountInput = {
@@ -32707,6 +35611,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -32736,6 +35642,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -32947,6 +35855,278 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
+  export type UserCreateWithoutRegistrationConsentInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutRegistrationConsentInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutRegistrationConsentInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
+  }
+
+  export type UserUpsertWithoutRegistrationConsentInput = {
+    update: XOR<UserUpdateWithoutRegistrationConsentInput, UserUncheckedUpdateWithoutRegistrationConsentInput>
+    create: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRegistrationConsentInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRegistrationConsentInput, UserUncheckedUpdateWithoutRegistrationConsentInput>
+  }
+
+  export type UserUpdateWithoutRegistrationConsentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRegistrationConsentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutSocialIdentitiesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSocialIdentitiesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSocialIdentitiesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSocialIdentitiesInput, UserUncheckedCreateWithoutSocialIdentitiesInput>
+  }
+
+  export type UserUpsertWithoutSocialIdentitiesInput = {
+    update: XOR<UserUpdateWithoutSocialIdentitiesInput, UserUncheckedUpdateWithoutSocialIdentitiesInput>
+    create: XOR<UserCreateWithoutSocialIdentitiesInput, UserUncheckedCreateWithoutSocialIdentitiesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSocialIdentitiesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSocialIdentitiesInput, UserUncheckedUpdateWithoutSocialIdentitiesInput>
+  }
+
+  export type UserUpdateWithoutSocialIdentitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSocialIdentitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutProfileInput = {
     id?: string
     email: string
@@ -32959,6 +36139,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -32988,6 +36170,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -33031,6 +36215,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -33060,6 +36246,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -33428,6 +36616,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
@@ -33457,6 +36647,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
@@ -33693,6 +36885,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
@@ -33722,6 +36916,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
@@ -33901,6 +37097,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
@@ -33930,6 +37128,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
@@ -34178,6 +37378,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
@@ -34207,6 +37409,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
@@ -34606,6 +37810,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
@@ -34635,6 +37841,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
@@ -34858,6 +38066,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
@@ -34887,6 +38097,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
@@ -35243,6 +38455,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -35272,6 +38486,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -35458,6 +38674,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -35487,6 +38705,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -35514,6 +38734,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -35543,6 +38765,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -35586,6 +38810,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -35615,6 +38841,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -35779,6 +39007,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -35808,6 +39038,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -35840,6 +39072,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -35869,6 +39103,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -36055,6 +39291,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -36084,6 +39322,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -36122,6 +39362,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -36151,6 +39393,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -36573,6 +39817,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -36602,6 +39848,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -36674,6 +39922,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -36703,6 +39953,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -36753,6 +40005,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -36782,6 +40036,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -36854,6 +40110,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -36883,6 +40141,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -36910,6 +40170,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -36939,6 +40201,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -36982,6 +40246,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -37011,6 +40277,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -37038,6 +40306,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -37067,6 +40337,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -37110,6 +40382,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -37139,6 +40413,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -37166,6 +40442,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -37195,6 +40473,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -37238,6 +40518,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -37267,6 +40549,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -37280,6 +40564,13 @@ export namespace Prisma {
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  }
+
+  export type SocialIdentityCreateManyUserInput = {
+    id?: string
+    provider: string
+    providerUserId: string
+    createdAt?: Date | string
   }
 
   export type ServiceSaleCreateManyRecipientAccountInput = {
@@ -37463,6 +40754,27 @@ export namespace Prisma {
     read?: boolean
     active?: boolean
     createdAt?: Date | string
+  }
+
+  export type SocialIdentityUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialIdentityUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SocialIdentityUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerUserId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ServiceSaleUpdateWithoutRecipientAccountInput = {
@@ -37833,6 +41145,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -37861,6 +41175,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput

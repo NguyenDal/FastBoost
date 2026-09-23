@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changeMyPassword } from "../api/accountSettings";
@@ -10,8 +11,8 @@ function useAccountGuard() {
 
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
-            const userRaw = localStorage.getItem("user");
+            const token = authStorage.getItem("token");
+            const userRaw = authStorage.getItem("user");
 
             if (!token || !userRaw || !hasValidSession()) {
                 navigate("/", { replace: true });

@@ -135,6 +135,22 @@ exports.Prisma.UserScalarFieldEnum = {
   referredById: 'referredById'
 };
 
+exports.Prisma.RegistrationConsentScalarFieldEnum = {
+  userId: 'userId',
+  termsVersion: 'termsVersion',
+  termsAcceptedAt: 'termsAcceptedAt',
+  promotionalEmails: 'promotionalEmails',
+  promotionalConsentAt: 'promotionalConsentAt'
+};
+
+exports.Prisma.SocialIdentityScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  providerUserId: 'providerUserId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -455,6 +471,8 @@ exports.NotificationType = exports.$Enums.NotificationType = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  RegistrationConsent: 'RegistrationConsent',
+  SocialIdentity: 'SocialIdentity',
   Profile: 'Profile',
   Service: 'Service',
   ServicePriceRule: 'ServicePriceRule',

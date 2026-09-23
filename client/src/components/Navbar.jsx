@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CleanIcon from "./CleanIcon";
@@ -72,7 +73,7 @@ function Navbar({
         };
 
         const syncNavbarSession = async () => {
-            const tokenBeforeCheck = localStorage.getItem("token");
+            const tokenBeforeCheck = authStorage.getItem("token");
             const tokenIsValid = hasValidSession();
 
             if (!tokenIsValid) {
@@ -102,7 +103,7 @@ function Navbar({
             setLocalCurrentUser(getStoredUser());
             resetExpiryTimer();
 
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
             const cached = getStoredUser();
 
             if (token) {
@@ -122,7 +123,7 @@ function Navbar({
                     const data = await res.json();
 
                     if (res.ok && data?.user) {
-                        localStorage.setItem("user", JSON.stringify(data.user));
+                        authStorage.setItem("user", JSON.stringify(data.user));
                         setLocalCurrentUser(data.user);
                     }
                 } catch { }
@@ -234,7 +235,7 @@ function Navbar({
     };
 
     const loadNotifications = async () => {
-        const tokenBeforeCheck = localStorage.getItem("token");
+        const tokenBeforeCheck = authStorage.getItem("token");
 
         if (!hasValidSession()) {
             // Do not show expired popup if there was no token.

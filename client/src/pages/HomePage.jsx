@@ -1,3 +1,5 @@
+import { authStorage } from "../utils/authStorage";
+import { storeAuthSession } from "../utils/authStorage";
 import {
   getStoredUser,
   hasValidSession,
@@ -107,6 +109,7 @@ function HomePage() {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
 
   const [registerForm, setRegisterForm] = useState({
@@ -422,11 +425,11 @@ function HomePage() {
   };
 
   const handleLoginInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setLoginForm({
       ...loginForm,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     });
 
     setLoginErrors((prev) => ({
@@ -438,11 +441,11 @@ function HomePage() {
   };
 
   const handleRegisterInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setRegisterForm({
       ...registerForm,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     });
 
     setRegisterErrors((prev) => ({
@@ -496,13 +499,13 @@ function HomePage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    authStorage.removeItem("token");
+    authStorage.removeItem("user");
     setCurrentUser(null);
     setShowProfileMenu(false);
   };
 
-  const finishLogin = ({ token, user }) => {
+  const finishLogin = ({ token, user, rememberMe = loginForm.rememberMe === true }) => {
     const loggedInUser = {
       ...user,
       profileImage:
@@ -513,9 +516,7 @@ function HomePage() {
         "",
     };
 
-    localStorage.setItem("token", token || "logged-in");
-    sessionStorage.removeItem("fastboost:session-expired-shown");
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
+    storeAuthSession(token, loggedInUser, rememberMe);
 
     setCurrentUser(loggedInUser);
 
@@ -626,6 +627,8 @@ function HomePage() {
           role,
           username,
           referralCode: referralCode || undefined,
+          termsAccepted: registerForm.termsAccepted === true,
+          promotionalEmails: registerForm.promotionalEmails === true,
         }),
       });
 
@@ -642,6 +645,7 @@ function HomePage() {
 
       if (registerData?.token) {
         finishLogin({
+          rememberMe: false,
           token: registerData.token,
           user: {
             ...(registerData.user || {}),
@@ -695,6 +699,7 @@ function HomePage() {
 
       finishLogin({
         token: loginData?.token,
+        rememberMe: false,
         user: {
           ...(loginData?.user || {}),
           email: loginData?.user?.email || loginData?.email || registerForm.email,
@@ -751,7 +756,7 @@ function HomePage() {
     }
   };
 
-  const hasSession = Boolean(localStorage.getItem("token")) || Boolean(currentUser);
+  const hasSession = Boolean(authStorage.getItem("token")) || Boolean(currentUser);
 
   const profileImage =
     currentUser?.profileImage ||
@@ -901,6 +906,7 @@ function HomePage() {
       </main>
 
       <RegisterPage
+        onSocialSuccess={finishLogin}
         showAuthModal={showAuthModal}
         closeAuthModal={closeAuthModal}
         authSuccess={authSuccess}

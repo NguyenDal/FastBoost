@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
@@ -108,9 +109,9 @@ function ResetPasswordPage() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
+      authStorage.setItem("token", data.token);
       sessionStorage.removeItem("fastboost:session-expired-shown");
-      localStorage.setItem("user", JSON.stringify(data.user || {}));
+      authStorage.setItem("user", JSON.stringify(data.user || {}));
       setSuccess(true);
 
       setTimeout(() => {

@@ -1,0 +1,20 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const storage = () => { const values = new Map(); return { getItem: k => values.get(k) ?? null, setItem: (k, v) => values.set(k, String(v)), removeItem: k => values.delete(k) }; };
+test('remember me selects persistent storage and logout clears both stores', async t => {
+  const oldLocal = global.localStorage, oldSession = global.sessionStorage;
+  global.localStorage = storage(); global.sessionStorage = storage();
+  t.after(() => { if (oldLocal === undefined) delete global.localStorage; else global.localStorage = oldLocal; if (oldSession === undefined) delete global.sessionStorage; else global.sessionStorage = oldSession; });
+  const { authStorage, storeAuthSession } = await import('../../client/src/utils/authStorage.js');
+  storeAuthSession('remembered', { id: 'first' }, true);
+  assert.equal(localStorage.getItem('token'), 'remembered'); assert.equal(sessionStorage.getItem('token'), null);
+  storeAuthSession('session', { id: 'second' }, false);
+  assert.equal(localStorage.getItem('token'), null); assert.equal(localStorage.getItem('user'), null);
+  assert.equal(authStorage.getItem('token'), 'session');
+  authStorage.setItem('user', JSON.stringify({ id: 'updated' }));
+  assert.equal(JSON.parse(sessionStorage.getItem('user')).id, 'updated');
+  storeAuthSession('remembered-again', { id: 'third' }, true);
+  assert.equal(sessionStorage.getItem('token'), null); assert.equal(authStorage.getItem('token'), 'remembered-again');
+  authStorage.removeItem('token'); authStorage.removeItem('user');
+  assert.equal(authStorage.getItem('token'), null); assert.equal(authStorage.getItem('user'), null);
+});

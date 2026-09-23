@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -23,8 +24,8 @@ function useAdminGuard() {
 
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
-            const userRaw = localStorage.getItem("user");
+            const token = authStorage.getItem("token");
+            const userRaw = authStorage.getItem("user");
 
             if (!token || !userRaw) {
                 navigate("/", { replace: true });
@@ -678,4 +679,3 @@ function StatusBadge({ status }) {
 
     return <span className={cls}>{status}</span>;
 }
-

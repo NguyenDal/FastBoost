@@ -8,6 +8,94 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### September 22, 2026 — production receipt investigation
+
+- The deployed `fastboost-api` service was inspected in Render. It runs on Free
+  compute, uses `smtp.gmail.com:587`, and has no
+  `ORDER_CONFIRMATION_EMAILS_ENABLED` environment variable. With the current code,
+  the missing flag disables both receipt queueing and delivery.
+- Render Free blocks outbound SMTP ports 25, 465 and 587. Restore production
+  delivery with a paid instance that supports SMTP or an HTTPS email integration,
+  then enable receipts after confirming the production migration and frontend URL.
+  See [Render's Free service limits](https://render.com/docs/free).
+- Local SMTP authentication and the focused receipt/payment tests pass, but the
+  locally configured database does not contain the reported production orders.
+  Local sent records do not establish production delivery. No production settings,
+  payments or email records were changed, and no receipt was resent during diagnosis.
+
+### September 22, 2026 — authentication and legal pages
+
+- Login/register popups are wider and animate their height and width when switching.
+  Registration uses compact spacing and a full-height card with no internal
+  scrollbar; all controls fit at 1148×859. On smaller screens, overflow is handled
+  by the surrounding overlay so content remains reachable. Removed Account Access, changed
+  submit buttons to purple, softened Forgot password, and added the circled Or
+  divider and Google/Discord buttons with logos.
+- Remember me is functional: checked stores the session in localStorage; unchecked
+  uses sessionStorage for the current tab session. Both keep the existing three-day
+  JWT expiry. API calls, profile updates, logout and expiry use the same storage
+  helper. `/login` supports the same login options; `/register` opens the popup.
+  Home, Order, Contact and standalone login all handle checkbox booleans and honor
+  the selected persistence mode; Order/Contact no longer retain the string `on`.
+- Email/password and social registration require affirmative terms acceptance.
+  Promotional email consent is a separate, optional, unchecked choice. The server
+  stores the document version, acceptance time and marketing choice atomically
+  with the new account. Public signup always creates a CUSTOMER account.
+  Terms show a red required asterisk; missing acceptance focuses/highlights the
+  checkbox for password or social signup without extra alert text. Marketing
+  remains optional but its label does not display the word Optional.
+- `/terms-and-conditions` and `/provider-agreement` display the supplied HTML
+  documents. Their wording, review-draft labels, unset effective date and provider
+  template blanks are retained. These are review documents, not finalized terms
+  or an electronic signing flow. Registration and both card and gold checkout
+  link to terms; checkout now says the customer agrees to those terms.
+  The provider template's unprovided English/Vietnamese PDF download links are
+  omitted; its working Print / save PDF control remains.
+- Google and Discord authorization-code flows support signup and subsequent
+  sign-in using a stored provider identity and a verified provider email. Existing
+  password accounts are not automatically linked by email; those users continue
+  using password login. Social signup also preserves referral attribution.
+- OAuth uses a signed, expiring state cookie, fixed provider endpoints, validated
+  frontend origins and Google PKCE. Provider secrets and provider tokens stay on
+  the backend. The callback sends the FastBoost session to the initiating window
+  by origin-checked postMessage; tokens are not put in redirect URLs.
+- Migration `20260923010000_auth_consent_social` adds `RegistrationConsent` and
+  `SocialIdentity`. It was applied and recorded on the configured database; no
+  existing accounts were changed. The unrelated pending loyalty migration remains
+  untouched. Other deployments need the same schema and regenerated Prisma client.
+- Verification: 47 server tests pass, 2 optional database tests skip; new tests
+  cover consent, role assignment, OAuth state/callback/account rules and session
+  storage. Focused auth lint and the client build pass. Real Google/Discord login
+  still needs credentials and a user-driven provider login. No real test accounts,
+  payments or emails were created, and nothing was committed or deployed.
+
+#### Google and Discord setup
+
+In each provider developer console, create a web OAuth application and allow the
+exact backend callback URL. Set these **server-only** variables in `server/.env`
+(never commit secrets or add them to frontend environment variables):
+
+```dotenv
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:5000/api/auth/social/google/callback
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
+DISCORD_REDIRECT_URI=http://localhost:5000/api/auth/social/discord/callback
+```
+
+Set `CLIENT_URL` to the frontend origin (comma-separated origins are supported).
+Local development also allows `http://localhost:5173`. Production callback URLs
+must use HTTPS and the deployed API origin, retaining the paths above. Register
+each exact callback with its provider; use provider test users while an app is in
+testing mode. Restart the backend and reload the frontend after changing settings.
+Missing settings show a clear message and preserve password login. The endpoints
+are `GET /api/auth/social/providers`, `GET /api/auth/social/:provider/start` and
+`GET /api/auth/social/:provider/callback` (`google` or `discord`).
+
+Provider references: [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)
+and [Discord OAuth2](https://discord.com/developers/docs/topics/oauth2).
+
 ### September 22, 2026 — pricing, checkout, and coupons
 
 This section records the latest implementation and supersedes older session
@@ -66,7 +154,7 @@ Render deployment was performed for this work.
 - Deploy matching schema, backend, and frontend to other environments. The
   unrelated pending `20260921200000_optimize_loyalty_history` was not applied;
   review pending migrations before running a blanket deployment command.
-- Latest full server run: 39 passing tests, 2 optional database tests skipped.
+- Pricing-change server run: 39 passing tests, 2 optional database tests skipped.
   Coupon database lifecycle checks were separately verified in a rolled-back
   isolated schema earlier in the session. Focused pricing lint and client builds
   passed after the UI edits; Vite retains its existing bundle-size warning.
@@ -481,8 +569,9 @@ The current test account reports Link inactive for live mode and the localhost
 domain unregistered for Apple Pay.
 
 Stripe consumer terms and privacy links are displayed in the security card.
-FastBoost Terms of Service are not implemented yet; set `VITE_TERMS_URL` when
-the page exists to include its agreement link below the payment button.
+FastBoost Terms and Conditions are linked below card and gold payment buttons at
+`/terms-and-conditions`. `VITE_TERMS_URL` is no longer used. The imported document
+still carries its supplied review-draft label and unset effective date.
 
 Checkout session creation enforces order ownership and rejects cancelled orders.
 Refreshing reuses an open session when its amount and gold redemption match;
@@ -679,6 +768,10 @@ request originates from localhost.
 
 FastBoost order confirmation emails:
 - Reuses `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM`.
+- Production settings are separate from `server/.env`. Render Free blocks outbound
+  SMTP ports 25, 465 and 587, including the Gmail configuration above. Use a paid
+  instance with SMTP access or implement an HTTPS email provider before enabling
+  delivery. [Render Free limitations](https://render.com/docs/free).
 - Apply `server/prisma/migrations/20260922200000_order_confirmation_emails/migration.sql`
   before setting `ORDER_CONFIRMATION_EMAILS_ENABLED=true`, then restart the backend.
   Apply this migration alone if unrelated migrations are pending; do not blindly deploy all pending migrations.
@@ -689,6 +782,8 @@ FastBoost order confirmation emails:
 - The payment transaction queues one immutable confirmation per order. The backend worker
   checks every 30 seconds and retries delivery up to eight times. No historical orders are emailed.
   Inspect `OrderConfirmationEmail` for `sentAt`, `attempts`, `lastError`, and `nextAttemptAt`.
+  `sentAt` records acceptance by the SMTP server, not delivery to the customer's inbox.
+  Diagnose against the affected deployment's database; a local queue can be unrelated.
   After fixing delivery configuration, an operator can reset attempts and nextAttemptAt for
   unsent rows only. SMTP cannot guarantee exactly-once delivery after ambiguous network failure;
   the unique queue row and stable Message-ID prevent ordinary webhook/revisit duplicates.

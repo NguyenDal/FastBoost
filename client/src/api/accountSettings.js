@@ -1,7 +1,8 @@
+import { authStorage } from "../utils/authStorage";
 import { API_BASE_URL } from "./config.js";
 
 function authHeaders() {
-    const token = localStorage.getItem("token");
+    const token = authStorage.getItem("token");
 
     return {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ export async function changeMyPassword(payload) {
 }
 
 export async function uploadProfilePicture(file) {
-    const token = localStorage.getItem("token");
+    const token = authStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("profileImage", file);

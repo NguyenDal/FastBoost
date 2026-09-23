@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../api/config";
 import "../styles/Admin.css";
@@ -887,7 +888,7 @@ export default function PriceManagementPage() {
         setAvailabilityError("");
         try {
             const response = await fetch(`${API_BASE_URL}/admin/prices/rules/${item.id}/availability`, {
-                method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+                method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${authStorage.getItem("token")}` },
                 body: JSON.stringify({ active: item.nextActive }),
             });
             const data = await response.json();
@@ -958,7 +959,7 @@ export default function PriceManagementPage() {
         setPricesError("");
 
         try {
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
 
             const response = await fetch(`${API_BASE_URL}/admin/prices`, {
                 headers: {
@@ -1138,7 +1139,7 @@ export default function PriceManagementPage() {
             setPriceSaving(true);
             setPriceSaveError("");
 
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
 
             // Start from the original config and apply ONLY the checked changes.
             // Unchecked edits are intentionally discarded.
@@ -1322,7 +1323,7 @@ export default function PriceManagementPage() {
             setSaleSaving(true);
             setSaleError("");
 
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
             const response = await fetch(
                 `${API_BASE_URL}/admin/prices/sales`,
                 {
@@ -1411,7 +1412,7 @@ export default function PriceManagementPage() {
             setSaleSaving(true);
             setSaleError("");
 
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
             const response = await fetch(
                 `${API_BASE_URL}/admin/prices/sales/${pendingSaleAction.saleId}/disable`,
                 {

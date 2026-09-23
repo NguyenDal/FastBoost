@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
@@ -25,7 +26,7 @@ function formatDate(value) {
 
 function getStoredUserId() {
     try {
-        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const user = JSON.parse(authStorage.getItem("user") || "null");
         return user?.id || "";
     } catch {
         return "";

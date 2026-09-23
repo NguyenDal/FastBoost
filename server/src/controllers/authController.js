@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const prisma = require("../prisma");
 const { generateReferralCode } = require("../utils/referralCode");
+const { registrationConsent } = require("../utils/registrationConsent");
 
 const PASSWORD_RULES = {
   minLength: 8,
@@ -99,7 +100,10 @@ const sendPasswordResetEmail = async ({ to, resetUrl }) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, role, username, referralCode } = req.body;
+    const { email, password, username, referralCode } = req.body;
+    let consent;
+    try { consent = registrationConsent(req.body); }
+    catch (error) { return res.status(400).json({ ok: false, message: error.message }); }
 
     if (!email || !password) {
       return res.status(400).json({
@@ -169,7 +173,8 @@ const registerUser = async (req, res) => {
         email: normalizedEmail,
         username: cleanUsername || null,
         passwordHash: hashedPassword,
-        role: role || "CUSTOMER",
+        role: "CUSTOMER",
+        registrationConsent: { create: consent },
         referralCode: newReferralCode,
         referredById: referredByUser?.id || null,
         profile: cleanUsername

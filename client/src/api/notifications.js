@@ -1,7 +1,8 @@
+import { authStorage } from "../utils/authStorage";
 import { API_BASE_URL } from './config.js';
 
 function authHeaders() {
-  const token = localStorage.getItem("token");
+  const token = authStorage.getItem("token");
 
   return {
     "Content-Type": "application/json",

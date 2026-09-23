@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -19,8 +20,8 @@ function useAccountGuard() {
 
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
-            const userRaw = localStorage.getItem("user");
+            const token = authStorage.getItem("token");
+            const userRaw = authStorage.getItem("user");
 
             if (!token || !userRaw || !hasValidSession()) {
                 navigate("/", { replace: true });
@@ -196,7 +197,7 @@ export default function AccountSettingsPage() {
                 profileImageUrl: data.imageUrl,
             }));
 
-            localStorage.setItem("user", JSON.stringify(data.user));
+            authStorage.setItem("user", JSON.stringify(data.user));
 
             try {
                 window.dispatchEvent(
@@ -307,7 +308,7 @@ export default function AccountSettingsPage() {
                 : "",
         }));
 
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        authStorage.setItem("user", JSON.stringify(updatedUser));
 
         try {
             window.dispatchEvent(

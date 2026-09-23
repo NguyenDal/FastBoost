@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { customerListMyOrders } from "../api/customerOrders";
@@ -6,7 +7,7 @@ import { GenericPageSkeleton } from "../components/PageSkeletons";
 
 function getStoredUser() {
     try {
-        return JSON.parse(localStorage.getItem("user") || "null");
+        return JSON.parse(authStorage.getItem("user") || "null");
     } catch {
         return null;
     }
@@ -18,7 +19,7 @@ function useCustomerGuard() {
 
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
             const user = getStoredUser();
 
             if (!token || !user) {

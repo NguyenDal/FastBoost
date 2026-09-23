@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import SocialAuthButtons from "../components/SocialAuthButtons";
 import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
 
@@ -29,13 +30,40 @@ function RegisterPage({
   referralInvite,
   referralInviteLoading,
   referralInviteError,
+  onSocialSuccess,
 }) {
+  const contentRef = useRef(null);
+  const termsRef = useRef(null);
+  const [termsAttempted, setTermsAttempted] = useState(false);
+  const termsInvalid = termsAttempted && !registerForm?.termsAccepted;
+  const highlightTerms = () => {
+    setTermsAttempted(true);
+    setAuthMessage("");
+    termsRef.current?.focus();
+  };
+  useEffect(() => {
+    if (!showAuthModal) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, [showAuthModal]);
+  const [contentHeight, setContentHeight] = useState(null);
+  useLayoutEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    const observer = new ResizeObserver(() => setContentHeight(content.getBoundingClientRect().height));
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [showAuthModal]);
   // Local computed state for Register mode
-  const [nameStatus, setNameStatus] = useState({
+  const [nameResult, setNameResult] = useState({
+    username: "",
     checked: false,
     available: false,
     reason: "",
   });
+  const nameStatus = nameResult.username === (registerForm?.username || "").trim()
+    ? nameResult : { checked: false, available: false, reason: "" };
 
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
@@ -63,24 +91,29 @@ function RegisterPage({
   useEffect(() => {
     if (authMode !== "register") return;
     const u = (registerForm?.username || "").trim();
-    setNameStatus((s) => ({ ...s, checked: false }));
     if (u.length < 3) return;
+    const controller = new AbortController();
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/user/check-username?u=${encodeURIComponent(u)}`);
+        const res = await fetch(`${API_BASE_URL}/user/check-username?u=${encodeURIComponent(u)}`, { signal: controller.signal });
         const data = await res.json();
-        setNameStatus({ checked: true, available: !!data.available, reason: data.reason || "" });
+        if (!controller.signal.aborted) setNameResult({ username: u, checked: true, available: !!data.available, reason: data.reason || "" });
       } catch {
-        setNameStatus({ checked: true, available: false, reason: "error" });
+        if (!controller.signal.aborted) setNameResult({ username: u, checked: true, available: false, reason: "error" });
       }
     }, 250);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); controller.abort(); };
   }, [authMode, registerForm?.username]);
 
   const handleValidatedRegisterSubmit = (event) => {
     event.preventDefault();
     setSubmitAttempted(true);
     setAuthMessage("");
+
+    if (registerForm.termsAccepted !== true) {
+      highlightTerms();
+      return;
+    }
 
     const username = (registerForm?.username || "").trim();
 
@@ -105,18 +138,21 @@ function RegisterPage({
   if (!showAuthModal) return null;
 
   return (
-    <div className="modal-backdrop" onClick={closeAuthModal}>
+    <div className="modal-backdrop auth-modal-backdrop" onClick={closeAuthModal}>
       <div
-        className={`auth-modal ${authMode === "register" && registerForm?.referralCode
+        className={`auth-modal auth-modal-${authMode} ${authMode === "register" && registerForm?.referralCode
           ? "auth-modal-private-invite"
           : ""
           }`}
         onClick={(event) => event.stopPropagation()}
+        role="dialog" aria-modal="true" aria-label={authMode === "register" ? "Create account" : "Sign in"}
+        style={{ height: contentHeight ? contentHeight + 58 : undefined }}
       >
-        <button className="modal-close-btn" onClick={closeAuthModal}>
+        <button className="modal-close-btn" aria-label="Close" onClick={closeAuthModal}>
           ×
         </button>
 
+        <div ref={contentRef} className="auth-modal-content">
         {authSuccess ? (
           <div className="auth-success-state">
             <div className="success-checkmark-wrap">
@@ -131,7 +167,6 @@ function RegisterPage({
           </div>
         ) : (
           <>
-            <p className="section-label">Account Access</p>
             <h2 className="modal-title">
               {authMode === "login"
                 ? "Login"
@@ -170,6 +205,7 @@ function RegisterPage({
                   required
                 />
 
+                <label className="auth-check-row auth-remember"><input type="checkbox" name="rememberMe" checked={Boolean(loginForm.rememberMe)} onChange={handleLoginInputChange}/><span>Remember me</span></label>
                 <button
                   type="submit"
                   className="primary-btn modal-submit-btn"
@@ -369,17 +405,31 @@ function RegisterPage({
                   )}
                 </div>
 
+                <div className="auth-consents">
+                  <label className={`auth-check-row auth-terms-row${termsInvalid ? " auth-check-error" : ""}`}>
+                    <input ref={termsRef} type="checkbox" name="termsAccepted" checked={Boolean(registerForm.termsAccepted)}
+                      onChange={(event) => { setTermsAttempted(false); handleRegisterInputChange(event); }}
+                      onInvalid={(event) => { event.preventDefault(); highlightTerms(); }} aria-invalid={termsInvalid} required/>
+                    <span>I agree to the <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>. <span className="auth-required" aria-hidden="true">*</span></span>
+                  </label>
+                  <label className="auth-check-row"><input type="checkbox" name="promotionalEmails" checked={Boolean(registerForm.promotionalEmails)} onChange={handleRegisterInputChange}/><span>I agree to receive promotional emails.</span></label>
+                </div>
                 <button
                   type="submit"
                   className="primary-btn modal-submit-btn"
                   disabled={authLoading}
-                  onClick={() => setSubmitAttempted(true)}
+                  onClick={(event) => {
+                    if (!registerForm.termsAccepted) { event.preventDefault(); highlightTerms(); }
+                    else setSubmitAttempted(true);
+                  }}
                 >
                   {authLoading ? "Creating account..." : "Register"}
                 </button>
               </form>
             )}
 
+            {authMessage && <p className="auth-error-message" role="alert">{authMessage}</p>}
+            {authMode !== "forgot" && <SocialAuthButtons mode={authMode} termsAccepted={registerForm?.termsAccepted} onTermsRequired={highlightTerms} promotionalEmails={registerForm?.promotionalEmails} referralCode={registerForm?.referralCode} rememberMe={authMode === "login" && Boolean(loginForm?.rememberMe)} onSuccess={onSocialSuccess} onError={setAuthMessage} />}
             <p className="auth-switch-line">
               {authMode === "login" ? (
                 <>
@@ -428,6 +478,7 @@ function RegisterPage({
             </p>
           </>
         )}
+        </div>
       </div>
     </div>
   );

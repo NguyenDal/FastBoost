@@ -8,15 +8,20 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  z-index: 999;
+  z-index: 1400;
   animation: fadeInBackdrop 0.25s ease;
 }
 
 .auth-modal {
   position: relative;
   width: 100%;
-  max-width: 460px;
-  padding: 32px 28px 28px;
+  max-width: 520px;
+  padding: 28px;
+  flex-shrink: 0;
+  margin: auto 0;
+  overflow: clip;
+  box-sizing: border-box;
+  transition: height 300ms ease, max-width 300ms ease;
   border-radius: 24px;
   background: rgba(13, 18, 30, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -34,7 +39,7 @@
   margin-bottom: 18px;
 }
 
-.auth-modal-form input {
+.auth-modal-form input:not([type="checkbox"]) {
   width: 100%;
   margin-bottom: 14px;
   padding: 14px 16px;
@@ -55,6 +60,58 @@
   border: none;
   cursor: pointer;
 }
+
+.auth-modal-backdrop {
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.auth-modal-register { max-width: 600px; }
+.auth-modal-register .modal-title { font-size: 1.75rem; }
+.auth-modal-register .modal-description { margin-top: 0; margin-bottom: 14px; }
+.auth-modal-register .auth-modal-form input:not([type="checkbox"]) { padding: 11px 16px; margin-bottom: 10px; }
+.auth-modal-register .password-strength { margin: 4px 0 12px; }
+.auth-modal-register .password-strength-track { height: 8px; margin-bottom: 8px; }
+.auth-modal-register .password-rules p { margin: 3px 0; }
+.auth-modal-register .auth-consents { gap: 8px; margin-bottom: 14px; }
+.auth-modal-register .auth-or { margin: 12px 0; }
+.auth-modal-register .auth-or span { width: 30px; height: 30px; }
+.auth-modal-register .auth-switch-line { margin: 14px 0 0; }
+.auth-modal-content { display: flow-root; }
+.auth-modal .modal-title { margin-top: 0; padding-right: 32px; }
+.auth-modal .modal-submit-btn, .auth-card .auth-submit-btn {
+  background: linear-gradient(110deg, #9333ea, #6d28d9);
+  color: #fff;
+}
+.forgot-password-line .auth-switch-btn { font-weight: 400; color: #c4b5fd; }
+.auth-check-row { display: flex; align-items: flex-start; gap: 10px; text-align: left; font-size: .88rem; line-height: 1.5; color: #cbd5e1; cursor: pointer; }
+.auth-check-row input[type="checkbox"] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; accent-color: #8b5cf6; cursor: pointer; }
+.auth-check-row a { color: #c4b5fd; text-underline-offset: 3px; }
+.auth-check-row input:focus-visible, .auth-provider-button:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 3px; }
+.auth-remember { margin: 0 0 16px; }
+.auth-consents { display: grid; gap: 10px; margin: 2px 0 20px; }
+.auth-required { color: #f87171; font-weight: 700; }
+.auth-terms-row { border-radius: 6px; }
+.auth-check-error { color: #fca5a5; background: rgba(239, 68, 68, .08); box-shadow: 0 0 0 5px rgba(239, 68, 68, .08); }
+.auth-check-error a { color: #fca5a5; }
+.auth-check-error input[type="checkbox"] { outline: 2px solid #f87171; outline-offset: 2px; }
+.auth-or { display: flex; align-items: center; gap: 0; margin: 20px 0 16px; color: #aeb6ca; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 1px; background: #30364a; }
+.auth-or span { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #30364a; border-radius: 50%; font-size: .8rem; }
+.auth-social-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.auth-provider-button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 10px; background: #171d2d; border: 1px solid #343c53; border-radius: 12px; color: #f1f5f9; cursor: pointer; font: inherit; font-size: .85rem; }
+.auth-provider-button svg { width: 21px; height: 21px; flex-shrink: 0; }
+.auth-provider-button:hover { background: #222a40; border-color: #8b5cf6; }
+.auth-provider-button:disabled { opacity: .6; cursor: wait; }
+.auth-social [role="status"] { color: #aeb6ca; font-size: .85rem; }
+.auth-modal-register .password-rules { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
+@media (max-width: 560px) {
+  .modal-backdrop { padding: 12px; }
+  .auth-modal { padding: 28px; }
+  .auth-social-buttons { grid-template-columns: 1fr; }
+  .auth-modal-register .password-rules { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .auth-modal { transition: none; animation: none; } }
 
 .modal-close-btn {
   position: absolute;

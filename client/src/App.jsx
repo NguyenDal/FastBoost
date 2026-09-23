@@ -1,9 +1,10 @@
+import { authStorage } from "./utils/authStorage";
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
+import LegalDocumentPage from "./pages/LegalDocumentPage";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import OrderPage from "./pages/OrderPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MatchPage from "./pages/MatchPage";
@@ -56,7 +57,7 @@ function App() {
 
   useEffect(() => {
     const checkSession = () => {
-      const token = localStorage.getItem("token");
+      const token = authStorage.getItem("token");
 
       if (!token) return;
 
@@ -95,7 +96,9 @@ function App() {
         <Route path="/r/:referralCode" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register" element={<Navigate to="/" replace state={{ openAuthModal: true, authMode: "register" }} />} />
+        <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
+        <Route path="/provider-agreement" element={<LegalDocumentPage provider />} />
         <Route path="/order/:serviceId" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />

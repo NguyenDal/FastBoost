@@ -102,7 +102,6 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
     if (state.type === "error") return <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />;
     // Stripe requires reading and displaying its current total before confirmation.
     const total = state.checkout.total.total.amount;
-    const termsUrl = import.meta.env.VITE_TERMS_URL;
     return <>
         <div id="checkout-express" className={wallets ? "checkout-express" : "checkout-express-empty"}>
             {wallets && <h3>Express Checkout</h3>}
@@ -127,9 +126,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
             <div className="checkout-input"><CheckoutIcon type="globe"/><select id="checkout-country" autoComplete="country" required value={country} onChange={event=>setCountry(event.target.value)}><option value="">Select country</option>{COUNTRIES.map(item=><option key={item.code} value={item.code}>{item.name}</option>)}</select></div>
             {error && <PaymentErrorDialog message={error} action={ready ? "Back to Payment" : "Reload Checkout"} onClose={() => { if (ready) setError(""); else window.location.reload(); }} />}
             <button className="checkout-pay" disabled={busy || !ready} type="submit"><CheckoutIcon type="lock"/><span>{busy ? "Processing…" : `Pay Securely — ${total}`}</span><CheckoutIcon type="arrow"/></button>
-            <p className="checkout-agreement">By placing this order, {termsUrl ? <>you agree to our <a href={termsUrl} target="_blank" rel="noreferrer">Terms of Service</a> and </> : null}you confirm that all information provided is accurate.</p>
+            <p className="checkout-agreement">By placing this order, you agree to our <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>.</p>
         </form>
     </>;
 }
-
-

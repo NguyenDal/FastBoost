@@ -1,3 +1,6 @@
+import { storeAuthSession } from "../utils/authStorage";
+import { notifyAuthChanged } from "../utils/authSession";
+import SocialAuthButtons from "../components/SocialAuthButtons";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
@@ -10,12 +13,20 @@ function LoginPage() {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
+    const { name, type, checked, value } = event.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+  };
+
+  const finishLogin = ({ token, user, rememberMe = form.rememberMe }) => {
+    storeAuthSession(token, user, rememberMe);
+    notifyAuthChanged({ loggedIn: true });
+    navigate(redirectTo);
   };
 
   const handleSubmit = async (event) => {
@@ -39,13 +50,8 @@ function LoginPage() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      sessionStorage.removeItem("fastboost:session-expired-shown");
-      localStorage.setItem("user", JSON.stringify(data.user || {}));
-
-      setMessage("Login successful");
-      navigate(redirectTo);
-    } catch (error) {
+      finishLogin(data);
+    } catch {
       setMessage("Could not connect to backend");
     } finally {
       setLoading(false);
@@ -55,7 +61,6 @@ function LoginPage() {
   return (
     <div className="auth-page">
       <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="section-label">Account Access</p>
         <h1>Login</h1>
         <p className="section-description">
           Sign in to continue your FastBoost experience.
@@ -79,11 +84,13 @@ function LoginPage() {
           required
         />
 
+        <label className="auth-check-row auth-page-remember"><input type="checkbox" name="rememberMe" checked={form.rememberMe} onChange={handleChange}/><span>Remember me</span></label>
         <button className="primary-btn auth-submit-btn" type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {message && <p className="info-message">{message}</p>}
+        {message && <p className="info-message" role="alert">{message}</p>}
+        <SocialAuthButtons rememberMe={form.rememberMe} onSuccess={finishLogin} onError={setMessage}/>
 
         <p className="auth-switch-text">
           Don&apos;t have an account? <Link to="/register">Register</Link>

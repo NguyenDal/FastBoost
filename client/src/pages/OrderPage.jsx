@@ -1,3 +1,5 @@
+import { authStorage, storeAuthSession } from "../utils/authStorage";
+import { notifyAuthChanged } from "../utils/authSession";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
@@ -94,6 +96,7 @@ function OrderPage() {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
 
   const [registerForm, setRegisterForm] = useState({
@@ -123,8 +126,8 @@ function OrderPage() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const savedUser = localStorage.getItem("user");
-      const savedToken = localStorage.getItem("token");
+      const savedUser = authStorage.getItem("user");
+      const savedToken = authStorage.getItem("token");
 
       if (savedUser) return JSON.parse(savedUser);
       if (savedToken) return { email: "Signed in user" };
@@ -136,7 +139,7 @@ function OrderPage() {
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const hasSession = Boolean(localStorage.getItem("token")) || Boolean(currentUser);
+  const hasSession = Boolean(authStorage.getItem("token")) || Boolean(currentUser);
 
   const [formData, setFormData] = useState({
     currentRank: "Silver I",
@@ -176,7 +179,7 @@ function OrderPage() {
 
   useEffect(() => {
     const loadGold = async () => {
-      const token = localStorage.getItem("token");
+      const token = authStorage.getItem("token");
 
       if (!token) {
         setReferralOffer(null);
@@ -810,11 +813,11 @@ function OrderPage() {
   };
 
   const handleLoginInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setLoginForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     setLoginErrors((prev) => ({
@@ -826,11 +829,11 @@ function OrderPage() {
   };
 
   const handleRegisterInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setRegisterForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     setRegisterErrors((prev) => ({
@@ -855,26 +858,30 @@ function OrderPage() {
     setLoginErrors({ email: false, password: false });
     setRegisterErrors({ email: false, password: false });
 
-    setLoginForm({ email: "", password: "" });
+    setLoginForm({ email: "", password: "", rememberMe: false });
     setRegisterForm({ email: "", password: "", role: "CUSTOMER" });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    authStorage.removeItem("token");
+    authStorage.removeItem("user");
     setCurrentUser(null);
     setShowProfileMenu(false);
     try { window.dispatchEvent(new Event("auth:changed")); } catch { }
     navigate("/", { replace: true });
   };
 
-  const finishLogin = ({ token, email, profileImage = "", role = "CUSTOMER" }) => {
-    const loggedInUser = { email, profileImage, role };
+  const finishLogin = ({ token, user, email, profileImage = "", role = "CUSTOMER", rememberMe = loginForm.rememberMe === true }) => {
+    const loggedInUser = {
+      ...user,
+      email: user?.email || email,
+      profileImage: user?.profile?.profileImageUrl || user?.profileImage || profileImage,
+      role: user?.role || role,
+    };
 
-    localStorage.setItem("token", token || "logged-in");
-    sessionStorage.removeItem("fastboost:session-expired-shown");
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
+    storeAuthSession(token, loggedInUser, rememberMe);
     setCurrentUser(loggedInUser);
+    notifyAuthChanged({ user: loggedInUser });
 
     setAuthLoading(false);
     setAuthSuccess(true);
@@ -913,6 +920,7 @@ function OrderPage() {
 
       finishLogin({
         token: data?.token,
+        user: data?.user,
         email: data?.user?.email || data?.email || loginForm.email,
         profileImage:
           data?.user?.profileImage ||
@@ -978,6 +986,7 @@ function OrderPage() {
             setLoginForm({
               email: registerForm.email,
               password: "",
+              rememberMe: false,
             });
             setAuthSuccessTitle("");
             setAuthSuccessText("");
@@ -987,6 +996,8 @@ function OrderPage() {
 
         finishLogin({
           token: loginData?.token,
+          user: loginData?.user,
+          rememberMe: false,
           email: loginData?.user?.email || loginData?.email || registerForm.email,
           profileImage:
             loginData?.user?.profileImage ||
@@ -1000,6 +1011,8 @@ function OrderPage() {
 
       finishLogin({
         token: data?.token,
+        user: data?.user,
+        rememberMe: false,
         email: data?.user?.email || data?.email || registerForm.email,
         profileImage:
           data?.user?.profileImage ||
@@ -1034,7 +1047,7 @@ function OrderPage() {
       }
 
 
-      const token = localStorage.getItem("token");
+      const token = authStorage.getItem("token");
 
       if (!token) {
         setSubmitError("");
@@ -2603,6 +2616,7 @@ function OrderPage() {
         )}
 
         <RegisterPage
+          onSocialSuccess={finishLogin}
           showAuthModal={showAuthModal}
           closeAuthModal={closeAuthModal}
           authMode={authMode}

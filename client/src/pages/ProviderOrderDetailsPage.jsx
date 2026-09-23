@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -15,8 +16,8 @@ function useProviderGuard() {
 
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
-            const userRaw = localStorage.getItem("user");
+            const token = authStorage.getItem("token");
+            const userRaw = authStorage.getItem("user");
 
             if (!token || !userRaw) {
                 navigate("/", { replace: true });

@@ -1,3 +1,4 @@
+import { authStorage } from "../utils/authStorage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -312,8 +313,8 @@ function MatchPage() {
     }, [orderId]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const savedUser = localStorage.getItem("user");
+        const token = authStorage.getItem("token");
+        const savedUser = authStorage.getItem("user");
 
         if (token && savedUser) {
             const parsedUser = JSON.parse(savedUser);
@@ -328,8 +329,8 @@ function MatchPage() {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        authStorage.removeItem("token");
+        authStorage.removeItem("user");
         setHasSession(false);
         setCurrentUser(null);
         setProfileImage("");
@@ -341,7 +342,7 @@ function MatchPage() {
     // Require auth: if token disappears, go home
     useEffect(() => {
         const check = () => {
-            const token = localStorage.getItem("token");
+            const token = authStorage.getItem("token");
             if (!token) {
                 navigate("/", { replace: true });
             }
@@ -365,7 +366,7 @@ function MatchPage() {
                 setChatLoading(true);
                 setChatError("");
 
-                const token = localStorage.getItem("token");
+                const token = authStorage.getItem("token");
 
                 if (!token) {
                     setOrder(null);
@@ -424,7 +425,7 @@ function MatchPage() {
                 } : null;
 
                 if (savedMessages.length > 0) {
-                    const currentUserRaw = localStorage.getItem("user");
+                    const currentUserRaw = authStorage.getItem("user");
                     const loggedInUser = currentUserRaw ? JSON.parse(currentUserRaw) : null;
                     const loggedInUserId = getCurrentUserId(loggedInUser);
 
@@ -1524,7 +1525,7 @@ function getCurrentUserId(currentUser) {
 
 function getStoredUser() {
     try {
-        return JSON.parse(localStorage.getItem("user") || "null");
+        return JSON.parse(authStorage.getItem("user") || "null");
     } catch {
         return null;
     }
@@ -1883,4 +1884,3 @@ function LockFieldIcon() {
 }
 
 export default MatchPage;
-

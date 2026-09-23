@@ -19,6 +19,10 @@ export default function DynamicTitle() {
       title = "Create Account | FastBoost";
     } else if (path === "/reset-password") {
       title = "Reset Password | FastBoost";
+    } else if (path === "/terms-and-conditions") {
+      title = "Terms and Conditions | FastBoost";
+    } else if (path === "/provider-agreement") {
+      title = "Provider Agreement | FastBoost";
     } else if (path === "/contact") {
       title = "Contact | FastBoost";
     } else if (path.startsWith("/checkout/")) {

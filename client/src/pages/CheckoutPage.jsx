@@ -188,6 +188,7 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     return <dialog ref={dialog} className={`checkout-gold-dialog${closing ? " is-closing" : ""}`} aria-labelledby="gold-confirm-title" aria-describedby="gold-confirm-description" onCancel={event => { event.preventDefault(); if (!busy) setClosing(true); }}>
         <h2 id="gold-confirm-title">Pay with {gold} gold?</h2>
         <p id="gold-confirm-description">Your gold covers this order in full. Confirm to spend {gold} gold and place your order.</p>
+        <p className="checkout-agreement">By placing this order, you agree to our <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>.</p>
         <button className="checkout-pay" disabled={busy || closing} onClick={onConfirm}>{busy ? "Processing…" : `Pay with ${gold} gold`}</button>
         <button className="checkout-gold-back" autoFocus disabled={busy || closing} onClick={() => setClosing(true)}>Back to card payment</button>
     </dialog>;
@@ -279,7 +280,3 @@ function GoldRedemption({ summary, onApply, disabled }) {
         <p id="checkout-gold-help" aria-live="polite" className={valid ? undefined : "checkout-gold-error"}>{warning || "Gold is spent only after payment succeeds."}</p>
     </form>;
 }
-
-
-
-

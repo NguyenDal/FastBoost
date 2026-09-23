@@ -23,7 +23,7 @@
   margin-bottom: 12px;
 }
 
-.auth-card input,
+.auth-card input:not([type="checkbox"]),
 .auth-input,
 .auth-textarea {
   width: 100%;
@@ -162,3 +162,5 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.auth-page-remember { margin-top: 16px; }

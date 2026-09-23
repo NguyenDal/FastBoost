@@ -8,6 +8,8 @@ datasource db {
 }
 
 model User {
+  registrationConsent RegistrationConsent?
+  socialIdentities SocialIdentity[]
   personalCoupons     ServiceSale[] @relation("PersonalCouponRecipient")
   couponUses          CouponUse[]
   id                  String               @id @default(cuid())
@@ -41,6 +43,26 @@ model User {
   boosterAssignmentRequests AssignmentRequest[] @relation("BoosterAssignmentRequests")
   adminAssignmentRequests   AssignmentRequest[] @relation("AdminAssignmentRequests")
   notifications             Notification[]
+}
+
+model RegistrationConsent {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  termsVersion String
+  termsAcceptedAt DateTime @default(now())
+  promotionalEmails Boolean @default(false)
+  promotionalConsentAt DateTime?
+}
+
+model SocialIdentity {
+  id String @id @default(cuid())
+  provider String
+  providerUserId String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([provider, providerUserId])
+  @@unique([userId, provider])
 }
 
 model Profile {

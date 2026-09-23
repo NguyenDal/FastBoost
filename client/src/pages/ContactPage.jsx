@@ -1,3 +1,4 @@
+import { storeAuthSession } from "../utils/authStorage";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { sendContactEmail } from "../api/contact";
@@ -21,7 +22,7 @@ export default function ContactPage() {
 
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
-    const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+    const [loginForm, setLoginForm] = useState({ email: "", password: "", rememberMe: false });
     const [registerForm, setRegisterForm] = useState({
         email: "",
         password: "",
@@ -51,7 +52,7 @@ export default function ContactPage() {
         setForgotError(false);
         setLoginErrors({ email: false, password: false });
         setRegisterErrors({ email: false, password: false });
-        setLoginForm({ email: "", password: "" });
+        setLoginForm({ email: "", password: "", rememberMe: false });
         setRegisterForm({
             email: "",
             password: "",
@@ -62,28 +63,27 @@ export default function ContactPage() {
     };
 
     const handleLoginInputChange = (event) => {
-        const { name, value } = event.target;
-        setLoginForm((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = event.target;
+        setLoginForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
         setLoginErrors((prev) => ({ ...prev, [name]: false }));
         setAuthMessage("");
     };
 
     const handleRegisterInputChange = (event) => {
-        const { name, value } = event.target;
-        setRegisterForm((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = event.target;
+        setRegisterForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
         setRegisterErrors((prev) => ({ ...prev, [name]: false }));
         setAuthMessage("");
     };
 
-    const finishLogin = (data) => {
+    const finishLogin = (data, rememberMe = (data.rememberMe ?? loginForm.rememberMe) === true) => {
         const user = {
             ...(data?.user || {}),
             email: data?.user?.email || data?.email || loginForm.email,
             role: data?.user?.role || "CUSTOMER",
         };
 
-        localStorage.setItem("token", data?.token || "logged-in");
-        localStorage.setItem("user", JSON.stringify(user));
+        storeAuthSession(data.token, user, rememberMe);
         notifyAuthChanged({ user });
         setAuthSuccess(true);
         setAuthSuccessTitle("Login Successful");
@@ -130,11 +130,11 @@ export default function ContactPage() {
         setRegisterErrors({ email: false, password: false });
 
         try {
-            const { email, password, role, username } = registerForm;
+            const { email, password, role, username, termsAccepted, promotionalEmails } = registerForm;
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, role, username }),
+                body: JSON.stringify({ email, password, role, username, termsAccepted: termsAccepted === true, promotionalEmails: promotionalEmails === true }),
             });
             const data = await response.json();
 
@@ -145,7 +145,7 @@ export default function ContactPage() {
             }
 
             if (data?.token) {
-                finishLogin(data);
+                finishLogin(data, false);
                 return;
             }
 
@@ -163,12 +163,12 @@ export default function ContactPage() {
                 window.setTimeout(() => {
                     setAuthSuccess(false);
                     setAuthMode("login");
-                    setLoginForm({ email, password: "" });
+                    setLoginForm({ email, password: "", rememberMe: false });
                 }, 350);
                 return;
             }
 
-            finishLogin(loginData);
+            finishLogin(loginData, false);
         } catch {
             setRegisterErrors({ email: true, password: true });
             setAuthMessage("Could not connect to backend");
@@ -395,6 +395,7 @@ export default function ContactPage() {
             )}
 
             <RegisterPage
+                onSocialSuccess={finishLogin}
                 showAuthModal={showAuthModal}
                 closeAuthModal={resetAuthState}
                 authSuccess={authSuccess}
