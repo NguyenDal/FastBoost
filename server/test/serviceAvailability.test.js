@@ -64,7 +64,7 @@ test('deactivated standalone Win Boost still provides the bonus-win reference pr
 test('service coupons match global coupon date and base-price rules',()=>{
     const options=saleOptions({scope:'SERVICE',saleMode:'WITH_COUPON',couponCode:'rank15',footerDecoration:true});
     assert.equal(options.couponCode,'RANK15');assert.equal(options.startsAt,null);assert.equal(options.endsAt,null);assert.equal(options.appliesTo,'BASE_PRICE');
-    assert.throws(()=>saleOptions({scope:'SERVICE',saleMode:'WITHOUT_COUPON'}),/sale start and end/);
+    assert.throws(()=>saleOptions({scope:'SERVICE',saleMode:'WITHOUT_COUPON'}),/Set Sale End/);
 });
 
 test('admin service coupon is scoped to the selected service and never automatically attached as its sale',async t=>{
@@ -84,7 +84,7 @@ test('personal coupon resolves an existing customer and rejects unknown recipien
     const writes=[];
     const {createSale}=loadController(t,'priceController',{
         user:{findFirst:async ({where})=>{
-            assert.equal(where.role,'CUSTOMER');
+            assert.equal(where.role,undefined);
             assert.equal(where.email.mode,'insensitive');
             return where.email.equals === 'customer@example.com' ? {id:'customer'} : null;
         }},
@@ -107,4 +107,17 @@ test('multi-service personal coupon keeps one code and validates every service',
  const body={scope:'SERVICE',serviceId:'rank',couponServiceIds:['rank','win'],saleMode:'WITH_COUPON',couponCode:'GIFT15',discountPercent:15,personalCoupon:true,recipientAccountId:'customer',personalReason:'MANUAL'};
  const ok=response();await createSale({body},ok);assert.equal(ok.code,201);assert.deepEqual(writes[0].couponServiceIds,['rank','win']);
  const invalid=response();await createSale({body:{...body,couponServiceIds:['rank','missing']}},invalid);assert.equal(invalid.code,400);assert.equal(writes.length,1);
+});
+
+
+test('multiple recipients share one private code with validated unique accounts',async t=>{
+ const writes=[];
+ const {createSale}=loadController(t,'priceController',{
+ user:{findMany:async({where})=>where.id.in.filter(id=>['a','b'].includes(id)).map(id=>({id}))},
+ serviceSale:{create:async({data})=>{writes.push(data);return data;}}
+ },{invalidatePricingCatalog(){}});
+ const body={scope:'GLOBAL',saleMode:'WITH_COUPON',couponCode:'GROUP15',discountPercent:15,personalCoupon:true,recipientAccountIds:['a','b'],personalReason:'MANUAL',footerDecoration:true};
+ const ok=response();await createSale({body},ok);assert.equal(ok.code,201);assert.deepEqual(writes[0].recipientAccountIds,['a','b']);assert.equal(writes[0].recipientAccountId,'a');assert.equal(writes[0].footerDecoration,false);
+ for(const ids of [[],['a','a'],['a',null],Array(101).fill('a')]){const res=response();await createSale({body:{...body,recipientAccountIds:ids}},res);assert.equal(res.code,400);}
+ const missing=response();await createSale({body:{...body,recipientAccountIds:['a','missing']}},missing);assert.equal(missing.code,404);assert.equal(writes.length,1);
 });

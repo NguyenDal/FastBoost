@@ -119,6 +119,7 @@ model ServicePriceRule {
 }
 
 model ServiceSale {
+  recipientAccountIds String[] @default([])
   recipientAccountId String?
   recipientAccount User? @relation("PersonalCouponRecipient", fields: [recipientAccountId], references: [id], onDelete: Restrict)
   personalReason String?

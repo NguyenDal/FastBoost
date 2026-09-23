@@ -193,12 +193,23 @@ exports.createSale = async (req, res) => {
 
         let service = null;
         let recipient = null;
+        let recipientAccountIds = [];
         if (req.body.personalCoupon === true) {
             if (!options.couponCode) return res.status(400).json({ ok: false, message: "Personal coupons require a coupon code." });
-            const email = String(req.body.recipientEmail || "").trim();
-            if ((!email && !req.body.recipientAccountId) || email.length > 254) return res.status(400).json({ ok: false, message: "Select a recipient account." });
-            recipient = await prisma.user.findFirst({ where: { ...(req.body.recipientAccountId ? { id: String(req.body.recipientAccountId) } : { email: { equals: email, mode: "insensitive" } }) }, select: { id: true } });
-            if (!recipient) return res.status(404).json({ ok: false, message: "Recipient account not found." });
+            if (req.body.recipientAccountIds !== undefined) {
+                const ids = req.body.recipientAccountIds;
+                if (!Array.isArray(ids) || !ids.length || ids.length > 100 || ids.some(id => typeof id !== "string" || !id.trim()) || new Set(ids).size !== ids.length) return res.status(400).json({ ok:false, message:"Select between 1 and 100 distinct accounts." });
+                const accounts = await prisma.user.findMany({where:{id:{in:ids}},select:{id:true}});
+                if (accounts.length !== ids.length) return res.status(404).json({ok:false,message:"One or more recipient accounts no longer exist."});
+                recipientAccountIds = ids;
+                recipient = {id:ids[0]};
+            } else {
+                const email = String(req.body.recipientEmail || "").trim();
+                if ((!email && !req.body.recipientAccountId) || email.length > 254) return res.status(400).json({ ok:false,message:"Select a recipient account." });
+                recipient = await prisma.user.findFirst({where:req.body.recipientAccountId ? {id:String(req.body.recipientAccountId)} : {email:{equals:email,mode:"insensitive"}},select:{id:true}});
+                if (!recipient) return res.status(404).json({ok:false,message:"Recipient account not found."});
+                recipientAccountIds = [recipient.id];
+            }
             if (!["MANUAL", "NEGOTIATED"].includes(req.body.personalReason)) return res.status(400).json({ ok: false, message: "Choose a personal coupon reason." });
         }
 
@@ -269,6 +280,7 @@ exports.createSale = async (req, res) => {
                 appliesTo: "BASE_PRICE",
                 couponCode: options.couponCode,
                 recipientAccountId: recipient?.id || null,
+                recipientAccountIds,
                 couponServiceIds,
                 personalReason: recipient ? req.body.personalReason : null,
                 footerDecoration: recipient ? false : options.footerDecoration,

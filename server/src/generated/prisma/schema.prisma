@@ -120,16 +120,17 @@ model ServicePriceRule {
 }
 
 model ServiceSale {
-  recipientAccountId String?
-  recipientAccount   User?       @relation("PersonalCouponRecipient", fields: [recipientAccountId], references: [id], onDelete: Restrict)
-  personalReason     String?
-  couponOrders       Order[]     @relation("OrderCoupon")
-  couponUses         CouponUse[]
-  id                 String      @id @default(cuid())
-  couponServiceIds   String[]    @default([])
-  couponCode         String?
-  footerDecoration   Boolean     @default(false)
-  footerTimer        Boolean     @default(true)
+  recipientAccountIds String[]    @default([])
+  recipientAccountId  String?
+  recipientAccount    User?       @relation("PersonalCouponRecipient", fields: [recipientAccountId], references: [id], onDelete: Restrict)
+  personalReason      String?
+  couponOrders        Order[]     @relation("OrderCoupon")
+  couponUses          CouponUse[]
+  id                  String      @id @default(cuid())
+  couponServiceIds    String[]    @default([])
+  couponCode          String?
+  footerDecoration    Boolean     @default(false)
+  footerTimer         Boolean     @default(true)
 
   serviceId String?
   service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)

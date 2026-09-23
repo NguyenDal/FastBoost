@@ -151,3 +151,14 @@ test('multi-service coupon accepts listed services only and remains account boun
  const wrong={...f.order,serviceId:'outside'};await assert.rejects(applyCheckoutCoupon(f.db,wrong,'WELCOME20',f.stripe),/does not apply/);
  await assert.rejects(applyCheckoutCoupon(f.db,{...f.order,customerId:'account-b'},'WELCOME20',f.stripe),/another account/);
 });
+
+
+test('each selected recipient can redeem a shared coupon independently, outsiders cannot',async()=>{
+ const f=fixture();f.sale.recipientAccountId='account-a';f.sale.recipientAccountIds=['account-a','account-b'];
+ await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);f.claims[0].usedAt=new Date();
+ const second={...f.order,id:'order-b',customerId:'account-b',couponSaleId:null,couponCode:null};f.orders.set(second.id,second);
+ await applyCheckoutCoupon(f.db,second,'WELCOME20',f.stripe);assert.equal(f.claims.length,2);assert.equal(f.claims[1].accountId,'account-b');
+ const outsider={...second,id:'order-c',customerId:'outsider'};f.orders.set(outsider.id,outsider);
+ await assert.rejects(applyCheckoutCoupon(f.db,outsider,'WELCOME20',f.stripe),/reserved for another account/);
+ assert.equal(f.claims.length,2);
+});

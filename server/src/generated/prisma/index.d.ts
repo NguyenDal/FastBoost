@@ -10236,6 +10236,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCountAggregateOutputType = {
+    recipientAccountIds: number
     recipientAccountId: number
     personalReason: number
     id: number
@@ -10304,6 +10305,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCountAggregateInputType = {
+    recipientAccountIds?: true
     recipientAccountId?: true
     personalReason?: true
     id?: true
@@ -10411,6 +10413,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleGroupByOutputType = {
+    recipientAccountIds: string[]
     recipientAccountId: string | null
     personalReason: string | null
     id: string
@@ -10450,6 +10453,7 @@ export namespace Prisma {
 
 
   export type ServiceSaleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    recipientAccountIds?: boolean
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
@@ -10475,6 +10479,7 @@ export namespace Prisma {
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    recipientAccountIds?: boolean
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
@@ -10497,6 +10502,7 @@ export namespace Prisma {
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    recipientAccountIds?: boolean
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
@@ -10519,6 +10525,7 @@ export namespace Prisma {
   }, ExtArgs["result"]["serviceSale"]>
 
   export type ServiceSaleSelectScalar = {
+    recipientAccountIds?: boolean
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
@@ -10538,7 +10545,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountId" | "personalReason" | "id" | "couponServiceIds" | "couponCode" | "footerDecoration" | "footerTimer" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
+  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountIds" | "recipientAccountId" | "personalReason" | "id" | "couponServiceIds" | "couponCode" | "footerDecoration" | "footerTimer" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
   export type ServiceSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipientAccount?: boolean | ServiceSale$recipientAccountArgs<ExtArgs>
     couponOrders?: boolean | ServiceSale$couponOrdersArgs<ExtArgs>
@@ -10564,6 +10571,7 @@ export namespace Prisma {
       service: Prisma.$ServicePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
+      recipientAccountIds: string[]
       recipientAccountId: string | null
       personalReason: string | null
       id: string
@@ -10664,8 +10672,8 @@ export namespace Prisma {
      * // Get first 10 ServiceSales
      * const serviceSales = await prisma.serviceSale.findMany({ take: 10 })
      * 
-     * // Only select the `recipientAccountId`
-     * const serviceSaleWithRecipientAccountIdOnly = await prisma.serviceSale.findMany({ select: { recipientAccountId: true } })
+     * // Only select the `recipientAccountIds`
+     * const serviceSaleWithRecipientAccountIdsOnly = await prisma.serviceSale.findMany({ select: { recipientAccountIds: true } })
      * 
      */
     findMany<T extends ServiceSaleFindManyArgs>(args?: SelectSubset<T, ServiceSaleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -10709,9 +10717,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many ServiceSales and only return the `recipientAccountId`
-     * const serviceSaleWithRecipientAccountIdOnly = await prisma.serviceSale.createManyAndReturn({
-     *   select: { recipientAccountId: true },
+     * // Create many ServiceSales and only return the `recipientAccountIds`
+     * const serviceSaleWithRecipientAccountIdsOnly = await prisma.serviceSale.createManyAndReturn({
+     *   select: { recipientAccountIds: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -10800,9 +10808,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more ServiceSales and only return the `recipientAccountId`
-     * const serviceSaleWithRecipientAccountIdOnly = await prisma.serviceSale.updateManyAndReturn({
-     *   select: { recipientAccountId: true },
+     * // Update zero or more ServiceSales and only return the `recipientAccountIds`
+     * const serviceSaleWithRecipientAccountIdsOnly = await prisma.serviceSale.updateManyAndReturn({
+     *   select: { recipientAccountIds: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11008,6 +11016,7 @@ export namespace Prisma {
    * Fields of the ServiceSale model
    */
   interface ServiceSaleFieldRefs {
+    readonly recipientAccountIds: FieldRef<"ServiceSale", 'String[]'>
     readonly recipientAccountId: FieldRef<"ServiceSale", 'String'>
     readonly personalReason: FieldRef<"ServiceSale", 'String'>
     readonly id: FieldRef<"ServiceSale", 'String'>
@@ -26798,6 +26807,7 @@ export namespace Prisma {
 
 
   export const ServiceSaleScalarFieldEnum: {
+    recipientAccountIds: 'recipientAccountIds',
     recipientAccountId: 'recipientAccountId',
     personalReason: 'personalReason',
     id: 'id',
@@ -27766,6 +27776,7 @@ export namespace Prisma {
     AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     OR?: ServiceSaleWhereInput[]
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    recipientAccountIds?: StringNullableListFilter<"ServiceSale">
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     id?: StringFilter<"ServiceSale"> | string
@@ -27790,6 +27801,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleOrderByWithRelationInput = {
+    recipientAccountIds?: SortOrder
     recipientAccountId?: SortOrderInput | SortOrder
     personalReason?: SortOrderInput | SortOrder
     id?: SortOrder
@@ -27818,6 +27830,7 @@ export namespace Prisma {
     AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     OR?: ServiceSaleWhereInput[]
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
+    recipientAccountIds?: StringNullableListFilter<"ServiceSale">
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     couponServiceIds?: StringNullableListFilter<"ServiceSale">
@@ -27841,6 +27854,7 @@ export namespace Prisma {
   }, "id">
 
   export type ServiceSaleOrderByWithAggregationInput = {
+    recipientAccountIds?: SortOrder
     recipientAccountId?: SortOrderInput | SortOrder
     personalReason?: SortOrderInput | SortOrder
     id?: SortOrder
@@ -27869,6 +27883,7 @@ export namespace Prisma {
     AND?: ServiceSaleScalarWhereWithAggregatesInput | ServiceSaleScalarWhereWithAggregatesInput[]
     OR?: ServiceSaleScalarWhereWithAggregatesInput[]
     NOT?: ServiceSaleScalarWhereWithAggregatesInput | ServiceSaleScalarWhereWithAggregatesInput[]
+    recipientAccountIds?: StringNullableListFilter<"ServiceSale">
     recipientAccountId?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     id?: StringWithAggregatesFilter<"ServiceSale"> | string
@@ -29540,6 +29555,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -29562,6 +29578,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedCreateInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -29584,6 +29601,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -29606,6 +29624,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
@@ -29628,6 +29647,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateManyInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -29648,6 +29668,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateManyMutationInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -29666,6 +29687,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateManyInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
@@ -31556,6 +31578,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCountOrderByAggregateInput = {
+    recipientAccountIds?: SortOrder
     recipientAccountId?: SortOrder
     personalReason?: SortOrder
     id?: SortOrder
@@ -33433,6 +33456,10 @@ export namespace Prisma {
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutPriceRulesInput, ServiceUpdateWithoutPriceRulesInput>, ServiceUncheckedUpdateWithoutPriceRulesInput>
   }
 
+  export type ServiceSaleCreaterecipientAccountIdsInput = {
+    set: string[]
+  }
+
   export type ServiceSaleCreatecouponServiceIdsInput = {
     set: string[]
   }
@@ -33475,6 +33502,11 @@ export namespace Prisma {
     connectOrCreate?: CouponUseCreateOrConnectWithoutSaleInput | CouponUseCreateOrConnectWithoutSaleInput[]
     createMany?: CouponUseCreateManySaleInputEnvelope
     connect?: CouponUseWhereUniqueInput | CouponUseWhereUniqueInput[]
+  }
+
+  export type ServiceSaleUpdaterecipientAccountIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ServiceSaleUpdatecouponServiceIdsInput = {
@@ -34701,6 +34733,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateWithoutRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -34722,6 +34755,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedCreateWithoutRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -35412,6 +35446,7 @@ export namespace Prisma {
     AND?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
     OR?: ServiceSaleScalarWhereInput[]
     NOT?: ServiceSaleScalarWhereInput | ServiceSaleScalarWhereInput[]
+    recipientAccountIds?: StringNullableListFilter<"ServiceSale">
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     id?: StringFilter<"ServiceSale"> | string
@@ -36513,6 +36548,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateWithoutServiceInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -36534,6 +36570,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedCreateWithoutServiceInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -37076,6 +37113,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateWithoutCouponOrdersInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -37097,6 +37135,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedCreateWithoutCouponOrdersInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -37343,6 +37382,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateWithoutCouponOrdersInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -37364,6 +37404,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateWithoutCouponOrdersInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
@@ -37951,6 +37992,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateWithoutCouponUsesInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -37972,6 +38014,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedCreateWithoutCouponUsesInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -38217,6 +38260,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateWithoutCouponUsesInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -38238,6 +38282,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateWithoutCouponUsesInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
@@ -40669,6 +40714,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateManyRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     personalReason?: string | null
     id?: string
     couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
@@ -40875,6 +40921,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateWithoutRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -40896,6 +40943,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateWithoutRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -40917,6 +40965,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateManyWithoutRecipientAccountInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -41548,6 +41597,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleCreateManyServiceInput = {
+    recipientAccountIds?: ServiceSaleCreaterecipientAccountIdsInput | string[]
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
@@ -41793,6 +41843,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUpdateWithoutServiceInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
     couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
@@ -41814,6 +41865,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateWithoutServiceInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
@@ -41835,6 +41887,7 @@ export namespace Prisma {
   }
 
   export type ServiceSaleUncheckedUpdateManyWithoutServiceInput = {
+    recipientAccountIds?: ServiceSaleUpdaterecipientAccountIdsInput | string[]
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string

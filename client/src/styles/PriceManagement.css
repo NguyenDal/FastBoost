@@ -1507,3 +1507,21 @@
 .personal-search-status { margin:0; color:#94a3b8; font-size:12px; }
 .personal-service-menu input[type="checkbox"] { width:16px; height:16px; min-height:0; margin:0; padding:0; flex:0 0 16px; }
 .personal-service-menu label { min-height:36px; box-sizing:border-box; }
+
+.personal-selected-account { display:flex; align-items:center; gap:10px; justify-self:start; max-width:100%; padding:10px 12px; border:1px solid #a78bfa40; border-radius:12px; background:#a78bfa0d; color:#e2e8f0; text-align:left; cursor:pointer; transition:background .2s ease,border-color .2s ease; }
+.personal-selected-account > img,.personal-selected-account > .personal-avatar { width:36px; height:36px; flex:0 0 36px; border-radius:50%; object-fit:cover; }
+.personal-selected-identity { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.personal-selected-identity strong { font-size:13px; }
+.personal-selected-identity small { font-size:11px; color:#94a3b8; }
+.personal-selected-identity strong,.personal-selected-identity small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.personal-selected-remove { display:grid; place-items:center; width:28px; height:28px; flex:0 0 28px; color:#fda4af; opacity:0; transition:opacity .2s ease; }
+.personal-selected-remove svg { width:18px; height:18px; }
+.personal-selected-account:hover,.personal-selected-account:focus-visible { background:#ef444424; border-color:#f8717180; }
+.personal-selected-account:hover .personal-selected-remove,.personal-selected-account:focus-visible .personal-selected-remove { opacity:1; }
+.personal-selected-account:focus-visible { outline:2px solid #fda4af; outline-offset:2px; }
+@media (hover:none) { .personal-selected-remove { opacity:1; } }
+@media (prefers-reduced-motion:reduce) { .personal-selected-account,.personal-selected-remove { transition:none; } }
+
+.personal-selected-accounts { display:flex; flex-wrap:wrap; gap:8px; }
+.personal-selected-accounts .personal-selected-account { max-width:100%; flex:0 1 auto; }
+.personal-selected-accounts .personal-selected-identity { max-width:190px; }

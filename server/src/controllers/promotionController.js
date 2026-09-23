@@ -6,7 +6,7 @@ exports.getFooterPromotion = async (req, res) => {
     const serviceId = typeof req.query.serviceId === "string" && req.query.serviceId.length <= 100
         ? req.query.serviceId : null;
     const where = {
-        active: true, footerDecoration: true, recipientAccountId: null,
+        active: true, footerDecoration: true, recipientAccountId: null, recipientAccountIds: { isEmpty: true },
         AND: [
             { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
             { OR: [{ endsAt: null }, { endsAt: { gt: now } }] },

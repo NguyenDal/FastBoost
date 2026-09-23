@@ -185,6 +185,7 @@ exports.Prisma.ServicePriceRuleScalarFieldEnum = {
 };
 
 exports.Prisma.ServiceSaleScalarFieldEnum = {
+  recipientAccountIds: 'recipientAccountIds',
   recipientAccountId: 'recipientAccountId',
   personalReason: 'personalReason',
   id: 'id',

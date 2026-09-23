@@ -1251,6 +1251,7 @@ export default function PriceManagementPage() {
             personalCoupon,
             recipientEmail: "",
             recipientAccountId: "",
+            recipients: [],
             couponServiceIds: [],
             personalReason: "MANUAL",
             ...(personalCoupon ? { saleMode: "WITH_COUPON" } : {}),
@@ -1280,7 +1281,7 @@ export default function PriceManagementPage() {
 
             const discount = Number(saleForm.discountPercent);
 
-            if (saleForm.personalCoupon && !saleForm.recipientAccountId) throw new Error("Select an account from the search results.");
+            if (saleForm.personalCoupon && !saleForm.recipients?.length) throw new Error("Select an account from the search results.");
 
             if (!Number.isFinite(discount) || discount <= 0 || discount > 90) {
                 throw new Error("Discount must be between 1 and 90.");
@@ -1306,7 +1307,9 @@ export default function PriceManagementPage() {
             const pending = {
                 personalCoupon: Boolean(saleForm.personalCoupon),
                 recipientEmail: saleForm.recipientEmail?.trim() || "",
-                recipientAccountId: saleForm.recipientAccountId,
+                recipientAccountId: saleForm.recipients?.[0]?.id,
+                recipientAccountIds: saleForm.recipients?.map(account => account.id),
+                recipientNames: saleForm.recipients?.map(account => account.username || account.profile?.displayName || account.email).join(", "),
                 couponServiceIds: saleForm.couponServiceIds || [],
                 personalReason: saleForm.personalReason || "MANUAL",
                 type: "CREATE",
@@ -1370,6 +1373,7 @@ export default function PriceManagementPage() {
                         personalCoupon: pendingSaleAction.personalCoupon,
                         recipientEmail: pendingSaleAction.recipientEmail,
                         recipientAccountId: pendingSaleAction.recipientAccountId,
+                        recipientAccountIds: pendingSaleAction.personalCoupon ? pendingSaleAction.recipientAccountIds : undefined,
                         couponServiceIds: pendingSaleAction.couponServiceIds,
                         personalReason: pendingSaleAction.personalReason,
                         scope: pendingSaleAction.scope,
@@ -1893,7 +1897,7 @@ export default function PriceManagementPage() {
                             {coupons.filter(coupon => coupon.recipientAccountId).map(coupon => <div className="price-sale-preview" key={coupon.id}>
                                 <strong>{coupon.title}</strong>
                                 <p><code>{coupon.couponCode}</code></p>
-                                <p>{coupon.recipientAccount?.email}</p>
+                                <p>{coupon.recipientAccountIds?.length > 1 ? `${coupon.recipientAccountIds.length} selected accounts` : coupon.recipientAccount?.email}</p>
                                 <p>{coupon.couponServiceIds?.length ? coupon.couponServiceIds.map(id => pricingServices.find(item => item.serviceId === id)?.service?.title || "Service").join(", ") : coupon.scope === "GLOBAL" ? "All services" : coupon.serviceTitle}</p>
                                 <p>{coupon.personalReason === "NEGOTIATED" ? "Negotiated" : "Manual"} · {Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
                                 <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "Immediately"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
@@ -2118,7 +2122,7 @@ export default function PriceManagementPage() {
 
                         <div className="price-sale-confirm-list">
                             {pendingSaleAction.personalCoupon && <>
-                                <div className="price-sale-confirm-row"><span>Customer account</span><strong>{pendingSaleAction.recipientEmail}</strong></div>
+                                <div className="price-sale-confirm-row"><span>Selected accounts</span><strong>{pendingSaleAction.recipientNames}</strong></div>
                                 <div className="price-sale-confirm-row"><span>Reason</span><strong>{pendingSaleAction.personalReason === "NEGOTIATED" ? "Negotiated" : "Manual"}</strong></div>
                             </>}
                             <div className="price-sale-confirm-row">
@@ -2271,7 +2275,7 @@ export default function PriceManagementPage() {
                                 </h2>
 
                                 <p>
-                                    {saleForm.personalCoupon ? "Only the selected account can redeem this coupon." : saleScope === "GLOBAL"
+                                    {saleForm.personalCoupon ? "Each selected account can redeem this coupon once." : saleScope === "GLOBAL"
                                         ? "Apply one temporary discount across every FastBoost service."
                                         : `This discount applies only to ${selectedService?.service?.title || "this service"}.`}
                                 </p>
