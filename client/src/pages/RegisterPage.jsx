@@ -429,7 +429,7 @@ function RegisterPage({
             )}
 
             {authMessage && <p className="auth-error-message" role="alert">{authMessage}</p>}
-            {authMode !== "forgot" && <SocialAuthButtons mode={authMode} termsAccepted={registerForm?.termsAccepted} onTermsRequired={highlightTerms} promotionalEmails={registerForm?.promotionalEmails} referralCode={registerForm?.referralCode} rememberMe={authMode === "login" && Boolean(loginForm?.rememberMe)} onSuccess={onSocialSuccess} onError={setAuthMessage} />}
+            {authMode !== "forgot" && <SocialAuthButtons key={authMode} mode={authMode} termsAccepted={registerForm?.termsAccepted} promotionalEmails={registerForm?.promotionalEmails} referralCode={registerForm?.referralCode} rememberMe={authMode === "login" && Boolean(loginForm?.rememberMe)} onSuccess={onSocialSuccess} onError={setAuthMessage} />}
             <p className="auth-switch-line">
               {authMode === "login" ? (
                 <>

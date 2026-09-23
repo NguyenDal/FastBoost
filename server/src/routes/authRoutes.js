@@ -7,8 +7,13 @@ const {
 } = require("../controllers/authController");
 
 const router = express.Router();
-const { socialProviders, startSocialAuth, socialCallback } = require('../controllers/socialAuthController');
+const { protect } = require('../middleware/authMiddleware');
+const { socialProviders, startSocialAuth, socialCallback, completeSocialSignup, socialConnections, startSocialLink, startSocialUnlink } = require('../controllers/socialAuthController');
 router.get('/social/providers', socialProviders);
+router.get('/social/connections', protect, socialConnections);
+router.post('/social/:provider/link/start', express.urlencoded({ extended: false, limit: '16kb' }), startSocialLink);
+router.post('/social/:provider/unlink/start', express.urlencoded({ extended: false, limit: '16kb' }), startSocialUnlink);
+router.post('/social/complete', completeSocialSignup);
 router.get('/social/:provider/start', startSocialAuth);
 router.get('/social/:provider/callback', socialCallback);
 

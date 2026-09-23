@@ -139,6 +139,9 @@
 .payment-result-closing { opacity: 0; pointer-events: none; }
 .payment-error-dialog::backdrop { background: rgba(3,5,14,.68); backdrop-filter: blur(8px); }
 .checkout-notice-dialog .payment-result-orb { background: linear-gradient(135deg, #a855f7, #533bff); box-shadow: 0 0 32px #7c3aed40; }
+.payment-warning-dialog { width: min(560px, calc(100vw - 32px)); }
+.payment-warning-dialog .payment-result-orb { color: #422006; background: linear-gradient(135deg, #fde047, #f59e0b); box-shadow: 0 0 32px #f59e0b30; }
+.payment-warning-dialog .payment-result-text { max-width: none; }
 @media (prefers-reduced-motion: reduce) {
   .payment-result-floating-layer { transition: none; }
   .payment-error-dialog,.payment-error-dialog .payment-result-orb { animation: none; }

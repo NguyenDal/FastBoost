@@ -103,7 +103,15 @@
 .auth-provider-button svg { width: 21px; height: 21px; flex-shrink: 0; }
 .auth-provider-button:hover { background: #222a40; border-color: #8b5cf6; }
 .auth-provider-button:disabled { opacity: .6; cursor: wait; }
-.auth-social [role="status"] { color: #aeb6ca; font-size: .85rem; }
+/* Provider signup replaces the password form while retaining the shared error message. */
+.auth-modal-content:has(> .auth-social-signup) > :not(.auth-social-signup):not([role="alert"]),
+.auth-card:has(> .auth-social-signup) > :not(.auth-social-signup):not([role="alert"]) { display: none; }
+.auth-social-signup .auth-social-username { width: 100%; box-sizing: border-box; margin-top: 12px; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); color: #fff; font: inherit; outline: none; }
+.auth-social-username::placeholder { color: rgba(255, 255, 255, .5); }
+.auth-social-username:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.auth-social-username[aria-invalid="true"] { border-color: #f87171; }
+.auth-social-signup .auth-consents { margin-top: 20px; }
+.auth-social-signup .auth-social-cancel { display: block; margin: 16px auto 0; }
 .auth-modal-register .password-rules { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
 @media (max-width: 560px) {
   .modal-backdrop { padding: 12px; }

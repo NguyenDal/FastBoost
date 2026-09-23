@@ -60,12 +60,13 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
+      <div className="auth-card">
         <h1>Login</h1>
         <p className="section-description">
           Sign in to continue your FastBoost experience.
         </p>
 
+        <form onSubmit={handleSubmit}>
         <input
           type="email"
           name="email"
@@ -88,6 +89,7 @@ function LoginPage() {
         <button className="primary-btn auth-submit-btn" type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
+        </form>
 
         {message && <p className="info-message" role="alert">{message}</p>}
         <SocialAuthButtons rememberMe={form.rememberMe} onSuccess={finishLogin} onError={setMessage}/>
@@ -95,7 +97,7 @@ function LoginPage() {
         <p className="auth-switch-text">
           Don&apos;t have an account? <Link to="/register">Register</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

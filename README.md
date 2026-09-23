@@ -108,9 +108,10 @@ and an independent countdown toggle. Focused pricing-page lint passes.
   The provider template's unprovided English/Vietnamese PDF download links are
   omitted; its working Print / save PDF control remains.
 - Google and Discord authorization-code flows support signup and subsequent
-  sign-in using a stored provider identity and a verified provider email. Existing
-  password accounts are not automatically linked by email; those users continue
-  using password login. Social signup also preserves referral attribution.
+  sign-in using a stored provider identity and a verified provider email. Profile
+  Settings supports linking both providers to the signed-in account. Matching
+  verified Gmail/Workspace emails can automatically link an existing account as
+  detailed below, preserving password login. Social signup keeps referral attribution.
 - OAuth uses a signed, expiring state cookie, fixed provider endpoints, validated
   frontend origins and Google PKCE. Provider secrets and provider tokens stay on
   the backend. The callback sends the FastBoost session to the initiating window
@@ -119,13 +120,66 @@ and an independent countdown toggle. Focused pricing-page lint passes.
   `SocialIdentity`. It was applied and recorded on the configured database; no
   existing accounts were changed. The unrelated pending loyalty migration remains
   untouched. Other deployments need the same schema and regenerated Prisma client.
-- Verification: 47 server tests pass, 2 optional database tests skip; new tests
-  cover consent, role assignment, OAuth state/callback/account rules and session
-  storage. Focused auth lint and the client build pass. Real Google/Discord login
-  still needs credentials and a user-driven provider login. No real test accounts,
-  payments or emails were created, and nothing was committed or deployed.
+- Verification: 94 server tests pass, 3 optional database tests skip; auth tests
+  cover consent, role assignment, OAuth state/callback, signup, linking conflicts,
+  password preservation and session storage. New component lint and client build
+  pass; AccountSettings retains its 12 pre-existing lint findings. A database
+  transaction verified signup, Google auto-link, manual Discord linking and
+  returning login, then rolled back every test account/link. Live provider approval
+  remains user-driven. These local changes have not been committed or deployed.
 
 #### Google and Discord setup
+
+Social signup creates a customer account using the provider's verified email and
+the customer's chosen username (also used as the initial display name). The signup
+screen shows a blank username field, with no email line or password fields.
+Names must be 3–60 characters; taken names are rejected so the customer can choose
+another. Names are never generated from email or automatically given a suffix.
+Returning users sign in using their stable provider identity; customized usernames
+and profiles are retained. Google sign-in automatically links an existing account
+when its FastBoost email is already verified and matches a verified Gmail address
+or a Google Workspace identity with the provider's `hd` claim. For other addresses,
+sign in with the existing password and link Google in Profile Settings. This follows
+[Google's email authority guidance](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token).
+Discord does not automatically link by email.
+
+Profile Settings replaces the Discord text field with Google/Discord connection
+status and Link buttons. Either provider can be linked with a different email once
+the user is signed into FastBoost. Linking preserves the existing password, email,
+username, profile and session; the linked provider can then sign in to that same
+account. A provider identity cannot be moved between accounts or replace another
+identity already linked for that provider. Linked status is green. Unlink opens
+the provider chooser again, with no FastBoost password form or extra confirmation.
+After the customer authenticates with the exact linked Google/Discord identity,
+the callback removes that connection, including when it is their last provider.
+Cancellation or a different provider identity leaves it intact. Password, profile
+and current app session remain unchanged. A subsequent Google sign-in may link
+again under the matching-email rules above; email password recovery also remains
+available. A different provider email must be relinked from a signed-in session.
+
+`POST /api/auth/social/:provider/unlink/start` requires the app session and trusted
+origin in the same popup form flow as linking. The server binds action, user ID,
+original SocialIdentity row ID, provider user ID and session expiry into signed
+OAuth state. The callback matches the newly verified provider ID and atomically
+deletes only that original row. Stale callbacks cannot delete a replacement link.
+The former direct DELETE/password endpoint is removed, so provider verification
+cannot be bypassed. Provider credentials must be configured for either action.
+
+`GET /api/auth/social/connections` returns authenticated connection/availability
+flags. `POST /api/auth/social/:provider/link/start` accepts a session token in a
+form body targeted at the popup, validates the request origin and binds the user
+ID and session expiry to the signed OAuth state. The credential never enters a URL.
+OAuth state uses its own derived signing key and cannot authenticate as an app session.
+The callback verifies both the provider identity and the initiating app session's
+expiry before linking, then returns link status without changing the app session.
+
+New users may start with either Login or Register. Both return a ten-minute,
+signed signup ticket and show the username/consent step. Any explicit consent
+choices made in Register are preserved. `POST /api/auth/social/complete` validates
+the ticket, its origin, the chosen username and affirmative terms before creating
+the account. Marketing consent stays optional and defaults to unchecked.
+Signup tickets use a separate signing key
+derived from the server secret and cannot authenticate as app session tokens.
 
 In each provider developer console, create a web OAuth application and allow the
 exact backend callback URL. Set these **server-only** variables in `server/.env`
@@ -148,6 +202,13 @@ testing mode. Restart the backend and reload the frontend after changing setting
 Missing settings show a clear message and preserve password login. The endpoints
 are `GET /api/auth/social/providers`, `GET /api/auth/social/:provider/start` and
 `GET /api/auth/social/:provider/callback` (`google` or `discord`).
+
+Render environment settings do not configure the local API. Local OAuth tests need
+the credentials in `server/.env` and a local API restart. Keep the localhost callback
+above registered alongside the production callback:
+`https://fastboost-api.onrender.com/api/auth/social/google/callback` (or
+`https://fastboost-api.onrender.com/api/auth/social/discord/callback`). Set the
+corresponding `*_REDIRECT_URI` to the callback for the environment being run.
 
 Provider references: [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)
 and [Discord OAuth2](https://discord.com/developers/docs/topics/oauth2).

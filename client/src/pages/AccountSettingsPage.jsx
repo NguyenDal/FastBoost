@@ -2,6 +2,7 @@ import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import LinkedSignInAccounts from "../components/LinkedSignInAccounts";
 import { COUNTRIES, findCountry } from "../utils/countries";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
@@ -526,7 +527,7 @@ export default function AccountSettingsPage() {
                         <p className="account-settings-eyebrow">FastBoost Account</p>
                         <h1>Profile Settings</h1>
                         <p>
-                            Manage your profile picture, username, email, Discord, country, and birthday.
+                            Manage your profile, linked sign-in accounts, country, and birthday.
                         </p>
                     </div>
 
@@ -673,18 +674,8 @@ export default function AccountSettingsPage() {
                                     <p className="settings-success">{verificationMessage}</p>
                                 )}
 
+                                <LinkedSignInAccounts />
                                 <div className="settings-form-row two-columns">
-                                    <label>
-                                        Discord
-                                        <input
-                                            type="text"
-                                            name="discord"
-                                            value={accountForm.discord}
-                                            onChange={handleAccountChange}
-                                            placeholder="Discord username"
-                                        />
-                                    </label>
-
                                     <label>
                                         Country
                                         <div className="settings-country-picker">
@@ -696,9 +687,6 @@ export default function AccountSettingsPage() {
                                             </select>
                                         </div>
                                     </label>
-                                </div>
-
-                                <div className="settings-form-row two-columns">
                                     <label>
                                         Birthday
                                         <input
@@ -711,12 +699,6 @@ export default function AccountSettingsPage() {
                                         />
                                     </label>
 
-                                    <div className="settings-info-box">
-                                        <strong>Birthday discount</strong>
-                                        <p>
-                                            Birthday rewards are not active yet, but this helps us prepare future birthday discounts.
-                                        </p>
-                                    </div>
                                 </div>
 
                                 {accountErrors.birthday && (
