@@ -870,11 +870,158 @@
     linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025));
 }
 
-.customer-list-hero {
-  background:
-    radial-gradient(700px 220px at 10% 0%, rgba(168, 85, 247, .16), transparent 55%),
-    radial-gradient(600px 240px at 90% 10%, rgba(236, 72, 153, .12), transparent 60%),
-    linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025));
+.customer-orders-title {
+  margin-bottom: 20px;
+}
+
+/* Keep list pages contained while their wide tables scroll independently. */
+.customer-orders-embedded .premium-table-wrap,
+.admin-orders-page .premium-table-wrap,
+.provider-orders-page .premium-table-wrap,
+.admin-accounts-page .premium-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.customer-orders-embedded .premium-table-wrap:focus-visible,
+.admin-orders-page .premium-table-wrap:focus-visible,
+.provider-orders-page .premium-table-wrap:focus-visible,
+.admin-accounts-page .premium-table-wrap:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+.customer-orders-embedded .admin-table,
+.provider-orders-page .admin-table,
+.admin-orders-page .admin-table {
+  min-width: 920px;
+}
+
+.customer-orders-embedded .admin-input,
+.provider-orders-page .admin-input,
+.admin-orders-page .admin-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-main .admin-orders-page,
+.admin-main .admin-accounts-page {
+  padding-top: 0;
+}
+
+.admin-orders-header,
+.provider-orders-header,
+.admin-accounts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-orders-header .admin-order-title,
+.provider-orders-header .admin-order-title,
+.admin-accounts-header .admin-order-title {
+  font-size: clamp(24px, 2.5vw, 32px);
+}
+
+.provider-orders-header .provider-assigned-count,
+.admin-accounts-header .admin-users-count {
+  flex: 0 0 auto;
+  min-width: 150px;
+  padding: 12px 16px;
+}
+
+@media (max-width: 600px) {
+  .admin-orders-header,
+  .provider-orders-header,
+  .admin-accounts-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .provider-orders-header .provider-assigned-count,
+  .admin-accounts-header .admin-users-count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .provider-orders-header .provider-assigned-count span,
+  .admin-accounts-header .admin-users-count span {
+    margin-bottom: 0;
+  }
+}
+
+.order-pagination {
+  --pagination-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 6px 0;
+}
+
+.order-pagination button,
+.order-pagination-gap {
+  display: grid;
+  place-items: center;
+  flex: 0 0 var(--pagination-size);
+  width: var(--pagination-size);
+  height: var(--pagination-size);
+  padding: 0;
+  color: #a8afbf;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.order-pagination button {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.order-pagination button:hover:not(:disabled):not([aria-current="page"]) {
+  color: #ede9fe;
+  background: rgba(167, 139, 250, .10);
+}
+
+.order-pagination button[aria-current="page"] {
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, .14);
+}
+
+.order-pagination button:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+.order-pagination button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+.order-pagination svg {
+  width: 18px;
+  height: 18px;
+}
+
+.order-pagination-gap {
+  color: #737c90;
+}
+
+@media (max-width: 480px) {
+  .order-pagination {
+    --pagination-size: 28px;
+    gap: 2px;
+  }
 }
 
 /* Admin Management Utilities */
@@ -933,6 +1080,12 @@
   font-size: 26px;
 }
 
+.management-icon svg {
+  width: 26px;
+  height: 26px;
+  color: #b9c2d1;
+}
+
 .management-status {
   display: inline-flex;
   align-items: center;
@@ -969,9 +1122,9 @@
 }
 
 .management-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   gap: 12px;
   color: #d1d5db;
   font-size: 13px;
@@ -1018,14 +1171,7 @@
 
 .account-toolbar .admin-input {
   flex: 1;
-  min-width: 280px;
-}
-
-.account-search-btn {
-  border: none;
-  cursor: pointer;
-  min-height: 44px;
-  padding: 0 22px;
+  min-width: 0;
 }
 
 .admin-feedback {
@@ -1169,8 +1315,7 @@
   }
 
   .account-toolbar .admin-input,
-  .account-toolbar .admin-select,
-  .account-search-btn {
+  .account-toolbar .admin-select {
     width: 100%;
     min-width: 0;
   }

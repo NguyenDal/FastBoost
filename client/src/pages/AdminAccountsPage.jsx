@@ -1,6 +1,7 @@
 import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
+import OrderPagination from "../components/OrderPagination";
 import {
     adminListUsers,
     adminUpdateUserRole,
@@ -37,8 +38,8 @@ export default function AdminAccountsPage() {
     const [query, setQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState("");
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(20);
-    const [loading, setLoading] = useState(false);
+    const [pageSize] = useState(10);
+    const [loading, setLoading] = useState(true);
     const [savingUserId, setSavingUserId] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -46,7 +47,7 @@ export default function AdminAccountsPage() {
         items: [],
         total: 0,
         page: 1,
-        pageSize: 20,
+        pageSize: 10,
     });
 
     const [pendingRoleChange, setPendingRoleChange] = useState(null);
@@ -68,37 +69,35 @@ export default function AdminAccountsPage() {
         return Math.max(1, Math.ceil((data?.total || 0) / pageSize));
     }, [data?.total, pageSize]);
 
-    const loadUsers = async () => {
-        setLoading(true);
-        setError("");
-        setSuccess("");
-
-        try {
-            const res = await adminListUsers({
-                page,
-                pageSize,
-                q: query.trim(),
-                role: roleFilter,
-            });
-
-            setData(res);
-        } catch (err) {
-            setError(err?.message || "Failed to load users");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        loadUsers();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, pageSize, roleFilter]);
+        let active = true;
+        const loadUsers = async () => {
+            setLoading(true);
+            setError("");
+            setSuccess("");
 
-    const handleSearchSubmit = (event) => {
-        event.preventDefault();
-        setPage(1);
-        loadUsers();
-    };
+            try {
+                const res = await adminListUsers({
+                    page,
+                    pageSize,
+                    q: query.trim(),
+                    role: roleFilter,
+                });
+
+                if (active) setData(res);
+            } catch (err) {
+                if (active) setError(err?.message || "Failed to load users");
+            } finally {
+                if (active) setLoading(false);
+            }
+        };
+
+        const timeout = setTimeout(loadUsers, query.trim() ? 250 : 0);
+        return () => {
+            active = false;
+            clearTimeout(timeout);
+        };
+    }, [page, pageSize, query, roleFilter]);
 
     const closeRoleConfirmModal = () => {
         if (confirmIntervalRef.current) {
@@ -328,37 +327,29 @@ export default function AdminAccountsPage() {
     };
 
     return (
-        <main className="page-container">
-            <section className="admin-list-hero">
-                    <div>
-                        <p className="admin-eyebrow">FastBoost Admin</p>
-                        <h1 className="admin-order-title">Account Management</h1>
-                        <p className="admin-list-subtitle">
-                            Search users and update account privileges for customers, boosters, and admins.
-                        </p>
-                    </div>
+        <section className="page-container admin-accounts-page">
+            <div className="admin-accounts-header">
+                <h1 className="admin-order-title">Account Management</h1>
+                <div className="admin-stat-card admin-users-count">
+                    <span>Total Users</span>
+                    <strong>{data.total}</strong>
+                </div>
+            </div>
 
-                    <div className="admin-list-stats">
-                        <div className="admin-stat-card">
-                            <span>Total Users</span>
-                            <strong>{data.total}</strong>
-                        </div>
-                        <div className="admin-stat-card">
-                            <span>Current Page</span>
-                            <strong>{page}</strong>
-                        </div>
-                    </div>
-                </section>
-
-                <form className="admin-toolbar premium-toolbar account-toolbar" onSubmit={handleSearchSubmit}>
+                <div className="admin-toolbar premium-toolbar account-toolbar">
                     <input
                         placeholder="Search username, email, or display name"
+                        aria-label="Search accounts"
                         value={query}
-                        onChange={(event) => setQuery(event.target.value)}
+                        onChange={(event) => {
+                            setQuery(event.target.value);
+                            setPage(1);
+                        }}
                         className="admin-input"
                     />
 
                     <select
+                        aria-label="Filter by role"
                         value={roleFilter}
                         onChange={(event) => {
                             setRoleFilter(event.target.value);
@@ -372,10 +363,7 @@ export default function AdminAccountsPage() {
                         <option value="ADMIN">Admin</option>
                     </select>
 
-                    <button className="primary-btn account-search-btn" type="submit">
-                        Search
-                    </button>
-                </form>
+                </div>
 
                 {error && <p className="admin-feedback admin-feedback-error">{error}</p>}
                 {success && <p className="admin-feedback admin-feedback-success">{success}</p>}
@@ -383,8 +371,8 @@ export default function AdminAccountsPage() {
                 {loading ? (
                     <GenericPageSkeleton />
                 ) : (
-                    <div className="admin-table-wrap premium-table-wrap">
-                        <table className="admin-table account-table">
+                    <div className="admin-table-wrap premium-table-wrap" role="region" aria-label="Accounts table" tabIndex={0}>
+                        <table className="admin-table account-table" id="admin-accounts-table">
                             <thead>
                                 <tr>
                                     <th>User</th>
@@ -499,29 +487,15 @@ export default function AdminAccountsPage() {
                     </div>
                 )}
 
-                <div className="admin-pagination">
-                    <span>Total: {data.total}</span>
-
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <button
-                            className="secondary-btn"
-                            disabled={page <= 1}
-                            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                        >
-                            Prev
-                        </button>
-
-                        <span>{page} / {totalPages}</span>
-
-                        <button
-                            className="secondary-btn"
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                        >
-                            Next
-                        </button>
-                    </div>
-                </div>
+                {!loading && !error && data.total > 0 && (
+                    <OrderPagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                        tableId="admin-accounts-table"
+                        label="Accounts pagination"
+                    />
+                )}
             {pendingRoleChange && (
                 <div
                     className="role-confirm-backdrop"
@@ -793,7 +767,7 @@ export default function AdminAccountsPage() {
                     </div>
                 </div>
             )}
-    </main>
+        </section>
     );
 }
 

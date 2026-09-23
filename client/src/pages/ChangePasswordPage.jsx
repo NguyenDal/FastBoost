@@ -154,7 +154,6 @@ export default function ChangePasswordPage() {
         <div className="dashboard-embedded-page dashboard-embedded-settings">
             <section className="account-settings-hero">
                 <div>
-                    <p className="account-settings-eyebrow">FastBoost Security</p>
                     <h1>Change Password</h1>
                     <p>
                         Update your account password. Use a strong password to protect your FastBoost account.

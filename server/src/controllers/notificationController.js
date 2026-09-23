@@ -5,6 +5,31 @@ function getUserId(req) {
   return req.user?.id || req.user?.userId;
 }
 
+// Dismiss previews only. Conversation messages and order records are untouched.
+exports.clearNotifications = async (req, res) => {
+  const userId = getUserId(req);
+  if (!userId) return res.status(401).json({ ok: false, message: "Unauthorized" });
+  const { kind, id } = req.body || {};
+  if (!["notifications", "messages"].includes(kind) ||
+      (id !== undefined && (typeof id !== "string" || !id.trim()))) {
+    return res.status(400).json({ ok: false, message: "Invalid clear request" });
+  }
+  try {
+    const result = await prisma.notification.updateMany({
+      where: {
+        userId, active: true,
+        type: kind === "messages" ? "CHAT_MESSAGE" : { not: "CHAT_MESSAGE" },
+        ...(id === undefined ? {} : { id }),
+      },
+      data: { active: false, read: true },
+    });
+    return res.json({ ok: true, cleared: result.count });
+  } catch (error) {
+    console.error("clearNotifications error:", error);
+    return res.status(500).json({ ok: false, message: "Could not clear items. Please try again." });
+  }
+};
+
 exports.listMyNotifications = async (req, res) => {
   try {
     const userId = getUserId(req);

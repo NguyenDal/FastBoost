@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { adminListOrders } from "../api/admin";
 import "../styles/Admin.css";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
+import OrderPagination from "../components/OrderPagination";
 
 function useAdminGuard() {
     const navigate = useNavigate();
@@ -50,66 +51,52 @@ export default function AdminOrdersPage() {
     const [query, setQuery] = useState("");
     const [status, setStatus] = useState("CURRENT");
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(20);
+    const [pageSize] = useState(10);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [data, setData] = useState({ items: [], total: 0, page: 1, pageSize: 20 });
+    const [data, setData] = useState({ items: [], total: 0, page: 1, pageSize: 10 });
 
     const totalPages = useMemo(() => Math.max(1, Math.ceil((data?.total || 0) / pageSize)), [data, pageSize]);
 
     useEffect(() => {
         if (!isAdmin) return;
+        let active = true;
 
         const load = async () => {
             setLoading(true);
             setError("");
             try {
                 const res = await adminListOrders({ page, pageSize, status: status || undefined, q: query || undefined });
-                setData(res);
+                if (active) setData(res);
             } catch (e) {
-                setError(e?.message || "Failed to load orders");
+                if (active) setError(e?.message || "Failed to load orders");
             } finally {
-                setLoading(false);
+                if (active) setLoading(false);
             }
         };
 
         load();
+        return () => { active = false; };
     }, [isAdmin, page, pageSize, status, query]);
 
     if (!isAdmin) return null;
 
     return (
-        <main className="page-container">
-            <div className="admin-list-hero">
-                    <div>
-                        <p className="admin-eyebrow">FastBoost Admin</p>
-                        <h1 className="admin-order-title">Order Management</h1>
-                        <p className="admin-list-subtitle">
-                            View customer orders, monitor status, assign boosters, and open order details.
-                        </p>
-                    </div>
-
-                    <div className="admin-list-stats">
-                        <div className="admin-stat-card">
-                            <span>Total Orders</span>
-                            <strong>{data.total}</strong>
-                        </div>
-                        <div className="admin-stat-card">
-                            <span>Current Page</span>
-                            <strong>{page}</strong>
-                        </div>
-                    </div>
-                </div>
+        <section className="page-container admin-orders-page">
+            <div className="admin-orders-header">
+                <h1 className="admin-order-title">Order Management</h1>
+            </div>
 
                 <div className="admin-toolbar premium-toolbar">
                     <input
+                        aria-label="Search orders"
                         placeholder="Search by ID or customer email"
                         value={query}
                         onChange={(e) => { setQuery(e.target.value); setPage(1); }}
                         className="admin-input"
-                        style={{ minWidth: 280 }}
                     />
                     <select
+                        aria-label="Order status"
                         value={status}
                         onChange={(e) => {
                             setStatus(e.target.value);
@@ -130,8 +117,8 @@ export default function AdminOrdersPage() {
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : (
-                    <div className="admin-table-wrap premium-table-wrap">
-                        <table className="admin-table">
+                    <div className="admin-table-wrap premium-table-wrap" role="region" aria-label="Orders table" tabIndex={0}>
+                        <table className="admin-table" id="admin-orders-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -193,15 +180,10 @@ export default function AdminOrdersPage() {
                     </div>
                 )}
 
-                <div className="admin-pagination">
-                    <span style={{ color: "#9ca3af" }}>Total: {data.total}</span>
-                    <div style={{ display: "flex", gap: 8 }}>
-                        <button className="secondary-btn" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
-                        <span style={{ padding: "6px 10px" }}>{page} / {totalPages}</span>
-                        <button className="secondary-btn" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
-                    </div>
-                </div>
-            </main>
+                {!loading && !error && data.total > 0 && (
+                    <OrderPagination currentPage={page} totalPages={totalPages} onPageChange={setPage} tableId="admin-orders-table" />
+                )}
+            </section>
     );
 }
 

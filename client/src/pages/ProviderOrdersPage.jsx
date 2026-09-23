@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
+import OrderPagination from "../components/OrderPagination";
 import { providerListAssignedOrders } from "../api/providerOrders";
 import "../styles/Admin.css";
 
@@ -55,7 +56,7 @@ export default function ProviderOrdersPage() {
     const [query, setQuery] = useState("");
     const [status, setStatus] = useState("CURRENT");
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(20);
+    const [pageSize] = useState(10);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -63,7 +64,7 @@ export default function ProviderOrdersPage() {
         items: [],
         total: 0,
         page: 1,
-        pageSize: 20,
+        pageSize: 10,
     });
 
     const totalPages = useMemo(
@@ -73,6 +74,7 @@ export default function ProviderOrdersPage() {
 
     useEffect(() => {
         if (!isProvider) return;
+        let active = true;
 
         const load = async () => {
             setLoading(true);
@@ -86,15 +88,16 @@ export default function ProviderOrdersPage() {
                     q: query || undefined,
                 });
 
-                setData(res);
+                if (active) setData(res);
             } catch (e) {
-                setError(e?.message || "Failed to load assigned orders");
+                if (active) setError(e?.message || "Failed to load assigned orders");
             } finally {
-                setLoading(false);
+                if (active) setLoading(false);
             }
         };
 
         load();
+        return () => { active = false; };
     }, [isProvider, page, pageSize, status, query]);
 
     if (!isProvider) return null;
@@ -103,31 +106,18 @@ export default function ProviderOrdersPage() {
         <div className="page-shell">
             <Navbar />
 
-            <div className="page-container">
-                <div className="admin-list-hero provider-list-hero">
-                    <div>
-                        <p className="admin-eyebrow">FastBoost Provider</p>
-                        <h1 className="admin-order-title">Assigned Orders</h1>
-                        <p className="admin-list-subtitle">
-                            View orders assigned to you, check customer request details, and open the order conversation.
-                        </p>
-                    </div>
-
-                    <div className="admin-list-stats">
-                        <div className="admin-stat-card">
-                            <span>Assigned Orders</span>
-                            <strong>{data.total}</strong>
-                        </div>
-
-                        <div className="admin-stat-card">
-                            <span>Current Page</span>
-                            <strong>{page}</strong>
-                        </div>
+            <div className="page-container provider-orders-page">
+                <div className="provider-orders-header">
+                    <h1 className="admin-order-title">Assigned Orders</h1>
+                    <div className="admin-stat-card provider-assigned-count">
+                        <span>Assigned Orders</span>
+                        <strong>{data.total}</strong>
                     </div>
                 </div>
 
                 <div className="admin-toolbar premium-toolbar">
                     <input
+                        aria-label="Search assigned orders"
                         placeholder="Search by order ID, customer, or service"
                         value={query}
                         onChange={(e) => {
@@ -135,10 +125,10 @@ export default function ProviderOrdersPage() {
                             setPage(1);
                         }}
                         className="admin-input"
-                        style={{ minWidth: 300 }}
                     />
 
                     <select
+                        aria-label="Order status"
                         value={status}
                         onChange={(e) => {
                             setStatus(e.target.value);
@@ -159,8 +149,8 @@ export default function ProviderOrdersPage() {
                 ) : error ? (
                     <p style={{ color: "#ef4444" }}>{error}</p>
                 ) : (
-                    <div className="admin-table-wrap premium-table-wrap">
-                        <table className="admin-table">
+                    <div className="admin-table-wrap premium-table-wrap" role="region" aria-label="Assigned orders table" tabIndex={0}>
+                        <table className="admin-table" id="provider-orders-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -221,31 +211,15 @@ export default function ProviderOrdersPage() {
                     </div>
                 )}
 
-                <div className="admin-pagination">
-                    <span>Total: {data.total}</span>
-
-                    <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                            className="secondary-btn"
-                            disabled={page <= 1}
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        >
-                            Prev
-                        </button>
-
-                        <span style={{ padding: "6px 10px" }}>
-                            {page} / {totalPages}
-                        </span>
-
-                        <button
-                            className="secondary-btn"
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        >
-                            Next
-                        </button>
-                    </div>
-                </div>
+                {!loading && !error && data.total > 0 && (
+                    <OrderPagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                        tableId="provider-orders-table"
+                        label="Assigned orders pagination"
+                    />
+                )}
             </div>
         </div>
     );

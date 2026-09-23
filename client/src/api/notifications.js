@@ -56,3 +56,10 @@ export async function markAllChatNotificationsRead() {
 
   return data.notifications || [];
 }
+
+export function clearNotifications(kind, id) {
+  return request("/notifications/clear", {
+    method: "PATCH",
+    body: JSON.stringify({ kind, ...(id === undefined ? {} : { id }) }),
+  });
+}

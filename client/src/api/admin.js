@@ -9,7 +9,7 @@ function authHeaders() {
   };
 }
 
-export async function adminListOrders({ page = 1, pageSize = 20, status, serviceId, q } = {}) {
+export async function adminListOrders({ page = 1, pageSize = 10, status, serviceId, q } = {}) {
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("pageSize", String(pageSize));

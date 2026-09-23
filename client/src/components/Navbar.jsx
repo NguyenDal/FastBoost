@@ -1,9 +1,11 @@
 import { authStorage } from "../utils/authStorage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ActivityClearRow, { BinIcon } from "./ActivityClearRow";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CleanIcon from "./CleanIcon";
 import {
     listMyNotifications,
+    clearNotifications,
     markAllNotificationsRead,
     markAllChatNotificationsRead,
 } from "../api/notifications";
@@ -58,6 +60,45 @@ function Navbar({
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [openPanel, setOpenPanel] = useState(null); // 'notifications' | 'messages' | null
+    const [clearMode, setClearMode] = useState(false);
+    const [clearBusy, setClearBusy] = useState(false);
+    const [clearError, setClearError] = useState("");
+    const [removingIds, setRemovingIds] = useState([]);
+    const clearPending = useRef(false);
+
+    const clearPanelItems = async (id) => {
+        if (clearPending.current) return;
+        const kind = openPanel;
+        const items = kind === "messages" ? messageNotifications : notifications;
+        const ids = id === undefined ? items.map(item => item.id) : [id];
+        clearPending.current = true;
+        setClearBusy(true);
+        setClearError("");
+        try {
+            await clearNotifications(kind, id);
+            setRemovingIds(ids);
+            await new Promise(resolve => setTimeout(resolve, 560));
+            const remaining = items.filter(item => !ids.includes(item.id));
+            const unread = remaining.filter(item => !item.read).length;
+            if (kind === "messages") {
+                setMessageNotifications(remaining);
+                setUnreadMessages(unread);
+                localStorage.setItem("unreadMessages", String(unread));
+            } else {
+                setNotifications(remaining);
+                setUnreadNotifications(unread);
+                localStorage.setItem("unreadNotifications", String(unread));
+            }
+            if (!remaining.length) setClearMode(false);
+            notifyUnreadChanged();
+        } catch (error) {
+            setClearError(error.message || "Could not clear items. Please try again.");
+        } finally {
+            setRemovingIds([]);
+            clearPending.current = false;
+            setClearBusy(false);
+        }
+    };
     const [isPanelClosing, setIsPanelClosing] = useState(false);
     const [panelAnimIn, setPanelAnimIn] = useState(false); // add 'open' class after mount for smooth slide-in
 
@@ -347,7 +388,7 @@ function Navbar({
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
 
-            setNotifications(sortedReadItems);
+            setNotifications(sortedReadItems.filter(item => item.type !== "CHAT_MESSAGE"));
             setUnreadNotifications(0);
             localStorage.setItem("unreadNotifications", "0");
 
@@ -360,6 +401,9 @@ function Navbar({
     };
 
     const openSidePanel = (kind) => {
+        if (clearPending.current) return;
+        setClearMode(false);
+        setClearError("");
         setIsPanelClosing(false);
         setOpenPanel(kind);
 
@@ -384,6 +428,7 @@ function Navbar({
     });
 
     const closeSidePanel = () => {
+        if (clearPending.current) return;
         const closingPanel = openPanel;
 
         setIsPanelClosing(true);
@@ -746,10 +791,22 @@ function Navbar({
                                             : "No new messages"}
                                 </p>
                             </div>
-                            <button className="panel-close" aria-label="Close" onClick={closeSidePanel}>×</button>
+                            <div className="panel-header-actions">
+                                {clearMode && <button type="button" className="panel-clear-done" disabled={clearBusy} onClick={() => { setClearMode(false); setClearError(""); }}>Done</button>}
+                                {(openPanel === "messages" ? messageNotifications : notifications).length > 0 &&
+                                    <button type="button" className={`panel-bin${clearMode ? ' active' : ''}`} disabled={clearBusy || notificationsLoading}
+                                        aria-label={clearMode ? `Clear all ${openPanel}` : `Manage ${openPanel}`}
+                                        title={clearMode ? `Clear all ${openPanel}` : 'Clear items'}
+                                        onClick={() => clearMode ? clearPanelItems() : setClearMode(true)}>
+                                        <BinIcon />{clearMode && <span>Clear all</span>}
+                                    </button>}
+                                <button className="panel-close" aria-label="Close" disabled={clearBusy} onClick={closeSidePanel}>×</button>
+                            </div>
                         </div>
 
                         <div className="panel-body">
+                            {clearMode && <p className="panel-clear-hint">Choose an item to clear, or clear all.</p>}
+                            {clearError && <p className="panel-clear-error" role="alert">{clearError}</p>}
                             {openPanel === "notifications" ? (
                                 <NotificationPanelContent
                                     notifications={notifications}
@@ -757,11 +814,13 @@ function Navbar({
                                     error={notificationsError}
                                     onRefresh={loadNotifications}
                                     onClosePanel={closeSidePanel}
+                                    clearMode={clearMode} clearBusy={clearBusy} removingIds={removingIds} onClear={clearPanelItems}
                                 />
                             ) : (
                                 <MessagePanelContent
                                     messages={messageNotifications}
                                     onClosePanel={closeSidePanel}
+                                    clearMode={clearMode} clearBusy={clearBusy} removingIds={removingIds} onClear={clearPanelItems}
                                 />
                             )}
                         </div>
@@ -827,7 +886,7 @@ function ProfileMenuIcon({ type }) {
     );
 }
 
-function NotificationPanelContent({ notifications, loading, error, onRefresh, onClosePanel }) {
+function NotificationPanelContent({ notifications, loading, error, onRefresh, onClosePanel, clearMode, clearBusy, removingIds, onClear }) {
     if (loading) {
         return (
             <div className="panel-empty">
@@ -865,20 +924,23 @@ function NotificationPanelContent({ notifications, loading, error, onRefresh, on
     }
 
     return (
-        <div className="notification-list">
+        <div className="notification-list activity-clear-list">
             {notifications.map((notification) => (
+                <ActivityClearRow key={notification.id} editing={clearMode} busy={clearBusy}
+                    removing={removingIds.includes(notification.id)} label={`Clear notification: ${notification.title}`} onClear={() => onClear(notification.id)}>
                 <NotificationCard
                     key={notification.id}
                     notification={notification}
                     onRefresh={onRefresh}
                     onClosePanel={onClosePanel}
                 />
+                </ActivityClearRow>
             ))}
         </div>
     );
 }
 
-function MessagePanelContent({ messages, onClosePanel }) {
+function MessagePanelContent({ messages, onClosePanel, clearMode, clearBusy, removingIds, onClear }) {
     const navigate = useNavigate();
 
     if (!messages.length) {
@@ -900,7 +962,7 @@ function MessagePanelContent({ messages, onClosePanel }) {
     }
 
     return (
-        <div className="notification-list">
+        <div className="notification-list activity-clear-list">
             {messages.map((item) => {
                 const senderName =
                     item.data?.senderName ||
@@ -920,6 +982,8 @@ function MessagePanelContent({ messages, onClosePanel }) {
                     (item.data?.orderId ? `/match/${item.data.orderId}` : null);
 
                 return (
+                    <ActivityClearRow key={item.id} editing={clearMode} busy={clearBusy}
+                        removing={removingIds.includes(item.id)} label={`Clear message: ${senderName}, ${item.message}`} onClear={() => onClear(item.id)}>
                     <button
                         key={item.id}
                         type="button"
@@ -961,6 +1025,7 @@ function MessagePanelContent({ messages, onClosePanel }) {
                             </div>
                         </div>
                     </button>
+                    </ActivityClearRow>
                 );
             })}
         </div>

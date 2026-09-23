@@ -18,6 +18,7 @@ import AccountSettingsPage from "./pages/AccountSettingsPage";
 import AdminManagementPage from "./pages/AdminManagementPage";
 import AdminAccountsPage from "./pages/AdminAccountsPage";
 import DashboardPage from "./pages/DashboardPage";
+import FaqPage from "./pages/FaqPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PaymentResultPage from "./pages/PaymentResultPage";
@@ -171,6 +172,7 @@ function App() {
           }
         >
           <Route path="/account/dashboard" element={<DashboardPage />} />
+          <Route path="/account/faq" element={<FaqPage />} />
           <Route path="/account/orders" element={<CustomerOrdersPage />} />
           <Route path="/account/change-password" element={<ChangePasswordPage />} />
         </Route>

@@ -2,8 +2,9 @@
     padding-bottom: 70px;
 }
 
-.price-hero .admin-order-title span {
-    color: #fff;
+.price-management-title {
+    margin-bottom: 20px;
+    font-size: clamp(24px, 2.5vw, 32px);
 }
 
 .price-hero-actions {

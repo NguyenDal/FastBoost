@@ -12,7 +12,7 @@ function authHeaders() {
 
 export async function providerListAssignedOrders({
     page = 1,
-    pageSize = 20,
+    pageSize = 10,
     status,
     q,
 } = {}) {

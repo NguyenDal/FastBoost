@@ -1554,18 +1554,8 @@ export default function PriceManagementPage() {
     return (
         <>
 
-            <main className="price-management-page">
-                <section className="admin-list-hero price-hero">
-                    <div>
-                        <p className="admin-eyebrow">FastBoost Admin</p>
-                        <h1 className="admin-order-title">
-                            Price <span>Management</span>
-                        </h1>
-                        <p className="admin-list-subtitle">
-                            Manage dynamic service pricing rules, sale activation, and sale duration.
-                        </p>
-                    </div>
-                </section>
+            <section className="price-management-page">
+                <h1 className="admin-order-title price-management-title">Price Management</h1>
 
                 <section className="price-stats-grid">
                     <article className="price-stat-card">
@@ -1906,7 +1896,7 @@ export default function PriceManagementPage() {
                         </section>
                     </aside>
                 </section>
-            </main>
+            </section>
 
             {pendingAvailability && (
                 <div className="price-modal-backdrop" onClick={closeAvailabilityConfirmation}>

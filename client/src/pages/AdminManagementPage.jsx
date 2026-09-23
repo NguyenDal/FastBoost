@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { OrdersIcon, UsersIcon, PriceIcon } from "../components/AdminIcons";
 import "../styles/Admin.css";
 
 const managementCards = [
@@ -7,25 +8,22 @@ const managementCards = [
         title: "Order Management",
         description:
             "View customer orders, assign boosters, update status, and open order details.",
-        icon: "📦",
+        icon: <OrdersIcon />,
         path: "/admin/orders",
-        status: "Ready",
     },
     {
         title: "Account Management",
         description:
             "Manage user roles such as customer, booster, and admin.",
-        icon: "👤",
+        icon: <UsersIcon />,
         path: "/admin/accounts",
-        status: "Ready",
     },
     {
         title: "Price Management",
         description:
             "View service pricing rules, manage sales, and control sale duration.",
-        icon: "💰",
+        icon: <PriceIcon />,
         path: "/admin/prices",
-        status: "Ready",
     },
 ];
 
@@ -43,22 +41,6 @@ export default function AdminManagementPage() {
                             Management Utilities
                         </h1>
 
-                        <p className="admin-list-subtitle">
-                            Central hub for managing orders, accounts, pricing,
-                            and sales.
-                        </p>
-                    </div>
-
-                    <div className="admin-list-stats">
-                        <div className="admin-stat-card">
-                            <span>Utilities</span>
-                            <strong>{managementCards.length}</strong>
-                        </div>
-
-                        <div className="admin-stat-card">
-                            <span>Active</span>
-                            <strong>{managementCards.length}</strong>
-                        </div>
                     </div>
                 </section>
 
@@ -74,9 +56,6 @@ export default function AdminManagementPage() {
                                     {card.icon}
                                 </div>
 
-                                <span className="management-status ready">
-                                    {card.status}
-                                </span>
                             </div>
 
                             <div>
@@ -85,7 +64,6 @@ export default function AdminManagementPage() {
                             </div>
 
                             <div className="management-card-footer">
-                                <span>Open utility</span>
                                 <span className="management-arrow">→</span>
                             </div>
                         </Link>

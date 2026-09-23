@@ -10,7 +10,7 @@ function getAuthHeaders() {
     };
 }
 
-export async function adminListUsers({ page = 1, pageSize = 20, q = "", role = "" } = {}) {
+export async function adminListUsers({ page = 1, pageSize = 10, q = "", role = "" } = {}) {
     const params = new URLSearchParams();
 
     params.set("page", String(page));

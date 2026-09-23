@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { customerListMyOrders } from "../api/customerOrders";
 import "../styles/Admin.css";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
+import OrderPagination from "../components/OrderPagination";
+
+const ORDERS_PER_PAGE = 10;
 
 function getStoredUser() {
     try {
@@ -50,6 +53,7 @@ export default function CustomerOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [query, setQuery] = useState("");
     const [status, setStatus] = useState("CURRENT");
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -80,6 +84,7 @@ export default function CustomerOrdersPage() {
             const matchesSearch =
                 !q ||
                 order.id?.toLowerCase().includes(q) ||
+                order.orderNumber?.toLowerCase().includes(q.replace(/^#/, "")) ||
                 order.service?.title?.toLowerCase().includes(q) ||
                 order.boostType?.toLowerCase().includes(q) ||
                 order.region?.toLowerCase().includes(q);
@@ -93,45 +98,30 @@ export default function CustomerOrdersPage() {
         });
     }, [orders, query, status]);
 
+    const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
+    const currentPage = Math.min(page, totalPages);
+    const pageOrders = filteredOrders.slice((currentPage - 1) * ORDERS_PER_PAGE, currentPage * ORDERS_PER_PAGE);
+
     if (!allowed) return null;
 
     return (
         <div className="dashboard-embedded-page customer-orders-embedded">
-            <div className="admin-list-hero customer-list-hero">
-                <div>
-                    <p className="admin-eyebrow">FastBoost Account</p>
-                    <h1 className="admin-order-title">My Orders</h1>
-                    <p className="admin-list-subtitle">
-                        Track your active orders, view order details, and open chat with your assigned booster.
-                    </p>
-                </div>
-
-                <div className="admin-list-stats">
-                    <div className="admin-stat-card">
-                        <span>Total Orders</span>
-                        <strong>{orders.length}</strong>
-                    </div>
-
-                    <div className="admin-stat-card">
-                        <span>Visible</span>
-                        <strong>{filteredOrders.length}</strong>
-                    </div>
-                </div>
-            </div>
+            <h1 className="admin-order-title customer-orders-title">My Orders</h1>
 
             <div className="admin-toolbar premium-toolbar">
                 <input
                     className="admin-input"
+                    aria-label="Search orders"
                     placeholder="Search by order ID, service, boost type, or region"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    style={{ minWidth: 320 }}
+                    onChange={(e) => { setQuery(e.target.value); setPage(1); }}
                 />
 
                 <select
                     className="admin-select"
+                    aria-label="Order status"
                     value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    onChange={(e) => { setStatus(e.target.value); setPage(1); }}
                 >
                     <option value="CURRENT">Current Orders</option>
                     <option value="PENDING">Pending</option>
@@ -146,8 +136,8 @@ export default function CustomerOrdersPage() {
             ) : error ? (
                 <p style={{ color: "#ef4444" }}>{error}</p>
             ) : (
-                <div className="admin-table-wrap premium-table-wrap">
-                    <table className="admin-table">
+                <div className="admin-table-wrap premium-table-wrap" role="region" aria-label="Orders table" tabIndex={0}>
+                    <table className="admin-table" id="customer-orders-table">
                         <thead>
                             <tr>
                                 <th>Order</th>
@@ -162,7 +152,7 @@ export default function CustomerOrdersPage() {
                         </thead>
 
                         <tbody>
-                            {filteredOrders.map((order) => (
+                            {pageOrders.map((order) => (
                                 <tr key={order.id}>
                                     <td className="mono order-id-cell">
                                         #{order.orderNumber}
@@ -216,6 +206,9 @@ export default function CustomerOrdersPage() {
                         </tbody>
                     </table>
                 </div>
+            )}
+            {!loading && !error && filteredOrders.length > 0 && (
+                <OrderPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
             )}
         </div>
     );

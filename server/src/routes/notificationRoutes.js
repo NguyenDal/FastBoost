@@ -11,6 +11,7 @@ const {
 const router = express.Router();
 
 router.get("/", protect, ctrl.listMyNotifications);
+router.patch("/clear", protect, ctrl.clearNotifications);
 router.patch("/read-all", protect, ctrl.markAllNotificationsRead);
 router.patch("/messages/read-all", protect, markAllChatNotificationsRead);
 router.patch("/:id/read", protect, ctrl.markNotificationRead);

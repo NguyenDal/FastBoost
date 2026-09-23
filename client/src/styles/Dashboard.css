@@ -68,6 +68,7 @@
 }
 
 .dashboard-main {
+    min-width: 0;
     padding: 16px 28px 28px;
 }
 
@@ -245,11 +246,6 @@
 .dashboard-quick-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 16px; }
 .dashboard-quick-actions a, .dashboard-quick-actions > button { display: flex; align-items: center; gap: 10px; padding: 14px 10px; color: #e5e7eb; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; text-decoration: none; font: inherit; text-align: left; cursor: pointer; }
 .dashboard-quick-actions a > span, .dashboard-quick-actions > button > span { color: #a78bfa; font-size: 24px; }
-.dashboard-faq-dialog { width: min(560px, calc(100vw - 32px)); max-height: 80vh; overflow: auto; padding: 24px; border: 1px solid rgba(167,139,250,.3); border-radius: 22px; color: #e5e7eb; background: #111827; }
-.dashboard-faq-dialog::backdrop { background: rgba(0,0,0,.65); }
-.dashboard-faq-dialog details { padding: 14px 0; border-top: 1px solid rgba(255,255,255,.1); }
-.dashboard-faq-dialog summary { cursor: pointer; font-weight: 700; }
-.dashboard-faq-dialog p { color: #aab3c2; line-height: 1.6; }
 .dashboard-quick-actions strong { font-size: 12px; }
 .dashboard-quick-actions small { display: block; margin-top: 5px; color: #94a3b8; font-size: 10px; }
 .dashboard-platform-status > div { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 12px; }
@@ -907,4 +903,12 @@
 .dashboard-coupon-countdown .sale-footer-time small { font-size:8px; margin:0; }
 
 .dashboard-coupon-viewport { height:198px; flex:0 0 198px; overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; }
-.dashboard-coupon-viewport .dashboard-coupon-empty { height:198px; min-height:0; box-sizing:border-box; }
+.dashboard-coupon-viewport .dashboard-coupon-empty { margin-top:12px; height:186px; min-height:0; box-sizing:border-box; }
+.dashboard-coupons-card .order-pagination {
+  --pagination-size: 26px;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 10px;
+  padding: 4px 0;
+}
+.dashboard-coupons-card .order-pagination button { font-size: 11px; }
