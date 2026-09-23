@@ -3,6 +3,31 @@ import { useLocation } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
 import "../styles/SaleFooter.css";
 
+function CouponCode({ code }) {
+    const [feedback, setFeedback] = useState("");
+    useEffect(() => {
+        if (!feedback) return;
+        const timeout = setTimeout(() => setFeedback(""), 2500);
+        return () => clearTimeout(timeout);
+    }, [feedback]);
+    const copyCode = async () => {
+        try {
+            await navigator.clipboard.writeText(code);
+            setFeedback("Copied!");
+        } catch {
+            setFeedback("Copy code manually");
+        }
+    };
+    return <span className="sale-footer-coupon">
+        <span>Use code</span>
+        <button type="button" className="sale-footer-copy" onClick={copyCode} aria-label={`Copy coupon code ${code}`} title="Copy code to use at checkout">
+            <b>{code}</b>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg>
+        </button>
+        <span className="sale-footer-copy-feedback" role="status">{feedback}</span>
+    </span>;
+}
+
 export function SaleBanner({ promotion, now, preview = false }) {
     const [clock, setClock] = useState(Date.now);
     useEffect(() => {
@@ -20,8 +45,8 @@ export function SaleBanner({ promotion, now, preview = false }) {
     return <aside className={`sale-footer-bar${timer ? "" : " sale-footer-no-timer"}${preview ? " sale-footer-preview" : ""}`} aria-label="Current sale">
         <strong className="sale-footer-title">{promotion.title}</strong>
         <div className="sale-footer-offer">
-            <span className="sale-footer-discount">{Number(promotion.discountPercent)}% OFF{promotion.scope === "GLOBAL" ? " ALL SERVICES" : ""}</span>
-            {promotion.couponCode && <span className="sale-footer-detail">Use code <b>{promotion.couponCode}</b></span>}
+            <span className="sale-footer-discount">{Number(promotion.discountPercent)}% OFF {promotion.scope === "GLOBAL" ? "ALL SERVICES" : promotion.service?.title || "THIS SERVICE"}</span>
+            {promotion.couponCode && <CouponCode key={promotion.couponCode} code={promotion.couponCode} />}
         </div>
         {timer && <div className="sale-footer-timer" role="timer" aria-label="Time until sale ends">
             {parts.map((value, index) => <span className="sale-footer-time" key={index}><b>{String(value).padStart(2, "0")}</b><small>{["DAYS", "HRS", "MIN", "SEC"][index]}</small></span>)}
@@ -29,7 +54,7 @@ export function SaleBanner({ promotion, now, preview = false }) {
     </aside>;
 }
 
-function LiveSaleFooter({ serviceId }) {
+export function LiveSaleFooter({ serviceId }) {
     const [promotion, setPromotion] = useState(null);
     const [now, setNow] = useState(Date.now);
     const [height, setHeight] = useState(0);

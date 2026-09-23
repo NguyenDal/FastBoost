@@ -47,6 +47,9 @@ test('admin saves coupons independently from automatic campaigns', async t => {
         } }],
         [require.resolve('../src/utils/pricingCatalogCache'), { invalidatePricingCatalog() {} }],
     ]);
+    const db = mocks.get(require.resolve("../src/prisma"));
+    db.$transaction = async callback => callback(db);
+    db.serviceSale.updateMany = async () => ({ count: 0 });
     const saved = new Map();
     for (const [path, exports] of mocks) { saved.set(path, require.cache[path]); require.cache[path] = { exports }; }
     const controller = require.resolve('../src/controllers/priceController');

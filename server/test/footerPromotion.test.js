@@ -21,7 +21,7 @@ test('public footer only selects current public opted-in campaigns and prefers t
     const res = { set() {}, json(value) { this.body = value; }, status() { return this; } };
     await getFooterPromotion({ query: {} }, res);
     assert.equal(queries.length, 1);
-    assert.equal(queries[0].where.scope, 'GLOBAL');
+    assert.deepEqual(queries[0].where.OR, [{ scope: 'GLOBAL' }, { scope: 'SERVICE', service: { priceRules: { some: { active: true } } } }]);
     assert.equal(res.body.promotion, null);
     await getFooterPromotion({ query: { serviceId: 'rank' } }, res);
     assert.equal(queries[1].where.serviceId, 'rank');
@@ -35,10 +35,21 @@ test('public footer only selects current public opted-in campaigns and prefers t
         assert.ok(where.AND[1].OR[1].endsAt.gt instanceof Date);
         assert.equal(select.recipientAccountId, undefined);
         assert.equal(select.personalReason, undefined);
+        assert.deepEqual(select.service, { select: { title: true } });
     }
-    result = { id: 'service-sale' };
+    result = { id: 'service-sale', scope: 'SERVICE', couponCode: 'RANK15', service: { title: 'Rank Boost' } };
     queries.length = 0;
     await getFooterPromotion({ query: { serviceId: 'rank' } }, res);
     assert.equal(queries.length, 1);
     assert.equal(res.body.promotion.id, 'service-sale');
+    assert.equal(res.body.promotion.service.title, 'Rank Boost');
+    assert.equal(res.body.promotion.couponCode, 'RANK15');
+    queries.length = 0;
+    await getFooterPromotion({ query: {} }, res);
+    assert.equal(res.body.promotion.id, 'service-sale');
+    assert.equal(queries[0].where.OR[1].scope, 'SERVICE');
+    result = { id: 'global-coupon', scope: 'GLOBAL', couponCode: 'ALL15', service: null };
+    await getFooterPromotion({ query: {} }, res);
+    assert.equal(res.body.promotion.couponCode, 'ALL15');
+    assert.equal(res.body.promotion.scope, 'GLOBAL');
 });

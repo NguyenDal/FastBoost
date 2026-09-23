@@ -4,6 +4,8 @@ const { calculateOrderPrice } = require('../src/utils/pricingCalculator');
 const { saleOptions } = require('../src/utils/saleOptions');
 
 function loadController(t, name, prisma, cache = {}) {
+    prisma.$transaction = async callback => callback(prisma);
+    if (prisma.serviceSale) prisma.serviceSale.updateMany = async () => ({ count: 0 });
     const mocks = new Map([[require.resolve('../src/prisma'),prisma],[require.resolve('../src/utils/pricingCatalogCache'),cache],[require.resolve('../src/utils/stripeClient'),{}]]);
     if (name === 'orderController') mocks.set(require.resolve('../src/utils/orderPasswordCrypto'), {});
     const old = new Map();

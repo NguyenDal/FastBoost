@@ -13,7 +13,7 @@ function fixture() {
     const expired = [];
     const stripe = { checkout:{ sessions:{ retrieve:async id => sessions.get(id),expire:async id => { const s=sessions.get(id); if(s.status !== 'open') throw new Error('Session cannot expire'); s.status='expired';expired.push(id); } } } };
     const db = {
-        serviceSale:{findUnique:async({where})=>where.couponCode===sale.couponCode?sale:null},
+        serviceSale:{findFirst:async({where})=>where.couponCode===sale.couponCode && sale.active?sale:null,findUnique:async({where})=>where.id===sale.id?sale:null},
         order:{update:async({where,data})=>Object.assign(orders.get(where.id),data)},
         couponUse:{
             findUnique:async({where})=>{const c=claims.find(c=>c.accountId===where.accountId_saleId.accountId && c.saleId===where.accountId_saleId.saleId);return c?{...c,order:orders.get(c.orderId)}:null;},
@@ -113,6 +113,8 @@ test('coupon pricing rounds to cents and leaves add-ons undiscounted',()=>{
 
 test('a smaller replacement keeps the existing coupon and explains that choice',async()=>{
     const f=fixture();await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);
+    const previous={...f.sale};
+    f.db.serviceSale.findUnique=async({where})=>where.id===previous.id?previous:null;
     Object.assign(f.sale,{id:'coupon-b',couponCode:'SMALL5',discountPercent:5});
     const notice=await applyCheckoutCoupon(f.db,f.order,'SMALL5',f.stripe);
     assert.match(notice.title,/current coupon/);assert.equal(f.order.couponCode,'WELCOME20');assert.equal(f.order.amountCents,9000);
@@ -124,4 +126,21 @@ test('refreshing an old draft after another order consumed its coupon restores i
     const notice=await applyCheckoutCoupon(f.db,f.order,undefined,f.stripe);
     assert.match(notice.message,/already used/);assert.equal(f.order.couponSaleId,null);assert.equal(f.order.amountCents,9900);
     assert.equal(f.claims.length,1);assert.equal(f.claims[0].orderId,'other-order');
+});
+
+for (const percent of [5,15]) test(`reused code replaces expired campaign at ${percent}%`,async()=>{
+ const f=fixture();await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);
+ const old={...f.sale,active:false};f.db.serviceSale.findUnique=async()=>old;
+ Object.assign(f.sale,{id:'new',discountPercent:percent});
+ await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);
+ assert.equal(f.order.couponSaleId,percent===5?null:'new');
+ assert.equal(f.order.amountCents,percent===5?9900:9450);
+ assert.ok(f.claims.every(c=>c.saleId==='new'));
+});
+test('refresh never silently adopts reused code',async()=>{
+ const f=fixture();await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);
+ const old={...f.sale,active:false};f.db.serviceSale.findUnique=async()=>old;
+ Object.assign(f.sale,{id:'new',discountPercent:30});
+ await applyCheckoutCoupon(f.db,f.order,undefined,f.stripe);
+ assert.equal(f.order.couponSaleId,null);assert.equal(f.order.amountCents,9900);assert.equal(f.claims.length,0);
 });

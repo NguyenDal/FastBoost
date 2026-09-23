@@ -13,13 +13,19 @@ exports.getFooterPromotion = async (req, res) => {
         ],
     };
     const select = { id: true, title: true, discountPercent: true, couponCode: true,
-        endsAt: true, footerTimer: true, scope: true };
+        endsAt: true, footerTimer: true, scope: true, service: { select: { title: true } } };
     const orderBy = [{ createdAt: "desc" }, { id: "asc" }];
     try {
         let promotion = serviceId ? await prisma.serviceSale.findFirst({
             where: { ...where, scope: "SERVICE", serviceId, service: { priceRules: { some: { active: true } } } }, select, orderBy,
         }) : null;
-        if (!promotion) promotion = await prisma.serviceSale.findFirst({ where: { ...where, scope: "GLOBAL" }, select, orderBy });
+        if (!promotion) promotion = await prisma.serviceSale.findFirst({ where: {
+            ...where,
+            ...(serviceId ? { scope: "GLOBAL" } : { OR: [
+                { scope: "GLOBAL" },
+                { scope: "SERVICE", service: { priceRules: { some: { active: true } } } },
+            ] }),
+        }, select, orderBy });
         res.set("Cache-Control", "no-store");
         return res.json({ ok: true, promotion });
     } catch {

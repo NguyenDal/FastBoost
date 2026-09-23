@@ -8,10 +8,16 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### September 22, 2026 — loyalty reward repair
+
+- Reconnected tier-bonus reconciliation on order completion/status changes and loyalty-page reads to recover missing historical rewards. Paid, completed spend unlocks Silver +200, Gold +500, Platinum +1000, and Diamond +1500 cumulatively. Per-user transaction locking and existing unique reward keys prevent duplicate credits. Reconciliation retains the existing policy of removing tier bonuses when qualifying spend falls below the threshold.
+- Loyalty spend/count/gold now consistently exclude unpaid completed orders, matching checkout gold eligibility. Gold history displays negative redemptions without a prefixed plus. Checkout coupon action reads Remove in grey underlined normal text.
+- Verified all four recovered bonuses and -100 redemption in the local loyalty page. Full server suite: 57 passed, 3 optional DB checks skipped; focused client lint and build pass. No migration or production deployment.
+
 ### September 22, 2026 — sale footer decoration
 
 - Full-width, edge-to-edge dark fixed bottom sale bar with subtle purple accents on the homepage, referral
-  landing pages, Contact, and service order pages. Title, offer and optional timer
+  landing pages, Contact, service order pages, and unpaid checkout. Title, offer and optional timer
   form a centered group. Desktop height is about 44px; mobile content wraps.
   Global discounts read N% OFF ALL SERVICES; the extra scope/base-price line is removed.
 - Footer decoration enables display; Show countdown timer is independent of the
@@ -20,11 +26,17 @@ This project is a **game services marketplace demo** where users can register, l
 - GET /api/pricing/footer-promotion returns only an active, currently eligible,
   opted-in public campaign. Personal coupons are always excluded. Service pages
   prefer the newest eligible campaign for that service (only if available), then
-  the newest global campaign; other storefront pages show global campaigns only.
-  Coupon banners retain their public code. Discount calculations remain base-price-only.
+  the newest global campaign; other storefront pages show the newest eligible global or available-service campaign.
+  Service banners read N% OFF SERVICE NAME. Global and service coupon banners
+  include Use code with a copy button and success/failure feedback. The admin
+  preview uses the selected service name and the same coupon control. Personal
+  coupons remain excluded. Discount calculations remain base-price-only.
+- Sale Control uses one shared campaign card for global sales, service sales, and public coupons, with status, countdown, scope, dates, footer setting, and an end/disable action.
 - Public pages refresh every 30 seconds and on focus/visibility. Expired banners
   disappear on the countdown tick even when the timer is hidden. API failures hide
-  the banner. Admin, account, checkout and match screens have no promotional bar.
+  the banner. Checkout uses its loaded order service ID, prefers that service campaign
+  then global, and reserves footer space below the payment content. It hides during
+  payment verification and after payment. Admin, account and match screens have no promotional bar.
 - Migration `20260923020000_sale_footer_timer` adds one boolean defaulting true.
   Applied and recorded only in the locally configured database, with Prisma client
   regenerated. Apply this migration to production before deploying the new code;
@@ -1699,7 +1711,11 @@ Referral links displayed and copied in the dashboard use the browser's current o
 
 ### Checkout coupon redemption
 
-Active admin coupons are entered in checkout's Coupon code field. They discount the base price only. The larger of the order's existing automatic sale and the coupon wins; they never stack. An explanatory popup tells customers which discount was retained. The existing referral percentage, when present, is calculated after the winning discount. Gold is applied after these discounts. Applied coupon titles appear in checkout and confirmation emails.
+Coupon codes may be reused after the old campaign expires or is disabled (the admin removal action). Active and scheduled campaigns reserve their codes. Reuse creates a new campaign ID and usage allowance; historical orders keep their original coupon and price snapshots. An old unpaid checkout never silently adopts a reused code.
+
+Migration `20260923030000_reusable_coupon_codes` was applied to the configured development database, with Prisma regenerated. Production requires this migration alongside the backend update. It replaces permanent code uniqueness with the manually maintained partial unique index `ServiceSale_active_couponCode_key` (`active = true`); preserve this index in future migrations. Expired reservations are released atomically when creating a replacement.
+
+Active admin coupons are entered in checkout's Coupon code field. They discount the base price only. The larger of the order's existing automatic sale and the coupon wins; they never stack. An explanatory popup tells customers which discount was retained. The existing referral percentage, when present, is calculated after the winning discount. Gold is applied after these discounts. Applied coupon titles appear in checkout and confirmation emails. Checkout shows the coupon once in the price breakdown, with an accessible grey, underlined, normal-weight Remove button beside its name (disabled while payment is busy).
 
 `CouponUse.usedAt` is set atomically with verified payment, including gold-only payment. Applying a coupon or loading an unpaid draft does not consume it. An unpaid checkout claim can move to another draft after its old Stripe session is expired. A unique account/coupon constraint plus serialized checkout mutations prevent two payable sessions from redeeming the same coupon for one account. Cancellation releases the use; completed orders retain it. Coupon price snapshots remain on the order for history.
 

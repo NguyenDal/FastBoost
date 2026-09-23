@@ -4,7 +4,14 @@
 .sale-footer-title { flex: 0 1 auto; font-size: 14px; letter-spacing: .02em; overflow-wrap: anywhere; text-align: center; }
 .sale-footer-offer { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .sale-footer-discount { white-space: normal; text-align: center; border-radius: 999px; padding: 5px 13px; color: #ded0ff; background: #a78bfa1c; border: 1px solid #a78bfa30; font-size: 12px; font-weight: 800; }
-.sale-footer-detail { font-size: 12px; color: #c6bbdb; overflow-wrap: anywhere; }
+.sale-footer-discount { text-transform: uppercase; }
+.sale-footer-coupon { position: relative; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #c6bbdb; min-width: 0; }
+.sale-footer-copy { display: inline-flex; align-items: center; gap: 6px; background: #a78bfa12; color: #eeeaf7; border: 1px dashed #a78bfa55; border-radius: 5px; padding: 4px 8px; cursor: pointer; font: inherit; }
+.sale-footer-copy b { user-select: all; overflow-wrap: anywhere; }
+.sale-footer-copy svg { flex-shrink: 0; }
+.sale-footer-copy:hover { background: #a78bfa26; }
+.sale-footer-copy:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.sale-footer-copy-feedback:not(:empty) { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #191426; border: 1px solid #a78bfa55; padding: 5px 8px; border-radius: 6px; white-space: nowrap; color: #eeeaf7; }
 .sale-footer-timer { display: flex; gap: 5px; padding-left: 18px; border-left: 1px solid #a78bfa26; flex-shrink: 0; }
 .sale-footer-time { display: grid; text-align: center; gap: 1px; min-width: 29px; border-radius: 5px; padding: 3px 4px; background: #ffffff04; }
 .sale-footer-time b { font-size: 14px; line-height: 1.1; font-variant-numeric: tabular-nums; }
@@ -14,7 +21,7 @@
     .sale-footer-bar { gap: 6px 12px; padding: 6px 10px max(6px, env(safe-area-inset-bottom)); }
     .sale-footer-title { font-size: 12px; }
     .sale-footer-discount { font-size: 11px; padding: 4px 10px; }
-    .sale-footer-detail { font-size: 10px; }
+    .sale-footer-coupon { font-size: 11px; }
     .sale-footer-timer { gap: 3px; padding-left: 10px; }
     .sale-footer-time { min-width: 24px; padding: 2px 3px; }
     .sale-footer-time b { font-size: 13px; }

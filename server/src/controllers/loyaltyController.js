@@ -1,3 +1,4 @@
+const { syncLoyaltyTierBonuses } = require("../utils/loyaltyTierBonuses");
 const prisma = require("../prisma");
 const { mergeRewardPage } = require("../utils/loyaltyRewards");
 const { generateReferralCode } = require("../utils/referralCode");
@@ -192,12 +193,14 @@ exports.getMyLoyalty = async (req, res) => {
             });
         }
 
+        await syncLoyaltyTierBonuses(prisma, userId);
         const user = await ensureReferralCode(userId);
         const referralOffer = await getReferralFirstPurchaseOffer(userId);
 
         const completedOrderWhere = {
             customerId: userId,
             status: "COMPLETED",
+            paymentStatus: "PAID",
         };
 
         const [
@@ -264,6 +267,7 @@ exports.getMyLoyalty = async (req, res) => {
     FROM "Order"
     WHERE "customerId" = ${userId}
     AND "status" = 'COMPLETED'
+    AND "paymentStatus" = 'PAID'
 `,
         ]);
 

@@ -125,7 +125,7 @@ model ServiceSale {
   couponOrders    Order[] @relation("OrderCoupon")
   couponUses      CouponUse[]
   id              String    @id @default(cuid())
-  couponCode      String?   @unique
+  couponCode      String?
   footerDecoration Boolean  @default(false)
   footerTimer      Boolean  @default(true)
 
@@ -148,6 +148,7 @@ model ServiceSale {
 
   @@index([serviceId])
   @@index([recipientAccountId])
+  @@index([couponCode])
   @@index([scope])
   @@index([active])
   @@index([startsAt])

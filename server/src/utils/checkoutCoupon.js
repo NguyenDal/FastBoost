@@ -75,7 +75,10 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
     let sale, unavailable;
     if (code) {
         if (!/^[A-Z0-9][A-Z0-9-]{3,31}$/.test(code)) throw couponError("Please check your coupon code and try again.");
-        sale = await db.serviceSale.findUnique({ where: { couponCode: code } });
+        // A draft stays bound to its original campaign, even if its code is reused.
+        sale = !explicit && order.couponSaleId
+            ? await db.serviceSale.findUnique({ where: { id: order.couponSaleId } })
+            : await db.serviceSale.findFirst({ where: { couponCode: code, active: true } });
         unavailable = !sale || !sale.active ? "This coupon is not available. Please check the code or try another coupon."
             : sale.recipientAccountId && sale.recipientAccountId !== order.customerId ? "This coupon is reserved for another account."
             : sale.startsAt && new Date(sale.startsAt) > now ? "This coupon is not active yet."
@@ -97,10 +100,19 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
         return { title: unavailable ? "Coupon no longer available" : "Coupon removed", message: unavailable ? `${unavailable} We have restored your original price. Please review your total.` : "Your original price has been restored. The coupon has not been used." };
     }
     const pricing = couponPricing(order, sale.discountPercent);
-    if (order.couponSaleId && order.couponSaleId !== sale.id && pricing.discount <= order.couponDiscountCents) {
+    const previousSale = order.couponSaleId && order.couponSaleId !== sale.id
+        ? await db.serviceSale.findUnique({ where: { id: order.couponSaleId } }) : null;
+    const previousAvailable = previousSale?.active && (!previousSale.endsAt || new Date(previousSale.endsAt) > now)
+        && (!previousSale.startsAt || new Date(previousSale.startsAt) <= now);
+    if (previousAvailable && pricing.discount <= order.couponDiscountCents) {
         return { title: "Your current coupon gives you the better price", message: "We kept your existing coupon because it gives an equal or larger discount. Coupons do not stack." };
     }
     if (pricing.discount <= pricing.sale) {
+        if (order.couponSaleId && !previousAvailable) {
+            await expireUnpaidSession(order, stripe);
+            await db.couponUse.deleteMany({ where: { orderId: order.id, usedAt: null } });
+            Object.assign(order, await db.order.update({ where: { id: order.id }, data: restoredCouponFields(order) }));
+        }
         return { title: "Your sale gives you the better price", message: "Your existing sale discount is equal to or larger than this coupon. We kept the sale price. Discounts do not stack, and this coupon has not been used." };
     }
     if (pricing.total < 50) throw couponError("This coupon cannot be applied to this order total. Please try another coupon.");

@@ -1479,3 +1479,7 @@
 .price-rule-card-inactive { background: #11131b; border-color: #353746; }
 .price-rule-card-inactive .price-rule-card-info, .price-rule-card-inactive .price-rule-sale-row { filter: grayscale(1); opacity: .5; }
 .price-side-panel, .price-main-panel { min-width: 0; }
+.price-campaign-card { margin-top: 18px; }
+.price-campaign-card + .price-campaign-card { padding-top: 20px; border-top: 1px solid #a78bfa26; }
+.price-campaign-card > .price-sale-control-header > span:first-child { color: #94a3b8; font-size: .78rem; }
+.price-global-status.expired, .price-global-status.none { color: #94a3b8; background: #94a3b81a; }

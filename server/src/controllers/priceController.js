@@ -1,5 +1,6 @@
 const prisma = require("../prisma");
 const { saleOptions } = require("../utils/saleOptions");
+const { createSale: saveSale } = require("../utils/createSale");
 const {
     invalidatePricingCatalog,
 } = require("../utils/pricingCatalogCache");
@@ -242,8 +243,7 @@ exports.createSale = async (req, res) => {
             }
         }
 
-        const sale = await prisma.serviceSale.create({
-            data: {
+        const sale = await saveSale(prisma, {
                 scope,
 
                 serviceId:
@@ -278,7 +278,6 @@ exports.createSale = async (req, res) => {
                         : null,
 
                 active: true,
-            },
         });
 
         invalidatePricingCatalog();
@@ -288,7 +287,7 @@ exports.createSale = async (req, res) => {
             sale,
         });
     } catch (error) {
-        if (error.code === "P2002") return res.status(409).json({ ok: false, message: "That coupon code already exists. Generate or enter another code." });
+        if (error.code === "P2002") return res.status(409).json({ ok: false, message: "That coupon code is reserved by an active or scheduled coupon. Disable it or choose another code." });
         console.error("createSale error:", error);
 
         return res.status(500).json({

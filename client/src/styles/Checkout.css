@@ -191,6 +191,10 @@
   .checkout-paid-content .checkout-paid-notice { font-size: 14px; padding: 12px; gap: 12px; }
 }
 
-.checkout-coupon-applied { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; color:#c4b5fd; font-size:13px; }
-.checkout-coupon-applied button { min-height:44px; padding:8px 12px; border:1px solid #65409c; border-radius:8px; background:#24173d; color:#eee5ff; cursor:pointer; }
-.checkout-coupon-applied button:disabled { opacity:.5; cursor:default; }
+
+.checkout-coupon-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.checkout-coupon-label > span { overflow-wrap: anywhere; }
+.checkout-coupon-remove { flex-shrink: 0; padding: 3px 0; border: 0; border-radius: 0; background: transparent; color: #9ca3af; font: inherit; font-weight: 400; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.checkout-coupon-remove:hover { color: #d1d5db; }
+.checkout-coupon-remove:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.checkout-coupon-remove:disabled { opacity: .5; cursor: default; }

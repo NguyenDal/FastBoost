@@ -273,7 +273,7 @@ export default function LoyaltyPage() {
                                                 </div>
 
                                                 <div className="loyalty-match-gold">
-                                                    <span>+{reward.goldEarned}</span>
+                                                    <span>{Number(reward.goldEarned) > 0 ? "+" : ""}{reward.goldEarned}</span>
                                                     <small>gold</small>
                                                 </div>
                                             </div>

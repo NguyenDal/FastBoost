@@ -11,7 +11,7 @@ test('checkout charges the winning coupon price; card and gold previews never co
         servicePriceRule: { findFirst: async () => ({ id:'active-rule' }) },
         $queryRaw:async()=>[],
         order:{findUnique:async()=>order,findMany:async()=>[],update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},
-        serviceSale:{findUnique:async({where})=>where.couponCode===sale.couponCode?sale:null},
+        serviceSale:{findFirst:async({where})=>where.couponCode===sale.couponCode && sale.active?sale:null,findUnique:async({where})=>where.id===sale.id?sale:null},
         couponUse:{findUnique:async()=>claim,create:async({data})=>{assert.equal(claim,null);claim={id:'claim',...data,usedAt:null};return claim;},deleteMany:async()=>{claim=null;}},
         rewardHistory:{aggregate:async()=>({_sum:{goldAmount:5000}}),create:async()=>({}),createMany:async()=>({count:1})},
         $transaction:async callback=>callback(prisma),

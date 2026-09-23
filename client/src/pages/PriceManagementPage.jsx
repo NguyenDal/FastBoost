@@ -5,6 +5,32 @@ import { API_BASE_URL } from "../api/config";
 import "../styles/Admin.css";
 import "../styles/PriceManagement.css";
 
+function CampaignCard({ sale, now, onEnd }) {
+    const status = getSaleDisplayStatus(sale, now);
+    const serviceName = sale.scope === "GLOBAL" ? "All Services" : sale.serviceTitle || "Selected service";
+    return <article className="price-campaign-card">
+        <div className="price-sale-control-header">
+            <span>{status === "SCHEDULED" ? "Scheduled Campaign" : status === "ACTIVE" ? "Live Campaign" : "Past Campaign"}</span>
+            <span className={"price-global-status " + status.toLowerCase()}>{status}</span>
+        </div>
+        <div className="price-sale-preview">
+            <strong>{sale.title}</strong>
+            <p>{Number(sale.discountPercent)}% OFF — {serviceName}</p>
+            {sale.couponCode && <p>Use code <code>{sale.couponCode}</code></p>}
+        </div>
+        <div className="price-sale-countdown">
+            <span>{status === "SCHEDULED" ? "Starts in" : "Expires in"}</span>
+            <strong>{formatTimeRemaining(status === "SCHEDULED" ? sale.startsAt : sale.endsAt, now)}</strong>
+        </div>
+        <div className="price-sale-meta"><span>Discount applies to</span><strong>Base price only</strong></div>
+        <div className="price-sale-meta"><span>Ends</span><strong>{sale.endsAt ? new Date(sale.endsAt).toLocaleString() : "No expiration"}</strong></div>
+        <div className="price-sale-meta"><span>Footer decoration</span><strong>{sale.footerDecoration ? "Enabled" : "Disabled"}</strong></div>
+        <button type="button" className="price-secondary-btn price-full-btn price-end-sale-btn" onClick={() => onEnd({ sale, scope: sale.scope, serviceName })}>
+            {sale.couponCode ? "Disable Coupon" : sale.scope === "GLOBAL" ? "End Global Sale" : "End Service Sale"}
+        </button>
+    </article>;
+}
+
 function formatPricingType(type) {
     const labels = {
         RANK_BASED: "Rank-based",
@@ -1465,6 +1491,11 @@ export default function PriceManagementPage() {
         setSaleModalOpen(true);
     };
 
+    const publicCampaigns = [...new Map([
+        ...(globalSale ? [{ ...globalSale, scope: "GLOBAL" }] : []),
+        ...pricingServices.filter(item => item.sale).map(item => ({ ...item.sale, scope: "SERVICE", serviceTitle: item.service?.title })),
+        ...coupons.filter(coupon => !coupon.recipientAccountId),
+    ].map(sale => [sale.id, sale])).values()];
     const globalSaleStatus = getSaleDisplayStatus(globalSale, saleClock);
     const hasCurrentGlobalSale =
         globalSaleStatus === "ACTIVE" || globalSaleStatus === "SCHEDULED";
@@ -1839,96 +1870,9 @@ export default function PriceManagementPage() {
                         </section>
 
                         <section className="price-side-card">
-                            <div className="price-sale-control-header">
-                                <div>
-                                    <h3>Sale Control</h3>
-                                </div>
-
-                                {hasCurrentGlobalSale && (
-                                    <span
-                                        className={`price-global-status ${globalSaleStatus === "ACTIVE"
-                                            ? "active"
-                                            : "scheduled"
-                                            }`}
-                                    >
-                                        {globalSaleStatus}
-                                    </span>
-                                )}
-                            </div>
-
-                            {!hasCurrentGlobalSale ? (
-                                !coupons.length && <p className="price-sale-empty-text">No sale created yet.</p>
-                            ) : (
-                                <>
-                                    <div className="price-sale-preview">
-                                        <span>
-                                            {globalSaleStatus === "ACTIVE"
-                                                ? "Live Campaign"
-                                                : "Scheduled Campaign"}
-                                        </span>
-                                        <strong>{globalSale.title}</strong>
-                                        <p>
-                                            {Number(globalSale.discountPercent).toFixed(0)}% OFF - All Services
-                                        </p>
-                                    </div>
-
-                                    <div className="price-sale-countdown">
-                                        <span>
-                                            {globalSaleStatus === "SCHEDULED"
-                                                ? "Starts in"
-                                                : "Expires in"}
-                                        </span>
-                                        <strong>
-                                            {formatTimeRemaining(
-                                                globalSaleStatus === "SCHEDULED"
-                                                    ? globalSale.startsAt
-                                                    : globalSale.endsAt,
-                                                saleClock
-                                            )}
-                                        </strong>
-                                    </div>
-
-                                    <div className="price-sale-meta">
-                                        <span>Discount applies to</span>
-                                        <strong>
-                                            {String(globalSale.appliesTo).toUpperCase() === "TOTAL"
-                                                ? "Whole order total"
-                                                : "Base price only"}
-                                        </strong>
-                                    </div>
-
-                                    <div className="price-sale-meta">
-                                        <span>Ends</span>
-                                        <strong>
-                                            {globalSale.endsAt
-                                                ? new Date(globalSale.endsAt).toLocaleString()
-                                                : "No expiration"}
-                                        </strong>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        className="price-secondary-btn price-full-btn price-end-sale-btn"
-                                        onClick={() =>
-                                            requestEndSale({
-                                                sale: globalSale,
-                                                scope: "GLOBAL",
-                                                serviceName: "All FastBoost Services",
-                                            })
-                                        }
-                                    >
-                                        End Global Sale
-                                    </button>
-                                </>
-                            )}
-                            {coupons.filter(coupon => !coupon.recipientAccountId).map(coupon => <div className="price-sale-preview" key={coupon.id}>
-                                <strong>{coupon.title}</strong><p><code>{coupon.couponCode}</code></p>
-                                <p>{coupon.scope === "GLOBAL" ? "All services" : coupon.serviceTitle || "Selected service"}</p>
-                                <p>{Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
-                                <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "No start timer"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
-                                <p>Footer decoration: {coupon.footerDecoration ? "Yes" : "No"}</p>
-                                <button type="button" className="price-secondary-btn" onClick={() => requestEndSale({ sale: coupon, scope: coupon.scope, serviceName: coupon.serviceTitle || "All services" })}>Disable Coupon</button>
-                            </div>)}
+                            <h3>Sale Control</h3>
+                            {!publicCampaigns.length && <p className="price-sale-empty-text">No sale created yet.</p>}
+                            {publicCampaigns.map(sale => <CampaignCard key={sale.id} sale={sale} now={saleClock} onEnd={requestEndSale} />)}
                         </section>
                         <section className="price-side-card">
                             <h3>Create Personal Coupon</h3>
@@ -2445,7 +2389,7 @@ export default function PriceManagementPage() {
                                 <input type="checkbox" checked={saleForm.footerTimer} onChange={event => setSaleForm(current => ({ ...current, footerTimer: event.target.checked }))} />
                                 <div><strong>Show countdown timer</strong><span>Counts down to Sale End. Without an end date, the bar displays without a timer.</span></div>
                             </label>
-                            <SaleBanner preview promotion={{ title: saleForm.title || "Limited time sale", discountPercent: Number(saleForm.discountPercent) || 0, couponCode: saleForm.saleMode === "WITH_COUPON" ? saleForm.couponCode : null, footerTimer: saleForm.footerTimer, endsAt: saleForm.endsAt || null, scope: saleScope }} />
+                            <SaleBanner preview promotion={{ title: saleForm.title || "Limited time sale", discountPercent: Number(saleForm.discountPercent) || 0, couponCode: saleForm.saleMode === "WITH_COUPON" ? saleForm.couponCode : null, footerTimer: saleForm.footerTimer, endsAt: saleForm.endsAt || null, scope: saleScope, service: selectedService?.service }} />
                         </>}
 
                         {saleError && (

@@ -8,6 +8,7 @@ import PaymentErrorDialog from "../components/PaymentErrorDialog";
 import { paymentErrorMessage } from "../utils/paymentError";
 import PaymentResultPage from "./PaymentResultPage";
 import Navbar from "../components/Navbar";
+import { LiveSaleFooter } from "../components/SaleFooter";
 import CleanIcon from "../components/CleanIcon";
 import { createCheckoutSession, verifyCheckoutSession, checkServiceAvailability } from "../api/orders";
 import "../styles/Checkout.css";
@@ -164,6 +165,7 @@ export default function CheckoutPage() {
                     <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
         </main>
+        {data?.summary?.serviceId && !paid && !verification && <LiveSaleFooter key={data.summary.serviceId} serviceId={data.summary.serviceId} />}
         {verification && <PaymentResultPage type="success" overlayOnly verification={verification} onVerified={markPaid} onComplete={completeConfirmation} />}
         {error && !paid && <PaymentErrorDialog message={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? error : "We couldn’t load checkout. Please try again. If this continues, contact support."} action={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? "Back to Services" : "Retry Checkout"} onClose={() => { if (error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" })) navigate("/"); else { setError(""); setAttempt(value => value + 1); } }} />}
         {goldError && <PaymentErrorDialog message={goldError} onClose={() => setGoldError("")} />}
@@ -228,13 +230,12 @@ function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, 
             <label className="checkout-field-label" htmlFor="checkout-promo-code">Coupon code</label>
             <div className="checkout-promo-controls"><div className="checkout-input"><input id="checkout-promo-code" placeholder="Enter your coupon code" autoComplete="off" spellCheck={false} maxLength={32} value={promoCode} disabled={paymentBusy} onChange={event => setPromoCode(event.target.value)} aria-describedby="checkout-promo-help" /></div><button type="submit" disabled={!enteredCode || paymentBusy}>Apply</button></div>
             <p id="checkout-promo-help">Coupons count as used only after successful payment. We apply the larger sale or coupon discount.</p>
-            {summary.promoDiscount && <div className="checkout-coupon-applied"><span>{summary.promoDiscount.title} applied</span><button type="button" disabled={paymentBusy} onClick={() => onApplyCoupon("")}>Remove</button></div>}
         </form>
         <dl className="checkout-totals">
             <div><dt>Base Price</dt><dd>{price(summary.basePriceCents)}</dd></div>
             {summary.addonPriceCents > 0 && <div><dt>Add-ons</dt><dd>{price(summary.addonPriceCents)}</dd></div>}
             {[["Sale Discount", summary.saleDiscountCents], ["Referral Discount", summary.referralDiscountCents], ["Gold Discount", summary.goldDiscountCents]].filter(([, value]) => value > 0).map(([label, value]) => <div className="checkout-discount" key={label}><dt>{label}</dt><dd>−{price(value)}</dd></div>)}
-            {summary.promoDiscount?.title && summary.promoDiscount.amountCents > 0 && <div className="checkout-discount"><dt>{summary.promoDiscount.title}</dt><dd>−{price(summary.promoDiscount.amountCents)}</dd></div>}
+            {summary.promoDiscount?.title && summary.promoDiscount.amountCents > 0 && <div className="checkout-discount"><dt className="checkout-coupon-label"><span>{summary.promoDiscount.title}</span><button type="button" className="checkout-coupon-remove" disabled={paymentBusy} onClick={() => onApplyCoupon("")} aria-label={"Remove coupon " + summary.promoDiscount.title} title="Remove coupon">Remove</button></dt><dd>−{price(summary.promoDiscount.amountCents)}</dd></div>}
             <div className="checkout-total"><dt>Total</dt><dd>{price(summary.totalCents)}</dd></div>
         </dl>
         <div className="checkout-security"><strong>Secure Payment</strong><p>Powered by Stripe. FastBoost does not receive or store your full card details.</p><p><a href="https://stripe.com/legal/consumer" target="_blank" rel="noreferrer">Stripe Terms</a> · <a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></p></div>

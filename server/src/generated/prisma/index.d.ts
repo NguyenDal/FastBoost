@@ -27803,12 +27803,12 @@ export namespace Prisma {
 
   export type ServiceSaleWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    couponCode?: string
     AND?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     OR?: ServiceSaleWhereInput[]
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
+    couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
     footerTimer?: BoolFilter<"ServiceSale"> | boolean
     serviceId?: StringNullableFilter<"ServiceSale"> | string | null
@@ -27825,7 +27825,7 @@ export namespace Prisma {
     couponOrders?: OrderListRelationFilter
     couponUses?: CouponUseListRelationFilter
     service?: XOR<ServiceNullableScalarRelationFilter, ServiceWhereInput> | null
-  }, "id" | "couponCode">
+  }, "id">
 
   export type ServiceSaleOrderByWithAggregationInput = {
     recipientAccountId?: SortOrderInput | SortOrder
