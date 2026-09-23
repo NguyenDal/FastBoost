@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "email:verify": "node scripts/verify-contact-email.js"
   },
   "keywords": [],
   "author": "",

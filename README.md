@@ -821,6 +821,25 @@ For deployment, set `CLIENT_URL` to the public client origin, for example
 `https://app.example.com`. A localhost value is accepted only when the checkout
 request originates from localhost.
 
+### Contact email delivery checks
+
+- The contact endpoint waits for SMTP acceptance of `support@fastboost.gg` before
+  returning `200` with `status: "sent"`. SMTP failures return `503`; the form keeps
+  the entered message and provides the direct support email. This confirms server
+  acceptance, not guaranteed inbox delivery. Failed contact requests are not retried automatically.
+- The client rejects the older `202` response, which previously appeared successful
+  even when SMTP failed. Deploy the API correction before or alongside the client.
+- From the `server` directory, run `npm run email:verify` in the environment being
+  diagnosed. It uses the contact transport configuration to check SMTP connection,
+  TLS and authentication without sending mail, printing credentials, or changing data.
+  It exits unsuccessfully on configuration/network/authentication failure or after
+  30 seconds. A local pass does not establish connectivity from Render.
+- A September 16 message's headers confirm a successful Render-to-Gmail SMTP send.
+  September 23 Render logs instead show connection timeout/network errors before
+  authentication. Historical logs expired, so the precise change is unconfirmed.
+  Render currently documents blocked SMTP ports on Free instances. Correct success
+  reporting cannot remove a hosting network restriction.
+
 FastBoost order confirmation emails:
 - Reuses `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM`.
 - Production settings are separate from `server/.env`. Render Free blocks outbound

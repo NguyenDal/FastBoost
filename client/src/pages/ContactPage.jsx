@@ -268,7 +268,7 @@ export default function ContactPage() {
                     </p>
                 </section>
 
-                {error && <p className="contact-message contact-error">{error}</p>}
+                {error && <p className="contact-message contact-error" role="alert">{error}</p>}
 
                 <section className="contact-form-card contact-form-open">
                     <div className="contact-form-heading">
@@ -386,7 +386,7 @@ export default function ContactPage() {
                         </div>
 
                         <p className="contact-success-kicker">Message sent</p>
-                        <h2>We received your email</h2>
+                        <h2>Your message has been sent</h2>
                         <p>
                             FastBoost support will reply as soon as possible.
                         </p>
