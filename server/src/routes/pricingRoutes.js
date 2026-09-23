@@ -5,6 +5,7 @@ const {
     getPriceQuote,
 } = require("../controllers/pricingController");
 
+router.get("/my-coupons", require("../middleware/authMiddleware").protect, require("../controllers/personalCouponController").myCoupons);
 router.post("/quote", getPriceQuote);
 router.get("/footer-promotion", require("../controllers/promotionController").getFooterPromotion);
 

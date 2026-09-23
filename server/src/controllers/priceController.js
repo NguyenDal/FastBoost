@@ -196,9 +196,9 @@ exports.createSale = async (req, res) => {
         if (req.body.personalCoupon === true) {
             if (!options.couponCode) return res.status(400).json({ ok: false, message: "Personal coupons require a coupon code." });
             const email = String(req.body.recipientEmail || "").trim();
-            if (!email || email.length > 254) return res.status(400).json({ ok: false, message: "Enter the customer's account email." });
-            recipient = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" }, role: "CUSTOMER" }, select: { id: true } });
-            if (!recipient) return res.status(404).json({ ok: false, message: "No customer account matches that email." });
+            if ((!email && !req.body.recipientAccountId) || email.length > 254) return res.status(400).json({ ok: false, message: "Select a recipient account." });
+            recipient = await prisma.user.findFirst({ where: { ...(req.body.recipientAccountId ? { id: String(req.body.recipientAccountId) } : { email: { equals: email, mode: "insensitive" } }) }, select: { id: true } });
+            if (!recipient) return res.status(404).json({ ok: false, message: "Recipient account not found." });
             if (!["MANUAL", "NEGOTIATED"].includes(req.body.personalReason)) return res.status(400).json({ ok: false, message: "Choose a personal coupon reason." });
         }
 
@@ -217,6 +217,12 @@ exports.createSale = async (req, res) => {
             }
         }
 
+        const couponServiceIds = req.body.couponServiceIds || [];
+        if (!Array.isArray(couponServiceIds) || couponServiceIds.length > 100 || couponServiceIds.some(id => typeof id !== "string") || new Set(couponServiceIds).size !== couponServiceIds.length || (couponServiceIds.length && !recipient)) return res.status(400).json({ ok: false, message: "Invalid coupon services." });
+        if (couponServiceIds.length) {
+            const services = await prisma.service.findMany({ where: { id: { in: couponServiceIds } }, select: { id: true } });
+            if (services.length !== couponServiceIds.length || scope !== "SERVICE" || !couponServiceIds.includes(serviceId)) return res.status(400).json({ ok: false, message: "Select valid coupon services." });
+        }
         if (scope === "GLOBAL" && !options.couponCode) {
             const now = new Date();
 
@@ -263,6 +269,7 @@ exports.createSale = async (req, res) => {
                 appliesTo: "BASE_PRICE",
                 couponCode: options.couponCode,
                 recipientAccountId: recipient?.id || null,
+                couponServiceIds,
                 personalReason: recipient ? req.body.personalReason : null,
                 footerDecoration: recipient ? false : options.footerDecoration,
                 footerTimer: recipient ? false : options.footerTimer,

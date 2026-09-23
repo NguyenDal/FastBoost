@@ -1,10 +1,11 @@
+import DashboardCoupons from "../components/DashboardCoupons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications, markNotificationRead } from "../api/notifications";
 import { getMyLoyalty } from "../api/loyalty";
 import { getMyAccount } from "../api/accountSettings";
 import { customerListMyOrders } from "../api/customerOrders";
-import { DashboardOrders, DashboardAccount, DashboardQuickActions, DashboardPlatform } from "../components/DashboardOverview";
+import { DashboardOrders, DashboardAccount, DashboardQuickActions } from "../components/DashboardOverview";
 import {
     Skeleton,
     SkeletonButton,
@@ -222,18 +223,16 @@ export default function DashboardPage() {
                                 to="/account/loyalty"
                                 className={"dashboard-card dashboard-loyalty-card dashboard-loyalty-" + tierInfo.key}
                             >
-                                <div className="dashboard-card-header">
-                                    <div>
-                                        <p className="dashboard-eyebrow gold">Loyalty Rewards Status</p>
-                                        <h2>{tierInfo.name} Rank</h2>
-                                        <p className="dashboard-subtitle">
-                                            {tierInfo.nextTier
-                                                ? `Spend $${tierInfo.spendToNext.toFixed(2)} more to reach ${tierInfo.nextTier} tier.`
-                                                : "You reached the highest loyalty tier."}
-                                        </p>
-                                    </div>
+                                <div className="dashboard-activity-header dashboard-rewards-header"><DashboardIcon kind="loyalty" /><h2>Loyalty Rewards Status</h2></div>
+                                <div className="dashboard-loyalty-rank">
+                                    <h3>{tierInfo.name} Rank</h3>
                                     <span className="dashboard-tier-badge">{tierInfo.icon}</span>
                                 </div>
+                                <p className="dashboard-loyalty-status">
+                                    {tierInfo.nextTier
+                                        ? `$${tierInfo.spendToNext.toFixed(2)} to reach ${tierInfo.nextTier} tier.`
+                                        : "You reached the highest loyalty tier."}
+                                </p>
                                 <div className="dashboard-track" role="progressbar" aria-label="Loyalty tier progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}>
                                     <div
                                         className={"dashboard-track-fill dashboard-fill-" + tierInfo.key}
@@ -253,16 +252,12 @@ export default function DashboardPage() {
                             </Link>
 
                         <section className={`dashboard-card dashboard-referral-card ${canUseReferral ? "is-unlocked" : "is-locked"}`}>
-                            <div className="dashboard-card-header">
-                                <div>
-                                    <h2>Refer a Friend</h2>
-                                    <p className="dashboard-referral-intro">Share your link and earn rewards together!</p>
-                                </div>
-
-                                <div className="dashboard-referral-count">
-                                    <strong>{referralCount} Invited</strong>
-                                </div>
+                            <div className="dashboard-activity-header">
+                                <DashboardIcon kind="referral" />
+                                <h2>Refer a Friend</h2>
+                                <div className="dashboard-referral-count"><strong>{referralCount} Invited</strong></div>
                             </div>
+                            <p className="dashboard-referral-intro">Share your link and earn rewards together!</p>
 
                             <div className="dashboard-referral-steps">
                                 {referralSteps.map((step, index) => (
@@ -301,7 +296,7 @@ export default function DashboardPage() {
                         <DashboardOrders orders={orders} />
                         <DashboardAccount account={account} />
                         <DashboardQuickActions />
-                        <DashboardPlatform />
+                        <DashboardCoupons />
                     </section>
                 </>
             )}

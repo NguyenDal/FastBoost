@@ -1,3 +1,4 @@
+import PersonalCouponFields from "../components/PersonalCouponFields";
 import { authStorage } from "../utils/authStorage";
 import { useEffect, useRef, useState } from "react";
 import { SaleBanner } from "../components/SaleFooter";
@@ -1249,6 +1250,8 @@ export default function PriceManagementPage() {
             ...EMPTY_SALE_FORM,
             personalCoupon,
             recipientEmail: "",
+            recipientAccountId: "",
+            couponServiceIds: [],
             personalReason: "MANUAL",
             ...(personalCoupon ? { saleMode: "WITH_COUPON" } : {}),
         });
@@ -1277,7 +1280,7 @@ export default function PriceManagementPage() {
 
             const discount = Number(saleForm.discountPercent);
 
-            if (saleForm.personalCoupon && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(saleForm.recipientEmail?.trim() || "")) throw new Error("Enter the customer's account email.");
+            if (saleForm.personalCoupon && !saleForm.recipientAccountId) throw new Error("Select an account from the search results.");
 
             if (!Number.isFinite(discount) || discount <= 0 || discount > 90) {
                 throw new Error("Discount must be between 1 and 90.");
@@ -1296,26 +1299,28 @@ export default function PriceManagementPage() {
             }
 
             {
-                if (saleForm.saleMode === "WITHOUT_COUPON" && (!saleForm.startsAt || !saleForm.endsAt)) throw new Error("Set sale start and end for a sale without a coupon.");
+                if (saleForm.saleMode === "WITHOUT_COUPON" && !saleForm.endsAt) throw new Error("Set Sale End for a sale without a coupon.");
                 if (saleScope === "GLOBAL" && saleForm.saleMode === "WITHOUT_COUPON" && hasCurrentGlobalSale) throw new Error("End the existing global sale first, or choose With coupon.");
                 if (saleForm.saleMode === "WITH_COUPON" && !/^[A-Z0-9][A-Z0-9-]{3,31}$/.test(saleForm.couponCode.trim().toUpperCase())) throw new Error("Enter or generate a coupon code of 4–32 letters, numbers or hyphens.");
             }
             const pending = {
                 personalCoupon: Boolean(saleForm.personalCoupon),
                 recipientEmail: saleForm.recipientEmail?.trim() || "",
+                recipientAccountId: saleForm.recipientAccountId,
+                couponServiceIds: saleForm.couponServiceIds || [],
                 personalReason: saleForm.personalReason || "MANUAL",
                 type: "CREATE",
-                scope: saleScope,
-                serviceId:
+                scope: saleForm.personalCoupon ? (saleForm.couponServiceIds?.length ? "SERVICE" : "GLOBAL") : saleScope,
+                serviceId: saleForm.personalCoupon ? (saleForm.couponServiceIds?.[0] || null) :
                     saleScope === "SERVICE"
                         ? selectedService.serviceId
                         : null,
-                serviceName:
+                serviceName: saleForm.personalCoupon && saleForm.couponServiceIds?.length ? saleForm.couponServiceIds.map(id => pricingServices.find(item => item.serviceId === id)?.service?.title || "Service").join(", ") :
                     saleScope === "SERVICE"
                         ? selectedService?.service?.title || "Service"
                         : "All FastBoost Services",
                 title:
-                    saleForm.title.trim() ||
+                    saleForm.title.trim() || (saleForm.personalCoupon ? `${discount}% personal coupon` : "") ||
                     (saleScope === "GLOBAL"
                         ? `${discount}% off all services`
                         : `${discount}% off ${selectedService?.service?.title || "Service"}`),
@@ -1364,6 +1369,8 @@ export default function PriceManagementPage() {
                     body: JSON.stringify({
                         personalCoupon: pendingSaleAction.personalCoupon,
                         recipientEmail: pendingSaleAction.recipientEmail,
+                        recipientAccountId: pendingSaleAction.recipientAccountId,
+                        couponServiceIds: pendingSaleAction.couponServiceIds,
                         personalReason: pendingSaleAction.personalReason,
                         scope: pendingSaleAction.scope,
                         serviceId: pendingSaleAction.serviceId,
@@ -1876,7 +1883,7 @@ export default function PriceManagementPage() {
                         </section>
                         <section className="price-side-card">
                             <h3>Create Personal Coupon</h3>
-                            <p>Create an account-only coupon for an individual customer.</p>
+                            <p>Create a personal coupon for an individual account.</p>
                             <button type="button" className="price-primary-btn price-full-btn" onClick={() => openSaleModal(null, "GLOBAL", true)}>Create Personal Coupon</button>
                         </section>
                         <section className="price-side-card">
@@ -1887,6 +1894,7 @@ export default function PriceManagementPage() {
                                 <strong>{coupon.title}</strong>
                                 <p><code>{coupon.couponCode}</code></p>
                                 <p>{coupon.recipientAccount?.email}</p>
+                                <p>{coupon.couponServiceIds?.length ? coupon.couponServiceIds.map(id => pricingServices.find(item => item.serviceId === id)?.service?.title || "Service").join(", ") : coupon.scope === "GLOBAL" ? "All services" : coupon.serviceTitle}</p>
                                 <p>{coupon.personalReason === "NEGOTIATED" ? "Negotiated" : "Manual"} · {Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
                                 <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "Immediately"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
                                 <button type="button" className="price-secondary-btn" onClick={() => requestEndSale({ sale: coupon, scope: coupon.scope, serviceName: coupon.recipientAccount?.email || "Selected account" })}>Disable Coupon</button>
@@ -2150,7 +2158,7 @@ export default function PriceManagementPage() {
                             <>
                                 <div className="price-sale-confirm-row"><span>Sale Type</span><strong>{pendingSaleAction.couponCode ? "With coupon" : "Without coupon"}</strong></div>
                                 {pendingSaleAction.couponCode && <div className="price-sale-confirm-row"><span>Coupon</span><strong>{pendingSaleAction.couponCode}</strong></div>}
-                                <div className="price-sale-confirm-row"><span>Footer decoration</span><strong>{pendingSaleAction.footerDecoration ? "Yes" : "No"}</strong></div>
+                                {!pendingSaleAction.personalCoupon && <div className="price-sale-confirm-row"><span>Footer decoration</span><strong>{pendingSaleAction.footerDecoration ? "Yes" : "No"}</strong></div>}
                                 {pendingSaleAction.footerDecoration && <div className="price-sale-confirm-row"><span>Countdown timer</span><strong>{pendingSaleAction.footerTimer !== false && pendingSaleAction.endsAt ? "Yes" : "No"}</strong></div>}
                             </>
                             <div className="price-sale-confirm-row">
@@ -2263,7 +2271,7 @@ export default function PriceManagementPage() {
                                 </h2>
 
                                 <p>
-                                    {saleForm.personalCoupon ? "Only the selected customer account can redeem this coupon." : saleScope === "GLOBAL"
+                                    {saleForm.personalCoupon ? "Only the selected account can redeem this coupon." : saleScope === "GLOBAL"
                                         ? "Apply one temporary discount across every FastBoost service."
                                         : `This discount applies only to ${selectedService?.service?.title || "this service"}.`}
                                 </p>
@@ -2279,18 +2287,17 @@ export default function PriceManagementPage() {
                             </button>
                         </div>
 
-                        <div className="price-sale-scope-preview">
+                        {saleForm.personalCoupon ? <PersonalCouponFields form={saleForm} setForm={setSaleForm} services={pricingServices} /> : <div className="price-sale-scope-preview">
                             <span>Sale Scope</span>
                             <strong>
                                 {saleScope === "GLOBAL"
                                     ? "🌐 All FastBoost Services"
                                     : `🎯 ${selectedService?.service?.title || "Selected Service"} Only`}
                             </strong>
-                        </div>
+                        </div>}
 
                         <div className="price-modal-grid">
                             {saleForm.personalCoupon && <>
-                                <label className="price-modal-field price-modal-field-wide"><span>Customer account email</span><input type="email" maxLength={254} value={saleForm.recipientEmail} onChange={event => setSaleForm(current => ({ ...current, recipientEmail: event.target.value }))} placeholder="customer@example.com" /></label>
                                 <label className="price-modal-field price-modal-field-wide"><span>Reason</span><select value={saleForm.personalReason} onChange={event => setSaleForm(current => ({ ...current, personalReason: event.target.value }))}><option value="MANUAL">Manual gift</option><option value="NEGOTIATED">Negotiated discount</option></select></label>
                             </>}
                             <label className="price-modal-field price-modal-field-wide">
@@ -2328,13 +2335,13 @@ export default function PriceManagementPage() {
                                 />
                             </label>
 
-                            <label className="price-modal-field">
+                            {!saleForm.personalCoupon && <label className="price-modal-field">
                                 <span>Sale Type</span>
                                 <select disabled={saleForm.personalCoupon} value={saleForm.saleMode} onChange={event => setSaleForm(current => ({ ...current, saleMode: event.target.value }))}>
                                     <option value="WITHOUT_COUPON">Without coupon</option>
                                     <option value="WITH_COUPON">With coupon</option>
                                 </select>
-                            </label>
+                            </label>}
                             {saleForm.saleMode === "WITH_COUPON" && <label className="price-modal-field price-modal-field-full">
                                 <span>Coupon Code</span>
                                 <div className="price-coupon-input">
@@ -2378,11 +2385,11 @@ export default function PriceManagementPage() {
                         </div>
 
                         <>
-                            <p className="price-coupon-help">{saleForm.saleMode === "WITH_COUPON" ? "Set Sale Start to schedule when this coupon becomes available, or leave it blank to start immediately. Leave Sale End blank for no expiration, even with a scheduled start." : "Set Sale Start and Sale End to schedule this automatic sale."} Discounts apply to the base price only.</p>
-                            <label className="price-sale-critical-check">
+                            <p className="price-coupon-help">{saleForm.saleMode === "WITH_COUPON" ? "Set Sale Start to schedule when this coupon becomes available, or leave it blank to start immediately. Leave Sale End blank for no expiration, even with a scheduled start." : "Leave Sale Start blank to activate immediately, or choose a start date to schedule this sale. Set Sale End to choose when it finishes."} Discounts apply to the base price only.</p>
+                            {!saleForm.personalCoupon && <label className="price-sale-critical-check">
                                 <input type="checkbox" disabled={saleForm.personalCoupon} checked={saleForm.footerDecoration} onChange={event => setSaleForm(current => ({ ...current, footerDecoration: event.target.checked }))} />
                                 <div><strong>Footer decoration</strong><span>Show this campaign in the customer-facing sale bar while it is active.</span></div>
-                            </label>
+                            </label>}
                         </>
                         {saleForm.footerDecoration && !saleForm.personalCoupon && <>
                             <label className="price-sale-critical-check">

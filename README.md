@@ -8,6 +8,17 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### September 23, 2026 — gold redemption eligibility
+
+Gold redemption requires a current balance of at least 100 gold. Below that threshold, checkout disables gold entry/Max/Apply and explains the requirement; server normalization also applies zero gold, including direct requests. Eligible customers can redeem fewer than 100 gold. Existing order caps and Stripe minimum cash rules remain. Server suite: 61 passed, 3 optional checks skipped; client build and focused lint pass.
+
+### September 23, 2026 — personal coupon delivery
+
+- Personal coupon form offers all services, one service, or multiple services through an overlay checkbox dropdown that does not shift form fields. Search covers username, profile display name, and email (including legacy accounts without usernames); it is debounced, admin-only, capped at eight customer suggestions, and displays profile pictures or initials. Selection binds the customer ID. Personal coupons always use a code; footer and sale-type controls are hidden.
+- My Coupons replaces Platform Status on the customer dashboard, using the shared icon/header styling, a ticket icon, count badge and styled empty state, with copyable codes, eligible services, dates, and used/scheduled status. Delivery is through this dashboard; this update does not send email. The authenticated API only returns that account’s assigned active, unexpired coupons. Personal codes remain excluded from public footers.
+- One multi-service coupon is one campaign and one use per account, across the chosen services. The backend validates each service and checks the full allowed list during redemption. Existing single-service/global coupons retain their behavior.
+- Applied and recorded `20260923040000_personal_coupon_services` only on the configured development database; Prisma regenerated. Production needs this migration and matching backend/frontend deployment.
+
 ### September 22, 2026 — loyalty reward repair
 
 - Reconnected tier-bonus reconciliation on order completion/status changes and loyalty-page reads to recover missing historical rewards. Paid, completed spend unlocks Silver +200, Gold +500, Platinum +1000, and Diamond +1500 cumulatively. Per-user transaction locking and existing unique reward keys prevent duplicate credits. Reconciliation retains the existing policy of removing tier bonuses when qualifying spend falls below the threshold.

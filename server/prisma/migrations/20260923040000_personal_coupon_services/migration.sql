@@ -1,0 +1,1 @@
+ALTER TABLE "ServiceSale" ADD COLUMN "couponServiceIds" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

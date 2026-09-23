@@ -10239,6 +10239,7 @@ export namespace Prisma {
     recipientAccountId: number
     personalReason: number
     id: number
+    couponServiceIds: number
     couponCode: number
     footerDecoration: number
     footerTimer: number
@@ -10306,6 +10307,7 @@ export namespace Prisma {
     recipientAccountId?: true
     personalReason?: true
     id?: true
+    couponServiceIds?: true
     couponCode?: true
     footerDecoration?: true
     footerTimer?: true
@@ -10412,6 +10414,7 @@ export namespace Prisma {
     recipientAccountId: string | null
     personalReason: string | null
     id: string
+    couponServiceIds: string[]
     couponCode: string | null
     footerDecoration: boolean
     footerTimer: boolean
@@ -10450,6 +10453,7 @@ export namespace Prisma {
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
+    couponServiceIds?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -10474,6 +10478,7 @@ export namespace Prisma {
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
+    couponServiceIds?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -10495,6 +10500,7 @@ export namespace Prisma {
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
+    couponServiceIds?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -10516,6 +10522,7 @@ export namespace Prisma {
     recipientAccountId?: boolean
     personalReason?: boolean
     id?: boolean
+    couponServiceIds?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -10531,7 +10538,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountId" | "personalReason" | "id" | "couponCode" | "footerDecoration" | "footerTimer" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
+  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountId" | "personalReason" | "id" | "couponServiceIds" | "couponCode" | "footerDecoration" | "footerTimer" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
   export type ServiceSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipientAccount?: boolean | ServiceSale$recipientAccountArgs<ExtArgs>
     couponOrders?: boolean | ServiceSale$couponOrdersArgs<ExtArgs>
@@ -10560,6 +10567,7 @@ export namespace Prisma {
       recipientAccountId: string | null
       personalReason: string | null
       id: string
+      couponServiceIds: string[]
       couponCode: string | null
       footerDecoration: boolean
       footerTimer: boolean
@@ -11003,6 +11011,7 @@ export namespace Prisma {
     readonly recipientAccountId: FieldRef<"ServiceSale", 'String'>
     readonly personalReason: FieldRef<"ServiceSale", 'String'>
     readonly id: FieldRef<"ServiceSale", 'String'>
+    readonly couponServiceIds: FieldRef<"ServiceSale", 'String[]'>
     readonly couponCode: FieldRef<"ServiceSale", 'String'>
     readonly footerDecoration: FieldRef<"ServiceSale", 'Boolean'>
     readonly footerTimer: FieldRef<"ServiceSale", 'Boolean'>
@@ -26792,6 +26801,7 @@ export namespace Prisma {
     recipientAccountId: 'recipientAccountId',
     personalReason: 'personalReason',
     id: 'id',
+    couponServiceIds: 'couponServiceIds',
     couponCode: 'couponCode',
     footerDecoration: 'footerDecoration',
     footerTimer: 'footerTimer',
@@ -27759,6 +27769,7 @@ export namespace Prisma {
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     id?: StringFilter<"ServiceSale"> | string
+    couponServiceIds?: StringNullableListFilter<"ServiceSale">
     couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
     footerTimer?: BoolFilter<"ServiceSale"> | boolean
@@ -27782,6 +27793,7 @@ export namespace Prisma {
     recipientAccountId?: SortOrderInput | SortOrder
     personalReason?: SortOrderInput | SortOrder
     id?: SortOrder
+    couponServiceIds?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     footerDecoration?: SortOrder
     footerTimer?: SortOrder
@@ -27808,6 +27820,7 @@ export namespace Prisma {
     NOT?: ServiceSaleWhereInput | ServiceSaleWhereInput[]
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
+    couponServiceIds?: StringNullableListFilter<"ServiceSale">
     couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
     footerTimer?: BoolFilter<"ServiceSale"> | boolean
@@ -27831,6 +27844,7 @@ export namespace Prisma {
     recipientAccountId?: SortOrderInput | SortOrder
     personalReason?: SortOrderInput | SortOrder
     id?: SortOrder
+    couponServiceIds?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     footerDecoration?: SortOrder
     footerTimer?: SortOrder
@@ -27858,6 +27872,7 @@ export namespace Prisma {
     recipientAccountId?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     id?: StringWithAggregatesFilter<"ServiceSale"> | string
+    couponServiceIds?: StringNullableListFilter<"ServiceSale">
     couponCode?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolWithAggregatesFilter<"ServiceSale"> | boolean
     footerTimer?: BoolWithAggregatesFilter<"ServiceSale"> | boolean
@@ -29527,6 +29542,7 @@ export namespace Prisma {
   export type ServiceSaleCreateInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -29549,6 +29565,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -29569,6 +29586,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -29591,6 +29609,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -29612,6 +29631,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -29630,6 +29650,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateManyMutationInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -29648,6 +29669,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -31502,6 +31524,14 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type EnumSaleScopeFilter<$PrismaModel = never> = {
     equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
     in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
@@ -31529,6 +31559,7 @@ export namespace Prisma {
     recipientAccountId?: SortOrder
     personalReason?: SortOrder
     id?: SortOrder
+    couponServiceIds?: SortOrder
     couponCode?: SortOrder
     footerDecoration?: SortOrder
     footerTimer?: SortOrder
@@ -33402,6 +33433,10 @@ export namespace Prisma {
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutPriceRulesInput, ServiceUpdateWithoutPriceRulesInput>, ServiceUncheckedUpdateWithoutPriceRulesInput>
   }
 
+  export type ServiceSaleCreatecouponServiceIdsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutPersonalCouponsInput = {
     create?: XOR<UserCreateWithoutPersonalCouponsInput, UserUncheckedCreateWithoutPersonalCouponsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPersonalCouponsInput
@@ -33440,6 +33475,11 @@ export namespace Prisma {
     connectOrCreate?: CouponUseCreateOrConnectWithoutSaleInput | CouponUseCreateOrConnectWithoutSaleInput[]
     createMany?: CouponUseCreateManySaleInputEnvelope
     connect?: CouponUseWhereUniqueInput | CouponUseWhereUniqueInput[]
+  }
+
+  export type ServiceSaleUpdatecouponServiceIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type EnumSaleScopeFieldUpdateOperationsInput = {
@@ -34663,6 +34703,7 @@ export namespace Prisma {
   export type ServiceSaleCreateWithoutRecipientAccountInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -34683,6 +34724,7 @@ export namespace Prisma {
   export type ServiceSaleUncheckedCreateWithoutRecipientAccountInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -35373,6 +35415,7 @@ export namespace Prisma {
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     id?: StringFilter<"ServiceSale"> | string
+    couponServiceIds?: StringNullableListFilter<"ServiceSale">
     couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
     footerTimer?: BoolFilter<"ServiceSale"> | boolean
@@ -36472,6 +36515,7 @@ export namespace Prisma {
   export type ServiceSaleCreateWithoutServiceInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -36493,6 +36537,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -37033,6 +37078,7 @@ export namespace Prisma {
   export type ServiceSaleCreateWithoutCouponOrdersInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -37054,6 +37100,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -37298,6 +37345,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateWithoutCouponOrdersInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -37319,6 +37367,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -37904,6 +37953,7 @@ export namespace Prisma {
   export type ServiceSaleCreateWithoutCouponUsesInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -37925,6 +37975,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -38168,6 +38219,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateWithoutCouponUsesInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -38189,6 +38241,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -40618,6 +40671,7 @@ export namespace Prisma {
   export type ServiceSaleCreateManyRecipientAccountInput = {
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -40823,6 +40877,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateWithoutRecipientAccountInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -40843,6 +40898,7 @@ export namespace Prisma {
   export type ServiceSaleUncheckedUpdateWithoutRecipientAccountInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -40863,6 +40919,7 @@ export namespace Prisma {
   export type ServiceSaleUncheckedUpdateManyWithoutRecipientAccountInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -41494,6 +41551,7 @@ export namespace Prisma {
     recipientAccountId?: string | null
     personalReason?: string | null
     id?: string
+    couponServiceIds?: ServiceSaleCreatecouponServiceIdsInput | string[]
     couponCode?: string | null
     footerDecoration?: boolean
     footerTimer?: boolean
@@ -41737,6 +41795,7 @@ export namespace Prisma {
   export type ServiceSaleUpdateWithoutServiceInput = {
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -41758,6 +41817,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean
@@ -41778,6 +41838,7 @@ export namespace Prisma {
     recipientAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     personalReason?: NullableStringFieldUpdateOperationsInput | string | null
     id?: StringFieldUpdateOperationsInput | string
+    couponServiceIds?: ServiceSaleUpdatecouponServiceIdsInput | string[]
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
     footerTimer?: BoolFieldUpdateOperationsInput | boolean

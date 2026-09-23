@@ -83,7 +83,7 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
             : sale.recipientAccountId && sale.recipientAccountId !== order.customerId ? "This coupon is reserved for another account."
             : sale.startsAt && new Date(sale.startsAt) > now ? "This coupon is not active yet."
             : sale.endsAt && new Date(sale.endsAt) <= now ? "This coupon has expired."
-            : sale.scope !== "GLOBAL" && sale.serviceId !== order.serviceId ? "This coupon does not apply to this service." : null;
+            : (sale.couponServiceIds?.length ? !sale.couponServiceIds.includes(order.serviceId) : sale.scope !== "GLOBAL" && sale.serviceId !== order.serviceId) ? "This coupon does not apply to this service." : null;
         if (!unavailable) {
             const claim = await db.couponUse.findUnique({ where: { accountId_saleId: { accountId: order.customerId, saleId: sale.id } } });
             if (claim?.usedAt) unavailable = "You have already used this coupon. It becomes available again if that order is cancelled.";

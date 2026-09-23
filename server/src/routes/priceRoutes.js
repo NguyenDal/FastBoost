@@ -11,6 +11,7 @@ const {
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
+router.get("/customers", protect, adminOnly, require("../controllers/personalCouponController").searchCustomers);
 router.get("/", protect, adminOnly, listPriceRules);
 router.patch("/rules/:id/availability", protect, adminOnly, setServiceAvailability);
 

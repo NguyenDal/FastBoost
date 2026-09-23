@@ -126,6 +126,7 @@ model ServiceSale {
   couponOrders       Order[]     @relation("OrderCoupon")
   couponUses         CouponUse[]
   id                 String      @id @default(cuid())
+  couponServiceIds   String[]    @default([])
   couponCode         String?
   footerDecoration   Boolean     @default(false)
   footerTimer        Boolean     @default(true)

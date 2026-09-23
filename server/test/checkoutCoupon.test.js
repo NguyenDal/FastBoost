@@ -144,3 +144,10 @@ test('refresh never silently adopts reused code',async()=>{
  await applyCheckoutCoupon(f.db,f.order,undefined,f.stripe);
  assert.equal(f.order.couponSaleId,null);assert.equal(f.order.amountCents,9900);assert.equal(f.claims.length,0);
 });
+
+test('multi-service coupon accepts listed services only and remains account bound',async()=>{
+ const f=fixture();Object.assign(f.sale,{scope:'SERVICE',serviceId:'other',couponServiceIds:['service-a','service-b'],recipientAccountId:'account-a'});
+ await applyCheckoutCoupon(f.db,f.order,'WELCOME20',f.stripe);assert.equal(f.order.couponSaleId,f.sale.id);
+ const wrong={...f.order,serviceId:'outside'};await assert.rejects(applyCheckoutCoupon(f.db,wrong,'WELCOME20',f.stripe),/does not apply/);
+ await assert.rejects(applyCheckoutCoupon(f.db,{...f.order,customerId:'account-b'},'WELCOME20',f.stripe),/another account/);
+});

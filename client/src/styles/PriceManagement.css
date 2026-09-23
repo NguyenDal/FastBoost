@@ -1483,3 +1483,27 @@
 .price-campaign-card + .price-campaign-card { padding-top: 20px; border-top: 1px solid #a78bfa26; }
 .price-campaign-card > .price-sale-control-header > span:first-child { color: #94a3b8; font-size: .78rem; }
 .price-global-status.expired, .price-global-status.none { color: #94a3b8; background: #94a3b81a; }
+.personal-coupon-fields { display:grid; gap:14px; margin:0 0 14px; }
+.personal-coupon-fields > p { margin:0; }
+.personal-service-select { padding:14px; border:1px solid #a78bfa40; border-radius:12px; background:#a78bfa10; }
+.personal-service-select summary { cursor:pointer; color:#ddd6fe; }
+.personal-service-select label { display:flex; align-items:center; gap:10px; margin-top:12px; }
+.personal-customer-results { list-style:none; padding:0; margin:0; border:1px solid #a78bfa40; border-radius:10px; overflow:hidden; }
+.personal-customer-results button { display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:10px; color:#eee; background:#15172a; border:0; cursor:pointer; }
+.personal-customer-results button:hover,.personal-customer-results button:focus-visible { background:#302149; }
+.personal-customer-results img,.personal-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+.personal-avatar { display:grid; place-items:center; background:#65409c; }
+.personal-customer-results small { display:block; color:#94a3b8; }
+/* Overlay service choices without changing form height. */
+.personal-service-select { position:relative; padding:0; border:0; background:transparent; }
+.personal-service-select summary { list-style:none; display:flex; align-items:center; justify-content:space-between; min-height:44px; box-sizing:border-box; padding:12px 14px; border:1px solid #a78bfa30; border-radius:12px; background:#080c1d; color:#e2e8f0; font-size:13px; }
+.personal-service-select summary::-webkit-details-marker { display:none; }
+.personal-service-select summary::after { content:'⌄'; color:#a78bfa; }
+.personal-service-select[open] summary { border-color:#8b5cf6; box-shadow:0 0 0 2px #8b5cf620; }
+.personal-service-menu { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:10; max-height:240px; overflow:auto; padding:6px; border:1px solid #a78bfa40; border-radius:12px; background:#121529; box-shadow:0 12px 30px #0008; }
+.personal-service-menu label { margin:0; padding:10px; border-radius:7px; cursor:pointer; color:#e2e8f0; font-size:13px; }
+.personal-service-menu label:hover { background:#a78bfa18; }
+.personal-service-menu input { accent-color:#8b5cf6; }
+.personal-search-status { margin:0; color:#94a3b8; font-size:12px; }
+.personal-service-menu input[type="checkbox"] { width:16px; height:16px; min-height:0; margin:0; padding:0; flex:0 0 16px; }
+.personal-service-menu label { min-height:36px; box-sizing:border-box; }

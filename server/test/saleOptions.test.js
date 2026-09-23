@@ -68,3 +68,16 @@ test('admin saves coupons independently from automatic campaigns', async t => {
     assert.equal(res.code, 409);
     assert.equal(globalChecks, 1);
 });
+
+
+test('automatic global and service sales can start immediately with a blank start', () => {
+    for (const scope of ['GLOBAL', 'SERVICE']) {
+        for (const startsAt of [undefined, null, '']) {
+            const value = saleOptions({ scope, startsAt, endsAt: '2099-02-01' });
+            assert.equal(value.startsAt, null);
+            assert.equal(value.endsAt.toISOString(), '2099-02-01T00:00:00.000Z');
+        }
+        assert.throws(() => saleOptions({ scope, endsAt: '2000-01-01' }));
+        assert.throws(() => saleOptions({ scope, startsAt: '2099-01-01' }));
+    }
+});

@@ -96,3 +96,15 @@ test('personal coupon resolves an existing customer and rejects unknown recipien
     const missing=response();await createSale({body:{...body,recipientEmail:'missing@example.com'}},missing);
     assert.equal(missing.code,404);assert.equal(writes.length,1);
 });
+
+test('multi-service personal coupon keeps one code and validates every service',async t=>{
+ const writes=[];
+ const {createSale}=loadController(t,'priceController',{
+ user:{findFirst:async({where})=>{assert.equal(where.id,'customer');return {id:'customer'};}},
+ service:{findUnique:async()=>({id:'rank',title:'Rank Boost'}),findMany:async({where})=>where.id.in.filter(id=>['rank','win'].includes(id)).map(id=>({id}))},
+ serviceSale:{create:async({data})=>{writes.push(data);return data;}}
+ },{invalidatePricingCatalog(){}});
+ const body={scope:'SERVICE',serviceId:'rank',couponServiceIds:['rank','win'],saleMode:'WITH_COUPON',couponCode:'GIFT15',discountPercent:15,personalCoupon:true,recipientAccountId:'customer',personalReason:'MANUAL'};
+ const ok=response();await createSale({body},ok);assert.equal(ok.code,201);assert.deepEqual(writes[0].couponServiceIds,['rank','win']);
+ const invalid=response();await createSale({body:{...body,couponServiceIds:['rank','missing']}},invalid);assert.equal(invalid.code,400);assert.equal(writes.length,1);
+});

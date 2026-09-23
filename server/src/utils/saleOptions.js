@@ -11,7 +11,7 @@ function saleOptions(body) {
     };
     const startsAt = date(body.startsAt);
     const endsAt = date(body.endsAt);
-    if (!couponCode && (!startsAt || !endsAt)) throw new Error("Set sale start and end for a sale without a coupon.");
+    if (!couponCode && !endsAt) throw new Error("Set Sale End for a sale without a coupon.");
     if (endsAt && endsAt <= (startsAt || new Date())) throw new Error("Sale end must be after sale start and in the future.");
     return { couponCode, footerDecoration: body.footerDecoration === true, footerTimer: body.footerTimer !== false, startsAt, endsAt, appliesTo: "BASE_PRICE" };
 }
