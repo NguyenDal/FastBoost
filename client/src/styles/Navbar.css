@@ -942,3 +942,8 @@
   .topbar .profile-avatar-btn { width: 30px; height: 30px; }
   .topbar .nav-cta { padding: 0 6px; font-size: 12px; }
 }
+
+.brand-wordmark { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff1f8; font-size:23px; line-height:1; font-weight:850; font-style:italic; letter-spacing:-1.1px; white-space:nowrap; }
+.brand-wordmark > span { color:#b4a5ff; }
+@media (max-width:560px) { .brand-wordmark { font-size:20px; } }
+@media (max-width:400px) { .brand-wordmark { font-size:18px; } }

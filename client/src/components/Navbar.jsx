@@ -451,10 +451,7 @@ function Navbar({
                             />
                         </div>
 
-                        <div className="brand-copy">
-                            <p className="brand-title">FastBoost</p>
-                            <p className="brand-subtitle">Play more. Worry less.</p>
-                        </div>
+                        <span className="brand-wordmark">FAST<span>BOOST</span></span>
                     </Link>
                 </div>
             </div>

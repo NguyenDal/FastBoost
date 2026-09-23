@@ -1,0 +1,4 @@
+.legal-document-page { display:flex; flex-direction:column; height:100dvh; overflow:hidden; background:#0d1018; }
+.legal-document-page > .topbar { position:relative; flex-shrink:0; box-sizing:border-box; }
+.legal-document-frame { display:block; flex:1; min-height:0; width:100%; border:0; }
+@media print { .legal-document-page > .topbar { display:none; } }
