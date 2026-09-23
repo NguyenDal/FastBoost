@@ -309,18 +309,6 @@
         );
 }
 
-.price-global-create-icon {
-    width: 46px;
-    height: 46px;
-    margin-bottom: 14px;
-    display: grid;
-    place-items: center;
-    border-radius: 15px;
-    font-size: 1.35rem;
-    background: rgba(124, 58, 237, 0.14);
-    border: 1px solid rgba(167, 139, 250, 0.2);
-}
-
 .price-sale-control-header {
     display: flex;
     align-items: flex-start;

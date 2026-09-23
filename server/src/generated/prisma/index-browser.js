@@ -190,6 +190,7 @@ exports.Prisma.ServiceSaleScalarFieldEnum = {
   id: 'id',
   couponCode: 'couponCode',
   footerDecoration: 'footerDecoration',
+  footerTimer: 'footerTimer',
   serviceId: 'serviceId',
   scope: 'scope',
   title: 'title',

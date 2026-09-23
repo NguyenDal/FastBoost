@@ -8,6 +8,39 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
+### September 22, 2026 — sale footer decoration
+
+- Dark fixed bottom sale bar with subtle purple accents on the homepage, referral
+  landing pages, Contact, and service order pages. Title, offer and optional timer
+  form a centered group. Desktop height is about 44px; mobile content wraps.
+  Global discounts read N% OFF ALL SERVICES; the extra scope/base-price line is removed.
+- Footer decoration enables display; Show countdown timer is independent of the
+  actual expiration. A campaign without an end date displays without a timer.
+  The admin form previews both layouts and the confirmation includes the choice.
+- GET /api/pricing/footer-promotion returns only an active, currently eligible,
+  opted-in public campaign. Personal coupons are always excluded. Service pages
+  prefer the newest eligible campaign for that service (only if available), then
+  the newest global campaign; other storefront pages show global campaigns only.
+  Coupon banners retain their public code. Discount calculations remain base-price-only.
+- Public pages refresh every 30 seconds and on focus/visibility. Expired banners
+  disappear on the countdown tick even when the timer is hidden. API failures hide
+  the banner. Admin, account, checkout and match screens have no promotional bar.
+- Migration `20260923020000_sale_footer_timer` adds one boolean defaulting true.
+  Applied and recorded only in the locally configured database, with Prisma client
+  regenerated. Apply this migration to production before deploying the new code;
+  unrelated pending migrations were not applied.
+- Verification: 49 server tests pass, 2 optional DB tests skip; focused lint and
+  client build pass. Desktop timer/no-timer and mobile wrapping verified in the
+  unsaved admin preview. Live local endpoint returns ok with no current promotion.
+  No campaigns were created, and no production changes or deployment were made.
+
+### September 22, 2026 — sale dialog cleanup
+
+Removed the Create Global Sale sidebar globe icon and the shared sale modal’s
+Sale behavior note. Pricing behavior is unchanged. Footer decoration rendering
+is implemented as a purple customer-facing sale bar, with a live admin preview
+and an independent countdown toggle. Focused pricing-page lint passes.
+
 ### September 22, 2026 — production receipt investigation
 
 - The deployed `fastboost-api` service was inspected in Render. It runs on Free
@@ -125,9 +158,8 @@ Render deployment was performed for this work.
   existing customer's account email. The backend binds the coupon to that
   account's ID and rejects redemption by other accounts. Personal coupons are
   excluded from footer decoration.
-- Birthday and account-anniversary coupon automation and the promotional footer
-  display are **not implemented**. The general sale footer checkbox only stores
-  a preference for future implementation.
+- Birthday and account-anniversary coupon automation is **not implemented**.
+  Footer decoration now displays active public campaigns on storefront pages.
 
 #### Checkout and customer communication
 

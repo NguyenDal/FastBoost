@@ -13,6 +13,6 @@ function saleOptions(body) {
     const endsAt = date(body.endsAt);
     if (!couponCode && (!startsAt || !endsAt)) throw new Error("Set sale start and end for a sale without a coupon.");
     if (endsAt && endsAt <= (startsAt || new Date())) throw new Error("Sale end must be after sale start and in the future.");
-    return { couponCode, footerDecoration: body.footerDecoration === true, startsAt, endsAt, appliesTo: "BASE_PRICE" };
+    return { couponCode, footerDecoration: body.footerDecoration === true, footerTimer: body.footerTimer !== false, startsAt, endsAt, appliesTo: "BASE_PRICE" };
 }
 module.exports = { saleOptions };

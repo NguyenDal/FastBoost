@@ -1,0 +1,1 @@
+ALTER TABLE "ServiceSale" ADD COLUMN "footerTimer" BOOLEAN NOT NULL DEFAULT true;

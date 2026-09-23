@@ -26,6 +26,7 @@ import ContactPage from "./pages/ContactPage";
 import PriceManagementPage from "./pages/PriceManagementPage";
 import AdminLayout from "./layouts/AdminLayout";
 import DynamicTitle from "./components/DynamicTitle";
+import SaleFooter from "./components/SaleFooter";
 
 import {
   clearExpiredSession,
@@ -201,6 +202,7 @@ function App() {
           }
         />
       </Routes>
+      <SaleFooter />
 
       {sessionExpiredOpen && (
         <SessionExpiredModal

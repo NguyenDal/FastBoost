@@ -1,5 +1,6 @@
 import { authStorage } from "../utils/authStorage";
 import { useEffect, useRef, useState } from "react";
+import { SaleBanner } from "../components/SaleFooter";
 import { API_BASE_URL } from "../api/config";
 import "../styles/Admin.css";
 import "../styles/PriceManagement.css";
@@ -802,6 +803,7 @@ const EMPTY_SALE_FORM = {
     saleMode: "WITHOUT_COUPON",
     couponCode: "",
     footerDecoration: false,
+    footerTimer: true,
 };
 
 function getSaleDisplayStatus(sale, nowMs = Date.now()) {
@@ -1296,6 +1298,7 @@ export default function PriceManagementPage() {
                 saleMode: saleForm.saleMode,
                 couponCode: saleForm.saleMode === "WITH_COUPON" ? saleForm.couponCode.trim().toUpperCase() : null,
                 footerDecoration: saleForm.footerDecoration,
+                footerTimer: saleForm.footerTimer,
                 startsAt: saleForm.startsAt || null,
                 endsAt: saleForm.endsAt || null,
             };
@@ -1344,6 +1347,7 @@ export default function PriceManagementPage() {
                         saleMode: pendingSaleAction.saleMode,
                         couponCode: pendingSaleAction.couponCode,
                         footerDecoration: pendingSaleAction.footerDecoration,
+                        footerTimer: pendingSaleAction.footerTimer,
                         startsAt: pendingSaleAction.startsAt
                             ? new Date(pendingSaleAction.startsAt).toISOString()
                             : null,
@@ -1391,6 +1395,7 @@ export default function PriceManagementPage() {
             appliesTo: sale.appliesTo,
             couponCode: sale.couponCode,
             footerDecoration: sale.footerDecoration,
+            footerTimer: sale.footerTimer,
             startsAt: sale.startsAt || null,
             endsAt: sale.endsAt || null,
         });
@@ -1817,10 +1822,6 @@ export default function PriceManagementPage() {
 
                     <aside className="price-side-panel">
                         <section className="price-side-card price-global-create-card">
-                            <div className="price-global-create-icon">
-                                🌐
-                            </div>
-
                             <h3>Create Global Sale</h3>
 
                             <p>
@@ -1925,7 +1926,7 @@ export default function PriceManagementPage() {
                                 <p>{coupon.scope === "GLOBAL" ? "All services" : coupon.serviceTitle || "Selected service"}</p>
                                 <p>{Number(coupon.discountPercent)}% off base price · {getSaleDisplayStatus(coupon, saleClock)}</p>
                                 <p>{coupon.startsAt ? new Date(coupon.startsAt).toLocaleString() : "No start timer"} → {coupon.endsAt ? new Date(coupon.endsAt).toLocaleString() : "No expiration"}</p>
-                                <p>Footer decoration: {coupon.footerDecoration ? "Yes (coming later)" : "No"}</p>
+                                <p>Footer decoration: {coupon.footerDecoration ? "Yes" : "No"}</p>
                                 <button type="button" className="price-secondary-btn" onClick={() => requestEndSale({ sale: coupon, scope: coupon.scope, serviceName: coupon.serviceTitle || "All services" })}>Disable Coupon</button>
                             </div>)}
                         </section>
@@ -2205,7 +2206,8 @@ export default function PriceManagementPage() {
                             <>
                                 <div className="price-sale-confirm-row"><span>Sale Type</span><strong>{pendingSaleAction.couponCode ? "With coupon" : "Without coupon"}</strong></div>
                                 {pendingSaleAction.couponCode && <div className="price-sale-confirm-row"><span>Coupon</span><strong>{pendingSaleAction.couponCode}</strong></div>}
-                                <div className="price-sale-confirm-row"><span>Footer decoration</span><strong>{pendingSaleAction.footerDecoration ? "Yes (coming later)" : "No"}</strong></div>
+                                <div className="price-sale-confirm-row"><span>Footer decoration</span><strong>{pendingSaleAction.footerDecoration ? "Yes" : "No"}</strong></div>
+                                {pendingSaleAction.footerDecoration && <div className="price-sale-confirm-row"><span>Countdown timer</span><strong>{pendingSaleAction.footerTimer !== false && pendingSaleAction.endsAt ? "Yes" : "No"}</strong></div>}
                             </>
                             <div className="price-sale-confirm-row">
                                 <span>Starts</span>
@@ -2435,17 +2437,16 @@ export default function PriceManagementPage() {
                             <p className="price-coupon-help">{saleForm.saleMode === "WITH_COUPON" ? "Set Sale Start to schedule when this coupon becomes available, or leave it blank to start immediately. Leave Sale End blank for no expiration, even with a scheduled start." : "Set Sale Start and Sale End to schedule this automatic sale."} Discounts apply to the base price only.</p>
                             <label className="price-sale-critical-check">
                                 <input type="checkbox" disabled={saleForm.personalCoupon} checked={saleForm.footerDecoration} onChange={event => setSaleForm(current => ({ ...current, footerDecoration: event.target.checked }))} />
-                                <div><strong>Footer decoration</strong><span>Save this campaign for a future sale display in the footer. The footer display will be implemented later.</span></div>
+                                <div><strong>Footer decoration</strong><span>Show this campaign in the customer-facing sale bar while it is active.</span></div>
                             </label>
                         </>
-                        <div className="price-modal-note">
-                            <strong>Sale behavior:</strong>
-                            <span>
-                                {saleForm.saleMode === "WITH_COUPON" ? "Customers can enter this coupon at checkout for the selected scope. The larger sale or coupon discount applies; discounts do not stack."
-                                    : saleScope === "GLOBAL" ? "The global sale applies automatically unless a service has its own specific sale. Service-specific sales take priority."
-                                        : "This service-specific sale overrides the global sale for this service while it is active."}
-                            </span>
-                        </div>
+                        {saleForm.footerDecoration && !saleForm.personalCoupon && <>
+                            <label className="price-sale-critical-check">
+                                <input type="checkbox" checked={saleForm.footerTimer} onChange={event => setSaleForm(current => ({ ...current, footerTimer: event.target.checked }))} />
+                                <div><strong>Show countdown timer</strong><span>Counts down to Sale End. Without an end date, the bar displays without a timer.</span></div>
+                            </label>
+                            <SaleBanner preview promotion={{ title: saleForm.title || "Limited time sale", discountPercent: Number(saleForm.discountPercent) || 0, couponCode: saleForm.saleMode === "WITH_COUPON" ? saleForm.couponCode : null, footerTimer: saleForm.footerTimer, endsAt: saleForm.endsAt || null, scope: saleScope }} />
+                        </>}
 
                         {saleError && (
                             <div className="price-save-error price-confirm-error">

@@ -10203,6 +10203,7 @@ export namespace Prisma {
     id: string | null
     couponCode: string | null
     footerDecoration: boolean | null
+    footerTimer: boolean | null
     serviceId: string | null
     scope: $Enums.SaleScope | null
     title: string | null
@@ -10221,6 +10222,7 @@ export namespace Prisma {
     id: string | null
     couponCode: string | null
     footerDecoration: boolean | null
+    footerTimer: boolean | null
     serviceId: string | null
     scope: $Enums.SaleScope | null
     title: string | null
@@ -10239,6 +10241,7 @@ export namespace Prisma {
     id: number
     couponCode: number
     footerDecoration: number
+    footerTimer: number
     serviceId: number
     scope: number
     title: number
@@ -10267,6 +10270,7 @@ export namespace Prisma {
     id?: true
     couponCode?: true
     footerDecoration?: true
+    footerTimer?: true
     serviceId?: true
     scope?: true
     title?: true
@@ -10285,6 +10289,7 @@ export namespace Prisma {
     id?: true
     couponCode?: true
     footerDecoration?: true
+    footerTimer?: true
     serviceId?: true
     scope?: true
     title?: true
@@ -10303,6 +10308,7 @@ export namespace Prisma {
     id?: true
     couponCode?: true
     footerDecoration?: true
+    footerTimer?: true
     serviceId?: true
     scope?: true
     title?: true
@@ -10408,6 +10414,7 @@ export namespace Prisma {
     id: string
     couponCode: string | null
     footerDecoration: boolean
+    footerTimer: boolean
     serviceId: string | null
     scope: $Enums.SaleScope
     title: string
@@ -10445,6 +10452,7 @@ export namespace Prisma {
     id?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: boolean
     scope?: boolean
     title?: boolean
@@ -10468,6 +10476,7 @@ export namespace Prisma {
     id?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: boolean
     scope?: boolean
     title?: boolean
@@ -10488,6 +10497,7 @@ export namespace Prisma {
     id?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: boolean
     scope?: boolean
     title?: boolean
@@ -10508,6 +10518,7 @@ export namespace Prisma {
     id?: boolean
     couponCode?: boolean
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: boolean
     scope?: boolean
     title?: boolean
@@ -10520,7 +10531,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountId" | "personalReason" | "id" | "couponCode" | "footerDecoration" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
+  export type ServiceSaleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"recipientAccountId" | "personalReason" | "id" | "couponCode" | "footerDecoration" | "footerTimer" | "serviceId" | "scope" | "title" | "discountPercent" | "appliesTo" | "startsAt" | "endsAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceSale"]>
   export type ServiceSaleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipientAccount?: boolean | ServiceSale$recipientAccountArgs<ExtArgs>
     couponOrders?: boolean | ServiceSale$couponOrdersArgs<ExtArgs>
@@ -10551,6 +10562,7 @@ export namespace Prisma {
       id: string
       couponCode: string | null
       footerDecoration: boolean
+      footerTimer: boolean
       serviceId: string | null
       scope: $Enums.SaleScope
       title: string
@@ -10993,6 +11005,7 @@ export namespace Prisma {
     readonly id: FieldRef<"ServiceSale", 'String'>
     readonly couponCode: FieldRef<"ServiceSale", 'String'>
     readonly footerDecoration: FieldRef<"ServiceSale", 'Boolean'>
+    readonly footerTimer: FieldRef<"ServiceSale", 'Boolean'>
     readonly serviceId: FieldRef<"ServiceSale", 'String'>
     readonly scope: FieldRef<"ServiceSale", 'SaleScope'>
     readonly title: FieldRef<"ServiceSale", 'String'>
@@ -26781,6 +26794,7 @@ export namespace Prisma {
     id: 'id',
     couponCode: 'couponCode',
     footerDecoration: 'footerDecoration',
+    footerTimer: 'footerTimer',
     serviceId: 'serviceId',
     scope: 'scope',
     title: 'title',
@@ -27747,6 +27761,7 @@ export namespace Prisma {
     id?: StringFilter<"ServiceSale"> | string
     couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
+    footerTimer?: BoolFilter<"ServiceSale"> | boolean
     serviceId?: StringNullableFilter<"ServiceSale"> | string | null
     scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
@@ -27769,6 +27784,7 @@ export namespace Prisma {
     id?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     footerDecoration?: SortOrder
+    footerTimer?: SortOrder
     serviceId?: SortOrderInput | SortOrder
     scope?: SortOrder
     title?: SortOrder
@@ -27794,6 +27810,7 @@ export namespace Prisma {
     recipientAccountId?: StringNullableFilter<"ServiceSale"> | string | null
     personalReason?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
+    footerTimer?: BoolFilter<"ServiceSale"> | boolean
     serviceId?: StringNullableFilter<"ServiceSale"> | string | null
     scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
@@ -27816,6 +27833,7 @@ export namespace Prisma {
     id?: SortOrder
     couponCode?: SortOrderInput | SortOrder
     footerDecoration?: SortOrder
+    footerTimer?: SortOrder
     serviceId?: SortOrderInput | SortOrder
     scope?: SortOrder
     title?: SortOrder
@@ -27842,6 +27860,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"ServiceSale"> | string
     couponCode?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolWithAggregatesFilter<"ServiceSale"> | boolean
+    footerTimer?: BoolWithAggregatesFilter<"ServiceSale"> | boolean
     serviceId?: StringNullableWithAggregatesFilter<"ServiceSale"> | string | null
     scope?: EnumSaleScopeWithAggregatesFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringWithAggregatesFilter<"ServiceSale"> | string
@@ -29510,6 +29529,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -29531,6 +29551,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -29550,6 +29571,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29571,6 +29593,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -29591,6 +29614,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -29608,6 +29632,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29625,6 +29650,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -31505,6 +31531,7 @@ export namespace Prisma {
     id?: SortOrder
     couponCode?: SortOrder
     footerDecoration?: SortOrder
+    footerTimer?: SortOrder
     serviceId?: SortOrder
     scope?: SortOrder
     title?: SortOrder
@@ -31527,6 +31554,7 @@ export namespace Prisma {
     id?: SortOrder
     couponCode?: SortOrder
     footerDecoration?: SortOrder
+    footerTimer?: SortOrder
     serviceId?: SortOrder
     scope?: SortOrder
     title?: SortOrder
@@ -31545,6 +31573,7 @@ export namespace Prisma {
     id?: SortOrder
     couponCode?: SortOrder
     footerDecoration?: SortOrder
+    footerTimer?: SortOrder
     serviceId?: SortOrder
     scope?: SortOrder
     title?: SortOrder
@@ -34636,6 +34665,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -34655,6 +34685,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -35344,6 +35375,7 @@ export namespace Prisma {
     id?: StringFilter<"ServiceSale"> | string
     couponCode?: StringNullableFilter<"ServiceSale"> | string | null
     footerDecoration?: BoolFilter<"ServiceSale"> | boolean
+    footerTimer?: BoolFilter<"ServiceSale"> | boolean
     serviceId?: StringNullableFilter<"ServiceSale"> | string | null
     scope?: EnumSaleScopeFilter<"ServiceSale"> | $Enums.SaleScope
     title?: StringFilter<"ServiceSale"> | string
@@ -36442,6 +36474,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -36462,6 +36495,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -37001,6 +37035,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -37021,6 +37056,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -37264,6 +37300,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -37284,6 +37321,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -37868,6 +37906,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -37888,6 +37927,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -38130,6 +38170,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -38150,6 +38191,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -40578,6 +40620,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     serviceId?: string | null
     scope?: $Enums.SaleScope
     title: string
@@ -40782,6 +40825,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -40801,6 +40845,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -40820,6 +40865,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
@@ -41450,6 +41496,7 @@ export namespace Prisma {
     id?: string
     couponCode?: string | null
     footerDecoration?: boolean
+    footerTimer?: boolean
     scope?: $Enums.SaleScope
     title: string
     discountPercent: Decimal | DecimalJsLike | number | string
@@ -41692,6 +41739,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -41712,6 +41760,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -41731,6 +41780,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     footerDecoration?: BoolFieldUpdateOperationsInput | boolean
+    footerTimer?: BoolFieldUpdateOperationsInput | boolean
     scope?: EnumSaleScopeFieldUpdateOperationsInput | $Enums.SaleScope
     title?: StringFieldUpdateOperationsInput | string
     discountPercent?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string

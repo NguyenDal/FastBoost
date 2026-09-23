@@ -91,6 +91,8 @@ exports.listPriceRules = async (req, res) => {
                     ? {
                         id: sale.id,
                         title: sale.title,
+                        footerDecoration: sale.footerDecoration,
+                        footerTimer: sale.footerTimer,
                         discountPercent: sale.discountPercent,
                         appliesTo: sale.appliesTo,
                         startsAt: sale.startsAt,
@@ -111,6 +113,7 @@ exports.listPriceRules = async (req, res) => {
                 ? {
                     id: globalSale.id,
                     footerDecoration: globalSale.footerDecoration,
+                    footerTimer: globalSale.footerTimer,
                     title: globalSale.title,
                     discountPercent:
                         globalSale.discountPercent,
@@ -262,6 +265,7 @@ exports.createSale = async (req, res) => {
                 recipientAccountId: recipient?.id || null,
                 personalReason: recipient ? req.body.personalReason : null,
                 footerDecoration: recipient ? false : options.footerDecoration,
+                footerTimer: recipient ? false : options.footerTimer,
 
                 startsAt:
                     startsAt
