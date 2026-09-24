@@ -8,282 +8,21 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 23, 2026 — gold redemption eligibility
+### September 23, 2026 — dashboard cleanup and social sign-in
 
-Gold redemption requires a current balance of at least 100 gold. Below that threshold, checkout disables gold entry/Max/Apply and explains the requirement; server normalization also applies zero gold, including direct requests. Eligible customers can redeem fewer than 100 gold. Existing order caps and Stripe minimum cash rules remain. Server suite: 61 passed, 3 optional checks skipped; client build and focused lint pass.
+- **Google and Discord sign-in:** new users choose a username and accept terms. When an eligible verified email matches an existing account, a confirmation offers **Link & sign in** or **Not now**. Nothing links until confirmed; declining returns to login. Existing usernames, profiles, passwords and orders stay intact. Already-linked accounts sign in directly.
+- **Link confirmation UI:** FastBoost/provider logos, a subtle linking animation, matching dark icon tiles, concise account information and separated buttons without a glow. Reduced-motion preferences are respected. General social sign-in errors use a yellow popup; login/register checkboxes use dark styling.
+- **Lists and admin pages:** shared numbered pagination shows 10 rows per page across customer orders, provider orders, admin orders and accounts. Headers and redundant counters/copy are trimmed; Management Utilities uses the admin sidebar icons.
+- **Dashboard:** My Coupons has 3 coupons per page with empty-state spacing. FAQ is a full account page with search and category filters, a smaller heading and search below the hero. Notifications and messages support individual or clear-all actions, with red delete controls and slide-out/up animations.
+- **Coupon and account polish:** personal coupons support multiple recipients, dashboard coupon countdowns and loyalty/referral visuals were refined, and the shared brand wordmark was updated. Contact-email correction was deployed earlier today; receipt delivery remains a separate verification item.
 
-### September 23, 2026 — personal coupon delivery
+**Verification:** the latest focused authentication suite passes 27 tests, including confirmation, cancellation without writes, origin/ticket validation and account preservation. The redesigned dialog was inspected locally; client build and focused component lint passed before the final copy/color-only edits. Earlier feature checks remain documented below; no fresh full-suite run is claimed.
 
-- Personal coupon form offers all services, one service, or multiple services through an overlay checkbox dropdown that does not shift form fields. Search covers username, profile display name, and email (including legacy accounts without usernames); it is debounced, admin-only, capped at eight customer suggestions, and displays profile pictures or initials. Selection binds the customer ID. Personal coupons always use a code; footer and sale-type controls are hidden.
-- My Coupons replaces Platform Status on the customer dashboard, using the shared icon/header styling, a ticket icon, count badge and styled empty state, with copyable codes, eligible services, dates, and used/scheduled status. Delivery is through this dashboard; this update does not send email. The authenticated API only returns that account’s assigned active, unexpired coupons. Personal codes remain excluded from public footers.
-- One multi-service coupon is one campaign and one use per account, across the chosen services. The backend validates each service and checks the full allowed list during redemption. Existing single-service/global coupons retain their behavior.
-- Applied and recorded `20260923040000_personal_coupon_services` only on the configured development database; Prisma regenerated. Production needs this migration and matching backend/frontend deployment.
+**Deployment status:** the user configured Discord in Render and registered local and production callbacks. Public production checks confirmed both providers enabled and the correct Discord redirect for the www.fastboost.gg origin. The latest linking-confirmation/UI changes are still local and uncommitted; full live production sign-in remains unverified. Production migration status must be checked before deploying features that require newer coupon/footer schema.
 
-### September 22, 2026 — loyalty reward repair
+## Earlier implementation notes
 
-- Reconnected tier-bonus reconciliation on order completion/status changes and loyalty-page reads to recover missing historical rewards. Paid, completed spend unlocks Silver +200, Gold +500, Platinum +1000, and Diamond +1500 cumulatively. Per-user transaction locking and existing unique reward keys prevent duplicate credits. Reconciliation retains the existing policy of removing tier bonuses when qualifying spend falls below the threshold.
-- Loyalty spend/count/gold now consistently exclude unpaid completed orders, matching checkout gold eligibility. Gold history displays negative redemptions without a prefixed plus. Checkout coupon action reads Remove in grey underlined normal text.
-- Verified all four recovered bonuses and -100 redemption in the local loyalty page. Full server suite: 57 passed, 3 optional DB checks skipped; focused client lint and build pass. No migration or production deployment.
-
-### September 22, 2026 — sale footer decoration
-
-- Full-width, edge-to-edge dark fixed bottom sale bar with subtle purple accents on the homepage, referral
-  landing pages, Contact, service order pages, and unpaid checkout. Title, offer and optional timer
-  form a centered group. Desktop height is about 44px; mobile content wraps.
-  Global discounts read N% OFF ALL SERVICES; the extra scope/base-price line is removed.
-- Footer decoration enables display; Show countdown timer is independent of the
-  actual expiration. A campaign without an end date displays without a timer.
-  The admin form previews both layouts and the confirmation includes the choice.
-- GET /api/pricing/footer-promotion returns only an active, currently eligible,
-  opted-in public campaign. Personal coupons are always excluded. Service pages
-  prefer the newest eligible campaign for that service (only if available), then
-  the newest global campaign; other storefront pages show the newest eligible global or available-service campaign.
-  Service banners read N% OFF SERVICE NAME. Global and service coupon banners
-  include Use code with a copy button and success/failure feedback. The admin
-  preview uses the selected service name and the same coupon control. Personal
-  coupons remain excluded. Discount calculations remain base-price-only.
-- Sale Control uses one shared campaign card for global sales, service sales, and public coupons, with status, countdown, scope, dates, footer setting, and an end/disable action.
-- Public pages refresh every 30 seconds and on focus/visibility. Expired banners
-  disappear on the countdown tick even when the timer is hidden. API failures hide
-  the banner. Checkout uses its loaded order service ID, prefers that service campaign
-  then global, and reserves footer space below the payment content. It hides during
-  payment verification and after payment. Admin, account and match screens have no promotional bar.
-- Migration `20260923020000_sale_footer_timer` adds one boolean defaulting true.
-  Applied and recorded only in the locally configured database, with Prisma client
-  regenerated. Apply this migration to production before deploying the new code;
-  unrelated pending migrations were not applied.
-- Verification: 49 server tests pass, 2 optional DB tests skip; focused lint and
-  client build pass. Desktop timer/no-timer and mobile wrapping verified in the
-  unsaved admin preview. Live local endpoint returns ok with no current promotion.
-  No campaigns were created, and no production changes or deployment were made.
-
-### September 22, 2026 — sale dialog cleanup
-
-Removed the Create Global Sale sidebar globe icon and the shared sale modal’s
-Sale behavior note. Pricing behavior is unchanged. Footer decoration rendering
-is implemented as a purple customer-facing sale bar, with a live admin preview
-and an independent countdown toggle. Focused pricing-page lint passes.
-
-### September 22, 2026 — production receipt investigation
-
-- The deployed `fastboost-api` service was inspected in Render. It runs on Free
-  compute, uses `smtp.gmail.com:587`, and has no
-  `ORDER_CONFIRMATION_EMAILS_ENABLED` environment variable. With the current code,
-  the missing flag disables both receipt queueing and delivery.
-- Render Free blocks outbound SMTP ports 25, 465 and 587. Restore production
-  delivery with a paid instance that supports SMTP or an HTTPS email integration,
-  then enable receipts after confirming the production migration and frontend URL.
-  See [Render's Free service limits](https://render.com/docs/free).
-- Local SMTP authentication and the focused receipt/payment tests pass, but the
-  locally configured database does not contain the reported production orders.
-  Local sent records do not establish production delivery. No production settings,
-  payments or email records were changed, and no receipt was resent during diagnosis.
-
-### September 22, 2026 — authentication and legal pages
-
-- Login/register popups are wider and animate their height and width when switching.
-  Registration uses compact spacing and a full-height card with no internal
-  scrollbar; all controls fit at 1148×859. On smaller screens, overflow is handled
-  by the surrounding overlay so content remains reachable. Removed Account Access, changed
-  submit buttons to purple, softened Forgot password, and added the circled Or
-  divider and Google/Discord buttons with logos.
-- Remember me is functional: checked stores the session in localStorage; unchecked
-  uses sessionStorage for the current tab session. Both keep the existing three-day
-  JWT expiry. API calls, profile updates, logout and expiry use the same storage
-  helper. `/login` supports the same login options; `/register` opens the popup.
-  Home, Order, Contact and standalone login all handle checkbox booleans and honor
-  the selected persistence mode; Order/Contact no longer retain the string `on`.
-- Email/password and social registration require affirmative terms acceptance.
-  Promotional email consent is a separate, optional, unchecked choice. The server
-  stores the document version, acceptance time and marketing choice atomically
-  with the new account. Public signup always creates a CUSTOMER account.
-  Terms show a red required asterisk; missing acceptance focuses/highlights the
-  checkbox for password or social signup without extra alert text. Marketing
-  remains optional but its label does not display the word Optional.
-- `/terms-and-conditions` and `/provider-agreement` display the supplied HTML
-  documents. Their wording, review-draft labels, unset effective date and provider
-  template blanks are retained. These are review documents, not finalized terms
-  or an electronic signing flow. Registration and both card and gold checkout
-  link to terms; checkout now says the customer agrees to those terms.
-  The provider template's unprovided English/Vietnamese PDF download links are
-  omitted; its working Print / save PDF control remains.
-- Google and Discord authorization-code flows support signup and subsequent
-  sign-in using a stored provider identity and a verified provider email. Profile
-  Settings supports linking both providers to the signed-in account. Matching
-  verified Gmail/Workspace emails can automatically link an existing account as
-  detailed below, preserving password login. Social signup keeps referral attribution.
-- OAuth uses a signed, expiring state cookie, fixed provider endpoints, validated
-  frontend origins and Google PKCE. Provider secrets and provider tokens stay on
-  the backend. The callback sends the FastBoost session to the initiating window
-  by origin-checked postMessage; tokens are not put in redirect URLs.
-- Migration `20260923010000_auth_consent_social` adds `RegistrationConsent` and
-  `SocialIdentity`. It was applied and recorded on the configured database; no
-  existing accounts were changed. The unrelated pending loyalty migration remains
-  untouched. Other deployments need the same schema and regenerated Prisma client.
-- Verification: 94 server tests pass, 3 optional database tests skip; auth tests
-  cover consent, role assignment, OAuth state/callback, signup, linking conflicts,
-  password preservation and session storage. New component lint and client build
-  pass; AccountSettings retains its 12 pre-existing lint findings. A database
-  transaction verified signup, Google auto-link, manual Discord linking and
-  returning login, then rolled back every test account/link. Live provider approval
-  remains user-driven. These local changes have not been committed or deployed.
-
-#### Google and Discord setup
-
-Social signup creates a customer account using the provider's verified email and
-the customer's chosen username (also used as the initial display name). The signup
-screen shows a blank username field, with no email line or password fields.
-Names must be 3–60 characters; taken names are rejected so the customer can choose
-another. Names are never generated from email or automatically given a suffix.
-Returning users sign in using their stable provider identity; customized usernames
-and profiles are retained. Google sign-in offers a linking confirmation for an existing account
-when its FastBoost email is already verified and matches a verified Gmail address
-or a Google Workspace identity with the provider's `hd` claim. For other addresses,
-sign in with the existing password and link Google in Profile Settings. This follows
-[Google's email authority guidance](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token).
-Discord also offers the same confirmation for matching verified emails. Both providers explain faster sign-in and offer Allow linking or Not now; no identity is saved until allowed. Existing accounts retain their username, profile, password and account data. Only new accounts choose a username.
-
-Profile Settings replaces the Discord text field with Google/Discord connection
-status and Link buttons. Either provider can be linked with a different email once
-the user is signed into FastBoost. Linking preserves the existing password, email,
-username, profile and session; the linked provider can then sign in to that same
-account. A provider identity cannot be moved between accounts or replace another
-identity already linked for that provider. Linked status is green. Unlink opens
-the provider chooser again, with no FastBoost password form or extra confirmation.
-After the customer authenticates with the exact linked Google/Discord identity,
-the callback removes that connection, including when it is their last provider.
-Cancellation or a different provider identity leaves it intact. Password, profile
-and current app session remain unchanged. A subsequent Google sign-in may link
-again under the matching-email rules above; email password recovery also remains
-available. A different provider email must be relinked from a signed-in session.
-
-`POST /api/auth/social/:provider/unlink/start` requires the app session and trusted
-origin in the same popup form flow as linking. The server binds action, user ID,
-original SocialIdentity row ID, provider user ID and session expiry into signed
-OAuth state. The callback matches the newly verified provider ID and atomically
-deletes only that original row. Stale callbacks cannot delete a replacement link.
-The former direct DELETE/password endpoint is removed, so provider verification
-cannot be bypassed. Provider credentials must be configured for either action.
-
-`GET /api/auth/social/connections` returns authenticated connection/availability
-flags. `POST /api/auth/social/:provider/link/start` accepts a session token in a
-form body targeted at the popup, validates the request origin and binds the user
-ID and session expiry to the signed OAuth state. The credential never enters a URL.
-OAuth state uses its own derived signing key and cannot authenticate as an app session.
-The callback verifies both the provider identity and the initiating app session's
-expiry before linking, then returns link status without changing the app session.
-
-New users may start with either Login or Register. Both return a ten-minute,
-signed signup ticket and show the username/consent step. Any explicit consent
-choices made in Register are preserved. `POST /api/auth/social/complete` validates
-the ticket, its origin, the chosen username and affirmative terms before creating
-the account. Marketing consent stays optional and defaults to unchecked.
-Signup tickets use a separate signing key
-derived from the server secret and cannot authenticate as app session tokens.
-
-In each provider developer console, create a web OAuth application and allow the
-exact backend callback URL. Set these **server-only** variables in `server/.env`
-(never commit secrets or add them to frontend environment variables):
-
-```dotenv
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=http://localhost:5000/api/auth/social/google/callback
-DISCORD_CLIENT_ID=
-DISCORD_CLIENT_SECRET=
-DISCORD_REDIRECT_URI=http://localhost:5000/api/auth/social/discord/callback
-```
-
-Set `CLIENT_URL` to the frontend origin (comma-separated origins are supported).
-Local development also allows `http://localhost:5173`. Production callback URLs
-must use HTTPS and the deployed API origin, retaining the paths above. Register
-each exact callback with its provider; use provider test users while an app is in
-testing mode. Restart the backend and reload the frontend after changing settings.
-Missing settings show a clear message and preserve password login. The endpoints
-are `GET /api/auth/social/providers`, `GET /api/auth/social/:provider/start` and
-`GET /api/auth/social/:provider/callback` (`google` or `discord`).
-
-Render environment settings do not configure the local API. Local OAuth tests need
-the credentials in `server/.env` and a local API restart. Keep the localhost callback
-above registered alongside the production callback:
-`https://fastboost-api.onrender.com/api/auth/social/google/callback` (or
-`https://fastboost-api.onrender.com/api/auth/social/discord/callback`). Set the
-corresponding `*_REDIRECT_URI` to the callback for the environment being run.
-
-Provider references: [Google OpenID Connect](https://developers.google.com/identity/openid-connect/openid-connect)
-and [Discord OAuth2](https://discord.com/developers/docs/topics/oauth2).
-
-### September 22, 2026 — pricing, checkout, and coupons
-
-This section records the latest implementation and supersedes older session
-notes below where they conflict. The changes are local; no commit, push, or
-Render deployment was performed for this work.
-
-#### Admin pricing and availability
-
-- Price Management has League of Legends and Teamfight Tactics filters only,
-  defaults to LoL, and shows service cards directly below the filters. The extra
-  rules wrapper, heading, description, count badge, and per-card game tags were
-  removed. The title is white; service cards have increased vertical spacing.
-- Green/red availability switches open an activation/deactivation confirmation.
-  Cancel preserves the current state; only Confirm saves it. Disabled services
-  are greyed out and blocked from new orders and new checkout sessions. Existing
-  paid orders remain accessible. Public availability refreshes on focus and
-  periodically; checkout checks availability again before confirmation.
-- Deactivation updates all pricing rules for that service and invalidates the
-  pricing cache. Inactive standalone Win Boost prices remain available as
-  references for other services' bonus-win calculations.
-- Global and service-level Create Sale flows support automatic sales or coupons,
-  base-price-only discounts, and a final review popup. Automatic sales require
-  start/end dates. Coupon dates are independent: blank start means immediate;
-  a scheduled start with blank end activates later and never expires.
-- General coupons appear in Sale Control. Separate Create Personal Coupon and
-  Personal Coupons cards support manual gifts and negotiated discounts for an
-  existing customer's account email. The backend binds the coupon to that
-  account's ID and rejects redemption by other accounts. Personal coupons are
-  excluded from footer decoration.
-- Birthday and account-anniversary coupon automation is **not implemented**.
-  Footer decoration now displays active public campaigns on storefront pages.
-
-#### Checkout and customer communication
-
-- Coupon checkout keeps the larger automatic sale or coupon discount and explains
-  the result in a popup. Usage is recorded only after successful payment;
-  cancellation permits reuse. See [Checkout coupon redemption](#checkout-coupon-redemption).
-- Checkout has service-specific summaries, skeleton loading, progress transitions,
-  editable contact email, and friendly payment error dialogs. Successful payment
-  stays on checkout with a paid-order summary and an explicit Go to Order button.
-- FastBoost confirmation emails cover card/wallet and gold-only payments, with a
-  branded layout and service-specific order overview. The Stripe-receipt footer
-  was removed. Stripe receipts remain separate and do not cover gold-only orders.
-- The frontend build requires `STRIPE_PUBLISHABLE_KEY` in its own build environment;
-  setting it only in a local/backend `.env` does not configure the deployed bundle.
-- Public order numbers and origin-aware referral links are documented below.
-
-#### Database status and verification
-
-- The configured database has migrations `20260922210000_sale_coupons`,
-  `20260922220000_checkout_coupon_redemption`, and
-  `20260922230000_personal_coupons` applied and recorded. The personal-coupon
-  migration was explicitly approved and applied on September 22 after a `P2022`
-  missing-column error; the actual pricing controller then returned all 7 rules.
-- Deploy matching schema, backend, and frontend to other environments. The
-  unrelated pending `20260921200000_optimize_loyalty_history` was not applied;
-  review pending migrations before running a blanket deployment command.
-- Pricing-change server run: 39 passing tests, 2 optional database tests skipped.
-  Coupon database lifecycle checks were separately verified in a rolled-back
-  isolated schema earlier in the session. Focused pricing lint and client builds
-  passed after the UI edits; Vite retains its existing bundle-size warning.
-- No real coupon, payment, or email was created for these checks. Browser review
-  covered the global/service sale confirmation flow; not every later UI edit
-  received a fresh visual check. Existing HomePage/OrderPage lint findings remain.
-- Disabling a service does not centrally expire previously issued Stripe sessions.
-  Previously issued sessions keep their quoted discounts until expired/replaced.
-
-### Dashboard, loyalty, referrals, and profile updates
-
-This section describes the current behavior and supersedes conflicting details in
-the historical session notes below, particularly older referral eligibility rules.
+These dated notes retain implementation details and historical verification. Today's summary above supersedes conflicting older authentication, UI and deployment statements. Open issues in these notes are not marked complete merely because they are historical.
 
 #### Dashboard layout and account details
 
@@ -1149,6 +888,26 @@ npx prisma studio
 ## Current progress summary
 
 ### Done
+
+- gold redemption requires at least 100 gold in the current balance, enforced in checkout and on the server; eligible users may redeem a smaller amount
+- existing order redemption caps and Stripe minimum cash rules preserved
+- personal coupons support all services, a single service, or multiple services through an overlay checkbox selector
+- admin customer search matches username, display name and email, with debounced results, avatars and account-ID selection
+- My Coupons dashboard displays copyable codes, service eligibility, dates and coupon status; personal codes stay private and are excluded from public footers
+- multi-service coupons remain one campaign with one use per account across eligible services
+- personal-coupon service migration applied locally with Prisma regenerated; production migration and matching deployment still require verification
+- loyalty tier bonuses reconcile on order completion, status changes and loyalty reads, with per-user locking and unique keys preventing duplicates
+- paid completed spend unlocks cumulative Silver +200, Gold +500, Platinum +1000 and Diamond +1500 rewards; unpaid orders are excluded
+- gold history displays negative redemptions correctly; checkout uses a grey underlined Remove coupon action
+- full-width dark sale footer with purple accents, service/global offer text, optional countdown and mobile wrapping
+- independent footer visibility and countdown settings, with admin previews and confirmation summaries
+- public promotion API selects eligible active campaigns, prioritizes service offers where applicable and excludes personal coupons
+- public coupon banners include copyable codes with feedback; pricing remains base-price-only
+- shared Sale Control campaign cards show status, countdown, scope, dates, footer settings and end/disable actions
+- promotion banners refresh on focus and every 30 seconds, disappear at expiry, and hide on API failure or during/after payment
+- footer timer migration applied locally with Prisma regenerated; production migration status must be verified before deploying dependent code
+- sale dialogs cleaned up by removing the sidebar globe icon and redundant Sale behavior note
+- focused server tests, client builds, lint checks and local loyalty/footer visual checks passed during implementation; these checks do not establish production deployment
 - detailed Admin Price Management editing with per-change confirmation and Check All selection
 - server-authoritative price-rule updates through `PATCH /api/admin/prices/rules/:id`
 - global/service sale schema with `SaleScope` and nullable `ServiceSale.serviceId`
@@ -1469,8 +1228,8 @@ npx prisma studio
   - finalized display benefits: Bronze no bonus, Silver 200 coins + 3%, Gold 500 coins + 5%, Platinum 800 coins + 8%, Diamond 1500 coins + 10%
 
 ### In progress
-- critical sale create/end confirmation modal: review exact sale settings, require explicit checkbox confirmation, then perform backend mutation
-- service-specific End Sale action using the same confirmation path as global sale cancellation
+
+Historical backlog: verify each item against current implementation before starting. The current immediate focus below takes precedence.
 - production deployment/verification of `20260822205028_add_global_sale_scope` on Render after pushing the migration with the feature
 - cleanup/refactor `client/src/styles/News.css` so the Updates page has one final layout source of truth instead of repeated overrides
 - final `/updates` page structure polish to match the provided demo mockup: compact left hero/list and right 2x2 detail template preview
@@ -1497,25 +1256,12 @@ npx prisma studio
 
 ## Current immediate focus
 
-1. Finish the critical sale confirmation flow in `PriceManagementPage.jsx`:
-   - clicking Create Sale must validate the form but **must not POST yet**
-   - show a full review modal with scope, title, discount, discount target, start, and end
-   - require an explicit confirmation checkbox
-   - only the final confirm button may call `POST /api/admin/prices/sales`
-   - clicking End Global Sale or End Service Sale must use the same review/checkbox pattern before `PATCH .../disable`
-2. Test sale precedence end-to-end:
-   - global sale applies to every service without its own sale
-   - service-specific sale overrides global for that service
-   - sales never stack
-   - customer quote and created order use the same result
-3. Commit and push the schema, migration, backend, and frontend together.
-4. Verify Render applies `20260822205028_add_global_sale_scope` through `npx prisma migrate deploy`.
-5. Continue OrderPage performance cleanup:
-   - reuse stable service metadata/cache
-   - lazy-load optional champion data
-   - keep pricing/order/payment data fresh
-   - remove obsolete hardcoded price fallbacks only after live quote behavior is verified.
-6. Refactor Pro Duo toward a single Win Boost price source so price data is not duplicated.
+1. Review and, when authorized, deploy the current social-link confirmation and UI changes together.
+2. Complete real Google/Discord sign-in checks in production, including Link & sign in, Not now, returning login and new-user signup. Automated coverage does not establish live provider completion.
+3. Verify production migration status for newer footer/personal-coupon changes before deploying dependent features.
+4. Verify production order-receipt delivery separately from contact email. Do not replay payments to resend receipts.
+
+The older backlog below is retained for planning, not authorization to implement or deploy it. Recheck its items against current code before starting work.
 
 ---
 
