@@ -950,20 +950,25 @@
 
 @media (max-width: 560px) {
   .topbar {
-    --nav-pill-width: 80px;
     flex-direction: row;
     align-items: center;
     gap: 8px;
     padding: 10px;
   }
 
-  .topbar .brand-zone { flex-wrap: nowrap; flex: 1; min-width: 0; }
+  .topbar .brand-zone { flex-wrap: nowrap; flex: 0 0 auto; min-width: 0; }
   .topbar .brand, .topbar .brand-link { min-width: 0; gap: 6px; }
   .topbar .brand-icon, .topbar .brand-logo-image { width: 40px; height: 40px; flex-shrink: 0; }
   .topbar .brand-copy { display: block; min-width: 0; }
   .topbar .brand-title { font-size: 14px; line-height: 1.25; }
   .topbar .brand-subtitle { font-size: 10px; line-height: 1.3; white-space: nowrap; }
-  .topbar .nav { width: auto; justify-content: flex-end; gap: 5px; }
+  .topbar .nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    flex: 1;
+    min-width: 0;
+    gap: 6px;
+  }
   .topbar .nav-pill, .topbar .nav-cta {
     min-height: 38px;
     padding: 0 10px;
@@ -972,6 +977,7 @@
     white-space: nowrap;
   }
   .topbar .nav-pill {
+    width: 100%;
     display: grid;
     grid-template-columns: 16px auto;
     justify-content: center;
@@ -988,23 +994,22 @@
 }
 
 @media (max-width: 430px) {
-  .topbar { --nav-pill-width: 70px; padding: 8px; gap: 5px; }
+  .topbar { padding: 8px; gap: 5px; }
   .topbar .brand-icon, .topbar .brand-logo-image { width: 32px; height: 32px; }
   .topbar .brand-title { font-size: 13px; }
   .topbar .brand-subtitle { font-size: 9px; }
-  .topbar .nav { gap: 4px; }
+  .topbar .nav { gap: 6px; }
   .topbar .brand, .topbar .brand-link { gap: 4px; }
-  .topbar .nav-pill { padding: 0 4px; gap: 3px; font-size: 11px; }
+  .topbar .nav-pill { padding: 0 4px; gap: 3px; font-size: 12px; }
   .topbar .profile-avatar-btn { width: 30px; height: 30px; }
   .topbar .nav-cta { padding: 0 6px; font-size: 12px; }
   .topbar .nav-login-icon { display: none; }
 }
 
 @media (max-width: 360px) {
-  .topbar { --nav-pill-width: 64px; }
   .topbar .brand-icon, .topbar .brand-logo-image { width: 28px; height: 28px; }
   .topbar .nav { gap: 3px; }
-  .topbar .nav-pill { padding: 0 2px; gap: 2px; }
+  .topbar .nav-pill { padding: 0 2px; gap: 2px; font-size: 11px; }
 }
 
 .brand-wordmark { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff1f8; font-size:23px; line-height:1; font-weight:850; font-style:italic; letter-spacing:-1.1px; white-space:nowrap; }
