@@ -965,7 +965,7 @@
   .topbar .brand-subtitle { font-size: 10px; line-height: 1.3; white-space: nowrap; }
   .topbar .nav {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 90px)) auto;
+    grid-template-columns: repeat(3, minmax(0, 84px)) auto;
     flex: 1;
     min-width: 0;
     gap: 6px;
@@ -985,7 +985,7 @@
     align-items: center;
     padding: 0 7px;
     gap: 5px;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1;
   }
   .topbar .nav-pill > span:first-child { width: 16px; height: 16px; display: grid; place-items: center; transform: none; }
@@ -999,18 +999,20 @@
   .topbar .brand-icon, .topbar .brand-logo-image { width: 32px; height: 32px; }
   .topbar .brand-title { font-size: 13px; }
   .topbar .brand-subtitle { font-size: 9px; }
-  .topbar .nav { grid-template-columns: repeat(3, minmax(0, 80px)) auto; gap: 6px; }
+  .topbar .nav { grid-template-columns: repeat(3, minmax(0, 74px)) auto; gap: 6px; }
   .topbar .brand, .topbar .brand-link { gap: 4px; }
-  .topbar .nav-pill { padding: 0 4px; gap: 3px; font-size: 12px; }
+  .topbar .nav-pill { padding: 0 4px; gap: 3px; font-size: 11px; }
   .topbar .profile-avatar-btn { width: 34px; height: 34px; }
   .topbar .nav-cta { padding: 0 6px; font-size: 12px; }
-  .topbar .nav-login-icon { display: none; }
+  .topbar .nav-login-icon { flex-shrink: 0; }
 }
 
 @media (max-width: 360px) {
   .topbar .brand-icon, .topbar .brand-logo-image { width: 28px; height: 28px; }
   .topbar .nav { gap: 3px; }
-  .topbar .nav-pill { padding: 0 2px; gap: 2px; font-size: 11px; }
+  .topbar .nav-pill { grid-template-columns: 14px auto; padding: 0 1px; gap: 2px; font-size: 10px; }
+  .topbar .nav-pill > span:first-child, .topbar .nav-pill svg { width: 14px; height: 14px; }
+  .topbar .nav-cta { gap: 3px; }
 }
 
 .brand-wordmark { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff1f8; font-size:23px; line-height:1; font-weight:850; font-style:italic; letter-spacing:-1.1px; white-space:nowrap; }
