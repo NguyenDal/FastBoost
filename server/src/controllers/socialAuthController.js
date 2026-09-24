@@ -184,7 +184,9 @@ async function resolveSocialUser(db, provider, identity, context) {
   const existing = await db.user.findUnique({ where: { email }, include: { profile: true } });
   if (existing) {
     const googleOwnsEmail = provider === 'google' && (email.endsWith('@gmail.com') || (typeof identity.hd === 'string' && Boolean(identity.hd.trim())));
-    if (!existing.emailVerifiedAt || (!googleOwnsEmail && provider !== 'discord')) throw new Error('Please sign in with email and password, then link this provider in Profile Settings.');
+    // Provider verification can establish ownership even if the existing account
+    // has never completed FastBoost's separate email-verification flow.
+    if (!googleOwnsEmail && provider !== 'discord') throw new Error('Please sign in with email and password, then link this provider in Profile Settings.');
     if (existing.suspendedAt) throw new Error('This account is suspended. Please contact support.');
     throw Object.assign(new Error('Allow linking to sign in faster next time.'), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED', userId: existing.id });
   }
@@ -225,9 +227,13 @@ exports.confirmSocialLink = async (req, res) => {
   } catch { return res.status(400).json({ error: 'This request expired. Please continue with your provider again.' }); }
   if (req.body.allow !== true) return res.json({ cancelled: true });
   try {
-    const user = await prisma.user.findUnique({ where: { id: pending.userId }, include: { profile: true } });
-    if (!user?.emailVerifiedAt || user.email !== String(pending.identity.email).trim().toLowerCase()) throw new Error('This account changed. Please sign in again.');
-    const linked = await linkSocialUser(prisma, user.id, pending.provider, pending.identity);
+    const linked = await prisma.$transaction(async tx => {
+      const user = await tx.user.findUnique({ where: { id: pending.userId }, include: { profile: true } });
+      if (!user || user.email !== String(pending.identity.email).trim().toLowerCase()) throw new Error('This account changed. Please sign in again.');
+      const account = await linkSocialUser(tx, user.id, pending.provider, pending.identity);
+      if (account.emailVerifiedAt) return account;
+      return tx.user.update({ where: { id: account.id }, data: { emailVerifiedAt: new Date() }, include: { profile: true } });
+    });
     return res.json(sessionPayload(linked, pending.rememberMe));
   } catch (error) { return res.status(400).json({ error: error.code ? 'Could not link your account. Please try again.' : error.message }); }
 };

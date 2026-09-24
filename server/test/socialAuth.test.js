@@ -314,10 +314,10 @@ test('matching verified Gmail and Workspace emails link to the same account and 
   }
 });
 
-test('unverified existing email and non-Google-managed email require linking from Settings', async t => {
+test('non-Google-managed email requires linking from Settings', async t => {
   const { resolveSocialUser } = controller(t);
   for (const [provider, email, emailVerifiedAt] of [
-    ['google', 'existing@gmail.com', null], ['google', 'existing@example.com', new Date()], ['discord', 'existing@gmail.com', null],
+    ['google', 'existing@example.com', new Date()],
   ]) {
     const db = linkingDatabase([{ id: 'existing', email, emailVerifiedAt }]);
     await assert.rejects(resolveSocialUser(db, provider, { ...identity, email }, { mode: 'login' }), /Profile Settings/);
@@ -568,10 +568,19 @@ test('stale or repeated unlink authorization cannot delete a replacement connect
 
 test('both providers require permission before email linking, preserve the account and sign in directly afterward', async t => {
   environment(t);
-  for (const provider of ['google', 'discord']) {
-    const user = { id: 'existing', email: 'player@gmail.com', emailVerifiedAt: new Date(), username: 'Original', passwordHash: 'keep', role: 'CUSTOMER', profile: { displayName: 'Original' } };
+  for (const provider of ['google', 'discord']) for (const initiallyVerified of [true, false]) {
+    const user = { id: 'existing', email: 'player@gmail.com', emailVerifiedAt: initiallyVerified ? new Date() : null, username: 'Original', passwordHash: 'keep', role: 'CUSTOMER', profile: { displayName: 'Original' } };
     const before = structuredClone(user);
     const db = linkingDatabase([user]);
+    db.$transaction = async callback => {
+      const savedUser = structuredClone(user), savedLinks = structuredClone(db.links);
+      try { return await callback(db); }
+      catch (error) { Object.assign(user, savedUser); db.links.splice(0, db.links.length, ...savedLinks); throw error; }
+    };
+    db.user.update = async ({ data }) => {
+      assert.deepEqual(Object.keys(data), ['emailVerifiedAt']);
+      assert.ok(data.emailVerifiedAt instanceof Date); Object.assign(user, data); return user;
+    };
     const auth = controller(t, db);
     const profile = { ...identity, email: user.email };
     t.mock.method(global, 'fetch', async url => ({ ok: true, json: async () => url.includes('token') ? { access_token: 'test' } : profile }));
@@ -583,7 +592,7 @@ test('both providers require permission before email linking, preserve the accou
     assert.ok(pending.linkToken); assert.equal(pending.token, undefined); assert.equal(pending.signupToken, undefined); assert.equal(db.links.length, 0);
     const request = { headers: { origin: context.origin }, body: { linkToken: pending.linkToken, allow: false } };
     const cancel = response(); await auth.confirmSocialLink(request, cancel);
-    assert.equal(cancel.body.cancelled, true); assert.equal(db.links.length, 0);
+    assert.equal(cancel.body.cancelled, true); assert.equal(db.links.length, 0); assert.deepEqual(user, before);
     for (const change of [{ headers: { origin: 'https://foreign.example' } }, { body: { ...request.body, linkToken: pending.linkToken + 'invalid', allow: true } }]) {
       const bad = response(); await auth.confirmSocialLink({ ...request, ...change }, bad); assert.equal(bad.code, 400); assert.equal(db.links.length, 0);
     }
@@ -598,8 +607,15 @@ test('both providers require permission before email linking, preserve the accou
     user.email = 'changed@example.com';
     const changed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, changed);
     assert.equal(changed.code, 400); assert.equal(db.links.length, 0); user.email = before.email;
+    if (!initiallyVerified) {
+      const update = db.user.update;
+      db.user.update = async () => { throw Object.assign(new Error('Database unavailable'), { code: 'DB_FAILURE' }); };
+      const failed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, failed);
+      assert.equal(failed.code, 400); assert.equal(failed.body.token, undefined); assert.equal(db.links.length, 0); assert.deepEqual(user, before);
+      db.user.update = update;
+    }
     const confirmed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, confirmed);
-    assert.ok(confirmed.body.token); assert.equal(confirmed.body.user.id, user.id); assert.equal(confirmed.body.rememberMe, true); assert.equal(db.links.length, 1); assert.deepEqual(user, before);
+    assert.ok(confirmed.body.token); assert.equal(confirmed.body.user.id, user.id); assert.equal(confirmed.body.rememberMe, true); assert.equal(db.links.length, 1); assert.ok(user.emailVerifiedAt instanceof Date); assert.deepEqual(user, { ...before, emailVerifiedAt: user.emailVerifiedAt }); if (initiallyVerified) assert.deepEqual(user.emailVerifiedAt, before.emailVerifiedAt);
     assert.equal(await auth.resolveSocialUser(db, provider, profile, { mode: 'login' }), user);
     const repeated = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, repeated);
     assert.equal(db.links.length, 1); assert.ok(repeated.body.token);

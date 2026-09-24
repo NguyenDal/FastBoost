@@ -10,7 +10,7 @@ This project is a **game services marketplace demo** where users can register, l
 
 ### September 23, 2026 — dashboard cleanup and social sign-in
 
-- **Google and Discord sign-in:** new users choose a username and accept terms. When an eligible verified email matches an existing account, a confirmation offers **Link & sign in** or **Not now**. Nothing links until confirmed; declining returns to login. Existing usernames, profiles, passwords and orders stay intact. Already-linked accounts sign in directly.
+- **Google and Discord sign-in:** new users choose a username and accept terms. When an eligible verified email matches an existing account, a confirmation offers **Link & sign in** or **Not now**. Nothing links until confirmed; declining returns to login. Existing usernames, profiles, passwords and orders stay intact. Already-linked accounts sign in directly. Provider-verified email ownership can also confirm an existing account whose FastBoost email-verification timestamp is unset; Link & sign in records verification and the link together.
 - **Link confirmation UI:** FastBoost/provider logos, a subtle linking animation, matching dark icon tiles, concise account information and separated buttons without a glow. Reduced-motion preferences are respected. General social sign-in errors use a yellow popup; login/register checkboxes use dark styling.
 - **Lists and admin pages:** shared numbered pagination shows 10 rows per page across customer orders, provider orders, admin orders and accounts. Headers and redundant counters/copy are trimmed; Management Utilities uses the admin sidebar icons.
 - **Dashboard:** My Coupons has 3 coupons per page with empty-state spacing. FAQ is a full account page with search and category filters, a smaller heading and search below the hero. Notifications and messages support individual or clear-all actions, with red delete controls and slide-out/up animations.
@@ -18,7 +18,7 @@ This project is a **game services marketplace demo** where users can register, l
 
 **Verification:** the latest focused authentication suite passes 27 tests, including confirmation, cancellation without writes, origin/ticket validation and account preservation. The redesigned dialog was inspected locally; client build and focused component lint passed before the final copy/color-only edits. Earlier feature checks remain documented below; no fresh full-suite run is claimed.
 
-**Deployment status:** the user configured Discord in Render and registered local and production callbacks. Public production checks confirmed both providers enabled and the correct Discord redirect for the www.fastboost.gg origin. The latest linking-confirmation/UI changes are still local and uncommitted; full live production sign-in remains unverified. Production migration status must be checked before deploying features that require newer coupon/footer schema.
+**Deployment status:** the user configured Discord in Render and registered local and production callbacks. Public production checks confirmed both providers enabled and the correct Discord redirect for the www.fastboost.gg origin. The linking-confirmation/UI work was committed and the production confirmation endpoint is reachable. A follow-up backend correction for existing accounts without a FastBoost email-verification timestamp is local and awaits deployment; full live production sign-in remains unverified. Production migration status must be checked before deploying features that require newer coupon/footer schema.
 
 ## Earlier implementation notes
 
