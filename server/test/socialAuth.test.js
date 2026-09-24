@@ -305,7 +305,8 @@ test('matching verified Gmail and Workspace emails link to the same account and 
     const before = structuredClone(user);
     const db = linkingDatabase([user]);
     const google = { ...identity, email, hd: email.endsWith('@gmail.com') ? undefined : 'workspace.example' };
-    assert.equal(await resolveSocialUser(db, 'google', google, { mode: 'login' }), user);
+    await assert.rejects(resolveSocialUser(db, 'google', google, { mode: 'login' }), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED' });
+    await controller(t).linkSocialUser(db, user.id, 'google', google);
     assert.deepEqual(db.links, [{ userId: user.id, provider: 'google', providerUserId: identity.sub }]);
     assert.deepEqual(user, before);
     assert.equal(await resolveSocialUser(db, 'google', google, { mode: 'login' }), user);
@@ -313,10 +314,10 @@ test('matching verified Gmail and Workspace emails link to the same account and 
   }
 });
 
-test('unverified existing email, non-Google-managed email and Discord require linking from Settings', async t => {
+test('unverified existing email and non-Google-managed email require linking from Settings', async t => {
   const { resolveSocialUser } = controller(t);
   for (const [provider, email, emailVerifiedAt] of [
-    ['google', 'existing@gmail.com', null], ['google', 'existing@example.com', new Date()], ['discord', 'existing@gmail.com', new Date()],
+    ['google', 'existing@gmail.com', null], ['google', 'existing@example.com', new Date()], ['discord', 'existing@gmail.com', null],
   ]) {
     const db = linkingDatabase([{ id: 'existing', email, emailVerifiedAt }]);
     await assert.rejects(resolveSocialUser(db, provider, { ...identity, email }, { mode: 'login' }), /Profile Settings/);
@@ -355,7 +356,7 @@ test('linking rejects unverified identities and suspended accounts; automatic li
   assert.equal(db.links.length, 0);
   user.suspendedAt = null;
   await linkSocialUser(db, user.id, 'google', { ...identity, sub: 'original-google' });
-  await assert.rejects(resolveSocialUser(db, 'google', { ...identity, email: user.email }, { mode: 'login' }), { message: 'Please use the same email as your FastBoost account.' });
+  await assert.rejects(resolveSocialUser(db, 'google', { ...identity, email: user.email }, { mode: 'login' }), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED' });
   assert.equal(db.links[0].providerUserId, 'original-google');
 });
 
@@ -561,4 +562,46 @@ test('stale or repeated unlink authorization cannot delete a replacement connect
   await unlinkSocialUser(db, 'owner', 'google', identity, { ...context, identityId: 'new-row' });
   await assert.rejects(unlinkSocialUser(db, 'owner', 'google', identity, { ...context, identityId: 'new-row' }), /connection changed/);
   assert.equal(db.links.length, 0);
+});
+
+
+
+test('both providers require permission before email linking, preserve the account and sign in directly afterward', async t => {
+  environment(t);
+  for (const provider of ['google', 'discord']) {
+    const user = { id: 'existing', email: 'player@gmail.com', emailVerifiedAt: new Date(), username: 'Original', passwordHash: 'keep', role: 'CUSTOMER', profile: { displayName: 'Original' } };
+    const before = structuredClone(user);
+    const db = linkingDatabase([user]);
+    const auth = controller(t, db);
+    const profile = { ...identity, email: user.email };
+    t.mock.method(global, 'fetch', async url => ({ ok: true, json: async () => url.includes('token') ? { access_token: 'test' } : profile }));
+    const context = { provider, origin: 'http://localhost:5173', state: 'state', mode: 'login', rememberMe: true };
+    const cookie = jwt.sign(context, oauthStateSecret(), { audience: 'fastboost-oauth-state', expiresIn: '5m' });
+    const callback = response();
+    await auth.socialCallback({ params: { provider }, headers: { cookie: 'fb_oauth_' + provider + '=' + cookie }, query: { state: 'state', code: 'code' } }, callback);
+    const pending = callbackPayload(callback);
+    assert.ok(pending.linkToken); assert.equal(pending.token, undefined); assert.equal(pending.signupToken, undefined); assert.equal(db.links.length, 0);
+    const request = { headers: { origin: context.origin }, body: { linkToken: pending.linkToken, allow: false } };
+    const cancel = response(); await auth.confirmSocialLink(request, cancel);
+    assert.equal(cancel.body.cancelled, true); assert.equal(db.links.length, 0);
+    for (const change of [{ headers: { origin: 'https://foreign.example' } }, { body: { ...request.body, linkToken: pending.linkToken + 'invalid', allow: true } }]) {
+      const bad = response(); await auth.confirmSocialLink({ ...request, ...change }, bad); assert.equal(bad.code, 400); assert.equal(db.links.length, 0);
+    }
+    const claims = jwt.decode(pending.linkToken);
+    const secret = require('node:crypto').createHmac('sha256', process.env.JWT_SECRET).update('fastboost-social-signup').digest('hex');
+    const expired = jwt.sign({ ...claims, exp: 1 }, secret);
+    const badTicket = response(); await auth.confirmSocialLink({ ...request, body: { linkToken: expired, allow: true } }, badTicket);
+    assert.equal(badTicket.code, 400); assert.equal(db.links.length, 0);
+    user.suspendedAt = new Date();
+    const suspended = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, suspended);
+    assert.equal(suspended.code, 400); assert.equal(db.links.length, 0); delete user.suspendedAt;
+    user.email = 'changed@example.com';
+    const changed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, changed);
+    assert.equal(changed.code, 400); assert.equal(db.links.length, 0); user.email = before.email;
+    const confirmed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, confirmed);
+    assert.ok(confirmed.body.token); assert.equal(confirmed.body.user.id, user.id); assert.equal(confirmed.body.rememberMe, true); assert.equal(db.links.length, 1); assert.deepEqual(user, before);
+    assert.equal(await auth.resolveSocialUser(db, provider, profile, { mode: 'login' }), user);
+    const repeated = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, repeated);
+    assert.equal(db.links.length, 1); assert.ok(repeated.body.token);
+  }
 });

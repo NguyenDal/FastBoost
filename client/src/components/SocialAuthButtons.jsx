@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import SocialLinkConfirmation from './SocialLinkConfirmation';
+import PaymentErrorDialog from './PaymentErrorDialog';
 import { API_BASE_URL } from '../api/config';
 
 export function ProviderLogo({ provider }) {
@@ -6,8 +8,12 @@ export function ProviderLogo({ provider }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.88-1.51l-.6 1.23a18.3 18.3 0 0 0-5.42 0l-.61-1.23a19.7 19.7 0 0 0-4.88 1.52C.84 8.94 0 13.4.42 17.79a19.8 19.8 0 0 0 5.99 3.03l1.23-2a12.9 12.9 0 0 1-1.94-.94l.48-.37c3.76 1.72 7.85 1.72 11.56 0l.49.37c-.62.37-1.27.69-1.95.95l1.22 1.99a19.7 19.7 0 0 0 5.99-3.03c.5-5.09-.86-9.51-3.17-13.42ZM8.02 15.1c-1.13 0-2.05-1.03-2.05-2.29s.9-2.29 2.05-2.29c1.14 0 2.07 1.04 2.05 2.29 0 1.26-.9 2.29-2.05 2.29Zm7.96 0c-1.13 0-2.05-1.03-2.05-2.29s.9-2.29 2.05-2.29c1.14 0 2.07 1.04 2.05 2.29 0 1.26-.9 2.29-2.05 2.29Z"/></svg>;
 }
 export default function SocialAuthButtons({ mode = 'login', termsAccepted = false, promotionalEmails = false, rememberMe = false, referralCode = '', onSuccess, onError }) {
+  const [error, setError] = useState('');
+  const reportError = message => { onError?.(''); setError(message); };
+  const errorDialog = error ? <PaymentErrorDialog warning eyebrow="" title="" message={error} action="OK" onClose={() => setError('')} /> : null;
   const [providers, setProviders] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [pendingLink, setPendingLink] = useState(null);
   const [pendingSignup, setPendingSignup] = useState(null);
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
@@ -26,18 +32,19 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
     return () => { controller.abort(); cleanup.current(); };
   }, []);
   const start = provider => {
-    if (providers && !providers[provider]) return onError('This sign-in option is not configured yet. Please use email and password.');
+    if (providers && !providers[provider]) return reportError('This sign-in option is not configured yet. Please use email and password.');
     cleanup.current();
     const url = new URL(`${API_BASE_URL}/auth/social/${provider}/start`, window.location.origin);
     for (const [key, value] of Object.entries({ origin: window.location.origin, mode, termsAccepted: mode === 'register' && termsAccepted, promotionalEmails: mode === 'register' && promotionalEmails, rememberMe, referralCode })) url.searchParams.set(key, String(value));
     const popup = window.open(url.toString(), 'fastboost-social-auth', 'popup,width=520,height=720');
-    if (!popup) return onError('Please allow the sign-in popup and try again.');
-    setBusy(true); onError('');
+    if (!popup) return reportError('Please allow the sign-in popup and try again.');
+    setBusy(true); reportError('');
     const finish = () => { cleanup.current(); setBusy(false); };
     const receive = event => {
       if (event.origin !== url.origin || event.source !== popup || event.data?.type !== 'fastboost:social-auth') return;
       finish();
-      if (event.data.error) onError(event.data.error);
+      if (event.data.error) reportError(event.data.error);
+      else if (event.data.linkToken) setPendingLink(event.data);
       else if (event.data.signupToken) {
         setPendingSignup({ signupToken: event.data.signupToken });
         setUsername(''); setUsernameError('');
@@ -47,7 +54,7 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
     };
     window.addEventListener('message', receive);
     const timer = window.setInterval(() => { if (popup.closed) { finish(); } }, 500);
-    const timeout = window.setTimeout(() => { finish(); onError('Sign-in expired. Please try again.'); }, 10 * 60 * 1000);
+    const timeout = window.setTimeout(() => { finish(); reportError('Sign-in expired. Please try again.'); }, 10 * 60 * 1000);
     cleanup.current = () => { window.removeEventListener('message', receive); clearInterval(timer); clearTimeout(timeout); if (!popup.closed) popup.close(); cleanup.current = () => {}; };
   };
   const completeSignup = async () => {
@@ -55,19 +62,20 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
       setUsernameError('Choose a username between 3 and 60 characters.'); usernameRef.current?.focus(); return;
     }
     if (!signupTerms) { setTermsAttempted(true); termsRef.current?.focus(); return; }
-    setBusy(true); onError('');
+    setBusy(true); reportError('');
     try {
       const response = await fetch(`${API_BASE_URL}/auth/social/complete`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ signupToken: pendingSignup.signupToken, username: username.trim(), termsAccepted: signupTerms, promotionalEmails: signupMarketing }),
       });
       const data = await response.json().catch(() => ({}));
+      if (response.ok && data.linkToken) { setPendingSignup(null); setPendingLink(data); return; }
       if (!response.ok && data.field === 'username') {
         setUsernameError(data.error); usernameRef.current?.focus(); return;
       }
       if (!response.ok || !data.token || !data.user) throw new Error(data.error || 'We could not create your account. Please try again.');
       onSuccess(data);
-    } catch (error) { onError(error.message || 'We could not create your account. Please try again.'); }
+    } catch (error) { reportError(error.message || 'We could not create your account. Please try again.'); }
     finally { setBusy(false); }
   };
   if (pendingSignup) return <form className="auth-social auth-social-signup" noValidate onSubmit={event => { event.preventDefault(); if (!busy) completeSignup(); }}>
@@ -83,9 +91,12 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
       <label className="auth-check-row"><input type="checkbox" checked={signupMarketing} onChange={event => setSignupMarketing(event.target.checked)} disabled={busy}/><span>I agree to receive promotional emails.</span></label>
     </div>
     <button type="submit" className="primary-btn modal-submit-btn" disabled={busy}>{busy ? 'Creating account...' : 'Create account'}</button>
-    <button type="button" className="auth-switch-btn auth-social-cancel" disabled={busy} onClick={() => { setPendingSignup(null); onError(''); }}>Back to sign in</button>
+    <button type="button" className="auth-switch-btn auth-social-cancel" disabled={busy} onClick={() => { setPendingSignup(null); reportError(''); }}>Back to sign in</button>
+    {errorDialog}
   </form>;
   return <div className="auth-social">
+    {errorDialog}
+    {pendingLink && <SocialLinkConfirmation pending={pendingLink} logo={<ProviderLogo provider={pendingLink.provider}/>} onCancel={() => setPendingLink(null)} onSuccess={data => { setPendingLink(null); onSuccess(data); }} />}
     <div className="auth-or"><span>Or</span></div>
     <div className="auth-social-buttons">{['google', 'discord'].map(provider => <button key={provider} type="button" className="auth-provider-button" disabled={busy} onClick={() => start(provider)}><ProviderLogo provider={provider}/><span>Continue with {provider === 'google' ? 'Google' : 'Discord'}</span></button>)}</div>
   </div>;

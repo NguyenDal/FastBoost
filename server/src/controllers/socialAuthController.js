@@ -183,11 +183,10 @@ async function resolveSocialUser(db, provider, identity, context) {
   const email = String(identity.email).trim().toLowerCase();
   const existing = await db.user.findUnique({ where: { email }, include: { profile: true } });
   if (existing) {
-    // Only Google-managed email proves current mailbox ownership. Other addresses
-    // can be linked after signing into the FastBoost account in Profile Settings.
     const googleOwnsEmail = provider === 'google' && (email.endsWith('@gmail.com') || (typeof identity.hd === 'string' && Boolean(identity.hd.trim())));
-    if (!existing.emailVerifiedAt || !googleOwnsEmail) throw new Error('Please sign in with email and password, then link this provider in Profile Settings.');
-    return attachIdentity(db, existing, provider, providerUserId);
+    if (!existing.emailVerifiedAt || (!googleOwnsEmail && provider !== 'discord')) throw new Error('Please sign in with email and password, then link this provider in Profile Settings.');
+    if (existing.suspendedAt) throw new Error('This account is suspended. Please contact support.');
+    throw Object.assign(new Error('Allow linking to sign in faster next time.'), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED', userId: existing.id });
   }
   if (context.username === undefined || context.termsAccepted !== true) {
     const error = new Error('Choose a username and agree to the Terms and Conditions to create an account.');
@@ -214,6 +213,24 @@ async function resolveSocialUser(db, provider, identity, context) {
     throw error;
   }
 }
+function linkConfirmation(provider, identity, context, userId) {
+  return { provider, linkToken: jwt.sign({ provider, identity, userId, origin: context.origin, rememberMe: context.rememberMe }, signupSecret(), { audience: 'fastboost-social-link-confirmation', expiresIn: '10m' }) };
+}
+exports.confirmSocialLink = async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  let pending;
+  try {
+    pending = jwt.verify(req.body.linkToken, signupSecret(), { algorithms: ['HS256'], audience: 'fastboost-social-link-confirmation' });
+    if (!Object.hasOwn(providers, pending.provider) || pending.origin !== req.headers.origin || !allowedOrigin(pending.origin)) throw new Error('Invalid origin');
+  } catch { return res.status(400).json({ error: 'This request expired. Please continue with your provider again.' }); }
+  if (req.body.allow !== true) return res.json({ cancelled: true });
+  try {
+    const user = await prisma.user.findUnique({ where: { id: pending.userId }, include: { profile: true } });
+    if (!user?.emailVerifiedAt || user.email !== String(pending.identity.email).trim().toLowerCase()) throw new Error('This account changed. Please sign in again.');
+    const linked = await linkSocialUser(prisma, user.id, pending.provider, pending.identity);
+    return res.json(sessionPayload(linked, pending.rememberMe));
+  } catch (error) { return res.status(400).json({ error: error.code ? 'Could not link your account. Please try again.' : error.message }); }
+};
 exports.completeSocialSignup = async (req, res) => {
   res.set('Cache-Control', 'no-store');
   let pending;
@@ -228,9 +245,11 @@ exports.completeSocialSignup = async (req, res) => {
     const user = await resolveSocialUser(prisma, pending.provider, pending.identity, {
       mode: 'register', username, termsAccepted: true, promotionalEmails: req.body.promotionalEmails === true,
       referralCode: pending.referralCode,
+
     });
     return res.json(sessionPayload(user, pending.rememberMe));
   } catch (error) {
+    if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return res.json(linkConfirmation(pending.provider, pending.identity, pending, error.userId));
     if (error.field === 'username') return res.status(error.status || 400).json({ error: error.message, field: 'username' });
     if (error.code === 'P2002') return res.status(409).json({ error: 'This account was just created. Please try signing in again.' });
     return res.status(error.code ? 500 : 400).json({ error: error.code ? 'We could not create your account. Please try again.' : error.message });
@@ -274,10 +293,12 @@ exports.socialCallback = async (req, res) => {
       user = await resolveSocialUser(prisma, provider, identity, context);
     }
     catch (error) {
+      if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return finish(res, context.origin, linkConfirmation(provider, identity, context, error.userId));
       if (error.code === 'SOCIAL_SIGNUP_REQUIRED') {
         const signupToken = jwt.sign({ provider, origin: context.origin,
           identity: { sub: identity.sub, id: identity.id, email: identity.email, email_verified: identity.email_verified, verified: identity.verified, hd: identity.hd },
           referralCode: context.referralCode, rememberMe: context.rememberMe,
+
         }, signupSecret(), { audience: 'fastboost-social-signup', expiresIn: '10m' });
         return finish(res, context.origin, { signupToken, termsAccepted: context.termsAccepted === true, promotionalEmails: context.promotionalEmails === true });
       }

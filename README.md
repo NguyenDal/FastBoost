@@ -136,12 +136,12 @@ screen shows a blank username field, with no email line or password fields.
 Names must be 3–60 characters; taken names are rejected so the customer can choose
 another. Names are never generated from email or automatically given a suffix.
 Returning users sign in using their stable provider identity; customized usernames
-and profiles are retained. Google sign-in automatically links an existing account
+and profiles are retained. Google sign-in offers a linking confirmation for an existing account
 when its FastBoost email is already verified and matches a verified Gmail address
 or a Google Workspace identity with the provider's `hd` claim. For other addresses,
 sign in with the existing password and link Google in Profile Settings. This follows
 [Google's email authority guidance](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token).
-Discord does not automatically link by email.
+Discord also offers the same confirmation for matching verified emails. Both providers explain faster sign-in and offer Allow linking or Not now; no identity is saved until allowed. Existing accounts retain their username, profile, password and account data. Only new accounts choose a username.
 
 Profile Settings replaces the Discord text field with Google/Discord connection
 status and Link buttons. Either provider can be linked with a different email once

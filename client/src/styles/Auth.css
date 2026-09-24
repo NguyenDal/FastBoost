@@ -85,7 +85,14 @@
 }
 .forgot-password-line .auth-switch-btn { font-weight: 400; color: #c4b5fd; }
 .auth-check-row { display: flex; align-items: flex-start; gap: 10px; text-align: left; font-size: .88rem; line-height: 1.5; color: #cbd5e1; cursor: pointer; }
-.auth-check-row input[type="checkbox"] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; accent-color: #8b5cf6; cursor: pointer; }
+.auth-check-row input[type="checkbox"] { appearance: none; display: grid; place-content: center; box-sizing: border-box; width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; border: 1px solid #647087; border-radius: 4px; background: #171c2a; color: #fff; accent-color: #8b5cf6; cursor: pointer; }
+.auth-check-row input[type="checkbox"]:checked { background: #7c3aed; border-color: #a78bfa; }
+.auth-check-row input[type="checkbox"]:checked::after { content: ""; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.auth-check-row input[type="checkbox"]:disabled { opacity: .5; cursor: default; }
+@media (forced-colors: active) {
+  .auth-check-row input[type="checkbox"] { appearance: auto; }
+  .auth-check-row input[type="checkbox"]::after { content: none; }
+}
 .auth-check-row a { color: #c4b5fd; text-underline-offset: 3px; }
 .auth-check-row input:focus-visible, .auth-provider-button:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 3px; }
 .auth-remember { margin: 0 0 16px; }
