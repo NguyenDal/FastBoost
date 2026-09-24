@@ -59,7 +59,7 @@ export function DashboardQuickActions() {
         <CardHeading title="Quick Actions" icon="lightning" />
         <div className="dashboard-quick-actions">
             {[ ["Browse Services", "View all services", "/", "▦"], ["Account Settings", "Update your profile", "/account/settings", "⚙"], ["Contact Support", "Get help", "/contact", "☏"] ].map(([title, detail, to, icon]) => <Link key={title} to={to}><span aria-hidden="true">{icon}</span><div><strong>{title}</strong><small>{detail}</small></div></Link>)}
-            <Link to="/account/faq"><span aria-hidden="true">?</span><div><strong>FAQ</strong><small>Common questions</small></div></Link>
+            <Link to="/faq"><span aria-hidden="true">?</span><div><strong>FAQ</strong><small>Common questions</small></div></Link>
         </div>
     </section>;
 }

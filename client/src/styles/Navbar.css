@@ -160,6 +160,10 @@
   color: #93c5fd;
 }
 
+.nav-faq-pill { text-decoration: none; }
+.nav-faq-pill svg { width: 17px; height: 17px; display: block; }
+.nav-faq-pill[aria-current="page"] { border-color: #8161b6; background: #29203e; color: #f4eaff; }
+
 .nav-trustpilot-link-pill {
   min-width: 118px;
   gap: 8px;
@@ -961,10 +965,10 @@
   }
   .topbar .nav-pill {
     box-sizing: border-box;
-    width: 90px;
+    width: 80px;
     min-width: 0;
     height: 38px;
-    flex: 0 0 90px;
+    flex: 0 0 80px;
     display: grid;
     grid-template-columns: 16px auto;
     justify-content: center;
@@ -975,6 +979,7 @@
     line-height: 1;
   }
   .topbar .nav-pill > span:first-child { width: 16px; height: 16px; display: grid; place-items: center; transform: none; }
+  .topbar .nav-faq-pill { width: 66px; flex-basis: 66px; }
   .topbar .nav-pill svg { width: 16px; height: 16px; }
   .topbar .profile-menu-wrap { min-height: 38px; }
   .topbar .profile-avatar-btn { width: 36px; height: 36px; }
@@ -988,8 +993,10 @@
   .topbar .nav { gap: 4px; }
   .topbar .brand, .topbar .brand-link { gap: 4px; }
   .topbar .nav-pill { width: 70px; flex-basis: 70px; padding: 0 4px; gap: 3px; font-size: 11px; }
+  .topbar .nav-faq-pill { width: 58px; flex-basis: 58px; }
   .topbar .profile-avatar-btn { width: 30px; height: 30px; }
   .topbar .nav-cta { padding: 0 6px; font-size: 12px; }
+  .topbar .nav-login-icon { display: none; }
 }
 
 .brand-wordmark { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff1f8; font-size:23px; line-height:1; font-weight:850; font-style:italic; letter-spacing:-1.1px; white-space:nowrap; }

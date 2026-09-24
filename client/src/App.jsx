@@ -104,6 +104,8 @@ function App() {
         <Route path="/order/:serviceId" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/account/faq" element={<Navigate to="/faq" replace />} />
 
         <Route
           path="/payment/success/:serviceId"
@@ -172,7 +174,6 @@ function App() {
           }
         >
           <Route path="/account/dashboard" element={<DashboardPage />} />
-          <Route path="/account/faq" element={<FaqPage />} />
           <Route path="/account/orders" element={<CustomerOrdersPage />} />
           <Route path="/account/change-password" element={<ChangePasswordPage />} />
         </Route>

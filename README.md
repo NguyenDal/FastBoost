@@ -8,17 +8,17 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 23, 2026 — dashboard cleanup and social sign-in
+### September 23, 2026 — interactive FAQ and policy guidance
 
-- **Google and Discord sign-in:** new users choose a username and accept terms. When an eligible verified email matches an existing account, a confirmation offers **Link & sign in** or **Not now**. Nothing links until confirmed; declining returns to login. Existing usernames, profiles, passwords and orders stay intact. Already-linked accounts sign in directly. Provider-verified email ownership can also confirm an existing account whose FastBoost email-verification timestamp is unset; Link & sign in records verification and the link together.
-- **Link confirmation UI:** FastBoost/provider logos, a subtle linking animation, matching dark icon tiles, concise account information and separated buttons without a glow. Reduced-motion preferences are respected. General social sign-in errors use a yellow popup; login/register checkboxes use dark styling.
-- **Lists and admin pages:** shared numbered pagination shows 10 rows per page across customer orders, provider orders, admin orders and accounts. Headers and redundant counters/copy are trimmed; Management Utilities uses the admin sidebar icons.
-- **Dashboard:** My Coupons has 3 coupons per page with empty-state spacing. FAQ is a full account page with search and category filters, a smaller heading and search below the hero. Notifications and messages support individual or clear-all actions, with red delete controls and slide-out/up animations.
-- **Coupon and account polish:** personal coupons support multiple recipients, dashboard coupon countdowns and loyalty/referral visuals were refined, and the shared brand wordmark was updated. Contact-email correction was deployed earlier today; receipt delivery remains a separate verification item.
+- **Public FAQ:** `/faq` is available without signing in and uses a full page without the dashboard sidebar. The navbar places FAQ between Reviews and Contact. The dashboard Quick Actions link remains; the sidebar entry is removed. Old `/account/faq` links redirect to `/faq`.
+- **Topic browsing:** Quick answers, Progress & delivery, Payments & refunds, Account & safety, and Gold & coupons. Search covers every topic; only one answer expands at a time. Removed the answer count and Helpful links block.
+- **Terms-based answers:** 22 concise FAQs cover order scope, delays, cancellation, refund timing and methods, account access, eligibility, closure and reward limits. Policy answers summarize the supplied FastBoost Terms and Conditions v1.0; product help reflects current checkout and account behavior. A link to the full terms preserves the complete policy context.
+- **Interactive refund guide:** choose Not started, In progress or Delivered to see the relevant guidance, including undelivered-work refunds and preserved legal rights.
+- **Responsive UI:** icon topic cards, keyboard-accessible accordions, subtle transitions with reduced-motion support and a compact support card. The heading stays on one line and search remains below the hero.
 
-**Verification:** the latest focused authentication suite passes 27 tests, including confirmation, cancellation without writes, origin/ticket validation and account preservation. The redesigned dialog was inspected locally; client build and focused component lint passed before the final copy/color-only edits. Earlier feature checks remain documented below; no fresh full-suite run is claimed.
+**Verification:** client production build and focused FAQ/routing/dashboard ESLint pass. Navbar lint reports the same 7 errors and 4 warnings as the committed baseline. Local browser checks covered signed-out FAQ access, the old-link redirect, dashboard navigation, desktop/mobile layouts down to 320px, keyboard expansion, category filtering, search/empty results and all three refund stages. The existing bundle-size warning remains; no backend or database changes were needed.
 
-**Deployment status:** the user configured Discord in Render and registered local and production callbacks. Public production checks confirmed both providers enabled and the correct Discord redirect for the www.fastboost.gg origin. The linking-confirmation/UI work was committed and the production confirmation endpoint is reachable. A follow-up backend correction for existing accounts without a FastBoost email-verification timestamp is local and awaits deployment; full live production sign-in remains unverified. Production migration status must be checked before deploying features that require newer coupon/footer schema.
+**Deployment status:** the FAQ is ready for frontend deployment; production rollout has not been verified. Earlier social-auth correction is committed as `fb0171b`; its production deployment and full live sign-in remain unverified. This FAQ update needs no backend or database migration.
 
 ## Earlier implementation notes
 
@@ -889,6 +889,13 @@ npx prisma studio
 
 ### Done
 
+- Google and Discord sign-in require confirmation before linking an eligible matching email; Link & sign in preserves the existing account and Not now returns to login without writes. New users choose a username and accept terms; already-linked users sign in directly.
+- provider-verified ownership can establish missing FastBoost email verification in the same transaction as linking; 27 focused authentication tests cover confirmation, cancellation, ticket/origin checks, preservation and rollback. This correction is committed; production deployment remains unverified.
+- link-confirmation UI uses FastBoost/provider logos, matching dark tiles, a subtle reduced-motion-aware animation and separated buttons without glow; social errors use a yellow popup and authentication checkboxes use dark styling
+- shared numbered pagination shows 10 rows per page for customer, provider and admin order lists and admin accounts; management pages use sidebar icons and compact headers
+- dashboard coupons show 3 per page with empty-state spacing; notifications and messages support individual/clear-all actions with red delete controls and slide-out/up animations
+- FAQ was added with a compact one-line heading and search below the hero; its public route and latest topic/refund redesign are described above
+- personal coupons support multiple recipients; coupon countdowns, loyalty/referral visuals and the shared brand wordmark were refined. Contact-email correction was deployed; receipt delivery remains a separate verification item.
 - gold redemption requires at least 100 gold in the current balance, enforced in checkout and on the server; eligible users may redeem a smaller amount
 - existing order redemption caps and Stripe minimum cash rules preserved
 - personal coupons support all services, a single service, or multiple services through an overlay checkbox selector

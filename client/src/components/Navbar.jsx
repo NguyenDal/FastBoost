@@ -513,6 +513,16 @@ function Navbar({
                     <span>Reviews</span>
                 </a>
 
+                <Link to="/faq" className="nav-pill nav-faq-pill" aria-current={location.pathname === "/faq" ? "page" : undefined}>
+                    <span className="nav-pill-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M9.5 9a2.5 2.5 0 1 1 4.2 1.8c-.9.7-1.7 1.2-1.7 2.7M12 17h.01" />
+                        </svg>
+                    </span>
+                    <span>FAQ</span>
+                </Link>
+
                 <button
                     type="button"
                     className="nav-pill nav-contact-pill"
