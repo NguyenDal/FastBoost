@@ -964,7 +964,7 @@
   .topbar .brand-subtitle { font-size: 10px; line-height: 1.3; white-space: nowrap; }
   .topbar .nav {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    grid-template-columns: repeat(3, minmax(0, 90px)) auto;
     flex: 1;
     min-width: 0;
     gap: 6px;
@@ -990,7 +990,7 @@
   .topbar .nav-pill > span:first-child { width: 16px; height: 16px; display: grid; place-items: center; transform: none; }
   .topbar .nav-pill svg { width: 16px; height: 16px; }
   .topbar .profile-menu-wrap { min-height: 38px; }
-  .topbar .profile-avatar-btn { width: 36px; height: 36px; }
+  .topbar .profile-avatar-btn { width: 40px; height: 40px; }
 }
 
 @media (max-width: 430px) {
@@ -998,10 +998,10 @@
   .topbar .brand-icon, .topbar .brand-logo-image { width: 32px; height: 32px; }
   .topbar .brand-title { font-size: 13px; }
   .topbar .brand-subtitle { font-size: 9px; }
-  .topbar .nav { gap: 6px; }
+  .topbar .nav { grid-template-columns: repeat(3, minmax(0, 80px)) auto; gap: 6px; }
   .topbar .brand, .topbar .brand-link { gap: 4px; }
   .topbar .nav-pill { padding: 0 4px; gap: 3px; font-size: 12px; }
-  .topbar .profile-avatar-btn { width: 30px; height: 30px; }
+  .topbar .profile-avatar-btn { width: 34px; height: 34px; }
   .topbar .nav-cta { padding: 0 6px; font-size: 12px; }
   .topbar .nav-login-icon { display: none; }
 }
