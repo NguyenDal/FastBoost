@@ -17,6 +17,7 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   // Delivery retries run independently of payment requests.
   startConfirmationWorker(require("./prisma"));
+  require("./utils/supportEmail").startSupportEmailWorker(require("./prisma"));
 
   cleanupOldUnpaidOrders().catch((error) => {
     console.error("[Cleanup] Failed initial unpaid order cleanup:", error);

@@ -43,6 +43,7 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/support", require("./routes/supportRoutes"));
 app.use("/api/assignment-requests", assignmentRequestRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/loyalty", loyaltyRoutes);

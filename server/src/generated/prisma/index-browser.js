@@ -143,6 +143,45 @@ exports.Prisma.RegistrationConsentScalarFieldEnum = {
   promotionalConsentAt: 'promotionalConsentAt'
 };
 
+exports.Prisma.SupportThreadScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  createdAt: 'createdAt',
+  lastMessageAt: 'lastMessageAt',
+  customerReadAt: 'customerReadAt',
+  adminReadAt: 'adminReadAt'
+};
+
+exports.Prisma.SupportMessageScalarFieldEnum = {
+  id: 'id',
+  threadId: 'threadId',
+  senderId: 'senderId',
+  clientId: 'clientId',
+  content: 'content',
+  attachmentKey: 'attachmentKey',
+  attachmentName: 'attachmentName',
+  attachmentMimeType: 'attachmentMimeType',
+  attachmentSize: 'attachmentSize',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SupportPresenceScalarFieldEnum = {
+  sessionId: 'sessionId',
+  adminId: 'adminId',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.SupportEmailAlertScalarFieldEnum = {
+  id: 'id',
+  messageId: 'messageId',
+  adminId: 'adminId',
+  sentAt: 'sentAt',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  claim: 'claim',
+  lastError: 'lastError'
+};
+
 exports.Prisma.SocialIdentityScalarFieldEnum = {
   id: 'id',
   provider: 'provider',
@@ -475,6 +514,10 @@ exports.NotificationType = exports.$Enums.NotificationType = {
 exports.Prisma.ModelName = {
   User: 'User',
   RegistrationConsent: 'RegistrationConsent',
+  SupportThread: 'SupportThread',
+  SupportMessage: 'SupportMessage',
+  SupportPresence: 'SupportPresence',
+  SupportEmailAlert: 'SupportEmailAlert',
   SocialIdentity: 'SocialIdentity',
   Profile: 'Profile',
   Service: 'Service',

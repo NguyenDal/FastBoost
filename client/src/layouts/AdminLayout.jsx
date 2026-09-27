@@ -1,9 +1,11 @@
 import { OrdersIcon, UsersIcon, PriceIcon } from "../components/AdminIcons";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { SupportIcon } from "../components/SupportChat";
 import "../styles/AdminLayout.css";
 
 const adminLinks = [
+    { label: "Support Inbox", path: "/admin/support", icon: <SupportIcon /> },
     {
         label: "Order Management",
         path: "/admin/orders",

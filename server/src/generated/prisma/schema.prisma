@@ -8,6 +8,10 @@ datasource db {
 }
 
 model User {
+  supportThread       SupportThread?
+  supportMessages     SupportMessage[]
+  supportPresence     SupportPresence[]
+  supportAlerts       SupportEmailAlert[]
   registrationConsent RegistrationConsent?
   socialIdentities    SocialIdentity[]
   personalCoupons     ServiceSale[]        @relation("PersonalCouponRecipient")
@@ -52,6 +56,63 @@ model RegistrationConsent {
   termsAcceptedAt      DateTime  @default(now())
   promotionalEmails    Boolean   @default(false)
   promotionalConsentAt DateTime?
+}
+
+model SupportThread {
+  id             String           @id @default(cuid())
+  customerId     String           @unique
+  customer       User             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt      DateTime         @default(now())
+  lastMessageAt  DateTime         @default(now())
+  customerReadAt DateTime         @default(now())
+  adminReadAt    DateTime         @default(now())
+  messages       SupportMessage[]
+
+  @@index([lastMessageAt])
+}
+
+model SupportMessage {
+  id                 String              @id @default(cuid())
+  threadId           String
+  thread             SupportThread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId           String
+  sender             User                @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  clientId           String
+  content            String              @default("")
+  attachmentKey      String?
+  attachmentName     String?
+  attachmentMimeType String?
+  attachmentSize     Int?
+  createdAt          DateTime            @default(now())
+  alerts             SupportEmailAlert[]
+
+  @@unique([senderId, clientId])
+  @@index([threadId, createdAt, id])
+}
+
+model SupportPresence {
+  sessionId String   @id
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model SupportEmailAlert {
+  id            String         @id @default(cuid())
+  messageId     String
+  message       SupportMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  adminId       String
+  admin         User           @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  sentAt        DateTime?
+  attempts      Int            @default(0)
+  nextAttemptAt DateTime       @default(now())
+  claim         String?
+  lastError     String?
+
+  @@unique([messageId, adminId])
+  @@index([sentAt, nextAttemptAt])
 }
 
 model SocialIdentity {

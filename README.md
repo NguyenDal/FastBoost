@@ -8,17 +8,17 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 23, 2026 — interactive FAQ and policy guidance
+### September 27, 2026 — customer live support
 
-- **Public FAQ:** `/faq` is available without signing in and uses a full page without the dashboard sidebar. The navbar places FAQ between Reviews and Contact. The dashboard Quick Actions link remains; the sidebar entry is removed. Old `/account/faq` links redirect to `/faq`.
-- **Topic browsing:** Quick answers, Progress & delivery, Payments & refunds, Account & safety, and Gold & coupons. Search covers every topic; only one answer expands at a time. Removed the answer count and Helpful links block.
-- **Terms-based answers:** 22 concise FAQs cover order scope, delays, cancellation, refund timing and methods, account access, eligibility, closure and reward limits. Policy answers summarize the supplied FastBoost Terms and Conditions v1.0; product help reflects current checkout and account behavior. A link to the full terms preserves the complete policy context.
-- **Interactive refund guide:** choose Not started, In progress or Delivered to see the relevant guidance, including undelivered-work refunds and preserved legal rights.
-- **Responsive UI:** icon topic cards, keyboard-accessible accordions, subtle transitions with reduced-motion support and a compact support card. The heading stays on one line and search remains below the hero.
+- **Customer chat:** a bottom-right support panel with zoom transitions, persistent conversations, unread indicators and responsive phone layouts. Guests see a sign-in prompt; only signed-in customers can message admins.
+- **Actual availability:** online admins appear with their usernames and profile pictures. When none are available, the panel says “No one is online.” Presence expires automatically if a tab disconnects.
+- **Attachments:** reuse Match chat's S3 upload flow, with one file up to 10 MB per message and access-checked temporary download links.
+- **Admin inbox:** `/admin/support` lists customer conversations, unread messages and reply controls. A visible signed-in admin tab advertises availability; hidden tabs stop their presence heartbeat.
+- **Offline alerts:** each message sent while no admin is online queues an email for every active admin account. Delivery retries independently per recipient using the existing SMTP configuration.
 
-**Verification:** client production build and focused FAQ/routing/dashboard ESLint pass. Navbar lint reports the same 7 errors and 4 warnings as the committed baseline. Local browser checks covered signed-out FAQ access, the old-link redirect, dashboard navigation, desktop/mobile layouts down to 320px, keyboard expansion, category filtering, search/empty results and all three refund stages. The existing bundle-size warning remains; no backend or database changes were needed.
+**Verification:** 102 server tests passed, with 4 optional database tests skipped in the normal suite. The new support database test also passed separately and rolled back all test records. Prisma validation, focused client ESLint and the production build passed (existing bundle-size warning remains). Browser checks covered the guest sign-in gate, customer/admin replies, online/offline states, attachments and phone layouts down to 320px using sample data.
 
-**Deployment status:** the FAQ is ready for frontend deployment; production rollout has not been verified. Earlier social-auth correction is committed as `fb0171b`; its production deployment and full live sign-in remain unverified. This FAQ update needs no backend or database migration.
+**Deployment:** requires the committed `20260927000000_support_chat` migration and matching client/API releases. The migration is applied to the configured development database. Use the normal Render `prisma migrate deploy` startup for production. Actual production delivery to admin mailboxes and S3 uploads remain unverified; tests did not send real emails.
 
 ## Earlier implementation notes
 
@@ -580,6 +580,22 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `POST /api/chats/conversations/:conversationId/attachments` — upload a chat attachment and create an attachment message
 - `GET /api/chats/messages/:messageId/attachment` — verify access and return a temporary signed S3 URL for opening the attachment
 
+### Customer support chat
+- `GET /api/support/status` — current online admin usernames and profile images, without exposing email addresses
+- `POST /api/support/thread` — get/create the signed-in customer's conversation
+- `GET /api/support/threads` — admin inbox, 30 conversations per page (`offset`)
+- `GET /api/support/threads/:threadId/messages` — latest 50 messages; `before=<messageId>` loads older history
+- `POST /api/support/threads/:threadId/messages` — text and optional multipart `attachment`, with a retry-safe `clientId`
+- `POST /api/support/threads/:threadId/read` — record the last seen `messageId`
+- `GET /api/support/attachments/:messageId` — authorize the customer/admin before returning a temporary download URL
+- `POST /api/support/presence` and `DELETE /api/support/presence/:sessionId` — admin tab heartbeat/leave
+
+All routes require a valid session and recheck the account's current role and suspension status. Customers can access only their own conversation; providers cannot use this support inbox. Messages are limited to 4,000 characters and 12 per minute per sender. Supported attachments are images, PDF, text, Office documents and ZIP files (10 MB maximum).
+
+Open conversations refresh every 3 seconds; the admin inbox refreshes every 5 seconds. Visible admin tabs refresh presence every 15 seconds with a 45-second expiry. Customer availability refreshes every 10 seconds. This uses database-backed polling and presence, independent of the existing Match chat Socket.IO connection.
+
+Offline notifications are created with the message in one transaction. The worker checks every 15 seconds and retries failures with backoff. It reuses `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, and `CLIENT_URL` (the HTTPS frontend origin in production). Each email goes to one active admin and links to the protected inbox; attachments remain behind access checks. `sentAt` means SMTP acceptance, not verified mailbox delivery. The queue is durable; ambiguous SMTP failures can still cause a retry of an already accepted email.
+
 ---
 
 ## Environment variables
@@ -736,7 +752,7 @@ When `stripe listen` starts, copy the shown `whsec_...` value into `server/.env`
 ```text
 1 gold = $0.10
 ```
-Gold redemption should support any whole-number amount of gold.
+Each redemption must be a whole-number amount of at least 100 Gold. Zero removes Gold from checkout. Balance, order and payment limits still apply; amounts below 100 after applying those limits cannot be redeemed.
 
 ## Database / Prisma
 
@@ -889,14 +905,17 @@ npx prisma studio
 
 ### Done
 
+- public FAQ at `/faq` is accessible without signing in, sits between Reviews and Contact in the navbar, and keeps its dashboard Quick Action; old `/account/faq` links redirect and the dashboard sidebar entry is removed
+- interactive FAQ includes five topic filters, cross-topic search, 22 concise answers based on the supplied terms and current product behavior, and a three-stage refund guide; redundant counts and Helpful links removed
+- FAQ supports keyboard navigation, reduced motion and phone layouts down to 320px; focused checks and production build passed
+- mobile navbar buttons use equal sizing, compact labels with the Login icon retained, centered FAQ text and a slightly larger profile avatar; phone country and birthday fields have usable height without overlap
 - Google and Discord sign-in require confirmation before linking an eligible matching email; Link & sign in preserves the existing account and Not now returns to login without writes. New users choose a username and accept terms; already-linked users sign in directly.
 - provider-verified ownership can establish missing FastBoost email verification in the same transaction as linking; 27 focused authentication tests cover confirmation, cancellation, ticket/origin checks, preservation and rollback. This correction is committed; production deployment remains unverified.
 - link-confirmation UI uses FastBoost/provider logos, matching dark tiles, a subtle reduced-motion-aware animation and separated buttons without glow; social errors use a yellow popup and authentication checkboxes use dark styling
 - shared numbered pagination shows 10 rows per page for customer, provider and admin order lists and admin accounts; management pages use sidebar icons and compact headers
 - dashboard coupons show 3 per page with empty-state spacing; notifications and messages support individual/clear-all actions with red delete controls and slide-out/up animations
-- FAQ was added with a compact one-line heading and search below the hero; its public route and latest topic/refund redesign are described above
 - personal coupons support multiple recipients; coupon countdowns, loyalty/referral visuals and the shared brand wordmark were refined. Contact-email correction was deployed; receipt delivery remains a separate verification item.
-- gold redemption requires at least 100 gold in the current balance, enforced in checkout and on the server; eligible users may redeem a smaller amount
+- each Gold redemption requires at least 100 Gold, enforced in checkout and on the server; zero removes Gold, and subminimum amounts are rejected or cleared after applying caps
 - existing order redemption caps and Stripe minimum cash rules preserved
 - personal coupons support all services, a single service, or multiple services through an overlay checkbox selector
 - admin customer search matches username, display name and email, with debounced results, avatars and account-ID selection

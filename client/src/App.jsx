@@ -28,6 +28,8 @@ import PriceManagementPage from "./pages/PriceManagementPage";
 import AdminLayout from "./layouts/AdminLayout";
 import DynamicTitle from "./components/DynamicTitle";
 import SaleFooter from "./components/SaleFooter";
+import SupportChat from "./components/SupportChat";
+import AdminSupportPage from "./pages/AdminSupportPage";
 
 import {
   clearExpiredSession,
@@ -155,6 +157,7 @@ function App() {
           <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="accounts" element={<AdminAccountsPage />} />
           <Route path="prices" element={<PriceManagementPage />} />
+          <Route path="support" element={<AdminSupportPage />} />
         </Route>
 
         <Route
@@ -206,6 +209,7 @@ function App() {
         />
       </Routes>
       <SaleFooter />
+      <SupportChat />
 
       {sessionExpiredOpen && (
         <SessionExpiredModal

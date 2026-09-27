@@ -109,7 +109,7 @@ async function uploadChatAttachmentToS3({ conversationId, userId, file }) {
   };
 }
 
-async function createChatAttachmentSignedUrl({ key, filename }) {
+async function createChatAttachmentSignedUrl({ key, filename, download = false }) {
   if (!key) {
     throw new Error("Attachment key is required");
   }
@@ -117,7 +117,7 @@ async function createChatAttachmentSignedUrl({ key, filename }) {
   const command = new GetObjectCommand({
     Bucket: BUCKET,
     Key: key,
-    ResponseContentDisposition: `inline; filename="${String(filename || "attachment").replace(/"/g, "")}"`,
+    ResponseContentDisposition: `${download ? "attachment" : "inline"}; filename="${String(filename || "attachment").replace(/["\r\n\\]/g, "")}"`,
   });
 
   return getSignedUrl(s3, command, {
