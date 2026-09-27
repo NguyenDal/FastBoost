@@ -262,11 +262,16 @@ function OrderTracker({ summary }) {
 function GoldRedemption({ summary, onApply, disabled }) {
     const [value, setValue] = useState(String(summary.goldRedeemed || 0));
     const available = Math.max(0, summary.availableGold || 0);
-    const orderMaximum = Math.max(0, Math.floor((summary.totalCents + summary.goldDiscountCents) / 10));
-    const eligible = available >= 100;
+    const orderCents = summary.totalCents + summary.goldDiscountCents;
+    const rawMaximum = Math.min(available, Math.max(0, Math.floor(orderCents / 10)));
+    const remainingCents = orderCents - rawMaximum * 10;
+    const orderMaximum = remainingCents > 0 && remainingCents < 50 ? Math.max(0, Math.floor((orderCents - 50) / 10)) : rawMaximum;
+    const eligible = available >= 100 && orderMaximum >= 100;
     const maximum = eligible ? Math.min(available, orderMaximum) : 0;
-    const warning = !eligible ? "You need at least 100 gold in your balance to redeem gold." : !/^\d+$/.test(value.trim())
+    const warning = !eligible ? "Gold redemption requires at least 100 Gold within your balance and this order’s payment limits." : !/^\d+$/.test(value.trim())
         ? "Please enter a whole number of gold."
+        : Number(value) > 0 && Number(value) < 100
+            ? "Redeem at least 100 Gold, or enter 0 to remove Gold."
         : Number(value) > available
             ? `You only have ${available} gold available.`
             : Number(value) > orderMaximum
@@ -279,6 +284,6 @@ function GoldRedemption({ summary, onApply, disabled }) {
         <div className="checkout-gold-heading"><label htmlFor="checkout-gold">Use your gold</label><span>{summary.availableGold || 0} available</span></div>
         <div className="checkout-gold-controls"><div className="checkout-input"><input id="checkout-gold" inputMode="numeric" value={value} disabled={disabled || !eligible} onChange={event=>setValue(event.target.value.replace(/[^0-9]/g, ""))} aria-invalid={!valid} aria-describedby="checkout-gold-help" /></div><button type="button" disabled={disabled || !eligible} onClick={()=>setValue(String(maximum))}>Max</button><button type="submit" disabled={disabled || !valid || Number(value) === summary.goldRedeemed}>Apply</button></div>
         <div className="checkout-gold-applied"><span>{summary.goldRedeemed || 0} gold applied</span><strong>−{money(summary.goldDiscountCents, summary.currency)}</strong></div>
-        <p id="checkout-gold-help" aria-live="polite" className={valid ? undefined : "checkout-gold-error"}>{warning || "Gold is spent only after payment succeeds."}</p>
+        <p id="checkout-gold-help" aria-live="polite" className={valid ? undefined : "checkout-gold-error"}>{warning || "Minimum redemption: 100 Gold. Enter 0 to remove. Gold is spent only after payment succeeds."}</p>
     </form>;
 }

@@ -24,12 +24,12 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
             assert.ok(args.line_items[0].price_data.product_data.description.includes(order.orderNumber));
             assert.equal(args.customer_email,undefined);
             assert.equal(args.metadata.editableEmail,'1');
-            assert.equal(args.line_items[0].price_data.unit_amount,2600);
-            assert.equal(args.metadata.goldRedeemed,'10');
+            assert.equal(args.line_items[0].price_data.unit_amount,1700);
+            assert.equal(args.metadata.goldRedeemed,'100');
             assert.equal(args.success_url,undefined);
             assert.ok(args.return_url.includes('{CHECKOUT_SESSION_ID}'));
             assert.ok(options.idempotencyKey);
-            existing={id:'cs_test_'+creates,client_secret:'test-secret',status:'open',ui_mode:'elements',amount_total:2600,metadata:args.metadata};
+            existing={id:'cs_test_'+creates,client_secret:'test-secret',status:'open',ui_mode:'elements',amount_total:1700,metadata:args.metadata};
             return existing;
         },
     }}};
@@ -45,11 +45,20 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     delete require.cache[path];
     t.after(()=>{delete require.cache[path];for(const [key,value] of saved){if(value)require.cache[key]=value;else delete require.cache[key];}});
     const {createCheckoutSession}=require(path);
-    const req={user:{id:order.customerId},body:{orderId:order.id,goldToUse:10,amount:1},hostname:'localhost',get:()=> 'http://localhost:5173'};
+    const req={user:{id:order.customerId},body:{orderId:order.id,goldToUse:100,amount:1},hostname:'localhost',get:()=> 'http://localhost:5173'};
     const res={code:200,status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+    for (const invalidGold of [1, 20, 99, -1, 100.5]) {
+        req.body.goldToUse = invalidGold;
+        await createCheckoutSession(req,res);
+        assert.equal(res.code,400);
+        assert.equal(creates,0);
+        assert.equal(order.paymentStatus,'PENDING');
+    }
+    req.body.goldToUse = 100;
+    res.code = 200;
     await createCheckoutSession(req,res);
     assert.equal(res.code,200);
-    assert.equal(res.body.summary.totalCents,2600);
+    assert.equal(res.body.summary.totalCents,1700);
     assert.equal(res.body.summary.referralDiscountCents,300);
     assert.equal(res.body.checkoutUrl,undefined);
     await createCheckoutSession(req,res);
@@ -72,9 +81,9 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.code,400);
     assert.equal(creates,2);
     order.status='PENDING';
-    order.amountCents=500;
+    order.amountCents=1000;
     existing.status='open';
-    req.body.goldToUse=50;
+    req.body.goldToUse=100;
     req.body.deferGoldOnly=true;
     res.code=200;
     await createCheckoutSession(req,res);
@@ -101,4 +110,3 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.body.orderId,order.id);
     assert.equal(creates,2);
 });
-

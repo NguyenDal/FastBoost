@@ -26,6 +26,14 @@ function normalizeGoldToUse(rawGoldToUse, availableGold, totalAmountCents) {
         cashAmountCents = Math.max(0, totalAmountCents - discountCents);
     }
 
+    // Balance/order caps and the Stripe minimum can reduce an otherwise valid
+    // request. Never apply a partial redemption below the minimum.
+    if (requestedGold > 0 && requestedGold < 100) {
+        requestedGold = 0;
+        discountCents = 0;
+        cashAmountCents = totalAmountCents;
+    }
+
     return {
         goldRedeemed: requestedGold,
         goldDiscountCents: discountCents,

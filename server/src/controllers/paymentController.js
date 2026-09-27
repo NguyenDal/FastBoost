@@ -177,6 +177,9 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
     try {
         const userId = getUserId(req);
         const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode } = req.body || {};
+        if (goldToUse != null && (!Number.isSafeInteger(Number(goldToUse)) || Number(goldToUse) < 0 || (Number(goldToUse) > 0 && Number(goldToUse) < 100))) {
+            return res.status(400).json({ ok: false, message: "Redeem at least 100 Gold, or enter 0 to remove Gold." });
+        }
 
         if (!userId) {
             return res.status(401).json({
