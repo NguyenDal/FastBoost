@@ -6,6 +6,7 @@ import {
     adminListUsers,
     adminUpdateUserRole,
     adminUpdateUserSuspension,
+    ownerUpdateBoosterAccess,
 } from "../api/adminUsers";
 import "../styles/Admin.css";
 
@@ -64,6 +65,16 @@ export default function AdminAccountsPage() {
     const suspensionIntervalRef = useRef(null);
 
     const currentUserId = getStoredUserId();
+
+    async function changeBoosterAccess(user, enabled) {
+        setSavingUserId(user.id); setError(""); setSuccess("");
+        try {
+            const result = await ownerUpdateBoosterAccess(user.id, enabled);
+            setData(old => ({ ...old, items: old.items.map(item => item.id === user.id ? { ...item, ...result.user } : item) }));
+            setSuccess(enabled ? "Booster access added." : "Additional role removed.");
+        } catch (err) { setError(err.message); }
+        finally { setSavingUserId(""); }
+    }
 
     const totalPages = useMemo(() => {
         return Math.max(1, Math.ceil((data?.total || 0) / pageSize));
@@ -330,10 +341,6 @@ export default function AdminAccountsPage() {
         <section className="page-container admin-accounts-page">
             <div className="admin-accounts-header">
                 <h1 className="admin-order-title">Account Management</h1>
-                <div className="admin-stat-card admin-users-count">
-                    <span>Total Users</span>
-                    <strong>{data.total}</strong>
-                </div>
             </div>
 
                 <div className="admin-toolbar premium-toolbar account-toolbar">
@@ -358,6 +365,7 @@ export default function AdminAccountsPage() {
                         className="admin-select"
                     >
                         <option value="">All Roles</option>
+                        <option value="OWNER">Owner</option>
                         <option value="CUSTOMER">Customer</option>
                         <option value="PROVIDER">Booster</option>
                         <option value="ADMIN">Admin</option>
@@ -381,6 +389,7 @@ export default function AdminAccountsPage() {
                                     <th>Status</th>
                                     <th>Current Role</th>
                                     <th>Change Privilege</th>
+                                    {data.canManageExtraRoles && <th>Add role</th>}
                                     <th>Account Action</th>
                                     <th>Created</th>
                                 </tr>
@@ -434,17 +443,20 @@ export default function AdminAccountsPage() {
                                             </td>
 
                                             <td>
-                                                <RoleBadge role={user.role} />
+                                                <RoleBadge role={user.isOwner ? "OWNER" : user.role} />
                                             </td>
+
+
 
                                             <td>
                                                 <select
-                                                    value={user.role}
-                                                    disabled={savingUserId === user.id || isSelf}
+                                                    value={user.isOwner ? "OWNER" : user.role}
+                                                    disabled={savingUserId === user.id || isSelf || user.isOwner}
                                                     onChange={(event) => handleRoleChange(user, event.target.value)}
                                                     className="admin-select role-change-select"
-                                                    title={isSelf ? "You cannot change your own role here" : "Change user role"}
+                                                    title={user.isOwner ? "The owner account is protected" : isSelf ? "You cannot change your own role here" : "Change user role"}
                                                 >
+                                                    {user.isOwner && <option value="OWNER">Owner</option>}
                                                     {ROLE_OPTIONS.map((option) => (
                                                         <option key={option.value} value={option.value}>
                                                             {option.label}
@@ -457,13 +469,22 @@ export default function AdminAccountsPage() {
                                                 )}
                                             </td>
 
+                                            {data.canManageExtraRoles && <td>
+                                                <select className="admin-select role-change-select" aria-label={`Additional role for ${displayName}`}
+                                                    value={user.hasBoosterAccess ? "BOOSTER" : ""} disabled={Boolean(savingUserId)}
+                                                    onChange={event => changeBoosterAccess(user, event.target.value === "BOOSTER")}>
+                                                    <option value="">None</option>
+                                                    <option value="BOOSTER">Booster</option>
+                                                </select>
+                                            </td>}
+
                                             <td>
                                                 <button
                                                     type="button"
                                                     className={`account-status-action-btn ${user.suspendedAt ? "restore" : "suspend"}`}
-                                                    disabled={savingUserId === user.id || isSelf}
+                                                    disabled={savingUserId === user.id || isSelf || user.isOwner}
                                                     onClick={() => handleSuspensionChange(user, !user.suspendedAt)}
-                                                    title={isSelf ? "You cannot suspend your own account" : user.suspendedAt ? "Restore account" : "Suspend account"}
+                                                    title={user.isOwner ? "The owner account is protected" : isSelf ? "You cannot suspend your own account" : user.suspendedAt ? "Restore account" : "Suspend account"}
                                                 >
                                                     {user.suspendedAt ? "Restore" : "Suspend"}
                                                 </button>
@@ -477,7 +498,7 @@ export default function AdminAccountsPage() {
 
                                 {data.items.length === 0 && (
                                     <tr>
-                                        <td colSpan={8} className="admin-empty">
+                                        <td colSpan={data.canManageExtraRoles ? 9 : 8} className="admin-empty">
                                             No users found
                                         </td>
                                     </tr>
@@ -772,6 +793,7 @@ export default function AdminAccountsPage() {
 }
 
 function RoleBadge({ role }) {
+    if (role === "OWNER") return <span className="role-badge role-owner">Owner</span>;
     const className =
         role === "ADMIN"
             ? "role-badge role-admin"

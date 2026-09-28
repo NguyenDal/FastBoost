@@ -40,7 +40,7 @@ function finish(res, origin, payload) {
 }
 function sessionPayload(user, rememberMe) {
   const token = jwt.sign({ userId: user.id, email: user.email, username: user.username || undefined, role: user.role }, process.env.JWT_SECRET, { expiresIn: '3d' });
-  return { token, rememberMe: Boolean(rememberMe), user: { id: user.id, email: user.email, username: user.username, role: user.role, profile: user.profile } };
+  return { token, rememberMe: Boolean(rememberMe), user: { id: user.id, email: user.email, username: user.username, role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess), profile: user.profile } };
 }
 // Signup tickets cannot be used as app session tokens or OAuth state cookies.
 function signupSecret() {

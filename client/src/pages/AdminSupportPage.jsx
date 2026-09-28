@@ -42,7 +42,7 @@ export default function AdminSupportPage() {
         finally { setMoreBusy(false); }
     }
     const active = threads.find(thread => thread.id === selected);
-    return <div className="support-admin-page"><div className="support-admin-title"><div><span className="support-eyebrow">CUSTOMER CARE</span><h1>Support inbox</h1></div><p><i className="support-status-dot" />You’re available while this tab is visible</p></div>
+    return <div className="support-admin-page"><div className="support-admin-title"><h1>Support inbox</h1><p><i className="support-status-dot" />You’re available while this tab is visible</p></div>
         {error && <p className="support-error" role="alert">{error}</p>}
         <div className={`support-inbox ${selected ? 'has-selection' : ''}`}>
             <aside className="support-thread-list" aria-label="Customer conversations"><h2>Conversations</h2>{loading && <p className="support-muted">Loading inbox…</p>}{!loading && !threads.length && <div className="support-empty"><SupportIcon /><p>All quiet for now.</p><small>Customer messages will appear here.</small></div>}{threads.map(thread => {

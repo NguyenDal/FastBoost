@@ -22,6 +22,8 @@ model User {
   emailVerifiedAt     DateTime?
   passwordHash        String
   role                UserRole             @default(CUSTOMER)
+  isOwner             Boolean              @default(false)
+  hasBoosterAccess    Boolean              @default(false)
   suspendedAt         DateTime?
   suspendedReason     String?
   createdAt           DateTime             @default(now())

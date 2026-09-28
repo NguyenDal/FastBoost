@@ -3504,6 +3504,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    isOwner: boolean | null
+    hasBoosterAccess: boolean | null
     suspendedAt: Date | null
     suspendedReason: string | null
     createdAt: Date | null
@@ -3519,6 +3521,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    isOwner: boolean | null
+    hasBoosterAccess: boolean | null
     suspendedAt: Date | null
     suspendedReason: string | null
     createdAt: Date | null
@@ -3534,6 +3538,8 @@ export namespace Prisma {
     emailVerifiedAt: number
     passwordHash: number
     role: number
+    isOwner: number
+    hasBoosterAccess: number
     suspendedAt: number
     suspendedReason: number
     createdAt: number
@@ -3551,6 +3557,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    isOwner?: true
+    hasBoosterAccess?: true
     suspendedAt?: true
     suspendedReason?: true
     createdAt?: true
@@ -3566,6 +3574,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    isOwner?: true
+    hasBoosterAccess?: true
     suspendedAt?: true
     suspendedReason?: true
     createdAt?: true
@@ -3581,6 +3591,8 @@ export namespace Prisma {
     emailVerifiedAt?: true
     passwordHash?: true
     role?: true
+    isOwner?: true
+    hasBoosterAccess?: true
     suspendedAt?: true
     suspendedReason?: true
     createdAt?: true
@@ -3669,6 +3681,8 @@ export namespace Prisma {
     emailVerifiedAt: Date | null
     passwordHash: string
     role: $Enums.UserRole
+    isOwner: boolean
+    hasBoosterAccess: boolean
     suspendedAt: Date | null
     suspendedReason: string | null
     createdAt: Date
@@ -3701,6 +3715,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: boolean
     suspendedReason?: boolean
     createdAt?: boolean
@@ -3738,6 +3754,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: boolean
     suspendedReason?: boolean
     createdAt?: boolean
@@ -3754,6 +3772,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: boolean
     suspendedReason?: boolean
     createdAt?: boolean
@@ -3770,6 +3790,8 @@ export namespace Prisma {
     emailVerifiedAt?: boolean
     passwordHash?: boolean
     role?: boolean
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: boolean
     suspendedReason?: boolean
     createdAt?: boolean
@@ -3778,7 +3800,7 @@ export namespace Prisma {
     referredById?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "isOwner" | "hasBoosterAccess" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     supportThread?: boolean | User$supportThreadArgs<ExtArgs>
     supportMessages?: boolean | User$supportMessagesArgs<ExtArgs>
@@ -3842,6 +3864,8 @@ export namespace Prisma {
       emailVerifiedAt: Date | null
       passwordHash: string
       role: $Enums.UserRole
+      isOwner: boolean
+      hasBoosterAccess: boolean
       suspendedAt: Date | null
       suspendedReason: string | null
       createdAt: Date
@@ -4298,6 +4322,8 @@ export namespace Prisma {
     readonly emailVerifiedAt: FieldRef<"User", 'DateTime'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
+    readonly isOwner: FieldRef<"User", 'Boolean'>
+    readonly hasBoosterAccess: FieldRef<"User", 'Boolean'>
     readonly suspendedAt: FieldRef<"User", 'DateTime'>
     readonly suspendedReason: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
@@ -31778,6 +31804,8 @@ export namespace Prisma {
     emailVerifiedAt: 'emailVerifiedAt',
     passwordHash: 'passwordHash',
     role: 'role',
+    isOwner: 'isOwner',
+    hasBoosterAccess: 'hasBoosterAccess',
     suspendedAt: 'suspendedAt',
     suspendedReason: 'suspendedReason',
     createdAt: 'createdAt',
@@ -32412,6 +32440,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    isOwner?: BoolFilter<"User"> | boolean
+    hasBoosterAccess?: BoolFilter<"User"> | boolean
     suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -32448,6 +32478,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    isOwner?: SortOrder
+    hasBoosterAccess?: SortOrder
     suspendedAt?: SortOrderInput | SortOrder
     suspendedReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -32488,6 +32520,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    isOwner?: BoolFilter<"User"> | boolean
+    hasBoosterAccess?: BoolFilter<"User"> | boolean
     suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -32523,6 +32557,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    isOwner?: SortOrder
+    hasBoosterAccess?: SortOrder
     suspendedAt?: SortOrderInput | SortOrder
     suspendedReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -32544,6 +32580,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     passwordHash?: StringWithAggregatesFilter<"User"> | string
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    isOwner?: BoolWithAggregatesFilter<"User"> | boolean
+    hasBoosterAccess?: BoolWithAggregatesFilter<"User"> | boolean
     suspendedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     suspendedReason?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -34425,6 +34463,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -34460,6 +34500,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -34495,6 +34537,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34530,6 +34574,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34565,6 +34611,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -34580,6 +34628,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34594,6 +34644,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36668,6 +36720,11 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -36871,6 +36928,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    isOwner?: SortOrder
+    hasBoosterAccess?: SortOrder
     suspendedAt?: SortOrder
     suspendedReason?: SortOrder
     createdAt?: SortOrder
@@ -36886,6 +36945,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    isOwner?: SortOrder
+    hasBoosterAccess?: SortOrder
     suspendedAt?: SortOrder
     suspendedReason?: SortOrder
     createdAt?: SortOrder
@@ -36901,6 +36962,8 @@ export namespace Prisma {
     emailVerifiedAt?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
+    isOwner?: SortOrder
+    hasBoosterAccess?: SortOrder
     suspendedAt?: SortOrder
     suspendedReason?: SortOrder
     createdAt?: SortOrder
@@ -36969,6 +37032,14 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -36981,11 +37052,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type UserScalarRelationFilter = {
@@ -37015,14 +37081,6 @@ export namespace Prisma {
     termsAcceptedAt?: SortOrder
     promotionalEmails?: SortOrder
     promotionalConsentAt?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type SupportThreadCountOrderByAggregateInput = {
@@ -38732,6 +38790,10 @@ export namespace Prisma {
     set?: $Enums.UserRole
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -39286,10 +39348,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
     connectOrCreate?: UserCreateOrConnectWithoutRegistrationConsentInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type UserUpdateOneRequiredWithoutRegistrationConsentNestedInput = {
@@ -40454,6 +40512,11 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -40545,6 +40608,14 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -40557,19 +40628,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -41373,6 +41431,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -41407,6 +41467,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -41446,6 +41508,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -41480,6 +41544,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42145,6 +42211,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42179,6 +42247,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42232,6 +42302,8 @@ export namespace Prisma {
     emailVerifiedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     passwordHash?: StringFilter<"User"> | string
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    isOwner?: BoolFilter<"User"> | boolean
+    hasBoosterAccess?: BoolFilter<"User"> | boolean
     suspendedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     suspendedReason?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -42409,6 +42481,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42443,6 +42517,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42493,6 +42569,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42527,6 +42605,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42561,6 +42641,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42595,6 +42677,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42681,6 +42765,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42715,6 +42801,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42788,6 +42876,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42822,6 +42912,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -42931,6 +43023,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42965,6 +43059,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43015,6 +43111,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43049,6 +43147,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43099,6 +43199,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43133,6 +43235,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43198,6 +43302,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43232,6 +43338,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43319,6 +43427,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43353,6 +43463,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43387,6 +43499,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43421,6 +43535,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43471,6 +43587,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43505,6 +43623,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43539,6 +43659,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43573,6 +43695,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -43623,6 +43747,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43657,6 +43783,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -44038,6 +44166,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -44072,6 +44202,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -44315,6 +44447,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -44349,6 +44483,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -44541,6 +44677,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -44575,6 +44713,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -44836,6 +44976,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -44870,6 +45012,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45276,6 +45420,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -45310,6 +45456,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -45546,6 +45694,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45580,6 +45730,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45949,6 +46101,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -45983,6 +46137,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46176,6 +46332,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46210,6 +46368,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46244,6 +46404,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46278,6 +46440,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46328,6 +46492,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46362,6 +46528,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46533,6 +46701,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46567,6 +46737,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46606,6 +46778,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46640,6 +46814,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -46833,6 +47009,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46867,6 +47045,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46912,6 +47092,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46946,6 +47128,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47375,6 +47559,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47409,6 +47595,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47488,6 +47676,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47522,6 +47712,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47579,6 +47771,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47613,6 +47807,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47692,6 +47888,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47726,6 +47924,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47760,6 +47960,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47794,6 +47996,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47844,6 +48048,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47878,6 +48084,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47912,6 +48120,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47946,6 +48156,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -47996,6 +48208,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48030,6 +48244,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48064,6 +48280,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -48098,6 +48316,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -48148,6 +48368,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48182,6 +48404,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48367,6 +48591,8 @@ export namespace Prisma {
     emailVerifiedAt?: Date | string | null
     passwordHash: string
     role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
     suspendedAt?: Date | string | null
     suspendedReason?: string | null
     createdAt?: Date | string
@@ -48905,6 +49131,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48939,6 +49167,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48973,6 +49203,8 @@ export namespace Prisma {
     emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
     suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

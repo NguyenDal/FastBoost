@@ -1,3 +1,4 @@
+const { canBoost } = require("../utils/boosterAccess");
 const { syncLoyaltyTierBonuses } = require("../utils/loyaltyTierBonuses");
 const prisma = require("../prisma");
 const stripe = require("../utils/stripeClient");
@@ -1028,7 +1029,7 @@ module.exports.assignBooster = async (req, res) => {
 
         const booster = await prisma.user.findUnique({ where: { id: boosterId } });
         if (!booster) return res.status(404).json({ ok: false, message: "User not found" });
-        if (booster.role !== "PROVIDER") {
+        if (!canBoost(booster)) {
             return res.status(400).json({ ok: false, message: "User is not a provider" });
         }
 
@@ -1050,7 +1051,7 @@ module.exports.assignBooster = async (req, res) => {
 
         try {
             await prisma.conversationParticipant.create({
-                data: { conversationId: convo.id, userId: boosterId, roleAtJoin: booster.role },
+                data: { conversationId: convo.id, userId: boosterId, roleAtJoin: "PROVIDER" },
             });
         } catch { }
 
@@ -1226,7 +1227,8 @@ module.exports.listAssignedOrdersForProvider = async (req, res) => {
             });
         }
 
-        if (req.user.role !== "PROVIDER" && req.user.role !== "ADMIN") {
+        const provider = await prisma.user.findUnique({ where: { id: providerId } });
+        if (!canBoost(provider) && !(provider?.role === "ADMIN" && !provider.suspendedAt)) {
             return res.status(403).json({
                 ok: false,
                 message: "Only providers can view assigned orders",
@@ -1351,7 +1353,9 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             });
         }
 
-        const isAdmin = req.user.role === "ADMIN";
+        const provider = await prisma.user.findUnique({ where: { id: providerId } });
+        const isAdmin = provider?.role === "ADMIN" && !provider.suspendedAt;
+        if (!isAdmin && !canBoost(provider)) return res.status(403).json({ ok: false, message: "Booster access is no longer active" });
 
         const assignment = await prisma.orderAssignment.findFirst({
             where: {
@@ -1488,7 +1492,8 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
             });
         }
 
-        if (req.user.role !== "PROVIDER") {
+        const provider = await prisma.user.findUnique({ where: { id: providerId } });
+        if (!canBoost(provider)) {
             return res.status(403).json({
                 ok: false,
                 message: "Only providers can leave assigned orders",

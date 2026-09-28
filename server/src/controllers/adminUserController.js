@@ -14,6 +14,9 @@ async function adminListUsers(req, res) {
         const pageSize = Math.min(Math.max(Number(req.query.pageSize || 20), 1), 50);
         const q = String(req.query.q || "").trim();
         const role = String(req.query.role || "").trim();
+        const viewerId = req.user?.id || req.user?.userId;
+        const viewer = viewerId ? await prisma.user.findUnique({ where: { id: viewerId }, select: { isOwner: true, role: true, suspendedAt: true } }) : null;
+        const canManageExtraRoles = Boolean(viewer?.isOwner && viewer.role === "ADMIN" && !viewer.suspendedAt);
 
         const where = {};
 
@@ -29,39 +32,36 @@ async function adminListUsers(req, res) {
             ];
         }
 
+        if (role === "OWNER") { where.isOwner = true; }
         if (role && ALLOWED_ROLES.includes(role)) {
             where.role = role;
+            where.isOwner = false;
         }
 
-        const [items, total] = await Promise.all([
+        // Pin the signed-in account before pagination, not just within its current page.
+        const pinned = viewerId ? await prisma.user.count({ where: { AND: [where, { id: viewerId }] } }) : 0;
+        const start = (page - 1) * pageSize;
+        const select = {
+            id: true, username: true, email: true, role: true, isOwner: true,
+            hasBoosterAccess: true, suspendedAt: true, suspendedReason: true,
+            createdAt: true, updatedAt: true, emailVerifiedAt: true,
+            profile: { select: { displayName: true, profileImageUrl: true } },
+        };
+        const [others, first, total] = await Promise.all([
             prisma.user.findMany({
-                where,
-                orderBy: { createdAt: "desc" },
-                skip: (page - 1) * pageSize,
-                take: pageSize,
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    role: true,
-                    suspendedAt: true,
-                    suspendedReason: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    emailVerifiedAt: true,
-                    profile: {
-                        select: {
-                            displayName: true,
-                            profileImageUrl: true,
-                        },
-                    },
-                },
+                where: pinned ? { AND: [where, { id: { not: viewerId } }] } : where,
+                orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+                skip: Math.max(0, start - pinned),
+                take: pageSize - (page === 1 ? pinned : 0),
+                select,
             }),
+            pinned && page === 1 ? prisma.user.findUnique({ where: { id: viewerId }, select }) : null,
             prisma.user.count({ where }),
         ]);
 
         return res.json({
-            items,
+            items: first ? [first, ...others] : others,
+            canManageExtraRoles,
             total,
             page,
             pageSize,
@@ -96,6 +96,7 @@ async function adminUpdateUserRole(req, res) {
                 username: true,
                 email: true,
                 role: true,
+                isOwner: true, hasBoosterAccess: true,
             },
         });
 
@@ -103,14 +104,19 @@ async function adminUpdateUserRole(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        if (targetUser.isOwner) {
+            return res.status(403).json({ message: "The owner account is protected." });
+        }
+
         const updatedUser = await prisma.user.update({
-            where: { id: userId },
+            where: { id: userId, isOwner: false },
             data: { role },
             select: {
                 id: true,
                 username: true,
                 email: true,
                 role: true,
+                isOwner: true, hasBoosterAccess: true,
                 suspendedAt: true,
                 suspendedReason: true,
                 emailVerifiedAt: true,
@@ -148,6 +154,7 @@ async function adminUpdateUserRole(req, res) {
             user: updatedUser,
         });
     } catch (error) {
+        if (error.code === "P2025") return res.status(403).json({ message: "Account no longer editable. Refresh and try again." });
         console.error("adminUpdateUserRole error:", error);
         return res.status(500).json({ message: "Failed to update user role" });
     }
@@ -169,6 +176,7 @@ async function adminUpdateUserSuspension(req, res) {
             select: {
                 id: true,
                 role: true,
+                isOwner: true, hasBoosterAccess: true,
                 suspendedAt: true,
             },
         });
@@ -177,8 +185,12 @@ async function adminUpdateUserSuspension(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        if (targetUser.isOwner) {
+            return res.status(403).json({ message: "The owner account is protected." });
+        }
+
         const updatedUser = await prisma.user.update({
-            where: { id: userId },
+            where: { id: userId, isOwner: false },
             data: suspended
                 ? {
                     suspendedAt: new Date(),
@@ -193,6 +205,7 @@ async function adminUpdateUserSuspension(req, res) {
                 username: true,
                 email: true,
                 role: true,
+                isOwner: true, hasBoosterAccess: true,
                 suspendedAt: true,
                 suspendedReason: true,
                 emailVerifiedAt: true,
@@ -212,6 +225,7 @@ async function adminUpdateUserSuspension(req, res) {
             user: updatedUser,
         });
     } catch (error) {
+        if (error.code === "P2025") return res.status(403).json({ message: "Account no longer editable. Refresh and try again." });
         console.error("adminUpdateUserSuspension error:", error);
         return res.status(500).json({ message: "Failed to update account status" });
     }
@@ -221,4 +235,27 @@ module.exports = {
     adminListUsers,
     adminUpdateUserRole,
     adminUpdateUserSuspension,
+};
+
+module.exports.ownerUpdateBoosterAccess = async (req, res) => {
+    try {
+        const viewer = await prisma.user.findUnique({
+            where: { id: req.user?.id || req.user?.userId },
+            select: { role: true, isOwner: true, suspendedAt: true },
+        });
+        if (!viewer?.isOwner || viewer.role !== "ADMIN" || viewer.suspendedAt) {
+            return res.status(403).json({ message: "Only the owner can manage additional roles." });
+        }
+        const { hasBoosterAccess } = req.body;
+        if (typeof hasBoosterAccess !== "boolean") return res.status(400).json({ message: "Booster access must be true or false." });
+        const user = await prisma.user.update({
+            where: { id: req.params.userId }, data: { hasBoosterAccess },
+            select: { id: true, hasBoosterAccess: true },
+        });
+        return res.json({ user });
+    } catch (error) {
+        if (error.code === "P2025") return res.status(404).json({ message: "User not found" });
+        console.error("ownerUpdateBoosterAccess error:", error);
+        return res.status(500).json({ message: "Failed to update additional role" });
+    }
 };

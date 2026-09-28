@@ -78,9 +78,9 @@
 .support-admin-launcher { position: fixed; right: 20px; bottom: 20px; z-index: 1100; display: flex; align-items: center; gap: 10px; padding: 13px 17px; color: #e1d1f6; background: #241b34; border: 1px solid #a88bc94d; border-radius: 16px; text-decoration: none; font-size: 12px; }
 .support-admin-launcher i { width: 7px; height: 7px; border-radius: 50%; background: #65d9ab; }
 .support-admin-launcher.unavailable i { background: #b79ca0; }
-.support-admin-title { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; }
-.support-admin-title h1 { font-size: 28px; margin: 8px 0 0; }
-.support-admin-title p { color: #a5b5af; font-size: 12px; }
+.support-admin-title { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 16px; }
+.support-admin-title h1 { font-size: 28px; margin: 0; }
+.support-admin-title p { color: #a5b5af; font-size: 12px; margin: 0; }
 .support-inbox { display: grid; grid-template-columns: 290px minmax(0, 1fr); height: min(740px, calc(100dvh - 200px)); min-height: 420px; border: 1px solid #a894bf26; border-radius: 20px; overflow: hidden; background: #10131e; }
 .support-thread-list { min-height: 0; overflow-y: auto; border-right: 1px solid #ffffff0c; padding: 15px 10px; }
 .support-thread-list h2 { padding: 8px 12px 15px; margin: 0; font-size: 13px; color: #a799ba; }

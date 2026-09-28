@@ -48,7 +48,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/" replace state={{ from: location.pathname }} />;
   }
 
-  if (allowedRoles?.length && !allowedRoles.includes(user?.role)) {
+  if (allowedRoles?.length && !allowedRoles.includes(user?.role) && !(allowedRoles.includes("PROVIDER") && user?.hasBoosterAccess)) {
     return <Navigate to="/" replace />;
   }
 

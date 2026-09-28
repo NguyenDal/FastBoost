@@ -144,7 +144,7 @@ function MatchPage() {
     const isAdminUser = currentUserRole === "ADMIN";
 
     const isAssignedProvider =
-        currentUserRole === "PROVIDER" &&
+        (currentUserRole === "PROVIDER" || effectiveUser?.hasBoosterAccess) &&
         isUserAssignedToOrder(order, conversation, currentUserId);
 
     const isConversationParticipant = isUserInConversation(
@@ -479,7 +479,7 @@ function MatchPage() {
     }, [orderId]);
 
     const isCustomerView = effectiveUser?.role === "CUSTOMER";
-    const isProviderView = effectiveUser?.role === "PROVIDER";
+    const isProviderView = effectiveUser?.role === "PROVIDER" || Boolean(effectiveUser?.hasBoosterAccess);
     const canEditLoginInfo = isCustomerOwner;
 
     const inGameName =

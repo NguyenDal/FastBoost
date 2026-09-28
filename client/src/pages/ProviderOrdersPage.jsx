@@ -24,7 +24,7 @@ function useProviderGuard() {
             try {
                 const user = JSON.parse(userRaw);
 
-                if (user?.role !== "PROVIDER" && user?.role !== "ADMIN") {
+                if (user?.role !== "PROVIDER" && user?.role !== "ADMIN" && !user?.hasBoosterAccess) {
                     navigate("/", { replace: true });
                 } else {
                     setIsProvider(true);

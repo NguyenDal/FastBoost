@@ -1979,3 +1979,9 @@
     transform: rotate(-45deg) scaleX(1);
   }
 }
+
+.role-badge.role-owner {
+  color: #fde68a;
+  background: rgba(234, 179, 8, 0.16);
+  border: 1px solid rgba(234, 179, 8, 0.38);
+}

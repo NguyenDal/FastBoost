@@ -723,7 +723,7 @@ function Navbar({
                                     </button>
                                 )}
 
-                                {effectiveCurrentUser?.role === "PROVIDER" && (
+                                {(effectiveCurrentUser?.role === "PROVIDER" || effectiveCurrentUser?.hasBoosterAccess) && (
                                     <button
                                         className="profile-menu-item profile-menu-row"
                                         role="menuitem"

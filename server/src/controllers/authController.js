@@ -53,7 +53,7 @@ const signToken = (user) => {
       userId: user.id,
       email: user.email,
       username: user.username || undefined,
-      role: user.role,
+      role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess),
     },
     process.env.JWT_SECRET,
     { expiresIn: "3d" }
@@ -195,7 +195,7 @@ const registerUser = async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess),
         username: user.username || null,
         referralCode: user.referralCode,
         profile: user.profile ? { displayName: user.profile.displayName } : null,
@@ -263,7 +263,7 @@ const loginUser = async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess),
         username: user.username || null,
         referralCode: user.referralCode || null,
         profile: user.profile ? { displayName: user.profile.displayName } : null,

@@ -1,6 +1,15 @@
 import { authStorage } from "../utils/authStorage";
 import { API_BASE_URL } from './config.js';
 
+export async function ownerUpdateBoosterAccess(userId, hasBoosterAccess) {
+    const res = await fetch(`${API_BASE_URL}/admin/users/${userId}/booster-access`, {
+        method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ hasBoosterAccess }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || "Failed to update additional role");
+    return data;
+}
+
 function getAuthHeaders() {
     const token = authStorage.getItem("token");
 

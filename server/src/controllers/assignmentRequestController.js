@@ -1,3 +1,4 @@
+const { canBoost } = require("../utils/boosterAccess");
 const prisma = require("../prisma");
 
 function getOrderTitle(order) {
@@ -74,7 +75,7 @@ exports.createAssignmentRequest = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
           },
         },
       },
@@ -93,11 +94,11 @@ exports.createAssignmentRequest = async (req, res) => {
         id: true,
         email: true,
         username: true,
-        role: true,
+        role: true, hasBoosterAccess: true, suspendedAt: true,
       },
     });
 
-    if (!booster || booster.role !== "PROVIDER") {
+    if (!canBoost(booster)) {
       return res.status(400).json({
         ok: false,
         message: "Selected user is not a provider",
@@ -273,7 +274,7 @@ exports.acceptAssignmentRequest = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
           },
         },
         requester: {
@@ -281,7 +282,7 @@ exports.acceptAssignmentRequest = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
           },
         },
       },
@@ -300,6 +301,8 @@ exports.acceptAssignmentRequest = async (req, res) => {
         message: "This request is not assigned to you",
       });
     }
+
+    if (!canBoost(request.booster)) return res.status(403).json({ ok: false, message: "Booster access is no longer active" });
 
     if (request.status !== "PENDING") {
       return res.status(400).json({
@@ -410,7 +413,7 @@ exports.declineAssignmentRequest = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
           },
         },
       },
@@ -503,7 +506,7 @@ exports.listOrderAssignmentRequests = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
             createdAt: true,
           },
         },
@@ -512,7 +515,7 @@ exports.listOrderAssignmentRequests = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            role: true,
+            role: true, hasBoosterAccess: true, suspendedAt: true,
           },
         },
       },

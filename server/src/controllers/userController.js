@@ -1,3 +1,4 @@
+const { boosterWhere } = require("../utils/boosterAccess");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
@@ -54,7 +55,7 @@ function sanitizeUser(user) {
     id: user.id,
     email: user.email,
     username: user.username,
-    role: user.role,
+    role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess),
 
     emailVerifiedAt: user.emailVerifiedAt || null,
     emailVerified: Boolean(user.emailVerifiedAt),
@@ -525,7 +526,7 @@ module.exports.listProviders = async (req, res) => {
   try {
     const q = (req.query.q || "").toString().trim();
 
-    const where = { role: "PROVIDER" };
+    const where = { AND: [boosterWhere] };
 
     if (q) {
       where.OR = [

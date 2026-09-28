@@ -127,6 +127,8 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerifiedAt: 'emailVerifiedAt',
   passwordHash: 'passwordHash',
   role: 'role',
+  isOwner: 'isOwner',
+  hasBoosterAccess: 'hasBoosterAccess',
   suspendedAt: 'suspendedAt',
   suspendedReason: 'suspendedReason',
   createdAt: 'createdAt',

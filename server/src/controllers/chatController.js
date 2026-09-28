@@ -179,7 +179,7 @@ exports.getOrCreateOrderConversation = async (req, res) => {
         create: {
           conversationId: conversation.id,
           userId: booster.id,
-          roleAtJoin: booster.role || "PROVIDER",
+          roleAtJoin: "PROVIDER",
         },
       });
     }
