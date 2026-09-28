@@ -2,7 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
-const { uploadChatAttachmentToS3, createChatAttachmentSignedUrl } = require('../utils/s3Upload');
+const { uploadChatAttachmentToS3, createChatAttachmentSignedUrl, readChatAttachmentFromS3 } = require('../utils/s3Upload');
+const { buildAttachmentPreview, contentTypeOf } = require('../utils/supportAttachmentPreview');
 const { identitySelect, messageSelect, fail, onlineAdmins, authorizeThread, validateMessage, saveSupportMessage } = require('../utils/supportChat');
 const router = express.Router();
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -87,8 +88,25 @@ router.get('/attachments/:messageId', handle(async (req, res) => {
     const message = await db.supportMessage.findUnique({ where: { id: req.params.messageId } });
     if (!message?.attachmentKey) fail(404, 'Attachment not found.');
     await authorizeThread(db, req.supportUser, message.threadId);
-    const url = await createChatAttachmentSignedUrl({ key: message.attachmentKey, filename: message.attachmentName, download: true });
+    const url = await createChatAttachmentSignedUrl({ key: message.attachmentKey, filename: message.attachmentName, download: req.query.download === '1', contentType: contentTypeOf(message.attachmentName) });
     res.json({ ok: true, url });
+}));
+
+router.get('/attachments/:messageId/preview', handle(async (req, res) => {
+    const message = await db.supportMessage.findUnique({ where: { id: req.params.messageId } });
+    if (!message?.attachmentKey) fail(404, 'Attachment not found.');
+    await authorizeThread(db, req.supportUser, message.threadId);
+    const preview = await buildAttachmentPreview(message, { signUrl: createChatAttachmentSignedUrl, readFile: readChatAttachmentFromS3 });
+    res.json({ ok: true, ...preview });
+}));
+
+router.get('/attachments/:messageId/content', handle(async (req, res) => {
+    const message = await db.supportMessage.findUnique({ where: { id: req.params.messageId } });
+    if (!message?.attachmentKey) fail(404, 'Attachment not found.');
+    await authorizeThread(db, req.supportUser, message.threadId);
+    if (!/\.pdf$/i.test(message.attachmentName)) fail(415, 'This file does not support PDF preview.');
+    const buffer = await readChatAttachmentFromS3(message.attachmentKey);
+    res.set('X-Content-Type-Options', 'nosniff').type('application/pdf').send(buffer);
 }));
 
 router.use((error, req, res, next) => {

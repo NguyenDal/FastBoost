@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { supportRequest } from '../api/support';
 import { authStorage } from '../utils/authStorage';
 import { getStoredUser, hasValidSession } from '../utils/authSession';
+import SupportAttachmentPreview from './SupportAttachmentPreview';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -26,6 +27,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
     const [file, setFile] = useState(null);
     const [sending, setSending] = useState(false);
     const [olderBusy, setOlderBusy] = useState(false);
+    const [previewMessage, setPreviewMessage] = useState(null);
     const scroll = useRef(null);
     const input = useRef(null);
     const pinned = useRef(true);
@@ -95,13 +97,8 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         } catch (err) { if (mounted.current) setError(err.message); }
         finally { if (mounted.current) setSending(false); }
     }
-    async function openAttachment(id) {
-        try {
-            const { url } = await supportRequest(`/attachments/${id}`);
-            const link = document.createElement('a'); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.click();
-        } catch (err) { setError(err.message); }
-    }
     return <div className="support-conversation">
+        {previewMessage && <SupportAttachmentPreview key={previewMessage.id} message={previewMessage} onClose={() => setPreviewMessage(null)} />}
         <div className="support-messages" ref={scroll} role="log" aria-label="Support messages" aria-live="polite" onScroll={() => { const el = scroll.current; pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60; }}>
             {hasMore && <button className="support-older" onClick={loadOlder} disabled={olderBusy}>{olderBusy ? 'Loading…' : 'Earlier messages'}</button>}
             {loading && <p className="support-muted">Loading your conversation…</p>}
@@ -111,7 +108,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
                 <div>
                     <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>
                     {message.content && <div className="support-bubble"><p>{message.content}</p></div>}
-                    {message.attachmentName && <button className="support-file" onClick={() => openAttachment(message.id)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Open attachment</small></span><span>↗</span></button>}
+                    {message.attachmentName && <button className="support-file" onClick={() => setPreviewMessage(message)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Preview attachment</small></span><span>↗</span></button>}
                     <time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
                 </div>
             </article>)}

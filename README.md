@@ -12,11 +12,11 @@ This project is a **game services marketplace demo** where users can register, l
 
 - **Customer chat:** a bottom-right support panel with zoom transitions, persistent conversations, unread indicators and responsive phone layouts. Guests see a sign-in prompt; only signed-in customers can message admins.
 - **Actual availability:** online admins appear with their usernames and profile pictures. When none are available, the panel says “No one is online.” Presence expires automatically if a tab disconnects.
-- **Attachments:** reuse Match chat's S3 upload flow, with one file up to 10 MB per message and access-checked temporary download links.
+- **Attachments:** reuse Match chat's S3 upload flow, with one file up to 10 MB per message. Images, PDFs, text and Word (`.docx`) text open in an on-site reader in both customer chat and the admin inbox. Downloading a copy is optional; file cards have a single frame.
 - **Admin inbox:** `/admin/support` lists customer conversations, unread messages and reply controls. A visible signed-in admin tab advertises availability; hidden tabs stop their presence heartbeat.
 - **Offline alerts:** each message sent while no admin is online queues an email for every active admin account. Delivery retries independently per recipient using the existing SMTP configuration.
 
-**Verification:** 102 server tests passed, with 4 optional database tests skipped in the normal suite. The new support database test also passed separately and rolled back all test records. Prisma validation, focused client ESLint and the production build passed (existing bundle-size warning remains). Browser checks covered the guest sign-in gate, customer/admin replies, online/offline states, attachments and phone layouts down to 320px using sample data.
+**Verification:** 105 server tests passed, with 4 optional database tests skipped in the normal suite. The support database test previously passed separately and rolled back all test records. Focused client ESLint and the production build passed (existing bundle-size warning remains). Browser checks covered the guest sign-in gate, customer/admin replies, online/offline states, attachments and phone layouts down to 320px using sample data. The attachment reader was checked separately on desktop and at 390px, including PDF rendering, Word text, images, unsupported files and keyboard dismissal. Preview authorization and actual DOCX extraction have automated coverage.
 
 **Deployment:** requires the committed `20260927000000_support_chat` migration and matching client/API releases. The migration is applied to the configured development database. Use the normal Render `prisma migrate deploy` startup for production. Actual production delivery to admin mailboxes and S3 uploads remain unverified; tests did not send real emails.
 
@@ -587,10 +587,14 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/support/threads/:threadId/messages` — latest 50 messages; `before=<messageId>` loads older history
 - `POST /api/support/threads/:threadId/messages` — text and optional multipart `attachment`, with a retry-safe `clientId`
 - `POST /api/support/threads/:threadId/read` — record the last seen `messageId`
-- `GET /api/support/attachments/:messageId` — authorize the customer/admin before returning a temporary download URL
+- `GET /api/support/attachments/:messageId` — authorize the customer/admin before returning a temporary inline URL; `?download=1` explicitly downloads a copy
+- `GET /api/support/attachments/:messageId/preview` — authorized image/PDF preview metadata or plain text extracted from `.txt`/`.docx`
+- `GET /api/support/attachments/:messageId/content` — authorized, non-cached PDF bytes for the on-site PDF.js reader
 - `POST /api/support/presence` and `DELETE /api/support/presence/:sessionId` — admin tab heartbeat/leave
 
 All routes require a valid session and recheck the account's current role and suspension status. Customers can access only their own conversation; providers cannot use this support inbox. Messages are limited to 4,000 characters and 12 per minute per sender. Supported attachments are images, PDF, text, Office documents and ZIP files (10 MB maximum).
+
+The reader uses a locally bundled PDF.js worker for PDFs and Mammoth in a bounded server worker for DOCX text. No external document-viewing service receives attachments. DOCX previews show text only, without the original layout or embedded images; text previews are capped at 500,000 characters. Legacy `.doc`, spreadsheets and archives remain uploadable but show an unsupported-preview notice with an optional download. S3 reads are capped at 10 MB; Word conversions are limited to two concurrent workers with an 8-second timeout.
 
 Open conversations refresh every 3 seconds; the admin inbox refreshes every 5 seconds. Visible admin tabs refresh presence every 15 seconds with a 45-second expiry. Customer availability refreshes every 10 seconds. This uses database-backed polling and presence, independent of the existing Match chat Socket.IO connection.
 
