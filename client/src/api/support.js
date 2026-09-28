@@ -8,12 +8,3 @@ export async function supportRequest(path, { method = 'GET', body, token = authS
     if (!res.ok || !data.ok) throw new Error(data.message || 'Support chat is unavailable. Please try again.');
     return data;
 }
-
-export async function supportAttachmentData(messageId, signal) {
-    const res = await fetch(`${API_BASE_URL}/support/attachments/${messageId}/content`, { signal, headers: { Authorization: `Bearer ${authStorage.getItem('token')}` } });
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || 'This PDF could not be opened.');
-    }
-    return res.arrayBuffer();
-}

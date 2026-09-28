@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { supportRequest } from '../api/support';
 import { authStorage } from '../utils/authStorage';
 import { getStoredUser, hasValidSession } from '../utils/authSession';
-import SupportAttachmentPreview from './SupportAttachmentPreview';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -27,7 +26,6 @@ export function SupportConversation({ threadId, user, active = true, online = nu
     const [file, setFile] = useState(null);
     const [sending, setSending] = useState(false);
     const [olderBusy, setOlderBusy] = useState(false);
-    const [previewMessage, setPreviewMessage] = useState(null);
     const scroll = useRef(null);
     const input = useRef(null);
     const pinned = useRef(true);
@@ -63,7 +61,9 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         const id = messages.at(-1).id;
         if (lastRead.current !== id && pinned.current) {
             lastRead.current = id;
-            supportRequest(`/threads/${threadId}/read`, { method: 'POST', body: { messageId: id } }).catch(() => { lastRead.current = null; });
+            supportRequest(`/threads/${threadId}/read`, { method: 'POST', body: { messageId: id } })
+                .then(() => window.dispatchEvent(new Event('support:read')))
+                .catch(() => { lastRead.current = null; });
         }
     }, [messages, active, threadId]);
 
@@ -97,8 +97,13 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         } catch (err) { if (mounted.current) setError(err.message); }
         finally { if (mounted.current) setSending(false); }
     }
+    async function openAttachment(message) {
+        try {
+            const { url } = await supportRequest(`/attachments/${message.id}`);
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (err) { setError(err.message || 'Failed to open attachment.'); }
+    }
     return <div className="support-conversation">
-        {previewMessage && <SupportAttachmentPreview key={previewMessage.id} message={previewMessage} onClose={() => setPreviewMessage(null)} />}
         <div className="support-messages" ref={scroll} role="log" aria-label="Support messages" aria-live="polite" onScroll={() => { const el = scroll.current; pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60; }}>
             {hasMore && <button className="support-older" onClick={loadOlder} disabled={olderBusy}>{olderBusy ? 'Loading…' : 'Earlier messages'}</button>}
             {loading && <p className="support-muted">Loading your conversation…</p>}
@@ -108,12 +113,12 @@ export function SupportConversation({ threadId, user, active = true, online = nu
                 <div>
                     <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>
                     {message.content && <div className="support-bubble"><p>{message.content}</p></div>}
-                    {message.attachmentName && <button className="support-file" onClick={() => setPreviewMessage(message)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Preview attachment</small></span><span>↗</span></button>}
+                    {message.attachmentName && <button className="support-file" onClick={() => openAttachment(message)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Open attachment</small></span><span>↗</span></button>}
                     <time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
                 </div>
             </article>)}
         </div>
-        {online === false && <p className="support-offline-note">No one is online. Leave a message; our admins will be notified by email.</p>}
+        {online === false && <p className="support-offline-note">No one is online. Leave a message and we’ll follow up.</p>}
         {error && <p role="alert" className="support-error">{error}</p>}
         {connectionError && <p role="status" className="support-error">{connectionError} Reconnecting…</p>}
         <form className="support-composer" onSubmit={send}>
@@ -159,6 +164,12 @@ function CustomerSupport({ user }) {
     const [footerHeight, setFooterHeight] = useState(0);
     const location = useLocation();
     useEffect(() => {
+        if (location.pathname === '/support') setOpen(true);
+    }, [location.pathname, user]);
+    useEffect(() => {
+        if (user && new URLSearchParams(location.search).get('support') === 'open') setOpen(true);
+    }, [location.key, location.search, user]);
+    useEffect(() => {
         const observer = new ResizeObserver(() => setFooterHeight(document.querySelector('.sale-footer-dock')?.getBoundingClientRect().height || 0));
         observer.observe(document.body);
         const footer = document.querySelector('.sale-footer-dock');
@@ -194,15 +205,15 @@ function CustomerSupport({ user }) {
         return () => { stopped = true; };
     }, [open, user, thread]);
     useEffect(() => { if (open) { closeButton.current?.focus(); setUnread(false); } }, [open]);
-    const close = () => { setOpen(false); trigger.current?.focus(); };
+    const close = () => { setOpen(false); requestAnimationFrame(() => trigger.current?.focus()); };
     const online = admins === null ? null : admins.length > 0;
     return <div className="support-widget" style={{ '--support-bottom': `${footerHeight + 20}px` }}>
         <section className={`support-panel ${open ? 'is-open' : ''}`} inert={!open} aria-hidden={!open} role="dialog" aria-label="FastBoost support chat" onKeyDown={e => { if (e.key === 'Escape') close(); }}>
             <header className="support-header"><div><span className="support-eyebrow">FASTBOOST SUPPORT</span><h2>Let’s talk<span> ✦</span></h2></div><button ref={closeButton} className="support-icon-button" aria-label="Close support chat" onClick={close}><SupportIcon type="close" /></button></header>
-            {user ? <><div className="support-presence"><div className="support-avatar-stack">{admins?.length ? admins.slice(0, 3).map(admin => <SupportAvatar key={admin.id} user={admin} />) : <span className="support-team-icon"><SupportIcon /></span>}</div><div><strong>{admins?.length ? admins.map(nameOf).join(', ') : 'Your support team'}</strong><span><i className={online ? 'online' : ''} />{online === null ? 'Checking availability…' : online ? 'Online · Ready to help' : 'No one is online'}</span></div></div>{thread ? <SupportConversation key={thread.id} threadId={thread.id} user={user} active={open} online={online} /> : <div className="support-welcome">{error ? <><p role="alert">{error}</p><button className="support-primary" onClick={() => { setOpen(false); trigger.current?.focus(); }}>Close and try again</button></> : <p>Opening your conversation…</p>}</div>}</> : <div className="support-signin"><span className="support-welcome-icon"><SupportIcon /></span><h3>A helping hand, right here.</h3><p>Sign in to message our team and keep your conversation in one place.</p><Link className="support-primary" to="/" state={{ openAuthModal: true, authMode: 'login' }} onClick={close}>Sign in to chat <span>↗</span></Link><Link to="/faq" onClick={close}>Browse quick answers</Link></div>}
+            {user ? <><div className="support-presence"><div className="support-avatar-stack">{admins?.length ? admins.slice(0, 3).map(admin => <SupportAvatar key={admin.id} user={admin} />) : <span className="support-team-icon"><SupportIcon /></span>}</div><div><strong>{admins?.length ? admins.map(nameOf).join(', ') : 'Your support team'}</strong><span><i className={online ? 'online' : ''} />{online === null ? 'Checking availability…' : online ? 'Online · Ready to help' : 'No one is online'}</span></div></div>{thread ? <SupportConversation key={thread.id} threadId={thread.id} user={user} active={open} online={online} /> : <div className="support-welcome">{error ? <><p role="alert">{error}</p><button className="support-primary" onClick={() => { setOpen(false); trigger.current?.focus(); }}>Close and try again</button></> : <p>Opening your conversation…</p>}</div>}</> : <div className="support-signin"><span className="support-welcome-icon"><SupportIcon /></span><h3>A helping hand, right here.</h3><p>Sign in to message our team and keep your conversation in one place.</p><Link className="support-primary" to={location.pathname === '/support' ? '/support' : '/'} state={{ openAuthModal: true, authMode: 'login' }} onClick={() => setOpen(false)}>Sign in to chat <span>↗</span></Link><Link to="/faq" onClick={() => setOpen(false)}>Browse quick answers</Link></div>}
             <div className="support-brandline"><SupportIcon type="bolt" /> A little boost goes a long way.</div>
         </section>
-        <button ref={trigger} className={`support-launcher ${open ? 'is-open' : ''}`} aria-label={open ? 'Close support chat' : 'Open support chat'} aria-expanded={open} onClick={() => open ? close() : setOpen(true)}><SupportIcon type={open ? 'close' : 'chat'} />{!open && <span>Need a hand?</span>}{unread && !open && <i className="support-unread" aria-label="Unread support message" />}</button>
+        <button ref={trigger} className="support-launcher" hidden={open} aria-label="Open support chat" aria-expanded={open} onClick={() => setOpen(true)}><SupportIcon /><span>Need a hand?</span>{unread && <i className="support-unread" aria-label="Unread support message" />}</button>
     </div>;
 }
 

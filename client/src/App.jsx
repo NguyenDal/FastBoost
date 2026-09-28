@@ -101,6 +101,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Navigate to="/" replace state={{ openAuthModal: true, authMode: "register" }} />} />
+        <Route path="/support" element={<HomePage />} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
         <Route path="/provider-agreement" element={<LegalDocumentPage provider />} />
         <Route path="/order/:serviceId" element={<OrderPage />} />

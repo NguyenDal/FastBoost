@@ -109,7 +109,7 @@ async function uploadChatAttachmentToS3({ conversationId, userId, file }) {
   };
 }
 
-async function createChatAttachmentSignedUrl({ key, filename, download = false, contentType }) {
+async function createChatAttachmentSignedUrl({ key, filename, download = false }) {
   if (!key) {
     throw new Error("Attachment key is required");
   }
@@ -117,7 +117,6 @@ async function createChatAttachmentSignedUrl({ key, filename, download = false, 
   const command = new GetObjectCommand({
     Bucket: BUCKET,
     Key: key,
-    ...(contentType ? { ResponseContentType: contentType } : {}),
     ResponseContentDisposition: `${download ? "attachment" : "inline"}; filename="${String(filename || "attachment").replace(/["\r\n\\]/g, "")}"`,
   });
 
@@ -126,29 +125,8 @@ async function createChatAttachmentSignedUrl({ key, filename, download = false, 
   });
 }
 
-async function readChatAttachmentFromS3(key) {
-  const maximum = 10 * 1024 * 1024;
-  const response = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }), {
-    abortSignal: AbortSignal.timeout(15000),
-  });
-  const chunks = [];
-  let size = 0;
-  try {
-    if (response.ContentLength > maximum) throw new Error('Attachment exceeds preview limit');
-    for await (const chunk of response.Body) {
-      size += chunk.length;
-      if (size > maximum) throw new Error('Attachment exceeds preview limit');
-      chunks.push(chunk);
-    }
-    return Buffer.concat(chunks);
-  } finally {
-    response.Body?.destroy?.();
-  }
-}
-
 module.exports = {
   uploadProfileImageToS3,
   uploadChatAttachmentToS3,
   createChatAttachmentSignedUrl,
-  readChatAttachmentFromS3,
 };

@@ -275,7 +275,7 @@ function Navbar({
         navigate("/", { replace: true });
     };
 
-    const loadNotifications = async () => {
+    const loadNotifications = async ({ quiet = false } = {}) => {
         const tokenBeforeCheck = authStorage.getItem("token");
 
         if (!hasValidSession()) {
@@ -306,7 +306,7 @@ function Navbar({
         }
 
         try {
-            setNotificationsLoading(true);
+            if (!quiet) setNotificationsLoading(true);
             setNotificationsError("");
 
             const items = await listMyNotifications();
@@ -357,7 +357,7 @@ function Navbar({
             setNotificationsError(error.message || "Failed to load notifications");
             return [];
         } finally {
-            setNotificationsLoading(false);
+            if (!quiet) setNotificationsLoading(false);
         }
     };
 
@@ -372,7 +372,16 @@ function Navbar({
             return;
         }
 
-        loadNotifications();
+        const refresh = () => { if (!document.hidden) void loadNotifications({ quiet: true }); };
+        refresh();
+        const timer = window.setInterval(refresh, 10000);
+        window.addEventListener('support:read', refresh);
+        window.addEventListener('focus', refresh);
+        return () => {
+            window.clearInterval(timer);
+            window.removeEventListener('support:read', refresh);
+            window.removeEventListener('focus', refresh);
+        };
     }, [effectiveHasSession]);
 
     const markNotificationsReadOnClose = async () => {

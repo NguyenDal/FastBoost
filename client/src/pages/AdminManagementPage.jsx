@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { OrdersIcon, UsersIcon, PriceIcon } from "../components/AdminIcons";
+import { SupportIcon } from "../components/SupportChat";
 import "../styles/Admin.css";
 
 const managementCards = [
+    {
+        title: "Support Inbox",
+        description: "Read customer messages and reply to support conversations.",
+        icon: <SupportIcon />,
+        path: "/admin/support",
+    },
     {
         title: "Order Management",
         description:

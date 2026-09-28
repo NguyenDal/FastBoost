@@ -8,17 +8,17 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 27, 2026 — customer live support
+### September 28, 2026 — support notifications and chat refinements
 
-- **Customer chat:** a bottom-right support panel with zoom transitions, persistent conversations, unread indicators and responsive phone layouts. Guests see a sign-in prompt; only signed-in customers can message admins.
-- **Actual availability:** online admins appear with their usernames and profile pictures. When none are available, the panel says “No one is online.” Presence expires automatically if a tab disconnects.
-- **Attachments:** reuse Match chat's S3 upload flow, with one file up to 10 MB per message. Images, PDFs, text and Word (`.docx`) text open in an on-site reader in both customer chat and the admin inbox. Downloading a copy is optional; file cards have a single frame.
-- **Admin inbox:** `/admin/support` lists customer conversations, unread messages and reply controls. A visible signed-in admin tab advertises availability; hidden tabs stop their presence heartbeat.
-- **Offline alerts:** each message sent while no admin is online queues an email for every active admin account. Delivery retries independently per recipient using the existing SMTP configuration.
+- **Attachments:** open in a separate browser tab using the same signed-URL flow as Match. The current support file-card design stays; the built-in document reader and its dependencies have been removed.
+- **Message notifications:** new support messages appear in the profile Messages panel and dashboard New Messages card. Clicking a customer notification opens the support conversation; reading the conversation clears its unread notifications.
+- **Email reminders:** admin replies queue an email to the customer. Customer messages sent while no admin is online queue emails to active admins. Both wait five minutes and recheck read status before delivery or retry; read messages do not trigger email.
+- **Chat layout:** centered offline icon, one header close button, and phone width contained even with a visible scrollbar.
+- **Admin access:** Support Inbox shortcut added to Management Utilities, with a balanced two-column layout. Customer email links use /support, retaining the chat entry through normal sign-in.
 
-**Verification:** 105 server tests passed, with 4 optional database tests skipped in the normal suite. The support database test previously passed separately and rolled back all test records. Focused client ESLint and the production build passed (existing bundle-size warning remains). Browser checks covered the guest sign-in gate, customer/admin replies, online/offline states, attachments and phone layouts down to 320px using sample data. The attachment reader was checked separately on desktop and at 390px, including PDF rendering, Word text, images, unsupported files and keyboard dismissal. Preview authorization and actual DOCX extraction have automated coverage.
+**Verification:** 105 server tests passed with 4 optional DB skips. The support database test also passed separately with all sample rows rolled back and no SMTP delivery. Focused changed-component lint and the production build passed; Navbar retains its same pre-existing 7 lint errors and 4 warnings. Browser checks used local sample data for notifications, read badges, attachment new-tab opening, the admin shortcut, email entry and a 390px phone layout.
 
-**Deployment:** requires the committed `20260927000000_support_chat` migration and matching client/API releases. The migration is applied to the configured development database. Use the normal Render `prisma migrate deploy` startup for production. Actual production delivery to admin mailboxes and S3 uploads remain unverified; tests did not send real emails.
+**Deployment:** matching client/API releases; no new database migration or email configuration. The existing support-chat migration must already be installed. Actual production mailbox delivery is not verified.
 
 ## Earlier implementation notes
 
@@ -587,18 +587,16 @@ socket.on("chat:message", (m) => console.log("msg", m));
 - `GET /api/support/threads/:threadId/messages` — latest 50 messages; `before=<messageId>` loads older history
 - `POST /api/support/threads/:threadId/messages` — text and optional multipart `attachment`, with a retry-safe `clientId`
 - `POST /api/support/threads/:threadId/read` — record the last seen `messageId`
-- `GET /api/support/attachments/:messageId` — authorize the customer/admin before returning a temporary inline URL; `?download=1` explicitly downloads a copy
-- `GET /api/support/attachments/:messageId/preview` — authorized image/PDF preview metadata or plain text extracted from `.txt`/`.docx`
-- `GET /api/support/attachments/:messageId/content` — authorized, non-cached PDF bytes for the on-site PDF.js reader
+- `GET /api/support/attachments/:messageId` — authorize the customer/admin before returning a temporary inline S3 URL, opened in a separate browser tab like Match
 - `POST /api/support/presence` and `DELETE /api/support/presence/:sessionId` — admin tab heartbeat/leave
 
 All routes require a valid session and recheck the account's current role and suspension status. Customers can access only their own conversation; providers cannot use this support inbox. Messages are limited to 4,000 characters and 12 per minute per sender. Supported attachments are images, PDF, text, Office documents and ZIP files (10 MB maximum).
 
-The reader uses a locally bundled PDF.js worker for PDFs and Mammoth in a bounded server worker for DOCX text. No external document-viewing service receives attachments. DOCX previews show text only, without the original layout or embedded images; text previews are capped at 500,000 characters. Legacy `.doc`, spreadsheets and archives remain uploadable but show an unsupported-preview notice with an optional download. S3 reads are capped at 10 MB; Word conversions are limited to two concurrent workers with an 8-second timeout.
+Support uses the same browser-native attachment opening as Match. Rendering depends on the browser and file format (PDFs/images are commonly viewable; unsupported formats may download). There is no in-site document reader or external document-viewing service.
 
 Open conversations refresh every 3 seconds; the admin inbox refreshes every 5 seconds. Visible admin tabs refresh presence every 15 seconds with a 45-second expiry. Customer availability refreshes every 10 seconds. This uses database-backed polling and presence, independent of the existing Match chat Socket.IO connection.
 
-Offline notifications are created with the message in one transaction. The worker checks every 15 seconds and retries failures with backoff. It reuses `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, and `CLIENT_URL` (the HTTPS frontend origin in production). Each email goes to one active admin and links to the protected inbox; attachments remain behind access checks. `sentAt` means SMTP acceptance, not verified mailbox delivery. The queue is durable; ambiguous SMTP failures can still cause a retry of an already accepted email.
+Messages and their CHAT_MESSAGE notifications commit together. Offline customer messages queue an email per active admin; admin replies queue one for the thread customer. Each alert becomes eligible after five minutes. The worker checks every 15 seconds and rechecks the recipient role, suspension, ownership, notification read flag and thread read cursor before sending or retrying. Reading the admin conversation clears the team’s unread notifications and suppresses pending team alerts; customers clear their own. Suppressed alerts are removed without marking them sent. The legacy SupportEmailAlert.adminId column stores either recipient type, so no schema migration is needed. SMTP_* and CLIENT_URL configuration is unchanged. sentAt means SMTP acceptance, not confirmed mailbox delivery; ambiguous SMTP failures can still cause duplicate delivery on retry.
 
 ---
 
@@ -909,6 +907,8 @@ npx prisma studio
 
 ### Done
 
+- customer live support includes persistent conversations, admin presence, attachments, an offline email outbox, and a responsive chat widget
+- support attachment cards use a single frame in both customer chat and the admin inbox
 - public FAQ at `/faq` is accessible without signing in, sits between Reviews and Contact in the navbar, and keeps its dashboard Quick Action; old `/account/faq` links redirect and the dashboard sidebar entry is removed
 - interactive FAQ includes five topic filters, cross-topic search, 22 concise answers based on the supplied terms and current product behavior, and a three-stage refund guide; redundant counts and Helpful links removed
 - FAQ supports keyboard navigation, reduced motion and phone layouts down to 320px; focused checks and production build passed
