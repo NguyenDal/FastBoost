@@ -108,7 +108,12 @@ export function SupportConversation({ threadId, user, active = true, online = nu
             {!loading && !messages.length && <div className="support-welcome"><span className="support-welcome-icon"><SupportIcon /></span><h3>A little help. A better game.</h3><p>Ask about an order, a service, or your account. We’re here to help.</p><div className="support-prompts">{['Help with my order', 'Choosing a service'].map(prompt => <button key={prompt} onClick={() => { setText(prompt); retryId.current = null; }}>{prompt}<span>↗</span></button>)}</div></div>}
             {messages.map(message => <article key={message.id} className={`support-message ${message.senderId === user.id ? 'mine' : ''}`}>
                 {message.senderId !== user.id && <SupportAvatar user={message.sender} />}
-                <div><span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span><div className="support-bubble">{message.content && <p>{message.content}</p>}{message.attachmentName && <button className="support-file" onClick={() => openAttachment(message.id)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Open attachment</small></span><span>↗</span></button>}</div><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time></div>
+                <div>
+                    <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>
+                    {message.content && <div className="support-bubble"><p>{message.content}</p></div>}
+                    {message.attachmentName && <button className="support-file" onClick={() => openAttachment(message.id)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Open attachment</small></span><span>↗</span></button>}
+                    <time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
+                </div>
             </article>)}
         </div>
         {online === false && <p className="support-offline-note">No one is online. Leave a message; our admins will be notified by email.</p>}

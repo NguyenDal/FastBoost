@@ -47,8 +47,9 @@
 .support-message.mine .support-bubble { background: #493069; border-color: #b699e41b; border-radius: 14px 3px 14px 14px; }
 .support-bubble p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; font-size: 13px; margin: 0; }
 .support-message time { display: block; color: #858098; font-size: 9px; margin: 6px 3px 0; }
-.support-file { background: #00000012; border: 1px solid #ffffff10; color: #e8e0f6; width: 100%; padding: 9px; display: flex; align-items: center; gap: 9px; border-radius: 8px; text-align: left; }
-.support-bubble p + .support-file { margin-top: 9px; }
+.support-file { background: #202130; border: 1px solid #ffffff10; color: #e8e0f6; width: 100%; padding: 9px; display: flex; align-items: center; gap: 9px; border-radius: 8px; text-align: left; }
+.support-message.mine .support-file { background: #493069; border-color: #b699e41b; }
+.support-bubble + .support-file { margin-top: 9px; }
 .support-file > span:first-of-type { min-width: 0; overflow-wrap: anywhere; font-size: 11px; }
 .support-file small { display: block; color: #bfb0cf; font-size: 9px; margin-top: 5px; }
 .support-offline-note { margin: 0; padding: 8px 20px; color: #aaa3b8; background: #ffffff03; font-size: 10px; line-height: 1.6; border-top: 1px solid #ffffff08; }
