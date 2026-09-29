@@ -8,16 +8,16 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 29, 2026 — unread support reminders and dashboard polish
+### September 29, 2026 — support email design and message links
 
-- Support email reminders work in both directions after five minutes unread, regardless of admin presence. Reading the conversation or notification cancels the pending reminder; retries recheck read status.
-- Support inbox rows highlight unread customer messages with a New badge, even when an admin reply is the latest message. Support chat shares Match's Today/Yesterday/date separators.
-- Profile notification categories have independent result limits. Dashboard messages refresh every ten seconds and on tab return/read events.
-- The My Orders empty state matches My Coupons with a centered icon, title, helper text and dashed border.
-
-**Verification:** 112 server tests passed; 5 optional database tests skipped. Focused client lint, day-boundary checks and production build passed. Existing Navbar/Match lint findings and bundle warning are unchanged. Saved locally; production mailbox delivery and browser visual verification remain unverified.
+- Branded support emails show a greeting, sender, timestamp, message and purple Read & reply hyperlink, with no reminder explanation or visible URL in HTML.
+- Links preserve the exact message through sign-in for both admins and customers. The chat loads older history as needed and centers/highlights the message; authorization remains required.
+- Verification: 114 server tests passed, 5 optional database skips; focused lint and client build passed. Browser preview verified the email and signed-out sign-in entry with preserved destination. Authenticated end-to-end and Gmail inbox rendering remain unverified. Saved locally, not deployed.
 
 ## Done
+
+- Fixed five-minute support reminders in both directions regardless of presence; added unread highlighting, shared chat date separators, independent notification feeds and refreshes.
+- Styled the empty orders card like My Coupons and expanded it to fill remaining height.
 
 - Added support notifications to profile Messages and dashboard New Messages, with conversation links and read synchronization.
 - Support attachments open in a separate tab through authorized signed URLs, matching Match; removed the document reader.

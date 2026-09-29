@@ -15,16 +15,40 @@ async function shouldDeliver(db, alert) {
     return !notification?.read;
 }
 
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
 function buildSupportEmail(alert) {
     const origin = new URL(process.env.CLIENT_URL);
     if (process.env.NODE_ENV === 'production' && (origin.protocol !== 'https:' || ['localhost', '127.0.0.1'].includes(origin.hostname))) throw new Error('Invalid client URL');
     const message = alert.message;
     const name = message.sender.username || message.sender.profile?.displayName || 'FastBoost support';
+    const recipientName = alert.admin.username || alert.admin.profile?.displayName || 'there';
     const toAdmin = customerMessage(alert);
-    const url = new URL(toAdmin ? `/admin/support?thread=${encodeURIComponent(message.threadId)}` : '/support', origin).href;
-    return { to: { address: alert.admin.email }, subject: 'New FastBoost support message',
-        text: [`${name} ${toAdmin ? 'sent you a support message' : 'replied to your support conversation'}.`, '', message.content || '', message.attachmentName ? `Attachment: ${message.attachmentName}` : '', '', `Read and reply: ${url}`].filter(Boolean).join('\n'),
-        messageId: `<support-${alert.id}@${origin.hostname}>` };
+    const heading = toAdmin ? 'You have a new customer message' : 'Your support team has replied';
+    const role = toAdmin ? 'Customer' : 'Support team';
+    const url = new URL('/support', origin);
+    url.searchParams.set('thread', message.threadId);
+    url.searchParams.set('message', message.id);
+    const date = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Winnipeg', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(new Date(message.createdAt));
+    const intro = name + ' sent you a message that’s waiting for your attention.';
+    const attachment = message.attachmentName ? 'Attachment: ' + message.attachmentName : '';
+    const html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>' +
+        '<body style="margin:0;padding:24px 12px;background:#f4f2f8;color:#202033;font-family:Arial,sans-serif">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">' +
+        '<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:100%;max-width:560px;background:#ffffff;border:1px solid #e5def0;border-radius:16px"><tr><td style="padding:32px">' +
+        '<div style="font-size:20px;font-weight:800;letter-spacing:1px;color:#713be7">FASTBOOST</div>' +
+        '<h1 style="font-size:24px;line-height:1.3;margin:24px 0">' + escapeHtml(heading) + '</h1>' +
+        '<p style="font-size:15px;line-height:1.7">Hi ' + escapeHtml(recipientName) + ',<br>' + escapeHtml(intro) + '</p>' +
+        '<div style="padding:20px;background:#f6f3fc;border:1px solid #e9e1f5;border-radius:12px;margin:24px 0">' +
+        '<strong style="font-size:14px">' + escapeHtml(name) + ' · ' + role + '</strong>' +
+        '<div style="font-size:12px;color:#686279;margin-top:6px">' + escapeHtml(date) + '</div>' +
+        (message.content ? '<p style="font-size:15px;line-height:1.7;overflow-wrap:anywhere;margin:18px 0 0">' + escapeHtml(message.content).replace(/\r?\n/g, '<br>') + '</p>' : '') +
+        (attachment ? '<p style="font-size:13px;overflow-wrap:anywhere;margin:14px 0 0">' + escapeHtml(attachment) + '</p>' : '') + '</div>' +
+        '<a href="' + escapeHtml(url.href) + '" style="display:inline-block;padding:14px 24px;border-radius:9px;background:#713be7;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none">Read &amp; reply</a>' +
+        '</td></tr></table></td></tr></table></body></html>';
+    return { to: { address: alert.admin.email }, subject: toAdmin ? 'New customer message from ' + name : name + ' replied to your support chat', html,
+        text: ['FASTBOOST', heading, '', 'Hi ' + recipientName + ',', intro, '', name + ' · ' + role, date, message.content || '', attachment, '', 'Read & reply: ' + url.href].filter(Boolean).join('\n'),
+        messageId: '<support-' + alert.id + '@' + origin.hostname + '>' };
 }
 
 async function deliverSupportAlerts(db, transport, now = new Date()) {
@@ -37,7 +61,7 @@ async function deliverSupportAlerts(db, transport, now = new Date()) {
         try {
             // Re-read recipient/ownership and read status after claiming, including on retries.
             const fresh = await db.supportEmailAlert.findUnique({ where: { id: alert.id }, include: {
-                admin: { select: { email: true, role: true, suspendedAt: true } },
+                admin: { select: { email: true, username: true, profile: { select: { displayName: true } }, role: true, suspendedAt: true } },
                 message: { include: { thread: true, sender: { select: { username: true, profile: { select: { displayName: true } } } } } },
             } });
             if (!fresh || fresh.claim !== claim) continue;

@@ -60,6 +60,10 @@ router.get('/threads', handle(async (req, res) => {
 
 router.get('/threads/:threadId/messages', handle(async (req, res) => {
     const thread = await authorizeThread(db, req.supportUser, req.params.threadId);
+    if (req.query.target) {
+        const target = await db.supportMessage.findUnique({ where: { id: String(req.query.target) } });
+        if (!target || target.threadId !== thread.id) fail(404, 'This support message is unavailable.');
+    }
     if (req.query.before) {
         const cursor = await db.supportMessage.findUnique({ where: { id: String(req.query.before) } });
         if (!cursor || cursor.threadId !== thread.id) fail(400, 'Invalid message cursor.');

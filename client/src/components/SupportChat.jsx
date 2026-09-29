@@ -1,9 +1,10 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { supportRequest } from '../api/support';
 import { authStorage } from '../utils/authStorage';
 import { getStoredUser, hasValidSession } from '../utils/authSession';
 import { formatChatDateDivider, shouldRenderDateDivider } from '../utils/chatDates';
+import { loadSupportMessageTarget, supportAdminDestination } from '../utils/supportMessageLink';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -17,7 +18,7 @@ export function SupportAvatar({ user }) {
 const nameOf = user => user?.username || user?.profile?.displayName || 'Support';
 const mergeMessages = (old, fresh) => [...new Map([...old, ...fresh].map(m => [m.id, m])).values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 
-export function SupportConversation({ threadId, user, active = true, online = null }) {
+export function SupportConversation({ threadId, user, active = true, online = null, targetMessageId = null }) {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
@@ -33,6 +34,8 @@ export function SupportConversation({ threadId, user, active = true, online = nu
     const retryId = useRef(null);
     const lastRead = useRef(null);
     const initialPage = useRef(true);
+    const targetElement = useRef(null);
+    const targetPositioned = useRef(false);
     const mounted = useRef(true);
     useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
@@ -43,7 +46,9 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         const poll = async () => {
             try {
                 if (!document.hidden) {
-                    const data = await supportRequest(`/threads/${threadId}/messages`);
+                    const data = initialPage.current && targetMessageId
+                        ? await loadSupportMessageTarget(supportRequest, threadId, targetMessageId, () => stopped)
+                        : await supportRequest(`/threads/${threadId}/messages`);
                     if (stopped) return;
                     setMessages(old => mergeMessages(old, data.messages));
                     if (initialPage.current) { setHasMore(data.hasMore); initialPage.current = false; }
@@ -54,10 +59,23 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         };
         void poll();
         return () => { stopped = true; clearTimeout(timer); };
-    }, [threadId, active]);
+    }, [threadId, active, targetMessageId]);
 
     useEffect(() => {
         if (!active || !messages.length || document.hidden) return;
+        if (targetMessageId && !targetPositioned.current) {
+            const element = targetElement.current;
+            if (!element || !scroll.current) return;
+            targetPositioned.current = true;
+            pinned.current = false;
+            const container = scroll.current;
+            container.scrollTop += element.getBoundingClientRect().top - container.getBoundingClientRect().top - (container.clientHeight - element.clientHeight) / 2;
+            element.focus({ preventScroll: true });
+            supportRequest(`/threads/${threadId}/read`, { method: 'POST', body: { messageId: targetMessageId } })
+                .then(() => window.dispatchEvent(new Event('support:read')))
+                .catch(() => { targetPositioned.current = false; });
+            return;
+        }
         if (pinned.current) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: 'instant' });
         const id = messages.at(-1).id;
         if (lastRead.current !== id && pinned.current) {
@@ -66,7 +84,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
                 .then(() => window.dispatchEvent(new Event('support:read')))
                 .catch(() => { lastRead.current = null; });
         }
-    }, [messages, active, threadId]);
+    }, [messages, active, threadId, targetMessageId]);
 
     async function loadOlder() {
         setOlderBusy(true);
@@ -111,7 +129,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
             {!loading && !messages.length && <div className="support-welcome"><span className="support-welcome-icon"><SupportIcon /></span><h3>A little help. A better game.</h3><p>Ask about an order, a service, or your account. We’re here to help.</p><div className="support-prompts">{['Help with my order', 'Choosing a service'].map(prompt => <button key={prompt} onClick={() => { setText(prompt); retryId.current = null; }}>{prompt}<span>↗</span></button>)}</div></div>}
             {messages.map((message, index) => <Fragment key={message.id}>
                 {shouldRenderDateDivider(messages[index - 1], message) && <div className="support-date-divider"><span>{formatChatDateDivider(message.createdAt)}</span></div>}
-                <article className={`support-message ${message.senderId === user.id ? 'mine' : ''}`}>
+                <article ref={message.id === targetMessageId ? targetElement : null} tabIndex={message.id === targetMessageId ? -1 : undefined} className={`support-message ${message.senderId === user.id ? 'mine' : ''} ${message.id === targetMessageId ? 'support-message-target' : ''}`}>
                 {message.senderId !== user.id && <SupportAvatar user={message.sender} />}
                 <div>
                     <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>
@@ -166,6 +184,7 @@ function CustomerSupport({ user }) {
     const closeButton = useRef(null);
     const [footerHeight, setFooterHeight] = useState(0);
     const location = useLocation();
+    const targetMessageId = new URLSearchParams(location.search).get('message');
     useEffect(() => {
         if (location.pathname === '/support') setOpen(true);
     }, [location.pathname, user]);
@@ -213,7 +232,7 @@ function CustomerSupport({ user }) {
     return <div className="support-widget" style={{ '--support-bottom': `${footerHeight + 20}px` }}>
         <section className={`support-panel ${open ? 'is-open' : ''}`} inert={!open} aria-hidden={!open} role="dialog" aria-label="FastBoost support chat" onKeyDown={e => { if (e.key === 'Escape') close(); }}>
             <header className="support-header"><div><span className="support-eyebrow">FASTBOOST SUPPORT</span><h2>Let’s talk<span> ✦</span></h2></div><button ref={closeButton} className="support-icon-button" aria-label="Close support chat" onClick={close}><SupportIcon type="close" /></button></header>
-            {user ? <><div className="support-presence"><div className="support-avatar-stack">{admins?.length ? admins.slice(0, 3).map(admin => <SupportAvatar key={admin.id} user={admin} />) : <span className="support-team-icon"><SupportIcon /></span>}</div><div><strong>{admins?.length ? admins.map(nameOf).join(', ') : 'Your support team'}</strong><span><i className={online ? 'online' : ''} />{online === null ? 'Checking availability…' : online ? 'Online · Ready to help' : 'No one is online'}</span></div></div>{thread ? <SupportConversation key={thread.id} threadId={thread.id} user={user} active={open} online={online} /> : <div className="support-welcome">{error ? <><p role="alert">{error}</p><button className="support-primary" onClick={() => { setOpen(false); trigger.current?.focus(); }}>Close and try again</button></> : <p>Opening your conversation…</p>}</div>}</> : <div className="support-signin"><span className="support-welcome-icon"><SupportIcon /></span><h3>A helping hand, right here.</h3><p>Sign in to message our team and keep your conversation in one place.</p><Link className="support-primary" to={location.pathname === '/support' ? '/support' : '/'} state={{ openAuthModal: true, authMode: 'login' }} onClick={() => setOpen(false)}>Sign in to chat <span>↗</span></Link><Link to="/faq" onClick={() => setOpen(false)}>Browse quick answers</Link></div>}
+            {user ? <><div className="support-presence"><div className="support-avatar-stack">{admins?.length ? admins.slice(0, 3).map(admin => <SupportAvatar key={admin.id} user={admin} />) : <span className="support-team-icon"><SupportIcon /></span>}</div><div><strong>{admins?.length ? admins.map(nameOf).join(', ') : 'Your support team'}</strong><span><i className={online ? 'online' : ''} />{online === null ? 'Checking availability…' : online ? 'Online · Ready to help' : 'No one is online'}</span></div></div>{thread ? <SupportConversation key={`${thread.id}:${targetMessageId || ""}`} threadId={thread.id} targetMessageId={targetMessageId} user={user} active={open} online={online} /> : <div className="support-welcome">{error ? <><p role="alert">{error}</p><button className="support-primary" onClick={() => { setOpen(false); trigger.current?.focus(); }}>Close and try again</button></> : <p>Opening your conversation…</p>}</div>}</> : <div className="support-signin"><span className="support-welcome-icon"><SupportIcon /></span><h3>A helping hand, right here.</h3><p>Sign in to message our team and keep your conversation in one place.</p><Link className="support-primary" to={location.pathname === '/support' ? '/support' + location.search : '/'} state={{ openAuthModal: true, authMode: 'login' }} onClick={() => setOpen(false)}>Sign in to chat <span>↗</span></Link><Link to="/faq" onClick={() => setOpen(false)}>Browse quick answers</Link></div>}
             <div className="support-brandline"><SupportIcon type="bolt" /> A little boost goes a long way.</div>
         </section>
         <button ref={trigger} className="support-launcher" hidden={open} aria-label="Open support chat" aria-expanded={open} onClick={() => setOpen(true)}><SupportIcon /><span>Need a hand?</span>{unread && <i className="support-unread" aria-label="Unread support message" />}</button>
@@ -221,6 +240,7 @@ function CustomerSupport({ user }) {
 }
 
 export default function SupportChat() {
+    const location = useLocation();
     const [session, setSession] = useState(() => ({ user: hasValidSession() ? getStoredUser() : null, token: authStorage.getItem('token') }));
     useEffect(() => {
         const update = () => setSession({ user: hasValidSession() ? getStoredUser() : null, token: authStorage.getItem('token') });
@@ -228,6 +248,7 @@ export default function SupportChat() {
         const timer = setInterval(() => { if (!hasValidSession()) setSession(old => old.user ? { user: null, token: null } : old); }, 30000);
         return () => { clearInterval(timer); window.removeEventListener('auth:changed', update); window.removeEventListener('storage', update); window.removeEventListener('session:expired', update); };
     }, []);
+    if (session.user?.role === 'ADMIN' && location.pathname === '/support') return <Navigate to={supportAdminDestination(location.search)} replace />;
     if (session.user?.role === 'ADMIN') return <AdminAvailability key={session.token} />;
     if (session.user && session.user.role !== 'CUSTOMER') return null;
     return <CustomerSupport key={session.token || 'guest'} user={session.user} />;

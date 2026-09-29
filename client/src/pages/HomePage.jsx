@@ -198,12 +198,12 @@ function HomePage() {
   };
 
   useEffect(() => {
-    if (!location.state?.openAuthModal) return;
+    if (!location.state?.openAuthModal && !(location.pathname === '/support' && !hasValidSession())) return;
 
-    setAuthMode(location.state.authMode || "login");
+    setAuthMode(location.state?.authMode || "login");
     setShowAuthModal(true);
     setAuthMessage(
-      location.state.reason === "session-expired"
+      location.state?.reason === "session-expired"
         ? "Your session expired. Please login again."
         : ""
     );
@@ -222,11 +222,11 @@ function HomePage() {
     setForgotError(false);
     setForgotEmail("");
 
-    navigate(location.pathname, {
+    if (location.state) navigate(location.pathname + location.search, {
       replace: true,
       state: null,
     });
-  }, [location.state, location.pathname, navigate]);
+  }, [location.state, location.pathname, location.search, navigate]);
 
   useEffect(() => {
     if (!referralCode) return;

@@ -108,10 +108,17 @@ test('email sends in both directions only at five minutes, with protected destin
     for (const customer of [false, true]) {
         const f = emailFixture(customer); let sent = 0;
         const transport = { sendMail: async mail => {
-            sent++; assert.equal(mail.cc, undefined); assert.equal(mail.bcc, undefined); assert.equal(mail.html, undefined);
+            sent++; assert.equal(mail.cc, undefined); assert.equal(mail.bcc, undefined);
+            assert.match(mail.html, /Read &amp; reply<\/a>/);
+            assert.match(mail.html, /support\?thread=thread&amp;message=message/);
+            assert.match(mail.html, /&lt;script&gt;test&lt;\/script&gt;/);
+            assert.ok(!mail.html.includes('<script>'));
+            assert.ok(!mail.html.replace(/<[^>]+>/g, '').includes('https://'));
+            assert.ok(!mail.html.includes('5 minutes'));
             assert.equal(mail.disableFileAccess, true); assert.equal(mail.disableUrlAccess, true);
             assert.equal(mail.to.address, f.alert.admin.email);
-            assert.ok(mail.text.includes(customer ? 'https://www.fastboost.gg/support' : '/admin/support?thread=thread'));
+            assert.ok(mail.text.includes('https://www.fastboost.gg/support?thread=thread&message=message'));
+            assert.ok(mail.html.includes(customer ? 'Your support team has replied' : 'You have a new customer message'));
             assert.match(mail.text, /proof.pdf/); return { accepted: [f.alert.admin.email] };
         } };
         await deliverSupportAlerts(f.db, transport, new Date(f.now.getTime() - 1)); assert.equal(sent, 0);
@@ -216,4 +223,11 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     f.db.supportThread.findUnique = async () => ({ id: 'private-thread', customerId: 'customer' });
     assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 200);
     assert.equal(signed, 2);
+    f.db.supportMessage.findUnique = async () => ({ id: 'foreign-message', threadId: 'another-thread' });
+    assert.equal((await fetch(`${base}/threads/private-thread/messages?target=foreign-message`, { headers })).status, 404);
+    f.db.supportMessage.findUnique = async () => null;
+    assert.equal((await fetch(`${base}/threads/private-thread/messages?target=missing`, { headers })).status, 404);
+    f.db.supportMessage.findUnique = async () => ({ id: 'own-message', threadId: 'private-thread' });
+    f.db.supportMessage.findMany = async () => [{ id: 'own-message' }];
+    assert.equal((await fetch(`${base}/threads/private-thread/messages?target=own-message`, { headers })).status, 200);
 });
