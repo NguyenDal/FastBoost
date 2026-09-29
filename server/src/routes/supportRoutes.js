@@ -70,7 +70,14 @@ router.get('/threads/:threadId/messages', handle(async (req, res) => {
     }
     const messages = await db.supportMessage.findMany({ where: { threadId: thread.id }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 51,
         ...(req.query.before ? { cursor: { id: String(req.query.before) }, skip: 1 } : {}), select: messageSelect });
-    res.json({ ok: true, thread, messages: messages.slice(0, 50).reverse(), hasMore: messages.length > 50 });
+    const firstUnread = req.query.target || req.query.focus === 'unread' ? await db.supportMessage.findFirst({
+        where: { threadId: thread.id,
+            senderId: req.supportUser.role === 'ADMIN' ? thread.customerId : { not: thread.customerId },
+            createdAt: { gt: req.supportUser.role === 'ADMIN' ? thread.adminReadAt : thread.customerReadAt },
+        }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }], select: { id: true },
+    }) : null;
+    res.json({ ok: true, thread, messages: messages.slice(0, 50).reverse(), hasMore: messages.length > 50,
+        firstUnreadMessageId: firstUnread?.id || null });
 }));
 
 router.post('/threads/:threadId/read', handle(async (req, res) => {

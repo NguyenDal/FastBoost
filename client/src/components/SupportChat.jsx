@@ -22,6 +22,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(false);
+    const [focusMessageId, setFocusMessageId] = useState(null);
     const [error, setError] = useState('');
     const [connectionError, setConnectionError] = useState('');
     const [text, setText] = useState('');
@@ -46,12 +47,12 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         const poll = async () => {
             try {
                 if (!document.hidden) {
-                    const data = initialPage.current && targetMessageId
+                    const data = initialPage.current
                         ? await loadSupportMessageTarget(supportRequest, threadId, targetMessageId, () => stopped)
                         : await supportRequest(`/threads/${threadId}/messages`);
                     if (stopped) return;
                     setMessages(old => mergeMessages(old, data.messages));
-                    if (initialPage.current) { setHasMore(data.hasMore); initialPage.current = false; }
+                    if (initialPage.current) { setHasMore(data.hasMore); setFocusMessageId(data.focusMessageId); initialPage.current = false; }
                     setConnectionError('');
                 }
             } catch (err) { if (!stopped) setConnectionError(err.message); }
@@ -63,28 +64,30 @@ export function SupportConversation({ threadId, user, active = true, online = nu
 
     useEffect(() => {
         if (!active || !messages.length || document.hidden) return;
-        if (targetMessageId && !targetPositioned.current) {
+        if (focusMessageId && !targetPositioned.current) {
             const element = targetElement.current;
             if (!element || !scroll.current) return;
             targetPositioned.current = true;
             pinned.current = false;
             const container = scroll.current;
-            container.scrollTop += element.getBoundingClientRect().top - container.getBoundingClientRect().top - (container.clientHeight - element.clientHeight) / 2;
+            const bounds = element.getBoundingClientRect();
+            const viewport = container.getBoundingClientRect();
+            if (bounds.top < viewport.top || bounds.bottom > viewport.bottom) {
+                container.scrollTop += bounds.top - viewport.top - Math.max(12, (container.clientHeight - bounds.height) / 2);
+            }
             element.focus({ preventScroll: true });
-            supportRequest(`/threads/${threadId}/read`, { method: 'POST', body: { messageId: targetMessageId } })
-                .then(() => window.dispatchEvent(new Event('support:read')))
-                .catch(() => { targetPositioned.current = false; });
-            return;
+            element.classList.add('support-message-highlight');
+        } else if (pinned.current) {
+            scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: 'instant' });
         }
-        if (pinned.current) scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: 'instant' });
-        const id = messages.at(-1).id;
-        if (lastRead.current !== id && pinned.current) {
+        const id = pinned.current ? messages.at(-1).id : focusMessageId;
+        if (id && lastRead.current !== id) {
             lastRead.current = id;
             supportRequest(`/threads/${threadId}/read`, { method: 'POST', body: { messageId: id } })
                 .then(() => window.dispatchEvent(new Event('support:read')))
                 .catch(() => { lastRead.current = null; });
         }
-    }, [messages, active, threadId, targetMessageId]);
+    }, [messages, active, threadId, focusMessageId]);
 
     async function loadOlder() {
         setOlderBusy(true);
@@ -129,7 +132,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
             {!loading && !messages.length && <div className="support-welcome"><span className="support-welcome-icon"><SupportIcon /></span><h3>A little help. A better game.</h3><p>Ask about an order, a service, or your account. We’re here to help.</p><div className="support-prompts">{['Help with my order', 'Choosing a service'].map(prompt => <button key={prompt} onClick={() => { setText(prompt); retryId.current = null; }}>{prompt}<span>↗</span></button>)}</div></div>}
             {messages.map((message, index) => <Fragment key={message.id}>
                 {shouldRenderDateDivider(messages[index - 1], message) && <div className="support-date-divider"><span>{formatChatDateDivider(message.createdAt)}</span></div>}
-                <article ref={message.id === targetMessageId ? targetElement : null} tabIndex={message.id === targetMessageId ? -1 : undefined} className={`support-message ${message.senderId === user.id ? 'mine' : ''} ${message.id === targetMessageId ? 'support-message-target' : ''}`}>
+                <article ref={message.id === focusMessageId ? targetElement : null} tabIndex={message.id === focusMessageId ? -1 : undefined} onAnimationEnd={event => { if (event.target === event.currentTarget) event.currentTarget.classList.remove('support-message-highlight'); }} className={`support-message ${message.senderId === user.id ? 'mine' : ''} ${message.id === focusMessageId ? 'support-message-target' : ''}`}>
                 {message.senderId !== user.id && <SupportAvatar user={message.sender} />}
                 <div>
                     <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>

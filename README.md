@@ -11,7 +11,7 @@ This project is a **game services marketplace demo** where users can register, l
 ### September 29, 2026 — support email design and message links
 
 - Branded support emails show a greeting, sender, timestamp, message and purple Read & reply hyperlink, with no reminder explanation or visible URL in HTML.
-- Links preserve the exact message through sign-in for both admins and customers. The chat loads older history as needed and centers/highlights the message; authorization remains required.
+- Links preserve the exact message through sign-in for both admins and customers. The chat loads older history as needed and focuses the first unread incoming message, falling back to the linked message when fully read. Its highlight fades after three seconds; authorization remains required.
 - Verification: 114 server tests passed, 5 optional database skips; focused lint and client build passed. Browser preview verified the email and signed-out sign-in entry with preserved destination. Authenticated end-to-end and Gmail inbox rendering remain unverified. Saved locally, not deployed.
 
 ## Done

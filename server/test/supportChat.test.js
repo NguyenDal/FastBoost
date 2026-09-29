@@ -229,5 +229,15 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     assert.equal((await fetch(`${base}/threads/private-thread/messages?target=missing`, { headers })).status, 404);
     f.db.supportMessage.findUnique = async () => ({ id: 'own-message', threadId: 'private-thread' });
     f.db.supportMessage.findMany = async () => [{ id: 'own-message' }];
-    assert.equal((await fetch(`${base}/threads/private-thread/messages?target=own-message`, { headers })).status, 200);
+    f.db.supportThread.findUnique = async () => ({ id: 'private-thread', customerId: 'customer', customerReadAt: readAt, adminReadAt: readAt });
+    const unreadQueries = [];
+    f.db.supportMessage.findFirst = async args => { unreadQueries.push(args); return { id: 'first-unread' }; };
+    const focused = await fetch(`${base}/threads/private-thread/messages?target=own-message`, { headers });
+    assert.equal(focused.status, 200);
+    assert.equal((await focused.json()).firstUnreadMessageId, 'first-unread');
+    assert.deepEqual(unreadQueries[0].where, { threadId: 'private-thread', senderId: { not: 'customer' }, createdAt: { gt: readAt } });
+    currentRole = 'ADMIN';
+    assert.equal((await fetch(`${base}/threads/private-thread/messages?focus=unread`, { headers })).status, 200);
+    assert.deepEqual(unreadQueries[1].where, { threadId: 'private-thread', senderId: 'customer', createdAt: { gt: readAt } });
+    assert.deepEqual(unreadQueries[1].orderBy, [{ createdAt: 'asc' }, { id: 'asc' }]);
 });

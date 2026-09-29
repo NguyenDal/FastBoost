@@ -28,3 +28,29 @@ test('target loading handles current, missing, and cancelled links', async () =>
     await loadSupportMessageTarget(request, 'thread', 'older', () => true);
     assert.equal(calls, 1);
 });
+
+test('a later redirect finds the first unread message beyond multiple pages of newer messages', async () => {
+    const { loadSupportMessageTarget } = await import('../../client/src/utils/supportMessageLink.js');
+    const messages = Array.from({ length: 160 }, (_, index) => ({ id: `message-${index}` }));
+    let calls = 0;
+    const result = await loadSupportMessageTarget(async path => {
+        calls++;
+        const before = new URL(path, 'https://test.invalid').searchParams.get('before');
+        const end = before ? messages.findIndex(message => message.id === before) : messages.length;
+        return { messages: messages.slice(Math.max(0, end - 50), end), hasMore: end > 50, firstUnreadMessageId: 'message-7' };
+    }, 'thread', 'message-159');
+    assert.equal(result.focusMessageId, 'message-7');
+    assert.equal(result.messages.length, 160);
+    assert.equal(calls, 4);
+});
+
+test('opening without a message link uses the first unread, or stays at latest if fully read', async () => {
+    const { loadSupportMessageTarget } = await import('../../client/src/utils/supportMessageLink.js');
+    for (const firstUnreadMessageId of ['new', null]) {
+        const result = await loadSupportMessageTarget(async path => {
+            assert.equal(path, '/threads/thread/messages?focus=unread');
+            return { messages: [{ id: 'new' }], hasMore: true, firstUnreadMessageId };
+        }, 'thread', null);
+        assert.equal(result.focusMessageId, firstUnreadMessageId);
+    }
+});
