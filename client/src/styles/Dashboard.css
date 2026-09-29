@@ -863,6 +863,8 @@
 .dashboard-coupon-count { margin-left:auto; padding:3px 8px; border:1px solid #a78bfa30; border-radius:8px; background:#a78bfa12; color:#c4b5fd; font-size:12px; }
 .dashboard-coupon-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:120px; padding:16px; text-align:center; border:1px dashed #a78bfa26; border-radius:12px; background:#a78bfa06; }
 .dashboard-coupon-empty strong { font-size:13px; color:#cbd5e1; }
+.dashboard-orders-card:has(.dashboard-orders-empty) { display:flex; flex-direction:column; }
+.dashboard-orders-card:has(.dashboard-orders-empty) > .dashboard-activity-header { flex-shrink:0; }
 .dashboard-orders-empty { min-height:186px; margin-top:12px; }
 .dashboard-coupon-empty > span:last-child { color:#94a3b8; font-size:12px; }
 
