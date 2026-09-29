@@ -8,17 +8,21 @@ This project is a **game services marketplace demo** where users can register, l
 
 ## What’s new (latest progress)
 
-### September 28, 2026 — support notifications and chat refinements
+### September 29, 2026 — unread support reminders and dashboard polish
 
-- **Attachments:** open in a separate browser tab using the same signed-URL flow as Match. The current support file-card design stays; the built-in document reader and its dependencies have been removed.
-- **Message notifications:** new support messages appear in the profile Messages panel and dashboard New Messages card. Clicking a customer notification opens the support conversation; reading the conversation clears its unread notifications.
-- **Email reminders:** admin replies queue an email to the customer. Customer messages sent while no admin is online queue emails to active admins. Both wait five minutes and recheck read status before delivery or retry; read messages do not trigger email.
-- **Chat layout:** centered offline icon, one header close button, and phone width contained even with a visible scrollbar.
-- **Admin access:** Support Inbox shortcut added to Management Utilities, with a balanced two-column layout. Customer email links use /support, retaining the chat entry through normal sign-in.
+- Support email reminders work in both directions after five minutes unread, regardless of admin presence. Reading the conversation or notification cancels the pending reminder; retries recheck read status.
+- Support inbox rows highlight unread customer messages with a New badge, even when an admin reply is the latest message. Support chat shares Match's Today/Yesterday/date separators.
+- Profile notification categories have independent result limits. Dashboard messages refresh every ten seconds and on tab return/read events.
+- The My Orders empty state matches My Coupons with a centered icon, title, helper text and dashed border.
 
-**Verification:** 105 server tests passed with 4 optional DB skips. The support database test also passed separately with all sample rows rolled back and no SMTP delivery. Focused changed-component lint and the production build passed; Navbar retains its same pre-existing 7 lint errors and 4 warnings. Browser checks used local sample data for notifications, read badges, attachment new-tab opening, the admin shortcut, email entry and a 390px phone layout.
+**Verification:** 112 server tests passed; 5 optional database tests skipped. Focused client lint, day-boundary checks and production build passed. Existing Navbar/Match lint findings and bundle warning are unchanged. Saved locally; production mailbox delivery and browser visual verification remain unverified.
 
-**Deployment:** matching client/API releases; no new database migration or email configuration. The existing support-chat migration must already be installed. Actual production mailbox delivery is not verified.
+## Done
+
+- Added support notifications to profile Messages and dashboard New Messages, with conversation links and read synchronization.
+- Support attachments open in a separate tab through authorized signed URLs, matching Match; removed the document reader.
+- Added the Support Inbox management shortcut, customer /support entry through sign-in, centered offline icon, one close button and contained phone chat width.
+- Added durable delayed support-email delivery with read cancellation and retry checks. The current policy above supersedes the original offline-only admin queue rule.
 
 ## Earlier implementation notes
 
@@ -596,7 +600,7 @@ Support uses the same browser-native attachment opening as Match. Rendering depe
 
 Open conversations refresh every 3 seconds; the admin inbox refreshes every 5 seconds. Visible admin tabs refresh presence every 15 seconds with a 45-second expiry. Customer availability refreshes every 10 seconds. This uses database-backed polling and presence, independent of the existing Match chat Socket.IO connection.
 
-Messages and their CHAT_MESSAGE notifications commit together. Offline customer messages queue an email per active admin; admin replies queue one for the thread customer. Each alert becomes eligible after five minutes. The worker checks every 15 seconds and rechecks the recipient role, suspension, ownership, notification read flag and thread read cursor before sending or retrying. Reading the admin conversation clears the team’s unread notifications and suppresses pending team alerts; customers clear their own. Suppressed alerts are removed without marking them sent. The legacy SupportEmailAlert.adminId column stores either recipient type, so no schema migration is needed. SMTP_* and CLIENT_URL configuration is unchanged. sentAt means SMTP acceptance, not confirmed mailbox delivery; ambiguous SMTP failures can still cause duplicate delivery on retry.
+Messages and their CHAT_MESSAGE notifications commit together. Customer messages queue an email per active admin regardless of presence; admin replies queue one for the thread customer. Each alert becomes eligible after five minutes. The worker checks every 15 seconds and rechecks the recipient role, suspension, ownership, notification read flag and thread read cursor before sending or retrying. Reading the admin conversation clears the team’s unread notifications and suppresses pending team alerts; customers clear their own. Suppressed alerts are removed without marking them sent. The legacy SupportEmailAlert.adminId column stores either recipient type, so no schema migration is needed. SMTP_* and CLIENT_URL configuration is unchanged. sentAt means SMTP acceptance, not confirmed mailbox delivery; ambiguous SMTP failures can still cause duplicate delivery on retry.
 
 ---
 

@@ -40,7 +40,7 @@ test('support ownership, empty/long input and unsafe file types are rejected', a
     assert.throws(() => validateMessage(body, { originalname: 'page.html' }), { status: 400 });
 });
 
-test('support notifications reach both sides; offline admin alerts and customer replies wait five minutes without retry duplicates', async () => {
+test('support notifications and five-minute reminders reach both sides regardless of admin presence without retry duplicates', async () => {
     const f = fixture();
     const body = { clientId: 'test-message-id-001', text: 'Order help' };
     const message = await saveSupportMessage(f.db, f.customer, 'thread', body);
@@ -56,9 +56,10 @@ test('support notifications reach both sides; offline admin alerts and customer 
     assert.equal(f.alerts.length, 4); assert.equal(f.messages[1].attachmentName, 'proof.pdf');
     f.setOnline(true);
     await saveSupportMessage(f.db, f.customer, 'thread', { ...body, clientId: 'test-message-id-003' });
+    assert.equal(f.alerts.length, 6, 'Online admins still need reminders for unread messages');
     f.setOnline(false);
     await saveSupportMessage(f.db, { id: 'admin', role: 'ADMIN' }, 'thread', { ...body, clientId: 'test-message-id-004' });
-    assert.equal(f.alerts.length, 5);
+    assert.equal(f.alerts.length, 7);
     assert.equal(f.alerts.at(-1).adminId, 'customer');
     assert.equal(f.notifications.length, 7);
     assert.equal(f.notifications.at(-1).data.targetPath, '/account/dashboard?support=open');
@@ -198,6 +199,17 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     currentRole = 'PROVIDER'; assert.equal((await fetch(`${base}/status`, { headers })).status, 403);
     currentRole = 'ADMIN'; suspended = true; assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 403);
     suspended = false;
+    const readAt = new Date('2026-09-29T10:00:00Z');
+    f.db.supportThread.findMany = async () => [{ id: 'private-thread', customerId: 'customer', adminReadAt: readAt,
+        messages: [{ senderId: 'admin', createdAt: new Date('2026-09-29T10:02:00Z') }] }];
+    let incomingAt = new Date('2026-09-29T10:01:00Z');
+    f.db.supportMessage.findMany = async args => {
+        assert.deepEqual(args.where.OR, [{ threadId: 'private-thread', senderId: 'customer' }]);
+        return [{ threadId: 'private-thread', createdAt: incomingAt }];
+    };
+    assert.equal((await (await fetch(`${base}/threads`, { headers })).json()).threads[0].unread, true, 'Admin reply must not hide unread customer messages');
+    incomingAt = readAt;
+    assert.equal((await (await fetch(`${base}/threads`, { headers })).json()).threads[0].unread, false);
     const file = await fetch(`${base}/attachments/file`, { headers });
     assert.equal(file.status, 200); assert.equal((await file.json()).url, 'https://example.test/inline-file');
     currentRole = 'CUSTOMER';

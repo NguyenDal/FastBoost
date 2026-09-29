@@ -39,6 +39,11 @@ test("dashboard fetches latest three per category including read items and keeps
         discount.read = true;
         await listMyNotifications(req, res);
         assert.equal(discount.read, true);
+        queries.length = 0;
+        await listMyNotifications({ user: { id: 'customer' }, query: {} }, res);
+        assert.equal(queries.length, 2, 'Profile messages cannot be crowded out by account notifications');
+        assert.deepEqual(queries.map(query => query.where.type), [{ not: 'CHAT_MESSAGE' }, 'CHAT_MESSAGE']);
+        assert.ok(queries.every(query => query.take === 30 && query.where.active && query.where.userId === 'customer'));
     } finally {
         for (const [path, cached] of saved) {
             if (cached) require.cache[path] = cached;

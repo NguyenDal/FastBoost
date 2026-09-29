@@ -25,7 +25,7 @@ export function DashboardOrders({ orders }) {
                 <div className="dashboard-order-meta"><span className={"dashboard-order-status status-" + order.status?.toLowerCase()}>{labels[order.status] || order.status}</span><small>{new Date(order.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</small></div>
                 <span aria-hidden="true">›</span>
             </Link>;
-        }) : <p className="dashboard-subtitle">No orders yet.</p>}
+        }) : <div className="dashboard-coupon-empty dashboard-orders-empty" role="status"><DashboardIcon kind="orders" /><strong>No orders yet.</strong><span>Your orders and their progress will appear here.</span></div>}
     </section>;
 }
 

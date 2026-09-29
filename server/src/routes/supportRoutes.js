@@ -45,7 +45,17 @@ router.get('/threads', handle(async (req, res) => {
     const skip = Math.trunc(Math.max(0, Math.min(100000, Number(req.query.offset) || 0)));
     const threads = await db.supportThread.findMany({ where: { messages: { some: {} } }, orderBy: [{ lastMessageAt: 'desc' }, { id: 'desc' }], skip, take: 31,
         include: { customer: { select: identitySelect }, messages: { orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 1, select: messageSelect } } });
-    res.json({ ok: true, threads: threads.slice(0, 30), hasMore: threads.length > 30 });
+    const page = threads.slice(0, 30);
+    // A later admin reply must not conceal an earlier unread customer message.
+    const incoming = page.length ? await db.supportMessage.findMany({
+        where: { OR: page.map(thread => ({ threadId: thread.id, senderId: thread.customerId })) },
+        distinct: ['threadId'], orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        select: { threadId: true, createdAt: true },
+    }) : [];
+    const latestIncoming = new Map(incoming.map(message => [message.threadId, message.createdAt]));
+    res.json({ ok: true, threads: page.map(thread => ({ ...thread,
+        unread: (latestIncoming.get(thread.id)?.getTime() || 0) > thread.adminReadAt.getTime(),
+    })), hasMore: threads.length > 30 });
 }));
 
 router.get('/threads/:threadId/messages', handle(async (req, res) => {

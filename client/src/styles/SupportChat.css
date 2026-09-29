@@ -86,6 +86,12 @@
 .support-thread-list h2 { padding: 8px 12px 15px; margin: 0; font-size: 13px; color: #a799ba; }
 .support-thread { display: flex; align-items: center; gap: 11px; width: 100%; border: 1px solid transparent; color: #e7e0ef; background: transparent; border-radius: 12px; text-align: left; padding: 13px 10px; margin-bottom: 6px; }
 .support-thread.selected { border-color: #ab8cda35; background: #9270c01a; }
+.support-thread.unread { border-color: #b191ee85; background: #9270c02e; box-shadow: inset 3px 0 #b191ee; }
+.support-thread.unread small { color: #e2d5f8; font-weight: 600; }
+.support-unread-badge { flex-shrink: 0; color: #ede4ff; background: #7850b7; border-radius: 10px; padding: 4px 7px; font-size: 10px; font-weight: 700; }
+.support-date-divider { display: flex; align-items: center; gap: 12px; margin: 8px 0 22px; color: #b2a8c5; font-size: 11px; }
+.support-date-divider::before, .support-date-divider::after { content: ''; height: 1px; flex: 1; background: #ffffff14; }
+.support-date-divider span { padding: 6px 12px; border-radius: 999px; background: #ffffff0b; border: 1px solid #ffffff14; }
 .support-thread:hover { background: #9270c00f; }
 .support-thread > span:nth-child(2) { display: grid; min-width: 0; gap: 7px; flex: 1; }
 .support-thread strong { font-size: 12px; }

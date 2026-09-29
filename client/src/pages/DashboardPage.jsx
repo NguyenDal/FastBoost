@@ -67,18 +67,23 @@ export default function DashboardPage() {
     useEffect(() => {
         let cancelled = false;
         const refresh = async () => {
+            if (document.hidden) return;
             try {
                 const items = await listMyNotifications({ dashboard: true });
                 if (!cancelled) setNotifications(items);
             } catch { /* Keep the last successful activity list. */ }
         };
-        const interval = window.setInterval(refresh, 30000);
+        const interval = window.setInterval(refresh, 10000);
         window.addEventListener("unread:update", refresh);
+        window.addEventListener("support:read", refresh);
+        document.addEventListener("visibilitychange", refresh);
         window.addEventListener("focus", refresh);
         return () => {
             cancelled = true;
             window.clearInterval(interval);
             window.removeEventListener("unread:update", refresh);
+            window.removeEventListener("support:read", refresh);
+            document.removeEventListener("visibilitychange", refresh);
             window.removeEventListener("focus", refresh);
         };
     }, []);

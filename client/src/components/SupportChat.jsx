@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supportRequest } from '../api/support';
 import { authStorage } from '../utils/authStorage';
 import { getStoredUser, hasValidSession } from '../utils/authSession';
+import { formatChatDateDivider, shouldRenderDateDivider } from '../utils/chatDates';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -108,7 +109,9 @@ export function SupportConversation({ threadId, user, active = true, online = nu
             {hasMore && <button className="support-older" onClick={loadOlder} disabled={olderBusy}>{olderBusy ? 'Loading…' : 'Earlier messages'}</button>}
             {loading && <p className="support-muted">Loading your conversation…</p>}
             {!loading && !messages.length && <div className="support-welcome"><span className="support-welcome-icon"><SupportIcon /></span><h3>A little help. A better game.</h3><p>Ask about an order, a service, or your account. We’re here to help.</p><div className="support-prompts">{['Help with my order', 'Choosing a service'].map(prompt => <button key={prompt} onClick={() => { setText(prompt); retryId.current = null; }}>{prompt}<span>↗</span></button>)}</div></div>}
-            {messages.map(message => <article key={message.id} className={`support-message ${message.senderId === user.id ? 'mine' : ''}`}>
+            {messages.map((message, index) => <Fragment key={message.id}>
+                {shouldRenderDateDivider(messages[index - 1], message) && <div className="support-date-divider"><span>{formatChatDateDivider(message.createdAt)}</span></div>}
+                <article className={`support-message ${message.senderId === user.id ? 'mine' : ''}`}>
                 {message.senderId !== user.id && <SupportAvatar user={message.sender} />}
                 <div>
                     <span className="support-sender">{message.senderId === user.id ? 'You' : nameOf(message.sender)}</span>
@@ -116,7 +119,7 @@ export function SupportConversation({ threadId, user, active = true, online = nu
                     {message.attachmentName && <button className="support-file" onClick={() => openAttachment(message)}><SupportIcon type="file" /><span>{message.attachmentName}<small>{Math.max(1, Math.round(message.attachmentSize / 1024))} KB · Open attachment</small></span><span>↗</span></button>}
                     <time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
                 </div>
-            </article>)}
+            </article></Fragment>)}
         </div>
         {online === false && <p className="support-offline-note">No one is online. Leave a message and we’ll follow up.</p>}
         {error && <p role="alert" className="support-error">{error}</p>}
@@ -141,7 +144,7 @@ function AdminAvailability() {
             const hidden = document.hidden;
             queue = queue.catch(() => {}).then(async () => {
                 await supportRequest(hidden ? `/presence/${sessionId}` : '/presence', { method: hidden ? 'DELETE' : 'POST', token, body: hidden ? undefined : { sessionId } });
-                if (!hidden) { const data = await supportRequest('/threads', { token }); setUnread(data.threads.some(t => t.messages[0]?.sender.role === 'CUSTOMER' && t.messages[0].createdAt > t.adminReadAt)); }
+                if (!hidden) { const data = await supportRequest('/threads', { token }); setUnread(data.threads.some(t => t.unread ?? (t.messages[0]?.senderId === t.customerId && t.messages[0].createdAt > t.adminReadAt))); }
             }).then(() => setError(false)).catch(() => setError(true));
         };
         update();

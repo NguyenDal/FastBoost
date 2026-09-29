@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-test('support schema saves replies and queues offline alerts atomically (rolled back)', { skip: process.env.SUPPORT_DB_TEST !== 'true' }, async () => {
+test('support schema saves replies and queues unread alerts atomically (rolled back)', { skip: process.env.SUPPORT_DB_TEST !== 'true' }, async () => {
     require('dotenv').config({ quiet: true });
     const db = require('../src/prisma');
     const { randomUUID } = require('node:crypto');
@@ -18,11 +18,8 @@ test('support schema saves replies and queues offline alerts atomically (rolled 
             const message = await saveSupportMessage(nested, customer, thread.id, { clientId: randomUUID(), text: 'Rollback-only support message' });
             assert.equal(message.content, 'Rollback-only support message');
             assert.equal(message.sender.id, customer.id);
-            // Existing development presence may be online; isolate this test's
-            // assertion to the same rule used by the save transaction.
-            const anyoneOnline = (await onlineAdmins(tx)).length > 0;
             const alert = await tx.supportEmailAlert.findUnique({ where: { messageId_adminId: { messageId: message.id, adminId: admin.id } } });
-            assert.equal(Boolean(alert), !anyoneOnline);
+            assert.ok(alert);
             await tx.supportPresence.create({ data: { sessionId: randomUUID(), adminId: admin.id, expiresAt: new Date(Date.now() + 45000) } });
             assert.ok((await onlineAdmins(tx)).some(user => user.id === admin.id));
             const reply = await saveSupportMessage(nested, admin, thread.id, { clientId: randomUUID(), text: 'Rollback-only admin reply' });

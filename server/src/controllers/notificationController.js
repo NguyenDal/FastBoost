@@ -58,27 +58,20 @@ exports.listMyNotifications = async (req, res) => {
     }
 
     const dashboard = req.query.view === "dashboard";
-    const notifications = dashboard ? (await Promise.all([
+    // Keep each feed independent so busy account activity cannot push messages
+    // out of the profile panel's result window.
+    const notifications = (await Promise.all([
       prisma.notification.findMany({
         where: { userId, active: true, type: { not: "CHAT_MESSAGE" } },
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        take: 3,
+        take: dashboard ? 3 : 30,
       }),
       prisma.notification.findMany({
         where: { userId, active: true, type: "CHAT_MESSAGE" },
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        take: 3,
+        take: dashboard ? 3 : 30,
       }),
-    ])).flat() : await prisma.notification.findMany({
-      where: {
-        userId,
-        active: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 30,
-    });
+    ])).flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || b.id.localeCompare(a.id));
 
     // Resolve current avatars in one query, including older chat notifications.
     const senderIds = [...new Set(notifications

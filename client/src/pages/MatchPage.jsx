@@ -1,4 +1,5 @@
 import { authStorage } from "../utils/authStorage";
+import { formatChatDateDivider, shouldRenderDateDivider } from "../utils/chatDates";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -1740,40 +1741,6 @@ function GlobeIcon() {
             <path d="M12 3.5c2.4 2.2 3.8 5.3 3.8 8.5s-1.4 6.3-3.8 8.5c-2.4-2.2-3.8-5.3-3.8-8.5s1.4-6.3 3.8-8.5z" />
         </svg>
     );
-}
-
-function shouldRenderDateDivider(previousMessage, currentMessage) {
-    if (!currentMessage?.createdAt) return false;
-    if (!previousMessage?.createdAt) return true;
-
-    const previousDate = new Date(previousMessage.createdAt);
-    const currentDate = new Date(currentMessage.createdAt);
-
-    return previousDate.toDateString() !== currentDate.toDateString();
-}
-
-function formatChatDateDivider(value) {
-    if (!value) return "";
-
-    const messageDate = new Date(value);
-    const today = new Date();
-
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-
-    if (messageDate.toDateString() === today.toDateString()) {
-        return "Today";
-    }
-
-    if (messageDate.toDateString() === yesterday.toDateString()) {
-        return "Yesterday";
-    }
-
-    return messageDate.toLocaleDateString([], {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-    });
 }
 
 function AttachIcon() {

@@ -376,10 +376,12 @@ function Navbar({
         refresh();
         const timer = window.setInterval(refresh, 10000);
         window.addEventListener('support:read', refresh);
+        document.addEventListener('visibilitychange', refresh);
         window.addEventListener('focus', refresh);
         return () => {
             window.clearInterval(timer);
             window.removeEventListener('support:read', refresh);
+            document.removeEventListener('visibilitychange', refresh);
             window.removeEventListener('focus', refresh);
         };
     }, [effectiveHasSession]);

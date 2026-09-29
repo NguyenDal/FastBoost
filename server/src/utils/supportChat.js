@@ -61,8 +61,9 @@ async function saveSupportMessage(db, user, threadId, body, file, upload) {
                 senderInitial: senderName.charAt(0).toUpperCase(), boostType: 'Support chat',
                 targetPath: user.role === 'CUSTOMER' ? `/admin/support?thread=${encodeURIComponent(threadId)}` : '/account/dashboard?support=open' },
         })), skipDuplicates: true });
-        const shouldEmail = user.role === 'ADMIN' || !(await onlineAdmins(tx)).length;
-        if (shouldEmail && recipients.length) await tx.supportEmailAlert.createMany({ data: recipients.map(recipient => ({
+        // Presence means an admin is on the site, not that this message was read.
+        // Queue every recipient; the worker cancels reminders when actually read.
+        if (recipients.length) await tx.supportEmailAlert.createMany({ data: recipients.map(recipient => ({
             // Legacy column name: adminId is the recipient FK for either direction.
             adminId: recipient.id, messageId: message.id, nextAttemptAt: new Date(message.createdAt.getTime() + EMAIL_DELAY_MS),
         })), skipDuplicates: true });
