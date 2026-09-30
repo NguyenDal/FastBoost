@@ -1,6 +1,7 @@
 import { storeAuthSession } from "../utils/authStorage";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import LegalAgreement from "../components/LegalAgreement";
 import { sendContactEmail } from "../api/contact";
 import { API_BASE_URL } from "../api/config";
 import RegisterPage from "./RegisterPage";
@@ -329,6 +330,7 @@ export default function ContactPage() {
                             />
                         </label>
 
+                        <p className="contact-agreement"><LegalAgreement action="sending this message" /></p>
                         <button
                             type="submit"
                             className="contact-submit-btn"

@@ -8,7 +8,8 @@ test("dashboard fetches latest three per category including read items and keeps
     const saved = [prismaPath, referralPath, controllerPath].map(path => [path, require.cache[path]]);
     const queries = [];
     let discount;
-    const prisma = { notification: {
+    let dashboardUser;
+    const prisma = { $queryRaw: async (_strings, userId) => { dashboardUser = userId; return [{ id: 'message', read: true }]; }, notification: {
         upsert: async ({ create, update }) => {
             discount = discount ? { ...discount, ...update } : { ...create, read: false };
         },
@@ -28,7 +29,8 @@ test("dashboard fetches latest three per category including read items and keeps
         await listMyNotifications(req, res);
         assert.equal(response.notifications.length, 2);
         assert.ok(response.notifications.every(item => item.read));
-        assert.equal(queries.length, 2);
+        assert.equal(queries.length, 1);
+        assert.equal(dashboardUser, 'customer');
         for (const query of queries) {
             assert.equal(query.take, 3);
             assert.equal(query.where.userId, "customer");

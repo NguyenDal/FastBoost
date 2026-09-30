@@ -425,3 +425,7 @@
         grid-template-columns: 1fr;
     }
 }
+
+.contact-agreement { margin: 0; color: #aab3c2; font-size: 13px; line-height: 1.7; }
+.contact-agreement a { color: #c4b5fd; text-underline-offset: 3px; }
+.contact-agreement a:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 3px; }

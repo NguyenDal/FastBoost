@@ -218,6 +218,7 @@ function Navbar({
         window.addEventListener("storage", syncNavbarSession);
         window.addEventListener("focus", syncNavbarSession);
         window.addEventListener("auth:changed", handleAuthChanged);
+        window.addEventListener("auth:refreshed", resetExpiryTimer);
 
         const handleProfileImageUploading = (event) => {
             setProfileImageLoading(Boolean(event.detail?.uploading));
@@ -233,6 +234,7 @@ function Navbar({
             window.removeEventListener("storage", syncNavbarSession);
             window.removeEventListener("focus", syncNavbarSession);
             window.removeEventListener("auth:changed", handleAuthChanged);
+            window.removeEventListener("auth:refreshed", resetExpiryTimer);
             window.removeEventListener("profile-image:uploading", handleProfileImageUploading);
             window.removeEventListener("storage", syncCounts);
             window.removeEventListener("unread:update", syncCounts);
@@ -1123,6 +1125,10 @@ function NotificationCard({ notification, onRefresh, onClosePanel }) {
                         {actionLoading ? "Working..." : "Decline"}
                     </button>
                 </div>
+            )}
+
+            {notification.type === 'BOOSTER_CONTRACT' && /^\/provider\/contracts\/[a-zA-Z0-9-]+$/.test(notification.data?.targetPath || '') && (
+                <button className="notification-action-btn accept" onClick={() => { onClosePanel?.(); navigate(notification.data.targetPath); }}>Review contract</button>
             )}
 
             <span className="notification-time">

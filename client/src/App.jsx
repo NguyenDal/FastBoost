@@ -29,7 +29,9 @@ import AdminLayout from "./layouts/AdminLayout";
 import DynamicTitle from "./components/DynamicTitle";
 import SaleFooter from "./components/SaleFooter";
 import SupportChat from "./components/SupportChat";
+import SessionActivity from "./components/SessionActivity";
 import AdminSupportPage from "./pages/AdminSupportPage";
+import { EarningsPage, BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage } from './pages/OperationsPages';
 
 import {
   clearExpiredSession,
@@ -45,7 +47,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   const user = getStoredUser();
 
   if (!isValid) {
-    return <Navigate to="/" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/" replace state={{ from: location.pathname, openAuthModal: true, authMode: 'login' }} />;
   }
 
   if (allowedRoles?.length && !allowedRoles.includes(user?.role) && !(allowedRoles.includes("PROVIDER") && user?.hasBoosterAccess)) {
@@ -102,7 +104,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Navigate to="/" replace state={{ openAuthModal: true, authMode: "register" }} />} />
         <Route path="/support" element={<HomePage />} />
+        <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterWorkspacePage /></ProtectedRoute>} />
+        <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
+        <Route path="/privacy-policy" element={<LegalDocumentPage privacy />} />
         <Route path="/provider-agreement" element={<LegalDocumentPage provider />} />
         <Route path="/order/:serviceId" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -157,6 +162,8 @@ function App() {
           <Route path="orders" element={<AdminOrdersPage />} />
           <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="accounts" element={<AdminAccountsPage />} />
+          <Route path="earnings" element={<EarningsPage />} />
+          <Route path="boosters" element={<BoosterManagementPage />} />
           <Route path="prices" element={<PriceManagementPage />} />
           <Route path="support" element={<AdminSupportPage />} />
         </Route>
@@ -211,6 +218,7 @@ function App() {
       </Routes>
       <SaleFooter />
       <SupportChat />
+      <SessionActivity />
 
       {sessionExpiredOpen && (
         <SessionExpiredModal

@@ -5,6 +5,8 @@ import { SupportIcon } from "../components/SupportChat";
 import "../styles/Admin.css";
 
 const managementCards = [
+    { title: 'Earnings', description: 'Track service revenue, FastBoost earnings, and booster shares.', icon: <PriceIcon />, path: '/admin/earnings' },
+    { title: 'Booster Management', description: 'Review match contributions, manage contracts, and see team earnings.', icon: <UsersIcon />, path: '/admin/boosters' },
     {
         title: "Support Inbox",
         description: "Read customer messages and reply to support conversations.",

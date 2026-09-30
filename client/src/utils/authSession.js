@@ -141,10 +141,10 @@ export function scheduleSessionExpiryCheck() {
   }
 
   const timerId = window.setTimeout(() => {
-    clearExpiredSession({
-      showExpiredModal: true,
-    });
-  }, delay);
+    // A refreshed remembered token may have replaced the one that set this timer.
+    if (isTokenExpired(authStorage.getItem('token'))) clearExpiredSession({ showExpiredModal: true });
+    else window.dispatchEvent(new Event('auth:refreshed'));
+  }, Math.min(delay, 2147483647));
 
   return timerId;
 }

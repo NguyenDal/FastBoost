@@ -28,6 +28,7 @@ app.post(
   handleStripeWebhook
 );
 
+app.post('/api/operations/docusign/webhook', express.raw({ type: 'application/json', limit: '2mb' }), require('./utils/contractStatus').webhook);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -49,6 +50,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralRoutes);
 app.use("/api/admin", adminUserRoutes);
+app.use('/api/operations', require('./routes/operationsRoutes'));
 app.use("/api/payments", paymentRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin/prices", priceRoutes);

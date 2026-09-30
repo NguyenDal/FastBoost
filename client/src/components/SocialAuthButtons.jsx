@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import SocialLinkConfirmation from './SocialLinkConfirmation';
+import LegalAgreement from './LegalAgreement';
 import PaymentErrorDialog from './PaymentErrorDialog';
 import { API_BASE_URL } from '../api/config';
 
@@ -86,7 +87,7 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
     <div className="auth-consents">
       <label className={`auth-check-row auth-terms-row${termsAttempted && !signupTerms ? ' auth-check-error' : ''}`}>
         <input ref={termsRef} type="checkbox" checked={signupTerms} onChange={event => setSignupTerms(event.target.checked)} aria-invalid={termsAttempted && !signupTerms} aria-required="true" disabled={busy}/>
-        <span>I agree to the <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>. <span className="auth-required" aria-hidden="true">*</span></span>
+        <span><LegalAgreement /> <span className="auth-required" aria-hidden="true">*</span></span>
       </label>
       <label className="auth-check-row"><input type="checkbox" checked={signupMarketing} onChange={event => setSignupMarketing(event.target.checked)} disabled={busy}/><span>I agree to receive promotional emails.</span></label>
     </div>

@@ -21,6 +21,8 @@ export default function DynamicTitle() {
       title = "Reset Password | FastBoost";
     } else if (path === "/terms-and-conditions") {
       title = "Terms and Conditions | FastBoost";
+    } else if (path === "/privacy-policy") {
+      title = "Privacy Policy | FastBoost";
     } else if (path === "/provider-agreement") {
       title = "Provider Agreement | FastBoost";
     } else if (path === "/contact") {

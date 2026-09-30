@@ -24,6 +24,16 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type RegistrationConsent = $Result.DefaultSelection<Prisma.$RegistrationConsentPayload>
 /**
+ * Model BoosterProfile
+ *
+ */
+export type BoosterProfile = $Result.DefaultSelection<Prisma.$BoosterProfilePayload>
+/**
+ * Model BoosterContract
+ *
+ */
+export type BoosterContract = $Result.DefaultSelection<Prisma.$BoosterContractPayload>
+/**
  * Model SupportThread
  *
  */
@@ -93,6 +103,11 @@ export type OrderNumberReservation = $Result.DefaultSelection<Prisma.$OrderNumbe
  * Link assigned boosters/providers to an order
  */
 export type OrderAssignment = $Result.DefaultSelection<Prisma.$OrderAssignmentPayload>
+/**
+ * Model BoosterContribution
+ *
+ */
+export type BoosterContribution = $Result.DefaultSelection<Prisma.$BoosterContributionPayload>
 /**
  * Model RewardHistory
  *
@@ -207,6 +222,7 @@ export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
 export const NotificationType: {
+  BOOSTER_CONTRACT: 'BOOSTER_CONTRACT',
   FIRST_PURCHASE_DISCOUNT: 'FIRST_PURCHASE_DISCOUNT',
   REFERRAL_REWARD: 'REFERRAL_REWARD',
   ORDER_COMPLETED: 'ORDER_COMPLETED',
@@ -399,6 +415,26 @@ export class PrismaClient<
   get registrationConsent(): Prisma.RegistrationConsentDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.boosterProfile`: Exposes CRUD operations for the **BoosterProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BoosterProfiles
+    * const boosterProfiles = await prisma.boosterProfile.findMany()
+    * ```
+    */
+  get boosterProfile(): Prisma.BoosterProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.boosterContract`: Exposes CRUD operations for the **BoosterContract** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BoosterContracts
+    * const boosterContracts = await prisma.boosterContract.findMany()
+    * ```
+    */
+  get boosterContract(): Prisma.BoosterContractDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.supportThread`: Exposes CRUD operations for the **SupportThread** model.
     * Example usage:
     * ```ts
@@ -537,6 +573,16 @@ export class PrismaClient<
     * ```
     */
   get orderAssignment(): Prisma.OrderAssignmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.boosterContribution`: Exposes CRUD operations for the **BoosterContribution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BoosterContributions
+    * const boosterContributions = await prisma.boosterContribution.findMany()
+    * ```
+    */
+  get boosterContribution(): Prisma.BoosterContributionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.rewardHistory`: Exposes CRUD operations for the **RewardHistory** model.
@@ -1053,6 +1099,8 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     RegistrationConsent: 'RegistrationConsent',
+    BoosterProfile: 'BoosterProfile',
+    BoosterContract: 'BoosterContract',
     SupportThread: 'SupportThread',
     SupportMessage: 'SupportMessage',
     SupportPresence: 'SupportPresence',
@@ -1067,6 +1115,7 @@ export namespace Prisma {
     CouponUse: 'CouponUse',
     OrderNumberReservation: 'OrderNumberReservation',
     OrderAssignment: 'OrderAssignment',
+    BoosterContribution: 'BoosterContribution',
     RewardHistory: 'RewardHistory',
     AssignmentRequest: 'AssignmentRequest',
     Conversation: 'Conversation',
@@ -1090,7 +1139,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "registrationConsent" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "registrationConsent" | "boosterProfile" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1239,6 +1288,154 @@ export namespace Prisma {
           count: {
             args: Prisma.RegistrationConsentCountArgs<ExtArgs>
             result: $Utils.Optional<RegistrationConsentCountAggregateOutputType> | number
+          }
+        }
+      }
+      BoosterProfile: {
+        payload: Prisma.$BoosterProfilePayload<ExtArgs>
+        fields: Prisma.BoosterProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BoosterProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BoosterProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.BoosterProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BoosterProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          findMany: {
+            args: Prisma.BoosterProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>[]
+          }
+          create: {
+            args: Prisma.BoosterProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          createMany: {
+            args: Prisma.BoosterProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BoosterProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.BoosterProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          update: {
+            args: Prisma.BoosterProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.BoosterProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BoosterProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BoosterProfileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>[]
+          }
+          upsert: {
+            args: Prisma.BoosterProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.BoosterProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoosterProfile>
+          }
+          groupBy: {
+            args: Prisma.BoosterProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BoosterProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BoosterProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<BoosterProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      BoosterContract: {
+        payload: Prisma.$BoosterContractPayload<ExtArgs>
+        fields: Prisma.BoosterContractFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BoosterContractFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BoosterContractFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          findFirst: {
+            args: Prisma.BoosterContractFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BoosterContractFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          findMany: {
+            args: Prisma.BoosterContractFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>[]
+          }
+          create: {
+            args: Prisma.BoosterContractCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          createMany: {
+            args: Prisma.BoosterContractCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BoosterContractCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>[]
+          }
+          delete: {
+            args: Prisma.BoosterContractDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          update: {
+            args: Prisma.BoosterContractUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          deleteMany: {
+            args: Prisma.BoosterContractDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BoosterContractUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BoosterContractUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>[]
+          }
+          upsert: {
+            args: Prisma.BoosterContractUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContractPayload>
+          }
+          aggregate: {
+            args: Prisma.BoosterContractAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoosterContract>
+          }
+          groupBy: {
+            args: Prisma.BoosterContractGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BoosterContractGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BoosterContractCountArgs<ExtArgs>
+            result: $Utils.Optional<BoosterContractCountAggregateOutputType> | number
           }
         }
       }
@@ -2278,6 +2475,80 @@ export namespace Prisma {
           }
         }
       }
+      BoosterContribution: {
+        payload: Prisma.$BoosterContributionPayload<ExtArgs>
+        fields: Prisma.BoosterContributionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BoosterContributionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BoosterContributionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          findFirst: {
+            args: Prisma.BoosterContributionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BoosterContributionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          findMany: {
+            args: Prisma.BoosterContributionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>[]
+          }
+          create: {
+            args: Prisma.BoosterContributionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          createMany: {
+            args: Prisma.BoosterContributionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BoosterContributionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>[]
+          }
+          delete: {
+            args: Prisma.BoosterContributionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          update: {
+            args: Prisma.BoosterContributionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          deleteMany: {
+            args: Prisma.BoosterContributionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BoosterContributionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BoosterContributionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>[]
+          }
+          upsert: {
+            args: Prisma.BoosterContributionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterContributionPayload>
+          }
+          aggregate: {
+            args: Prisma.BoosterContributionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoosterContribution>
+          }
+          groupBy: {
+            args: Prisma.BoosterContributionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BoosterContributionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BoosterContributionCountArgs<ExtArgs>
+            result: $Utils.Optional<BoosterContributionCountAggregateOutputType> | number
+          }
+        }
+      }
       RewardHistory: {
         payload: Prisma.$RewardHistoryPayload<ExtArgs>
         fields: Prisma.RewardHistoryFieldRefs
@@ -2980,6 +3251,8 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     registrationConsent?: RegistrationConsentOmit
+    boosterProfile?: BoosterProfileOmit
+    boosterContract?: BoosterContractOmit
     supportThread?: SupportThreadOmit
     supportMessage?: SupportMessageOmit
     supportPresence?: SupportPresenceOmit
@@ -2994,6 +3267,7 @@ export namespace Prisma {
     couponUse?: CouponUseOmit
     orderNumberReservation?: OrderNumberReservationOmit
     orderAssignment?: OrderAssignmentOmit
+    boosterContribution?: BoosterContributionOmit
     rewardHistory?: RewardHistoryOmit
     assignmentRequest?: AssignmentRequestOmit
     conversation?: ConversationOmit
@@ -3082,6 +3356,9 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
+    contributions: number
+    boosterContracts: number
+    issuedBoosterContracts: number
     supportMessages: number
     supportPresence: number
     supportAlerts: number
@@ -3102,6 +3379,9 @@ export namespace Prisma {
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contributions?: boolean | UserCountOutputTypeCountContributionsArgs
+    boosterContracts?: boolean | UserCountOutputTypeCountBoosterContractsArgs
+    issuedBoosterContracts?: boolean | UserCountOutputTypeCountIssuedBoosterContractsArgs
     supportMessages?: boolean | UserCountOutputTypeCountSupportMessagesArgs
     supportPresence?: boolean | UserCountOutputTypeCountSupportPresenceArgs
     supportAlerts?: boolean | UserCountOutputTypeCountSupportAlertsArgs
@@ -3130,6 +3410,27 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountContributionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContributionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBoosterContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContractWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountIssuedBoosterContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContractWhereInput
   }
 
   /**
@@ -3409,11 +3710,13 @@ export namespace Prisma {
 
   export type OrderCountOutputType = {
     assignments: number
+    contributions: number
     assignmentRequests: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assignments?: boolean | OrderCountOutputTypeCountAssignmentsArgs
+    contributions?: boolean | OrderCountOutputTypeCountContributionsArgs
     assignmentRequests?: boolean | OrderCountOutputTypeCountAssignmentRequestsArgs
   }
 
@@ -3433,6 +3736,13 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderAssignmentWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountContributionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContributionWhereInput
   }
 
   /**
@@ -3723,6 +4033,10 @@ export namespace Prisma {
     updatedAt?: boolean
     referralCode?: boolean
     referredById?: boolean
+    boosterProfile?: boolean | User$boosterProfileArgs<ExtArgs>
+    contributions?: boolean | User$contributionsArgs<ExtArgs>
+    boosterContracts?: boolean | User$boosterContractsArgs<ExtArgs>
+    issuedBoosterContracts?: boolean | User$issuedBoosterContractsArgs<ExtArgs>
     supportThread?: boolean | User$supportThreadArgs<ExtArgs>
     supportMessages?: boolean | User$supportMessagesArgs<ExtArgs>
     supportPresence?: boolean | User$supportPresenceArgs<ExtArgs>
@@ -3802,6 +4116,10 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "isOwner" | "hasBoosterAccess" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    boosterProfile?: boolean | User$boosterProfileArgs<ExtArgs>
+    contributions?: boolean | User$contributionsArgs<ExtArgs>
+    boosterContracts?: boolean | User$boosterContractsArgs<ExtArgs>
+    issuedBoosterContracts?: boolean | User$issuedBoosterContractsArgs<ExtArgs>
     supportThread?: boolean | User$supportThreadArgs<ExtArgs>
     supportMessages?: boolean | User$supportMessagesArgs<ExtArgs>
     supportPresence?: boolean | User$supportPresenceArgs<ExtArgs>
@@ -3835,6 +4153,10 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      boosterProfile: Prisma.$BoosterProfilePayload<ExtArgs> | null
+      contributions: Prisma.$BoosterContributionPayload<ExtArgs>[]
+      boosterContracts: Prisma.$BoosterContractPayload<ExtArgs>[]
+      issuedBoosterContracts: Prisma.$BoosterContractPayload<ExtArgs>[]
       supportThread: Prisma.$SupportThreadPayload<ExtArgs> | null
       supportMessages: Prisma.$SupportMessagePayload<ExtArgs>[]
       supportPresence: Prisma.$SupportPresencePayload<ExtArgs>[]
@@ -4266,6 +4588,10 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    boosterProfile<T extends User$boosterProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterProfileArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    contributions<T extends User$contributionsArgs<ExtArgs> = {}>(args?: Subset<T, User$contributionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    boosterContracts<T extends User$boosterContractsArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    issuedBoosterContracts<T extends User$issuedBoosterContractsArgs<ExtArgs> = {}>(args?: Subset<T, User$issuedBoosterContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supportThread<T extends User$supportThreadArgs<ExtArgs> = {}>(args?: Subset<T, User$supportThreadArgs<ExtArgs>>): Prisma__SupportThreadClient<$Result.GetResult<Prisma.$SupportThreadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     supportMessages<T extends User$supportMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$supportMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supportPresence<T extends User$supportPresenceArgs<ExtArgs> = {}>(args?: Subset<T, User$supportPresenceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportPresencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4728,6 +5054,97 @@ export namespace Prisma {
      * Limit how many Users to delete.
      */
     limit?: number
+  }
+
+  /**
+   * User.boosterProfile
+   */
+  export type User$boosterProfileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    where?: BoosterProfileWhereInput
+  }
+
+  /**
+   * User.contributions
+   */
+  export type User$contributionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    where?: BoosterContributionWhereInput
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    cursor?: BoosterContributionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoosterContributionScalarFieldEnum | BoosterContributionScalarFieldEnum[]
+  }
+
+  /**
+   * User.boosterContracts
+   */
+  export type User$boosterContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    where?: BoosterContractWhereInput
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    cursor?: BoosterContractWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoosterContractScalarFieldEnum | BoosterContractScalarFieldEnum[]
+  }
+
+  /**
+   * User.issuedBoosterContracts
+   */
+  export type User$issuedBoosterContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    where?: BoosterContractWhereInput
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    cursor?: BoosterContractWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoosterContractScalarFieldEnum | BoosterContractScalarFieldEnum[]
   }
 
   /**
@@ -6293,6 +6710,2296 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: RegistrationConsentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BoosterProfile
+   */
+
+  export type AggregateBoosterProfile = {
+    _count: BoosterProfileCountAggregateOutputType | null
+    _min: BoosterProfileMinAggregateOutputType | null
+    _max: BoosterProfileMaxAggregateOutputType | null
+  }
+
+  export type BoosterProfileMinAggregateOutputType = {
+    userId: string | null
+    startedAt: Date | null
+  }
+
+  export type BoosterProfileMaxAggregateOutputType = {
+    userId: string | null
+    startedAt: Date | null
+  }
+
+  export type BoosterProfileCountAggregateOutputType = {
+    userId: number
+    startedAt: number
+    _all: number
+  }
+
+
+  export type BoosterProfileMinAggregateInputType = {
+    userId?: true
+    startedAt?: true
+  }
+
+  export type BoosterProfileMaxAggregateInputType = {
+    userId?: true
+    startedAt?: true
+  }
+
+  export type BoosterProfileCountAggregateInputType = {
+    userId?: true
+    startedAt?: true
+    _all?: true
+  }
+
+  export type BoosterProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterProfile to aggregate.
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterProfiles to fetch.
+     */
+    orderBy?: BoosterProfileOrderByWithRelationInput | BoosterProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: BoosterProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned BoosterProfiles
+    **/
+    _count?: true | BoosterProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: BoosterProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: BoosterProfileMaxAggregateInputType
+  }
+
+  export type GetBoosterProfileAggregateType<T extends BoosterProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoosterProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoosterProfile[P]>
+      : GetScalarType<T[P], AggregateBoosterProfile[P]>
+  }
+
+
+
+
+  export type BoosterProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterProfileWhereInput
+    orderBy?: BoosterProfileOrderByWithAggregationInput | BoosterProfileOrderByWithAggregationInput[]
+    by: BoosterProfileScalarFieldEnum[] | BoosterProfileScalarFieldEnum
+    having?: BoosterProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BoosterProfileCountAggregateInputType | true
+    _min?: BoosterProfileMinAggregateInputType
+    _max?: BoosterProfileMaxAggregateInputType
+  }
+
+  export type BoosterProfileGroupByOutputType = {
+    userId: string
+    startedAt: Date | null
+    _count: BoosterProfileCountAggregateOutputType | null
+    _min: BoosterProfileMinAggregateOutputType | null
+    _max: BoosterProfileMaxAggregateOutputType | null
+  }
+
+  type GetBoosterProfileGroupByPayload<T extends BoosterProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BoosterProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BoosterProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BoosterProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], BoosterProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BoosterProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    startedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterProfile"]>
+
+  export type BoosterProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    startedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterProfile"]>
+
+  export type BoosterProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    startedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterProfile"]>
+
+  export type BoosterProfileSelectScalar = {
+    userId?: boolean
+    startedAt?: boolean
+  }
+
+  export type BoosterProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "startedAt", ExtArgs["result"]["boosterProfile"]>
+  export type BoosterProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BoosterProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BoosterProfile"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      startedAt: Date | null
+    }, ExtArgs["result"]["boosterProfile"]>
+    composites: {}
+  }
+
+  type BoosterProfileGetPayload<S extends boolean | null | undefined | BoosterProfileDefaultArgs> = $Result.GetResult<Prisma.$BoosterProfilePayload, S>
+
+  type BoosterProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BoosterProfileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BoosterProfileCountAggregateInputType | true
+    }
+
+  export interface BoosterProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BoosterProfile'], meta: { name: 'BoosterProfile' } }
+    /**
+     * Find zero or one BoosterProfile that matches the filter.
+     * @param {BoosterProfileFindUniqueArgs} args - Arguments to find a BoosterProfile
+     * @example
+     * // Get one BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BoosterProfileFindUniqueArgs>(args: SelectSubset<T, BoosterProfileFindUniqueArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BoosterProfile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BoosterProfileFindUniqueOrThrowArgs} args - Arguments to find a BoosterProfile
+     * @example
+     * // Get one BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BoosterProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, BoosterProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterProfile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileFindFirstArgs} args - Arguments to find a BoosterProfile
+     * @example
+     * // Get one BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BoosterProfileFindFirstArgs>(args?: SelectSubset<T, BoosterProfileFindFirstArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterProfile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileFindFirstOrThrowArgs} args - Arguments to find a BoosterProfile
+     * @example
+     * // Get one BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BoosterProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, BoosterProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BoosterProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BoosterProfiles
+     * const boosterProfiles = await prisma.boosterProfile.findMany()
+     *
+     * // Get first 10 BoosterProfiles
+     * const boosterProfiles = await prisma.boosterProfile.findMany({ take: 10 })
+     *
+     * // Only select the `userId`
+     * const boosterProfileWithUserIdOnly = await prisma.boosterProfile.findMany({ select: { userId: true } })
+     *
+     */
+    findMany<T extends BoosterProfileFindManyArgs>(args?: SelectSubset<T, BoosterProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BoosterProfile.
+     * @param {BoosterProfileCreateArgs} args - Arguments to create a BoosterProfile.
+     * @example
+     * // Create one BoosterProfile
+     * const BoosterProfile = await prisma.boosterProfile.create({
+     *   data: {
+     *     // ... data to create a BoosterProfile
+     *   }
+     * })
+     *
+     */
+    create<T extends BoosterProfileCreateArgs>(args: SelectSubset<T, BoosterProfileCreateArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BoosterProfiles.
+     * @param {BoosterProfileCreateManyArgs} args - Arguments to create many BoosterProfiles.
+     * @example
+     * // Create many BoosterProfiles
+     * const boosterProfile = await prisma.boosterProfile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends BoosterProfileCreateManyArgs>(args?: SelectSubset<T, BoosterProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BoosterProfiles and returns the data saved in the database.
+     * @param {BoosterProfileCreateManyAndReturnArgs} args - Arguments to create many BoosterProfiles.
+     * @example
+     * // Create many BoosterProfiles
+     * const boosterProfile = await prisma.boosterProfile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many BoosterProfiles and only return the `userId`
+     * const boosterProfileWithUserIdOnly = await prisma.boosterProfile.createManyAndReturn({
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends BoosterProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, BoosterProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BoosterProfile.
+     * @param {BoosterProfileDeleteArgs} args - Arguments to delete one BoosterProfile.
+     * @example
+     * // Delete one BoosterProfile
+     * const BoosterProfile = await prisma.boosterProfile.delete({
+     *   where: {
+     *     // ... filter to delete one BoosterProfile
+     *   }
+     * })
+     *
+     */
+    delete<T extends BoosterProfileDeleteArgs>(args: SelectSubset<T, BoosterProfileDeleteArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BoosterProfile.
+     * @param {BoosterProfileUpdateArgs} args - Arguments to update one BoosterProfile.
+     * @example
+     * // Update one BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends BoosterProfileUpdateArgs>(args: SelectSubset<T, BoosterProfileUpdateArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BoosterProfiles.
+     * @param {BoosterProfileDeleteManyArgs} args - Arguments to filter BoosterProfiles to delete.
+     * @example
+     * // Delete a few BoosterProfiles
+     * const { count } = await prisma.boosterProfile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends BoosterProfileDeleteManyArgs>(args?: SelectSubset<T, BoosterProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BoosterProfiles
+     * const boosterProfile = await prisma.boosterProfile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends BoosterProfileUpdateManyArgs>(args: SelectSubset<T, BoosterProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterProfiles and returns the data updated in the database.
+     * @param {BoosterProfileUpdateManyAndReturnArgs} args - Arguments to update many BoosterProfiles.
+     * @example
+     * // Update many BoosterProfiles
+     * const boosterProfile = await prisma.boosterProfile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more BoosterProfiles and only return the `userId`
+     * const boosterProfileWithUserIdOnly = await prisma.boosterProfile.updateManyAndReturn({
+     *   select: { userId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends BoosterProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, BoosterProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BoosterProfile.
+     * @param {BoosterProfileUpsertArgs} args - Arguments to update or create a BoosterProfile.
+     * @example
+     * // Update or create a BoosterProfile
+     * const boosterProfile = await prisma.boosterProfile.upsert({
+     *   create: {
+     *     // ... data to create a BoosterProfile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BoosterProfile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BoosterProfileUpsertArgs>(args: SelectSubset<T, BoosterProfileUpsertArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BoosterProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileCountArgs} args - Arguments to filter BoosterProfiles to count.
+     * @example
+     * // Count the number of BoosterProfiles
+     * const count = await prisma.boosterProfile.count({
+     *   where: {
+     *     // ... the filter for the BoosterProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends BoosterProfileCountArgs>(
+      args?: Subset<T, BoosterProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BoosterProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BoosterProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BoosterProfileAggregateArgs>(args: Subset<T, BoosterProfileAggregateArgs>): Prisma.PrismaPromise<GetBoosterProfileAggregateType<T>>
+
+    /**
+     * Group by BoosterProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends BoosterProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BoosterProfileGroupByArgs['orderBy'] }
+        : { orderBy?: BoosterProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BoosterProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoosterProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BoosterProfile model
+   */
+  readonly fields: BoosterProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BoosterProfile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BoosterProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BoosterProfile model
+   */
+  interface BoosterProfileFieldRefs {
+    readonly userId: FieldRef<"BoosterProfile", 'String'>
+    readonly startedAt: FieldRef<"BoosterProfile", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * BoosterProfile findUnique
+   */
+  export type BoosterProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterProfile to fetch.
+     */
+    where: BoosterProfileWhereUniqueInput
+  }
+
+  /**
+   * BoosterProfile findUniqueOrThrow
+   */
+  export type BoosterProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterProfile to fetch.
+     */
+    where: BoosterProfileWhereUniqueInput
+  }
+
+  /**
+   * BoosterProfile findFirst
+   */
+  export type BoosterProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterProfile to fetch.
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterProfiles to fetch.
+     */
+    orderBy?: BoosterProfileOrderByWithRelationInput | BoosterProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterProfiles.
+     */
+    cursor?: BoosterProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterProfiles.
+     */
+    distinct?: BoosterProfileScalarFieldEnum | BoosterProfileScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterProfile findFirstOrThrow
+   */
+  export type BoosterProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterProfile to fetch.
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterProfiles to fetch.
+     */
+    orderBy?: BoosterProfileOrderByWithRelationInput | BoosterProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterProfiles.
+     */
+    cursor?: BoosterProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterProfiles.
+     */
+    distinct?: BoosterProfileScalarFieldEnum | BoosterProfileScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterProfile findMany
+   */
+  export type BoosterProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterProfiles to fetch.
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterProfiles to fetch.
+     */
+    orderBy?: BoosterProfileOrderByWithRelationInput | BoosterProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing BoosterProfiles.
+     */
+    cursor?: BoosterProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterProfiles.
+     */
+    distinct?: BoosterProfileScalarFieldEnum | BoosterProfileScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterProfile create
+   */
+  export type BoosterProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BoosterProfile.
+     */
+    data: XOR<BoosterProfileCreateInput, BoosterProfileUncheckedCreateInput>
+  }
+
+  /**
+   * BoosterProfile createMany
+   */
+  export type BoosterProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BoosterProfiles.
+     */
+    data: BoosterProfileCreateManyInput | BoosterProfileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BoosterProfile createManyAndReturn
+   */
+  export type BoosterProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * The data used to create many BoosterProfiles.
+     */
+    data: BoosterProfileCreateManyInput | BoosterProfileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterProfile update
+   */
+  export type BoosterProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BoosterProfile.
+     */
+    data: XOR<BoosterProfileUpdateInput, BoosterProfileUncheckedUpdateInput>
+    /**
+     * Choose, which BoosterProfile to update.
+     */
+    where: BoosterProfileWhereUniqueInput
+  }
+
+  /**
+   * BoosterProfile updateMany
+   */
+  export type BoosterProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BoosterProfiles.
+     */
+    data: XOR<BoosterProfileUpdateManyMutationInput, BoosterProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterProfiles to update
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * Limit how many BoosterProfiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterProfile updateManyAndReturn
+   */
+  export type BoosterProfileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * The data used to update BoosterProfiles.
+     */
+    data: XOR<BoosterProfileUpdateManyMutationInput, BoosterProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterProfiles to update
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * Limit how many BoosterProfiles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterProfile upsert
+   */
+  export type BoosterProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BoosterProfile to update in case it exists.
+     */
+    where: BoosterProfileWhereUniqueInput
+    /**
+     * In case the BoosterProfile found by the `where` argument doesn't exist, create a new BoosterProfile with this data.
+     */
+    create: XOR<BoosterProfileCreateInput, BoosterProfileUncheckedCreateInput>
+    /**
+     * In case the BoosterProfile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BoosterProfileUpdateInput, BoosterProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * BoosterProfile delete
+   */
+  export type BoosterProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+    /**
+     * Filter which BoosterProfile to delete.
+     */
+    where: BoosterProfileWhereUniqueInput
+  }
+
+  /**
+   * BoosterProfile deleteMany
+   */
+  export type BoosterProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterProfiles to delete
+     */
+    where?: BoosterProfileWhereInput
+    /**
+     * Limit how many BoosterProfiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterProfile without action
+   */
+  export type BoosterProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterProfile
+     */
+    select?: BoosterProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterProfile
+     */
+    omit?: BoosterProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BoosterContract
+   */
+
+  export type AggregateBoosterContract = {
+    _count: BoosterContractCountAggregateOutputType | null
+    _min: BoosterContractMinAggregateOutputType | null
+    _max: BoosterContractMaxAggregateOutputType | null
+  }
+
+  export type BoosterContractMinAggregateOutputType = {
+    id: string | null
+    boosterId: string | null
+    issuedById: string | null
+    title: string | null
+    templateId: string | null
+    accountId: string | null
+    environment: string | null
+    envelopeId: string | null
+    signerName: string | null
+    signerEmail: string | null
+    status: string | null
+    sendAttemptAt: Date | null
+    sendError: string | null
+    lastSyncedAt: Date | null
+    startsAt: Date | null
+    createdAt: Date | null
+    signedAt: Date | null
+    signedName: string | null
+    viewedAt: Date | null
+    revokedAt: Date | null
+  }
+
+  export type BoosterContractMaxAggregateOutputType = {
+    id: string | null
+    boosterId: string | null
+    issuedById: string | null
+    title: string | null
+    templateId: string | null
+    accountId: string | null
+    environment: string | null
+    envelopeId: string | null
+    signerName: string | null
+    signerEmail: string | null
+    status: string | null
+    sendAttemptAt: Date | null
+    sendError: string | null
+    lastSyncedAt: Date | null
+    startsAt: Date | null
+    createdAt: Date | null
+    signedAt: Date | null
+    signedName: string | null
+    viewedAt: Date | null
+    revokedAt: Date | null
+  }
+
+  export type BoosterContractCountAggregateOutputType = {
+    id: number
+    boosterId: number
+    issuedById: number
+    title: number
+    templateId: number
+    accountId: number
+    environment: number
+    envelopeId: number
+    signerName: number
+    signerEmail: number
+    status: number
+    sendAttemptAt: number
+    sendError: number
+    lastSyncedAt: number
+    startsAt: number
+    createdAt: number
+    signedAt: number
+    signedName: number
+    viewedAt: number
+    revokedAt: number
+    _all: number
+  }
+
+
+  export type BoosterContractMinAggregateInputType = {
+    id?: true
+    boosterId?: true
+    issuedById?: true
+    title?: true
+    templateId?: true
+    accountId?: true
+    environment?: true
+    envelopeId?: true
+    signerName?: true
+    signerEmail?: true
+    status?: true
+    sendAttemptAt?: true
+    sendError?: true
+    lastSyncedAt?: true
+    startsAt?: true
+    createdAt?: true
+    signedAt?: true
+    signedName?: true
+    viewedAt?: true
+    revokedAt?: true
+  }
+
+  export type BoosterContractMaxAggregateInputType = {
+    id?: true
+    boosterId?: true
+    issuedById?: true
+    title?: true
+    templateId?: true
+    accountId?: true
+    environment?: true
+    envelopeId?: true
+    signerName?: true
+    signerEmail?: true
+    status?: true
+    sendAttemptAt?: true
+    sendError?: true
+    lastSyncedAt?: true
+    startsAt?: true
+    createdAt?: true
+    signedAt?: true
+    signedName?: true
+    viewedAt?: true
+    revokedAt?: true
+  }
+
+  export type BoosterContractCountAggregateInputType = {
+    id?: true
+    boosterId?: true
+    issuedById?: true
+    title?: true
+    templateId?: true
+    accountId?: true
+    environment?: true
+    envelopeId?: true
+    signerName?: true
+    signerEmail?: true
+    status?: true
+    sendAttemptAt?: true
+    sendError?: true
+    lastSyncedAt?: true
+    startsAt?: true
+    createdAt?: true
+    signedAt?: true
+    signedName?: true
+    viewedAt?: true
+    revokedAt?: true
+    _all?: true
+  }
+
+  export type BoosterContractAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterContract to aggregate.
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContracts to fetch.
+     */
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: BoosterContractWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContracts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContracts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned BoosterContracts
+    **/
+    _count?: true | BoosterContractCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: BoosterContractMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: BoosterContractMaxAggregateInputType
+  }
+
+  export type GetBoosterContractAggregateType<T extends BoosterContractAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoosterContract]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoosterContract[P]>
+      : GetScalarType<T[P], AggregateBoosterContract[P]>
+  }
+
+
+
+
+  export type BoosterContractGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContractWhereInput
+    orderBy?: BoosterContractOrderByWithAggregationInput | BoosterContractOrderByWithAggregationInput[]
+    by: BoosterContractScalarFieldEnum[] | BoosterContractScalarFieldEnum
+    having?: BoosterContractScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BoosterContractCountAggregateInputType | true
+    _min?: BoosterContractMinAggregateInputType
+    _max?: BoosterContractMaxAggregateInputType
+  }
+
+  export type BoosterContractGroupByOutputType = {
+    id: string
+    boosterId: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId: string | null
+    signerName: string
+    signerEmail: string
+    status: string
+    sendAttemptAt: Date | null
+    sendError: string | null
+    lastSyncedAt: Date | null
+    startsAt: Date
+    createdAt: Date
+    signedAt: Date | null
+    signedName: string | null
+    viewedAt: Date | null
+    revokedAt: Date | null
+    _count: BoosterContractCountAggregateOutputType | null
+    _min: BoosterContractMinAggregateOutputType | null
+    _max: BoosterContractMaxAggregateOutputType | null
+  }
+
+  type GetBoosterContractGroupByPayload<T extends BoosterContractGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BoosterContractGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BoosterContractGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BoosterContractGroupByOutputType[P]>
+            : GetScalarType<T[P], BoosterContractGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BoosterContractSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boosterId?: boolean
+    issuedById?: boolean
+    title?: boolean
+    templateId?: boolean
+    accountId?: boolean
+    environment?: boolean
+    envelopeId?: boolean
+    signerName?: boolean
+    signerEmail?: boolean
+    status?: boolean
+    sendAttemptAt?: boolean
+    sendError?: boolean
+    lastSyncedAt?: boolean
+    startsAt?: boolean
+    createdAt?: boolean
+    signedAt?: boolean
+    signedName?: boolean
+    viewedAt?: boolean
+    revokedAt?: boolean
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContract"]>
+
+  export type BoosterContractSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boosterId?: boolean
+    issuedById?: boolean
+    title?: boolean
+    templateId?: boolean
+    accountId?: boolean
+    environment?: boolean
+    envelopeId?: boolean
+    signerName?: boolean
+    signerEmail?: boolean
+    status?: boolean
+    sendAttemptAt?: boolean
+    sendError?: boolean
+    lastSyncedAt?: boolean
+    startsAt?: boolean
+    createdAt?: boolean
+    signedAt?: boolean
+    signedName?: boolean
+    viewedAt?: boolean
+    revokedAt?: boolean
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContract"]>
+
+  export type BoosterContractSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boosterId?: boolean
+    issuedById?: boolean
+    title?: boolean
+    templateId?: boolean
+    accountId?: boolean
+    environment?: boolean
+    envelopeId?: boolean
+    signerName?: boolean
+    signerEmail?: boolean
+    status?: boolean
+    sendAttemptAt?: boolean
+    sendError?: boolean
+    lastSyncedAt?: boolean
+    startsAt?: boolean
+    createdAt?: boolean
+    signedAt?: boolean
+    signedName?: boolean
+    viewedAt?: boolean
+    revokedAt?: boolean
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContract"]>
+
+  export type BoosterContractSelectScalar = {
+    id?: boolean
+    boosterId?: boolean
+    issuedById?: boolean
+    title?: boolean
+    templateId?: boolean
+    accountId?: boolean
+    environment?: boolean
+    envelopeId?: boolean
+    signerName?: boolean
+    signerEmail?: boolean
+    status?: boolean
+    sendAttemptAt?: boolean
+    sendError?: boolean
+    lastSyncedAt?: boolean
+    startsAt?: boolean
+    createdAt?: boolean
+    signedAt?: boolean
+    signedName?: boolean
+    viewedAt?: boolean
+    revokedAt?: boolean
+  }
+
+  export type BoosterContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boosterId" | "issuedById" | "title" | "templateId" | "accountId" | "environment" | "envelopeId" | "signerName" | "signerEmail" | "status" | "sendAttemptAt" | "sendError" | "lastSyncedAt" | "startsAt" | "createdAt" | "signedAt" | "signedName" | "viewedAt" | "revokedAt", ExtArgs["result"]["boosterContract"]>
+  export type BoosterContractInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterContractIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterContractIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+    issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BoosterContractPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BoosterContract"
+    objects: {
+      booster: Prisma.$UserPayload<ExtArgs>
+      issuedBy: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      boosterId: string
+      issuedById: string
+      title: string
+      templateId: string
+      accountId: string
+      environment: string
+      envelopeId: string | null
+      signerName: string
+      signerEmail: string
+      status: string
+      sendAttemptAt: Date | null
+      sendError: string | null
+      lastSyncedAt: Date | null
+      startsAt: Date
+      createdAt: Date
+      signedAt: Date | null
+      signedName: string | null
+      viewedAt: Date | null
+      revokedAt: Date | null
+    }, ExtArgs["result"]["boosterContract"]>
+    composites: {}
+  }
+
+  type BoosterContractGetPayload<S extends boolean | null | undefined | BoosterContractDefaultArgs> = $Result.GetResult<Prisma.$BoosterContractPayload, S>
+
+  type BoosterContractCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BoosterContractFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BoosterContractCountAggregateInputType | true
+    }
+
+  export interface BoosterContractDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BoosterContract'], meta: { name: 'BoosterContract' } }
+    /**
+     * Find zero or one BoosterContract that matches the filter.
+     * @param {BoosterContractFindUniqueArgs} args - Arguments to find a BoosterContract
+     * @example
+     * // Get one BoosterContract
+     * const boosterContract = await prisma.boosterContract.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BoosterContractFindUniqueArgs>(args: SelectSubset<T, BoosterContractFindUniqueArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BoosterContract that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BoosterContractFindUniqueOrThrowArgs} args - Arguments to find a BoosterContract
+     * @example
+     * // Get one BoosterContract
+     * const boosterContract = await prisma.boosterContract.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BoosterContractFindUniqueOrThrowArgs>(args: SelectSubset<T, BoosterContractFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterContract that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractFindFirstArgs} args - Arguments to find a BoosterContract
+     * @example
+     * // Get one BoosterContract
+     * const boosterContract = await prisma.boosterContract.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BoosterContractFindFirstArgs>(args?: SelectSubset<T, BoosterContractFindFirstArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterContract that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractFindFirstOrThrowArgs} args - Arguments to find a BoosterContract
+     * @example
+     * // Get one BoosterContract
+     * const boosterContract = await prisma.boosterContract.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BoosterContractFindFirstOrThrowArgs>(args?: SelectSubset<T, BoosterContractFindFirstOrThrowArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BoosterContracts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BoosterContracts
+     * const boosterContracts = await prisma.boosterContract.findMany()
+     *
+     * // Get first 10 BoosterContracts
+     * const boosterContracts = await prisma.boosterContract.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const boosterContractWithIdOnly = await prisma.boosterContract.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends BoosterContractFindManyArgs>(args?: SelectSubset<T, BoosterContractFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BoosterContract.
+     * @param {BoosterContractCreateArgs} args - Arguments to create a BoosterContract.
+     * @example
+     * // Create one BoosterContract
+     * const BoosterContract = await prisma.boosterContract.create({
+     *   data: {
+     *     // ... data to create a BoosterContract
+     *   }
+     * })
+     *
+     */
+    create<T extends BoosterContractCreateArgs>(args: SelectSubset<T, BoosterContractCreateArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BoosterContracts.
+     * @param {BoosterContractCreateManyArgs} args - Arguments to create many BoosterContracts.
+     * @example
+     * // Create many BoosterContracts
+     * const boosterContract = await prisma.boosterContract.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends BoosterContractCreateManyArgs>(args?: SelectSubset<T, BoosterContractCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BoosterContracts and returns the data saved in the database.
+     * @param {BoosterContractCreateManyAndReturnArgs} args - Arguments to create many BoosterContracts.
+     * @example
+     * // Create many BoosterContracts
+     * const boosterContract = await prisma.boosterContract.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many BoosterContracts and only return the `id`
+     * const boosterContractWithIdOnly = await prisma.boosterContract.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends BoosterContractCreateManyAndReturnArgs>(args?: SelectSubset<T, BoosterContractCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BoosterContract.
+     * @param {BoosterContractDeleteArgs} args - Arguments to delete one BoosterContract.
+     * @example
+     * // Delete one BoosterContract
+     * const BoosterContract = await prisma.boosterContract.delete({
+     *   where: {
+     *     // ... filter to delete one BoosterContract
+     *   }
+     * })
+     *
+     */
+    delete<T extends BoosterContractDeleteArgs>(args: SelectSubset<T, BoosterContractDeleteArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BoosterContract.
+     * @param {BoosterContractUpdateArgs} args - Arguments to update one BoosterContract.
+     * @example
+     * // Update one BoosterContract
+     * const boosterContract = await prisma.boosterContract.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends BoosterContractUpdateArgs>(args: SelectSubset<T, BoosterContractUpdateArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BoosterContracts.
+     * @param {BoosterContractDeleteManyArgs} args - Arguments to filter BoosterContracts to delete.
+     * @example
+     * // Delete a few BoosterContracts
+     * const { count } = await prisma.boosterContract.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends BoosterContractDeleteManyArgs>(args?: SelectSubset<T, BoosterContractDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterContracts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BoosterContracts
+     * const boosterContract = await prisma.boosterContract.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends BoosterContractUpdateManyArgs>(args: SelectSubset<T, BoosterContractUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterContracts and returns the data updated in the database.
+     * @param {BoosterContractUpdateManyAndReturnArgs} args - Arguments to update many BoosterContracts.
+     * @example
+     * // Update many BoosterContracts
+     * const boosterContract = await prisma.boosterContract.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more BoosterContracts and only return the `id`
+     * const boosterContractWithIdOnly = await prisma.boosterContract.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends BoosterContractUpdateManyAndReturnArgs>(args: SelectSubset<T, BoosterContractUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BoosterContract.
+     * @param {BoosterContractUpsertArgs} args - Arguments to update or create a BoosterContract.
+     * @example
+     * // Update or create a BoosterContract
+     * const boosterContract = await prisma.boosterContract.upsert({
+     *   create: {
+     *     // ... data to create a BoosterContract
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BoosterContract we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BoosterContractUpsertArgs>(args: SelectSubset<T, BoosterContractUpsertArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BoosterContracts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractCountArgs} args - Arguments to filter BoosterContracts to count.
+     * @example
+     * // Count the number of BoosterContracts
+     * const count = await prisma.boosterContract.count({
+     *   where: {
+     *     // ... the filter for the BoosterContracts we want to count
+     *   }
+     * })
+    **/
+    count<T extends BoosterContractCountArgs>(
+      args?: Subset<T, BoosterContractCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BoosterContractCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BoosterContract.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BoosterContractAggregateArgs>(args: Subset<T, BoosterContractAggregateArgs>): Prisma.PrismaPromise<GetBoosterContractAggregateType<T>>
+
+    /**
+     * Group by BoosterContract.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContractGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends BoosterContractGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BoosterContractGroupByArgs['orderBy'] }
+        : { orderBy?: BoosterContractGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BoosterContractGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoosterContractGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BoosterContract model
+   */
+  readonly fields: BoosterContractFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BoosterContract.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BoosterContractClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    issuedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BoosterContract model
+   */
+  interface BoosterContractFieldRefs {
+    readonly id: FieldRef<"BoosterContract", 'String'>
+    readonly boosterId: FieldRef<"BoosterContract", 'String'>
+    readonly issuedById: FieldRef<"BoosterContract", 'String'>
+    readonly title: FieldRef<"BoosterContract", 'String'>
+    readonly templateId: FieldRef<"BoosterContract", 'String'>
+    readonly accountId: FieldRef<"BoosterContract", 'String'>
+    readonly environment: FieldRef<"BoosterContract", 'String'>
+    readonly envelopeId: FieldRef<"BoosterContract", 'String'>
+    readonly signerName: FieldRef<"BoosterContract", 'String'>
+    readonly signerEmail: FieldRef<"BoosterContract", 'String'>
+    readonly status: FieldRef<"BoosterContract", 'String'>
+    readonly sendAttemptAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly sendError: FieldRef<"BoosterContract", 'String'>
+    readonly lastSyncedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly startsAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly createdAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly signedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly signedName: FieldRef<"BoosterContract", 'String'>
+    readonly viewedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly revokedAt: FieldRef<"BoosterContract", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * BoosterContract findUnique
+   */
+  export type BoosterContractFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContract to fetch.
+     */
+    where: BoosterContractWhereUniqueInput
+  }
+
+  /**
+   * BoosterContract findUniqueOrThrow
+   */
+  export type BoosterContractFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContract to fetch.
+     */
+    where: BoosterContractWhereUniqueInput
+  }
+
+  /**
+   * BoosterContract findFirst
+   */
+  export type BoosterContractFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContract to fetch.
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContracts to fetch.
+     */
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterContracts.
+     */
+    cursor?: BoosterContractWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContracts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContracts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContracts.
+     */
+    distinct?: BoosterContractScalarFieldEnum | BoosterContractScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContract findFirstOrThrow
+   */
+  export type BoosterContractFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContract to fetch.
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContracts to fetch.
+     */
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterContracts.
+     */
+    cursor?: BoosterContractWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContracts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContracts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContracts.
+     */
+    distinct?: BoosterContractScalarFieldEnum | BoosterContractScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContract findMany
+   */
+  export type BoosterContractFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContracts to fetch.
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContracts to fetch.
+     */
+    orderBy?: BoosterContractOrderByWithRelationInput | BoosterContractOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing BoosterContracts.
+     */
+    cursor?: BoosterContractWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContracts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContracts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContracts.
+     */
+    distinct?: BoosterContractScalarFieldEnum | BoosterContractScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContract create
+   */
+  export type BoosterContractCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BoosterContract.
+     */
+    data: XOR<BoosterContractCreateInput, BoosterContractUncheckedCreateInput>
+  }
+
+  /**
+   * BoosterContract createMany
+   */
+  export type BoosterContractCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BoosterContracts.
+     */
+    data: BoosterContractCreateManyInput | BoosterContractCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BoosterContract createManyAndReturn
+   */
+  export type BoosterContractCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * The data used to create many BoosterContracts.
+     */
+    data: BoosterContractCreateManyInput | BoosterContractCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterContract update
+   */
+  export type BoosterContractUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BoosterContract.
+     */
+    data: XOR<BoosterContractUpdateInput, BoosterContractUncheckedUpdateInput>
+    /**
+     * Choose, which BoosterContract to update.
+     */
+    where: BoosterContractWhereUniqueInput
+  }
+
+  /**
+   * BoosterContract updateMany
+   */
+  export type BoosterContractUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BoosterContracts.
+     */
+    data: XOR<BoosterContractUpdateManyMutationInput, BoosterContractUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterContracts to update
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * Limit how many BoosterContracts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterContract updateManyAndReturn
+   */
+  export type BoosterContractUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * The data used to update BoosterContracts.
+     */
+    data: XOR<BoosterContractUpdateManyMutationInput, BoosterContractUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterContracts to update
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * Limit how many BoosterContracts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterContract upsert
+   */
+  export type BoosterContractUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BoosterContract to update in case it exists.
+     */
+    where: BoosterContractWhereUniqueInput
+    /**
+     * In case the BoosterContract found by the `where` argument doesn't exist, create a new BoosterContract with this data.
+     */
+    create: XOR<BoosterContractCreateInput, BoosterContractUncheckedCreateInput>
+    /**
+     * In case the BoosterContract was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BoosterContractUpdateInput, BoosterContractUncheckedUpdateInput>
+  }
+
+  /**
+   * BoosterContract delete
+   */
+  export type BoosterContractDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
+    /**
+     * Filter which BoosterContract to delete.
+     */
+    where: BoosterContractWhereUniqueInput
+  }
+
+  /**
+   * BoosterContract deleteMany
+   */
+  export type BoosterContractDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterContracts to delete
+     */
+    where?: BoosterContractWhereInput
+    /**
+     * Limit how many BoosterContracts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterContract without action
+   */
+  export type BoosterContractDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContract
+     */
+    select?: BoosterContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContract
+     */
+    omit?: BoosterContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContractInclude<ExtArgs> | null
   }
 
 
@@ -17304,6 +20011,7 @@ export namespace Prisma {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
+    contributions?: boolean | Order$contributionsArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -17509,6 +20217,7 @@ export namespace Prisma {
     customer?: boolean | UserDefaultArgs<ExtArgs>
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
+    contributions?: boolean | Order$contributionsArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -17533,6 +20242,7 @@ export namespace Prisma {
       customer: Prisma.$UserPayload<ExtArgs>
       service: Prisma.$ServicePayload<ExtArgs>
       assignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
+      contributions: Prisma.$BoosterContributionPayload<ExtArgs>[]
       assignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       conversation: Prisma.$ConversationPayload<ExtArgs> | null
     }
@@ -17996,6 +20706,7 @@ export namespace Prisma {
     customer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignments<T extends Order$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contributions<T extends Order$contributionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$contributionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignmentRequests<T extends Order$assignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation<T extends Order$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Order$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
@@ -18565,6 +21276,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderAssignmentScalarFieldEnum | OrderAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Order.contributions
+   */
+  export type Order$contributionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    where?: BoosterContributionWhereInput
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    cursor?: BoosterContributionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoosterContributionScalarFieldEnum | BoosterContributionScalarFieldEnum[]
   }
 
   /**
@@ -22856,6 +25591,1171 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderAssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BoosterContribution
+   */
+
+  export type AggregateBoosterContribution = {
+    _count: BoosterContributionCountAggregateOutputType | null
+    _avg: BoosterContributionAvgAggregateOutputType | null
+    _sum: BoosterContributionSumAggregateOutputType | null
+    _min: BoosterContributionMinAggregateOutputType | null
+    _max: BoosterContributionMaxAggregateOutputType | null
+  }
+
+  export type BoosterContributionAvgAggregateOutputType = {
+    submittedMatches: number | null
+    approvedMatches: number | null
+    revision: number | null
+  }
+
+  export type BoosterContributionSumAggregateOutputType = {
+    submittedMatches: number | null
+    approvedMatches: number | null
+    revision: number | null
+  }
+
+  export type BoosterContributionMinAggregateOutputType = {
+    orderId: string | null
+    boosterId: string | null
+    submittedMatches: number | null
+    approvedMatches: number | null
+    revision: number | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewedBy: string | null
+    reviewNote: string | null
+  }
+
+  export type BoosterContributionMaxAggregateOutputType = {
+    orderId: string | null
+    boosterId: string | null
+    submittedMatches: number | null
+    approvedMatches: number | null
+    revision: number | null
+    submittedAt: Date | null
+    reviewedAt: Date | null
+    reviewedBy: string | null
+    reviewNote: string | null
+  }
+
+  export type BoosterContributionCountAggregateOutputType = {
+    orderId: number
+    boosterId: number
+    submittedMatches: number
+    approvedMatches: number
+    revision: number
+    submittedAt: number
+    reviewedAt: number
+    reviewedBy: number
+    reviewNote: number
+    _all: number
+  }
+
+
+  export type BoosterContributionAvgAggregateInputType = {
+    submittedMatches?: true
+    approvedMatches?: true
+    revision?: true
+  }
+
+  export type BoosterContributionSumAggregateInputType = {
+    submittedMatches?: true
+    approvedMatches?: true
+    revision?: true
+  }
+
+  export type BoosterContributionMinAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+    submittedMatches?: true
+    approvedMatches?: true
+    revision?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewedBy?: true
+    reviewNote?: true
+  }
+
+  export type BoosterContributionMaxAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+    submittedMatches?: true
+    approvedMatches?: true
+    revision?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewedBy?: true
+    reviewNote?: true
+  }
+
+  export type BoosterContributionCountAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+    submittedMatches?: true
+    approvedMatches?: true
+    revision?: true
+    submittedAt?: true
+    reviewedAt?: true
+    reviewedBy?: true
+    reviewNote?: true
+    _all?: true
+  }
+
+  export type BoosterContributionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterContribution to aggregate.
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContributions to fetch.
+     */
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: BoosterContributionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContributions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContributions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned BoosterContributions
+    **/
+    _count?: true | BoosterContributionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: BoosterContributionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: BoosterContributionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: BoosterContributionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: BoosterContributionMaxAggregateInputType
+  }
+
+  export type GetBoosterContributionAggregateType<T extends BoosterContributionAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoosterContribution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoosterContribution[P]>
+      : GetScalarType<T[P], AggregateBoosterContribution[P]>
+  }
+
+
+
+
+  export type BoosterContributionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterContributionWhereInput
+    orderBy?: BoosterContributionOrderByWithAggregationInput | BoosterContributionOrderByWithAggregationInput[]
+    by: BoosterContributionScalarFieldEnum[] | BoosterContributionScalarFieldEnum
+    having?: BoosterContributionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BoosterContributionCountAggregateInputType | true
+    _avg?: BoosterContributionAvgAggregateInputType
+    _sum?: BoosterContributionSumAggregateInputType
+    _min?: BoosterContributionMinAggregateInputType
+    _max?: BoosterContributionMaxAggregateInputType
+  }
+
+  export type BoosterContributionGroupByOutputType = {
+    orderId: string
+    boosterId: string
+    submittedMatches: number
+    approvedMatches: number | null
+    revision: number
+    submittedAt: Date
+    reviewedAt: Date | null
+    reviewedBy: string | null
+    reviewNote: string | null
+    _count: BoosterContributionCountAggregateOutputType | null
+    _avg: BoosterContributionAvgAggregateOutputType | null
+    _sum: BoosterContributionSumAggregateOutputType | null
+    _min: BoosterContributionMinAggregateOutputType | null
+    _max: BoosterContributionMaxAggregateOutputType | null
+  }
+
+  type GetBoosterContributionGroupByPayload<T extends BoosterContributionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BoosterContributionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BoosterContributionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BoosterContributionGroupByOutputType[P]>
+            : GetScalarType<T[P], BoosterContributionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BoosterContributionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    submittedMatches?: boolean
+    approvedMatches?: boolean
+    revision?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewedBy?: boolean
+    reviewNote?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContribution"]>
+
+  export type BoosterContributionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    submittedMatches?: boolean
+    approvedMatches?: boolean
+    revision?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewedBy?: boolean
+    reviewNote?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContribution"]>
+
+  export type BoosterContributionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    submittedMatches?: boolean
+    approvedMatches?: boolean
+    revision?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewedBy?: boolean
+    reviewNote?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterContribution"]>
+
+  export type BoosterContributionSelectScalar = {
+    orderId?: boolean
+    boosterId?: boolean
+    submittedMatches?: boolean
+    approvedMatches?: boolean
+    revision?: boolean
+    submittedAt?: boolean
+    reviewedAt?: boolean
+    reviewedBy?: boolean
+    reviewNote?: boolean
+  }
+
+  export type BoosterContributionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"orderId" | "boosterId" | "submittedMatches" | "approvedMatches" | "revision" | "submittedAt" | "reviewedAt" | "reviewedBy" | "reviewNote", ExtArgs["result"]["boosterContribution"]>
+  export type BoosterContributionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterContributionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterContributionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BoosterContributionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BoosterContribution"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      booster: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      orderId: string
+      boosterId: string
+      submittedMatches: number
+      approvedMatches: number | null
+      revision: number
+      submittedAt: Date
+      reviewedAt: Date | null
+      reviewedBy: string | null
+      reviewNote: string | null
+    }, ExtArgs["result"]["boosterContribution"]>
+    composites: {}
+  }
+
+  type BoosterContributionGetPayload<S extends boolean | null | undefined | BoosterContributionDefaultArgs> = $Result.GetResult<Prisma.$BoosterContributionPayload, S>
+
+  type BoosterContributionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BoosterContributionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BoosterContributionCountAggregateInputType | true
+    }
+
+  export interface BoosterContributionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BoosterContribution'], meta: { name: 'BoosterContribution' } }
+    /**
+     * Find zero or one BoosterContribution that matches the filter.
+     * @param {BoosterContributionFindUniqueArgs} args - Arguments to find a BoosterContribution
+     * @example
+     * // Get one BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BoosterContributionFindUniqueArgs>(args: SelectSubset<T, BoosterContributionFindUniqueArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BoosterContribution that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BoosterContributionFindUniqueOrThrowArgs} args - Arguments to find a BoosterContribution
+     * @example
+     * // Get one BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BoosterContributionFindUniqueOrThrowArgs>(args: SelectSubset<T, BoosterContributionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterContribution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionFindFirstArgs} args - Arguments to find a BoosterContribution
+     * @example
+     * // Get one BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BoosterContributionFindFirstArgs>(args?: SelectSubset<T, BoosterContributionFindFirstArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterContribution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionFindFirstOrThrowArgs} args - Arguments to find a BoosterContribution
+     * @example
+     * // Get one BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BoosterContributionFindFirstOrThrowArgs>(args?: SelectSubset<T, BoosterContributionFindFirstOrThrowArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BoosterContributions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BoosterContributions
+     * const boosterContributions = await prisma.boosterContribution.findMany()
+     *
+     * // Get first 10 BoosterContributions
+     * const boosterContributions = await prisma.boosterContribution.findMany({ take: 10 })
+     *
+     * // Only select the `orderId`
+     * const boosterContributionWithOrderIdOnly = await prisma.boosterContribution.findMany({ select: { orderId: true } })
+     *
+     */
+    findMany<T extends BoosterContributionFindManyArgs>(args?: SelectSubset<T, BoosterContributionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BoosterContribution.
+     * @param {BoosterContributionCreateArgs} args - Arguments to create a BoosterContribution.
+     * @example
+     * // Create one BoosterContribution
+     * const BoosterContribution = await prisma.boosterContribution.create({
+     *   data: {
+     *     // ... data to create a BoosterContribution
+     *   }
+     * })
+     *
+     */
+    create<T extends BoosterContributionCreateArgs>(args: SelectSubset<T, BoosterContributionCreateArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BoosterContributions.
+     * @param {BoosterContributionCreateManyArgs} args - Arguments to create many BoosterContributions.
+     * @example
+     * // Create many BoosterContributions
+     * const boosterContribution = await prisma.boosterContribution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends BoosterContributionCreateManyArgs>(args?: SelectSubset<T, BoosterContributionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BoosterContributions and returns the data saved in the database.
+     * @param {BoosterContributionCreateManyAndReturnArgs} args - Arguments to create many BoosterContributions.
+     * @example
+     * // Create many BoosterContributions
+     * const boosterContribution = await prisma.boosterContribution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many BoosterContributions and only return the `orderId`
+     * const boosterContributionWithOrderIdOnly = await prisma.boosterContribution.createManyAndReturn({
+     *   select: { orderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends BoosterContributionCreateManyAndReturnArgs>(args?: SelectSubset<T, BoosterContributionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BoosterContribution.
+     * @param {BoosterContributionDeleteArgs} args - Arguments to delete one BoosterContribution.
+     * @example
+     * // Delete one BoosterContribution
+     * const BoosterContribution = await prisma.boosterContribution.delete({
+     *   where: {
+     *     // ... filter to delete one BoosterContribution
+     *   }
+     * })
+     *
+     */
+    delete<T extends BoosterContributionDeleteArgs>(args: SelectSubset<T, BoosterContributionDeleteArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BoosterContribution.
+     * @param {BoosterContributionUpdateArgs} args - Arguments to update one BoosterContribution.
+     * @example
+     * // Update one BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends BoosterContributionUpdateArgs>(args: SelectSubset<T, BoosterContributionUpdateArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BoosterContributions.
+     * @param {BoosterContributionDeleteManyArgs} args - Arguments to filter BoosterContributions to delete.
+     * @example
+     * // Delete a few BoosterContributions
+     * const { count } = await prisma.boosterContribution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends BoosterContributionDeleteManyArgs>(args?: SelectSubset<T, BoosterContributionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterContributions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BoosterContributions
+     * const boosterContribution = await prisma.boosterContribution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends BoosterContributionUpdateManyArgs>(args: SelectSubset<T, BoosterContributionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterContributions and returns the data updated in the database.
+     * @param {BoosterContributionUpdateManyAndReturnArgs} args - Arguments to update many BoosterContributions.
+     * @example
+     * // Update many BoosterContributions
+     * const boosterContribution = await prisma.boosterContribution.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more BoosterContributions and only return the `orderId`
+     * const boosterContributionWithOrderIdOnly = await prisma.boosterContribution.updateManyAndReturn({
+     *   select: { orderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends BoosterContributionUpdateManyAndReturnArgs>(args: SelectSubset<T, BoosterContributionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BoosterContribution.
+     * @param {BoosterContributionUpsertArgs} args - Arguments to update or create a BoosterContribution.
+     * @example
+     * // Update or create a BoosterContribution
+     * const boosterContribution = await prisma.boosterContribution.upsert({
+     *   create: {
+     *     // ... data to create a BoosterContribution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BoosterContribution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BoosterContributionUpsertArgs>(args: SelectSubset<T, BoosterContributionUpsertArgs<ExtArgs>>): Prisma__BoosterContributionClient<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BoosterContributions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionCountArgs} args - Arguments to filter BoosterContributions to count.
+     * @example
+     * // Count the number of BoosterContributions
+     * const count = await prisma.boosterContribution.count({
+     *   where: {
+     *     // ... the filter for the BoosterContributions we want to count
+     *   }
+     * })
+    **/
+    count<T extends BoosterContributionCountArgs>(
+      args?: Subset<T, BoosterContributionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BoosterContributionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BoosterContribution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BoosterContributionAggregateArgs>(args: Subset<T, BoosterContributionAggregateArgs>): Prisma.PrismaPromise<GetBoosterContributionAggregateType<T>>
+
+    /**
+     * Group by BoosterContribution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterContributionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends BoosterContributionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BoosterContributionGroupByArgs['orderBy'] }
+        : { orderBy?: BoosterContributionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BoosterContributionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoosterContributionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BoosterContribution model
+   */
+  readonly fields: BoosterContributionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BoosterContribution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BoosterContributionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BoosterContribution model
+   */
+  interface BoosterContributionFieldRefs {
+    readonly orderId: FieldRef<"BoosterContribution", 'String'>
+    readonly boosterId: FieldRef<"BoosterContribution", 'String'>
+    readonly submittedMatches: FieldRef<"BoosterContribution", 'Int'>
+    readonly approvedMatches: FieldRef<"BoosterContribution", 'Int'>
+    readonly revision: FieldRef<"BoosterContribution", 'Int'>
+    readonly submittedAt: FieldRef<"BoosterContribution", 'DateTime'>
+    readonly reviewedAt: FieldRef<"BoosterContribution", 'DateTime'>
+    readonly reviewedBy: FieldRef<"BoosterContribution", 'String'>
+    readonly reviewNote: FieldRef<"BoosterContribution", 'String'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * BoosterContribution findUnique
+   */
+  export type BoosterContributionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContribution to fetch.
+     */
+    where: BoosterContributionWhereUniqueInput
+  }
+
+  /**
+   * BoosterContribution findUniqueOrThrow
+   */
+  export type BoosterContributionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContribution to fetch.
+     */
+    where: BoosterContributionWhereUniqueInput
+  }
+
+  /**
+   * BoosterContribution findFirst
+   */
+  export type BoosterContributionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContribution to fetch.
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContributions to fetch.
+     */
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterContributions.
+     */
+    cursor?: BoosterContributionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContributions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContributions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContributions.
+     */
+    distinct?: BoosterContributionScalarFieldEnum | BoosterContributionScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContribution findFirstOrThrow
+   */
+  export type BoosterContributionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContribution to fetch.
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContributions to fetch.
+     */
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterContributions.
+     */
+    cursor?: BoosterContributionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContributions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContributions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContributions.
+     */
+    distinct?: BoosterContributionScalarFieldEnum | BoosterContributionScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContribution findMany
+   */
+  export type BoosterContributionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterContributions to fetch.
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterContributions to fetch.
+     */
+    orderBy?: BoosterContributionOrderByWithRelationInput | BoosterContributionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing BoosterContributions.
+     */
+    cursor?: BoosterContributionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterContributions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterContributions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterContributions.
+     */
+    distinct?: BoosterContributionScalarFieldEnum | BoosterContributionScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContribution create
+   */
+  export type BoosterContributionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BoosterContribution.
+     */
+    data: XOR<BoosterContributionCreateInput, BoosterContributionUncheckedCreateInput>
+  }
+
+  /**
+   * BoosterContribution createMany
+   */
+  export type BoosterContributionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BoosterContributions.
+     */
+    data: BoosterContributionCreateManyInput | BoosterContributionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BoosterContribution createManyAndReturn
+   */
+  export type BoosterContributionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * The data used to create many BoosterContributions.
+     */
+    data: BoosterContributionCreateManyInput | BoosterContributionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterContribution update
+   */
+  export type BoosterContributionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BoosterContribution.
+     */
+    data: XOR<BoosterContributionUpdateInput, BoosterContributionUncheckedUpdateInput>
+    /**
+     * Choose, which BoosterContribution to update.
+     */
+    where: BoosterContributionWhereUniqueInput
+  }
+
+  /**
+   * BoosterContribution updateMany
+   */
+  export type BoosterContributionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BoosterContributions.
+     */
+    data: XOR<BoosterContributionUpdateManyMutationInput, BoosterContributionUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterContributions to update
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * Limit how many BoosterContributions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterContribution updateManyAndReturn
+   */
+  export type BoosterContributionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * The data used to update BoosterContributions.
+     */
+    data: XOR<BoosterContributionUpdateManyMutationInput, BoosterContributionUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterContributions to update
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * Limit how many BoosterContributions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterContribution upsert
+   */
+  export type BoosterContributionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BoosterContribution to update in case it exists.
+     */
+    where: BoosterContributionWhereUniqueInput
+    /**
+     * In case the BoosterContribution found by the `where` argument doesn't exist, create a new BoosterContribution with this data.
+     */
+    create: XOR<BoosterContributionCreateInput, BoosterContributionUncheckedCreateInput>
+    /**
+     * In case the BoosterContribution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BoosterContributionUpdateInput, BoosterContributionUncheckedUpdateInput>
+  }
+
+  /**
+   * BoosterContribution delete
+   */
+  export type BoosterContributionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
+    /**
+     * Filter which BoosterContribution to delete.
+     */
+    where: BoosterContributionWhereUniqueInput
+  }
+
+  /**
+   * BoosterContribution deleteMany
+   */
+  export type BoosterContributionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterContributions to delete
+     */
+    where?: BoosterContributionWhereInput
+    /**
+     * Limit how many BoosterContributions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterContribution without action
+   */
+  export type BoosterContributionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContribution
+     */
+    select?: BoosterContributionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterContribution
+     */
+    omit?: BoosterContributionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterContributionInclude<ExtArgs> | null
   }
 
 
@@ -31828,6 +35728,40 @@ export namespace Prisma {
   export type RegistrationConsentScalarFieldEnum = (typeof RegistrationConsentScalarFieldEnum)[keyof typeof RegistrationConsentScalarFieldEnum]
 
 
+  export const BoosterProfileScalarFieldEnum: {
+    userId: 'userId',
+    startedAt: 'startedAt'
+  };
+
+  export type BoosterProfileScalarFieldEnum = (typeof BoosterProfileScalarFieldEnum)[keyof typeof BoosterProfileScalarFieldEnum]
+
+
+  export const BoosterContractScalarFieldEnum: {
+    id: 'id',
+    boosterId: 'boosterId',
+    issuedById: 'issuedById',
+    title: 'title',
+    templateId: 'templateId',
+    accountId: 'accountId',
+    environment: 'environment',
+    envelopeId: 'envelopeId',
+    signerName: 'signerName',
+    signerEmail: 'signerEmail',
+    status: 'status',
+    sendAttemptAt: 'sendAttemptAt',
+    sendError: 'sendError',
+    lastSyncedAt: 'lastSyncedAt',
+    startsAt: 'startsAt',
+    createdAt: 'createdAt',
+    signedAt: 'signedAt',
+    signedName: 'signedName',
+    viewedAt: 'viewedAt',
+    revokedAt: 'revokedAt'
+  };
+
+  export type BoosterContractScalarFieldEnum = (typeof BoosterContractScalarFieldEnum)[keyof typeof BoosterContractScalarFieldEnum]
+
+
   export const SupportThreadScalarFieldEnum: {
     id: 'id',
     customerId: 'customerId',
@@ -32062,6 +35996,21 @@ export namespace Prisma {
   };
 
   export type OrderAssignmentScalarFieldEnum = (typeof OrderAssignmentScalarFieldEnum)[keyof typeof OrderAssignmentScalarFieldEnum]
+
+
+  export const BoosterContributionScalarFieldEnum: {
+    orderId: 'orderId',
+    boosterId: 'boosterId',
+    submittedMatches: 'submittedMatches',
+    approvedMatches: 'approvedMatches',
+    revision: 'revision',
+    submittedAt: 'submittedAt',
+    reviewedAt: 'reviewedAt',
+    reviewedBy: 'reviewedBy',
+    reviewNote: 'reviewNote'
+  };
+
+  export type BoosterContributionScalarFieldEnum = (typeof BoosterContributionScalarFieldEnum)[keyof typeof BoosterContributionScalarFieldEnum]
 
 
   export const RewardHistoryScalarFieldEnum: {
@@ -32448,6 +36397,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referralCode?: StringNullableFilter<"User"> | string | null
     referredById?: StringNullableFilter<"User"> | string | null
+    boosterProfile?: XOR<BoosterProfileNullableScalarRelationFilter, BoosterProfileWhereInput> | null
+    contributions?: BoosterContributionListRelationFilter
+    boosterContracts?: BoosterContractListRelationFilter
+    issuedBoosterContracts?: BoosterContractListRelationFilter
     supportThread?: XOR<SupportThreadNullableScalarRelationFilter, SupportThreadWhereInput> | null
     supportMessages?: SupportMessageListRelationFilter
     supportPresence?: SupportPresenceListRelationFilter
@@ -32486,6 +36439,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     referralCode?: SortOrderInput | SortOrder
     referredById?: SortOrderInput | SortOrder
+    boosterProfile?: BoosterProfileOrderByWithRelationInput
+    contributions?: BoosterContributionOrderByRelationAggregateInput
+    boosterContracts?: BoosterContractOrderByRelationAggregateInput
+    issuedBoosterContracts?: BoosterContractOrderByRelationAggregateInput
     supportThread?: SupportThreadOrderByWithRelationInput
     supportMessages?: SupportMessageOrderByRelationAggregateInput
     supportPresence?: SupportPresenceOrderByRelationAggregateInput
@@ -32527,6 +36484,10 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referredById?: StringNullableFilter<"User"> | string | null
+    boosterProfile?: XOR<BoosterProfileNullableScalarRelationFilter, BoosterProfileWhereInput> | null
+    contributions?: BoosterContributionListRelationFilter
+    boosterContracts?: BoosterContractListRelationFilter
+    issuedBoosterContracts?: BoosterContractListRelationFilter
     supportThread?: XOR<SupportThreadNullableScalarRelationFilter, SupportThreadWhereInput> | null
     supportMessages?: SupportMessageListRelationFilter
     supportPresence?: SupportPresenceListRelationFilter
@@ -32643,6 +36604,179 @@ export namespace Prisma {
     termsAcceptedAt?: DateTimeWithAggregatesFilter<"RegistrationConsent"> | Date | string
     promotionalEmails?: BoolWithAggregatesFilter<"RegistrationConsent"> | boolean
     promotionalConsentAt?: DateTimeNullableWithAggregatesFilter<"RegistrationConsent"> | Date | string | null
+  }
+
+  export type BoosterProfileWhereInput = {
+    AND?: BoosterProfileWhereInput | BoosterProfileWhereInput[]
+    OR?: BoosterProfileWhereInput[]
+    NOT?: BoosterProfileWhereInput | BoosterProfileWhereInput[]
+    userId?: StringFilter<"BoosterProfile"> | string
+    startedAt?: DateTimeNullableFilter<"BoosterProfile"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type BoosterProfileOrderByWithRelationInput = {
+    userId?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type BoosterProfileWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: BoosterProfileWhereInput | BoosterProfileWhereInput[]
+    OR?: BoosterProfileWhereInput[]
+    NOT?: BoosterProfileWhereInput | BoosterProfileWhereInput[]
+    startedAt?: DateTimeNullableFilter<"BoosterProfile"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "userId">
+
+  export type BoosterProfileOrderByWithAggregationInput = {
+    userId?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    _count?: BoosterProfileCountOrderByAggregateInput
+    _max?: BoosterProfileMaxOrderByAggregateInput
+    _min?: BoosterProfileMinOrderByAggregateInput
+  }
+
+  export type BoosterProfileScalarWhereWithAggregatesInput = {
+    AND?: BoosterProfileScalarWhereWithAggregatesInput | BoosterProfileScalarWhereWithAggregatesInput[]
+    OR?: BoosterProfileScalarWhereWithAggregatesInput[]
+    NOT?: BoosterProfileScalarWhereWithAggregatesInput | BoosterProfileScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"BoosterProfile"> | string
+    startedAt?: DateTimeNullableWithAggregatesFilter<"BoosterProfile"> | Date | string | null
+  }
+
+  export type BoosterContractWhereInput = {
+    AND?: BoosterContractWhereInput | BoosterContractWhereInput[]
+    OR?: BoosterContractWhereInput[]
+    NOT?: BoosterContractWhereInput | BoosterContractWhereInput[]
+    id?: StringFilter<"BoosterContract"> | string
+    boosterId?: StringFilter<"BoosterContract"> | string
+    issuedById?: StringFilter<"BoosterContract"> | string
+    title?: StringFilter<"BoosterContract"> | string
+    templateId?: StringFilter<"BoosterContract"> | string
+    accountId?: StringFilter<"BoosterContract"> | string
+    environment?: StringFilter<"BoosterContract"> | string
+    envelopeId?: StringNullableFilter<"BoosterContract"> | string | null
+    signerName?: StringFilter<"BoosterContract"> | string
+    signerEmail?: StringFilter<"BoosterContract"> | string
+    status?: StringFilter<"BoosterContract"> | string
+    sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    sendError?: StringNullableFilter<"BoosterContract"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    startsAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    createdAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    signedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signedName?: StringNullableFilter<"BoosterContract"> | string | null
+    viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+    issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type BoosterContractOrderByWithRelationInput = {
+    id?: SortOrder
+    boosterId?: SortOrder
+    issuedById?: SortOrder
+    title?: SortOrder
+    templateId?: SortOrder
+    accountId?: SortOrder
+    environment?: SortOrder
+    envelopeId?: SortOrderInput | SortOrder
+    signerName?: SortOrder
+    signerEmail?: SortOrder
+    status?: SortOrder
+    sendAttemptAt?: SortOrderInput | SortOrder
+    sendError?: SortOrderInput | SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    startsAt?: SortOrder
+    createdAt?: SortOrder
+    signedAt?: SortOrderInput | SortOrder
+    signedName?: SortOrderInput | SortOrder
+    viewedAt?: SortOrderInput | SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    booster?: UserOrderByWithRelationInput
+    issuedBy?: UserOrderByWithRelationInput
+  }
+
+  export type BoosterContractWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    envelopeId?: string
+    AND?: BoosterContractWhereInput | BoosterContractWhereInput[]
+    OR?: BoosterContractWhereInput[]
+    NOT?: BoosterContractWhereInput | BoosterContractWhereInput[]
+    boosterId?: StringFilter<"BoosterContract"> | string
+    issuedById?: StringFilter<"BoosterContract"> | string
+    title?: StringFilter<"BoosterContract"> | string
+    templateId?: StringFilter<"BoosterContract"> | string
+    accountId?: StringFilter<"BoosterContract"> | string
+    environment?: StringFilter<"BoosterContract"> | string
+    signerName?: StringFilter<"BoosterContract"> | string
+    signerEmail?: StringFilter<"BoosterContract"> | string
+    status?: StringFilter<"BoosterContract"> | string
+    sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    sendError?: StringNullableFilter<"BoosterContract"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    startsAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    createdAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    signedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signedName?: StringNullableFilter<"BoosterContract"> | string | null
+    viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+    issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "envelopeId">
+
+  export type BoosterContractOrderByWithAggregationInput = {
+    id?: SortOrder
+    boosterId?: SortOrder
+    issuedById?: SortOrder
+    title?: SortOrder
+    templateId?: SortOrder
+    accountId?: SortOrder
+    environment?: SortOrder
+    envelopeId?: SortOrderInput | SortOrder
+    signerName?: SortOrder
+    signerEmail?: SortOrder
+    status?: SortOrder
+    sendAttemptAt?: SortOrderInput | SortOrder
+    sendError?: SortOrderInput | SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
+    startsAt?: SortOrder
+    createdAt?: SortOrder
+    signedAt?: SortOrderInput | SortOrder
+    signedName?: SortOrderInput | SortOrder
+    viewedAt?: SortOrderInput | SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    _count?: BoosterContractCountOrderByAggregateInput
+    _max?: BoosterContractMaxOrderByAggregateInput
+    _min?: BoosterContractMinOrderByAggregateInput
+  }
+
+  export type BoosterContractScalarWhereWithAggregatesInput = {
+    AND?: BoosterContractScalarWhereWithAggregatesInput | BoosterContractScalarWhereWithAggregatesInput[]
+    OR?: BoosterContractScalarWhereWithAggregatesInput[]
+    NOT?: BoosterContractScalarWhereWithAggregatesInput | BoosterContractScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BoosterContract"> | string
+    boosterId?: StringWithAggregatesFilter<"BoosterContract"> | string
+    issuedById?: StringWithAggregatesFilter<"BoosterContract"> | string
+    title?: StringWithAggregatesFilter<"BoosterContract"> | string
+    templateId?: StringWithAggregatesFilter<"BoosterContract"> | string
+    accountId?: StringWithAggregatesFilter<"BoosterContract"> | string
+    environment?: StringWithAggregatesFilter<"BoosterContract"> | string
+    envelopeId?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    signerName?: StringWithAggregatesFilter<"BoosterContract"> | string
+    signerEmail?: StringWithAggregatesFilter<"BoosterContract"> | string
+    status?: StringWithAggregatesFilter<"BoosterContract"> | string
+    sendAttemptAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    sendError?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    startsAt?: DateTimeWithAggregatesFilter<"BoosterContract"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"BoosterContract"> | Date | string
+    signedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    signedName?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    viewedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    revokedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
   }
 
   export type SupportThreadWhereInput = {
@@ -33393,6 +37527,7 @@ export namespace Prisma {
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
+    contributions?: BoosterContributionListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
   }
@@ -33463,6 +37598,7 @@ export namespace Prisma {
     customer?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
     assignments?: OrderAssignmentOrderByRelationAggregateInput
+    contributions?: BoosterContributionOrderByRelationAggregateInput
     assignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     conversation?: ConversationOrderByWithRelationInput
   }
@@ -33536,6 +37672,7 @@ export namespace Prisma {
     customer?: XOR<UserScalarRelationFilter, UserWhereInput>
     service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
     assignments?: OrderAssignmentListRelationFilter
+    contributions?: BoosterContributionListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
   }, "id" | "orderNumber" | "stripeCheckoutSessionId">
@@ -33895,6 +38032,87 @@ export namespace Prisma {
     orderId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     boosterId?: StringWithAggregatesFilter<"OrderAssignment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"OrderAssignment"> | Date | string
+  }
+
+  export type BoosterContributionWhereInput = {
+    AND?: BoosterContributionWhereInput | BoosterContributionWhereInput[]
+    OR?: BoosterContributionWhereInput[]
+    NOT?: BoosterContributionWhereInput | BoosterContributionWhereInput[]
+    orderId?: StringFilter<"BoosterContribution"> | string
+    boosterId?: StringFilter<"BoosterContribution"> | string
+    submittedMatches?: IntFilter<"BoosterContribution"> | number
+    approvedMatches?: IntNullableFilter<"BoosterContribution"> | number | null
+    revision?: IntFilter<"BoosterContribution"> | number
+    submittedAt?: DateTimeFilter<"BoosterContribution"> | Date | string
+    reviewedAt?: DateTimeNullableFilter<"BoosterContribution"> | Date | string | null
+    reviewedBy?: StringNullableFilter<"BoosterContribution"> | string | null
+    reviewNote?: StringNullableFilter<"BoosterContribution"> | string | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type BoosterContributionOrderByWithRelationInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrderInput | SortOrder
+    revision?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    order?: OrderOrderByWithRelationInput
+    booster?: UserOrderByWithRelationInput
+  }
+
+  export type BoosterContributionWhereUniqueInput = Prisma.AtLeast<{
+    orderId_boosterId?: BoosterContributionOrderIdBoosterIdCompoundUniqueInput
+    AND?: BoosterContributionWhereInput | BoosterContributionWhereInput[]
+    OR?: BoosterContributionWhereInput[]
+    NOT?: BoosterContributionWhereInput | BoosterContributionWhereInput[]
+    orderId?: StringFilter<"BoosterContribution"> | string
+    boosterId?: StringFilter<"BoosterContribution"> | string
+    submittedMatches?: IntFilter<"BoosterContribution"> | number
+    approvedMatches?: IntNullableFilter<"BoosterContribution"> | number | null
+    revision?: IntFilter<"BoosterContribution"> | number
+    submittedAt?: DateTimeFilter<"BoosterContribution"> | Date | string
+    reviewedAt?: DateTimeNullableFilter<"BoosterContribution"> | Date | string | null
+    reviewedBy?: StringNullableFilter<"BoosterContribution"> | string | null
+    reviewNote?: StringNullableFilter<"BoosterContribution"> | string | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "orderId_boosterId">
+
+  export type BoosterContributionOrderByWithAggregationInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrderInput | SortOrder
+    revision?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    reviewNote?: SortOrderInput | SortOrder
+    _count?: BoosterContributionCountOrderByAggregateInput
+    _avg?: BoosterContributionAvgOrderByAggregateInput
+    _max?: BoosterContributionMaxOrderByAggregateInput
+    _min?: BoosterContributionMinOrderByAggregateInput
+    _sum?: BoosterContributionSumOrderByAggregateInput
+  }
+
+  export type BoosterContributionScalarWhereWithAggregatesInput = {
+    AND?: BoosterContributionScalarWhereWithAggregatesInput | BoosterContributionScalarWhereWithAggregatesInput[]
+    OR?: BoosterContributionScalarWhereWithAggregatesInput[]
+    NOT?: BoosterContributionScalarWhereWithAggregatesInput | BoosterContributionScalarWhereWithAggregatesInput[]
+    orderId?: StringWithAggregatesFilter<"BoosterContribution"> | string
+    boosterId?: StringWithAggregatesFilter<"BoosterContribution"> | string
+    submittedMatches?: IntWithAggregatesFilter<"BoosterContribution"> | number
+    approvedMatches?: IntNullableWithAggregatesFilter<"BoosterContribution"> | number | null
+    revision?: IntWithAggregatesFilter<"BoosterContribution"> | number
+    submittedAt?: DateTimeWithAggregatesFilter<"BoosterContribution"> | Date | string
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContribution"> | Date | string | null
+    reviewedBy?: StringNullableWithAggregatesFilter<"BoosterContribution"> | string | null
+    reviewNote?: StringNullableWithAggregatesFilter<"BoosterContribution"> | string | null
   }
 
   export type RewardHistoryWhereInput = {
@@ -34470,6 +38688,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -34508,6 +38730,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -34544,6 +38770,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -34582,6 +38812,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -34707,6 +38941,199 @@ export namespace Prisma {
     termsAcceptedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     promotionalEmails?: BoolFieldUpdateOperationsInput | boolean
     promotionalConsentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterProfileCreateInput = {
+    startedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutBoosterProfileInput
+  }
+
+  export type BoosterProfileUncheckedCreateInput = {
+    userId: string
+    startedAt?: Date | string | null
+  }
+
+  export type BoosterProfileUpdateInput = {
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutBoosterProfileNestedInput
+  }
+
+  export type BoosterProfileUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterProfileCreateManyInput = {
+    userId: string
+    startedAt?: Date | string | null
+  }
+
+  export type BoosterProfileUpdateManyMutationInput = {
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterProfileUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractCreateInput = {
+    id?: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    booster: UserCreateNestedOneWithoutBoosterContractsInput
+    issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+  }
+
+  export type BoosterContractUncheckedCreateInput = {
+    id?: string
+    boosterId: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type BoosterContractUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
+    issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+  }
+
+  export type BoosterContractUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractCreateManyInput = {
+    id?: string
+    boosterId: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type BoosterContractUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SupportThreadCreateInput = {
@@ -35496,6 +39923,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -35563,6 +39991,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -35630,6 +40059,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -35697,6 +40127,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -36093,6 +40524,88 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     boosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoosterContributionCreateInput = {
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+    order: OrderCreateNestedOneWithoutContributionsInput
+    booster: UserCreateNestedOneWithoutContributionsInput
+  }
+
+  export type BoosterContributionUncheckedCreateInput = {
+    orderId: string
+    boosterId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
+  export type BoosterContributionUpdateInput = {
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: OrderUpdateOneRequiredWithoutContributionsNestedInput
+    booster?: UserUpdateOneRequiredWithoutContributionsNestedInput
+  }
+
+  export type BoosterContributionUncheckedUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BoosterContributionCreateManyInput = {
+    orderId: string
+    boosterId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
+  export type BoosterContributionUpdateManyMutationInput = {
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BoosterContributionUncheckedUpdateManyInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RewardHistoryCreateInput = {
@@ -36736,6 +41249,23 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type BoosterProfileNullableScalarRelationFilter = {
+    is?: BoosterProfileWhereInput | null
+    isNot?: BoosterProfileWhereInput | null
+  }
+
+  export type BoosterContributionListRelationFilter = {
+    every?: BoosterContributionWhereInput
+    some?: BoosterContributionWhereInput
+    none?: BoosterContributionWhereInput
+  }
+
+  export type BoosterContractListRelationFilter = {
+    every?: BoosterContractWhereInput
+    some?: BoosterContractWhereInput
+    none?: BoosterContractWhereInput
+  }
+
   export type SupportThreadNullableScalarRelationFilter = {
     is?: SupportThreadWhereInput | null
     isNot?: SupportThreadWhereInput | null
@@ -36855,6 +41385,14 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type BoosterContributionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BoosterContractOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type SupportMessageOrderByRelationAggregateInput = {
@@ -37081,6 +41619,90 @@ export namespace Prisma {
     termsAcceptedAt?: SortOrder
     promotionalEmails?: SortOrder
     promotionalConsentAt?: SortOrder
+  }
+
+  export type BoosterProfileCountOrderByAggregateInput = {
+    userId?: SortOrder
+    startedAt?: SortOrder
+  }
+
+  export type BoosterProfileMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    startedAt?: SortOrder
+  }
+
+  export type BoosterProfileMinOrderByAggregateInput = {
+    userId?: SortOrder
+    startedAt?: SortOrder
+  }
+
+  export type BoosterContractCountOrderByAggregateInput = {
+    id?: SortOrder
+    boosterId?: SortOrder
+    issuedById?: SortOrder
+    title?: SortOrder
+    templateId?: SortOrder
+    accountId?: SortOrder
+    environment?: SortOrder
+    envelopeId?: SortOrder
+    signerName?: SortOrder
+    signerEmail?: SortOrder
+    status?: SortOrder
+    sendAttemptAt?: SortOrder
+    sendError?: SortOrder
+    lastSyncedAt?: SortOrder
+    startsAt?: SortOrder
+    createdAt?: SortOrder
+    signedAt?: SortOrder
+    signedName?: SortOrder
+    viewedAt?: SortOrder
+    revokedAt?: SortOrder
+  }
+
+  export type BoosterContractMaxOrderByAggregateInput = {
+    id?: SortOrder
+    boosterId?: SortOrder
+    issuedById?: SortOrder
+    title?: SortOrder
+    templateId?: SortOrder
+    accountId?: SortOrder
+    environment?: SortOrder
+    envelopeId?: SortOrder
+    signerName?: SortOrder
+    signerEmail?: SortOrder
+    status?: SortOrder
+    sendAttemptAt?: SortOrder
+    sendError?: SortOrder
+    lastSyncedAt?: SortOrder
+    startsAt?: SortOrder
+    createdAt?: SortOrder
+    signedAt?: SortOrder
+    signedName?: SortOrder
+    viewedAt?: SortOrder
+    revokedAt?: SortOrder
+  }
+
+  export type BoosterContractMinOrderByAggregateInput = {
+    id?: SortOrder
+    boosterId?: SortOrder
+    issuedById?: SortOrder
+    title?: SortOrder
+    templateId?: SortOrder
+    accountId?: SortOrder
+    environment?: SortOrder
+    envelopeId?: SortOrder
+    signerName?: SortOrder
+    signerEmail?: SortOrder
+    status?: SortOrder
+    sendAttemptAt?: SortOrder
+    sendError?: SortOrder
+    lastSyncedAt?: SortOrder
+    startsAt?: SortOrder
+    createdAt?: SortOrder
+    signedAt?: SortOrder
+    signedName?: SortOrder
+    viewedAt?: SortOrder
+    revokedAt?: SortOrder
   }
 
   export type SupportThreadCountOrderByAggregateInput = {
@@ -38142,6 +42764,59 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type BoosterContributionOrderIdBoosterIdCompoundUniqueInput = {
+    orderId: string
+    boosterId: string
+  }
+
+  export type BoosterContributionCountOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrder
+    revision?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewNote?: SortOrder
+  }
+
+  export type BoosterContributionAvgOrderByAggregateInput = {
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrder
+    revision?: SortOrder
+  }
+
+  export type BoosterContributionMaxOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrder
+    revision?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewNote?: SortOrder
+  }
+
+  export type BoosterContributionMinOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrder
+    revision?: SortOrder
+    submittedAt?: SortOrder
+    reviewedAt?: SortOrder
+    reviewedBy?: SortOrder
+    reviewNote?: SortOrder
+  }
+
+  export type BoosterContributionSumOrderByAggregateInput = {
+    submittedMatches?: SortOrder
+    approvedMatches?: SortOrder
+    revision?: SortOrder
+  }
+
   export type EnumRewardTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.RewardType | EnumRewardTypeFieldRefInput<$PrismaModel>
     in?: $Enums.RewardType[] | ListEnumRewardTypeFieldRefInput<$PrismaModel>
@@ -38494,6 +43169,33 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
+  export type BoosterProfileCreateNestedOneWithoutUserInput = {
+    create?: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterProfileCreateOrConnectWithoutUserInput
+    connect?: BoosterProfileWhereUniqueInput
+  }
+
+  export type BoosterContributionCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
+    createMany?: BoosterContributionCreateManyBoosterInputEnvelope
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+  }
+
+  export type BoosterContractCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput> | BoosterContractCreateWithoutBoosterInput[] | BoosterContractUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutBoosterInput | BoosterContractCreateOrConnectWithoutBoosterInput[]
+    createMany?: BoosterContractCreateManyBoosterInputEnvelope
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+  }
+
+  export type BoosterContractCreateNestedManyWithoutIssuedByInput = {
+    create?: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput> | BoosterContractCreateWithoutIssuedByInput[] | BoosterContractUncheckedCreateWithoutIssuedByInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutIssuedByInput | BoosterContractCreateOrConnectWithoutIssuedByInput[]
+    createMany?: BoosterContractCreateManyIssuedByInputEnvelope
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+  }
+
   export type SupportThreadCreateNestedOneWithoutCustomerInput = {
     create?: XOR<SupportThreadCreateWithoutCustomerInput, SupportThreadUncheckedCreateWithoutCustomerInput>
     connectOrCreate?: SupportThreadCreateOrConnectWithoutCustomerInput
@@ -38635,6 +43337,33 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type BoosterProfileUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterProfileCreateOrConnectWithoutUserInput
+    connect?: BoosterProfileWhereUniqueInput
+  }
+
+  export type BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
+    createMany?: BoosterContributionCreateManyBoosterInputEnvelope
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+  }
+
+  export type BoosterContractUncheckedCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput> | BoosterContractCreateWithoutBoosterInput[] | BoosterContractUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutBoosterInput | BoosterContractCreateOrConnectWithoutBoosterInput[]
+    createMany?: BoosterContractCreateManyBoosterInputEnvelope
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+  }
+
+  export type BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput = {
+    create?: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput> | BoosterContractCreateWithoutIssuedByInput[] | BoosterContractUncheckedCreateWithoutIssuedByInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutIssuedByInput | BoosterContractCreateOrConnectWithoutIssuedByInput[]
+    createMany?: BoosterContractCreateManyIssuedByInputEnvelope
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
   }
 
   export type SupportThreadUncheckedCreateNestedOneWithoutCustomerInput = {
@@ -38796,6 +43525,58 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type BoosterProfileUpdateOneWithoutUserNestedInput = {
+    create?: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterProfileCreateOrConnectWithoutUserInput
+    upsert?: BoosterProfileUpsertWithoutUserInput
+    disconnect?: BoosterProfileWhereInput | boolean
+    delete?: BoosterProfileWhereInput | boolean
+    connect?: BoosterProfileWhereUniqueInput
+    update?: XOR<XOR<BoosterProfileUpdateToOneWithWhereWithoutUserInput, BoosterProfileUpdateWithoutUserInput>, BoosterProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BoosterContributionUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
+    upsert?: BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput | BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: BoosterContributionCreateManyBoosterInputEnvelope
+    set?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    disconnect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    delete?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    update?: BoosterContributionUpdateWithWhereUniqueWithoutBoosterInput | BoosterContributionUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: BoosterContributionUpdateManyWithWhereWithoutBoosterInput | BoosterContributionUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
+  }
+
+  export type BoosterContractUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput> | BoosterContractCreateWithoutBoosterInput[] | BoosterContractUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutBoosterInput | BoosterContractCreateOrConnectWithoutBoosterInput[]
+    upsert?: BoosterContractUpsertWithWhereUniqueWithoutBoosterInput | BoosterContractUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: BoosterContractCreateManyBoosterInputEnvelope
+    set?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    disconnect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    delete?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    update?: BoosterContractUpdateWithWhereUniqueWithoutBoosterInput | BoosterContractUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: BoosterContractUpdateManyWithWhereWithoutBoosterInput | BoosterContractUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
+  }
+
+  export type BoosterContractUpdateManyWithoutIssuedByNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput> | BoosterContractCreateWithoutIssuedByInput[] | BoosterContractUncheckedCreateWithoutIssuedByInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutIssuedByInput | BoosterContractCreateOrConnectWithoutIssuedByInput[]
+    upsert?: BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput | BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput[]
+    createMany?: BoosterContractCreateManyIssuedByInputEnvelope
+    set?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    disconnect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    delete?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    update?: BoosterContractUpdateWithWhereUniqueWithoutIssuedByInput | BoosterContractUpdateWithWhereUniqueWithoutIssuedByInput[]
+    updateMany?: BoosterContractUpdateManyWithWhereWithoutIssuedByInput | BoosterContractUpdateManyWithWhereWithoutIssuedByInput[]
+    deleteMany?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
   }
 
   export type SupportThreadUpdateOneWithoutCustomerNestedInput = {
@@ -39074,6 +43855,58 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type BoosterProfileUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterProfileCreateOrConnectWithoutUserInput
+    upsert?: BoosterProfileUpsertWithoutUserInput
+    disconnect?: BoosterProfileWhereInput | boolean
+    delete?: BoosterProfileWhereInput | boolean
+    connect?: BoosterProfileWhereUniqueInput
+    update?: XOR<XOR<BoosterProfileUpdateToOneWithWhereWithoutUserInput, BoosterProfileUpdateWithoutUserInput>, BoosterProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
+    upsert?: BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput | BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: BoosterContributionCreateManyBoosterInputEnvelope
+    set?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    disconnect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    delete?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    update?: BoosterContributionUpdateWithWhereUniqueWithoutBoosterInput | BoosterContributionUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: BoosterContributionUpdateManyWithWhereWithoutBoosterInput | BoosterContributionUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
+  }
+
+  export type BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput> | BoosterContractCreateWithoutBoosterInput[] | BoosterContractUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutBoosterInput | BoosterContractCreateOrConnectWithoutBoosterInput[]
+    upsert?: BoosterContractUpsertWithWhereUniqueWithoutBoosterInput | BoosterContractUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: BoosterContractCreateManyBoosterInputEnvelope
+    set?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    disconnect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    delete?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    update?: BoosterContractUpdateWithWhereUniqueWithoutBoosterInput | BoosterContractUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: BoosterContractUpdateManyWithWhereWithoutBoosterInput | BoosterContractUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
+  }
+
+  export type BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput> | BoosterContractCreateWithoutIssuedByInput[] | BoosterContractUncheckedCreateWithoutIssuedByInput[]
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutIssuedByInput | BoosterContractCreateOrConnectWithoutIssuedByInput[]
+    upsert?: BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput | BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput[]
+    createMany?: BoosterContractCreateManyIssuedByInputEnvelope
+    set?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    disconnect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    delete?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    connect?: BoosterContractWhereUniqueInput | BoosterContractWhereUniqueInput[]
+    update?: BoosterContractUpdateWithWhereUniqueWithoutIssuedByInput | BoosterContractUpdateWithWhereUniqueWithoutIssuedByInput[]
+    updateMany?: BoosterContractUpdateManyWithWhereWithoutIssuedByInput | BoosterContractUpdateManyWithWhereWithoutIssuedByInput[]
+    deleteMany?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
   }
 
   export type SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput = {
@@ -39356,6 +44189,48 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutRegistrationConsentInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRegistrationConsentInput, UserUpdateWithoutRegistrationConsentInput>, UserUncheckedUpdateWithoutRegistrationConsentInput>
+  }
+
+  export type UserCreateNestedOneWithoutBoosterProfileInput = {
+    create?: XOR<UserCreateWithoutBoosterProfileInput, UserUncheckedCreateWithoutBoosterProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterProfileInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutBoosterProfileNestedInput = {
+    create?: XOR<UserCreateWithoutBoosterProfileInput, UserUncheckedCreateWithoutBoosterProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterProfileInput
+    upsert?: UserUpsertWithoutBoosterProfileInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBoosterProfileInput, UserUpdateWithoutBoosterProfileInput>, UserUncheckedUpdateWithoutBoosterProfileInput>
+  }
+
+  export type UserCreateNestedOneWithoutBoosterContractsInput = {
+    create?: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterContractsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutIssuedBoosterContractsInput = {
+    create?: XOR<UserCreateWithoutIssuedBoosterContractsInput, UserUncheckedCreateWithoutIssuedBoosterContractsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIssuedBoosterContractsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutBoosterContractsNestedInput = {
+    create?: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterContractsInput
+    upsert?: UserUpsertWithoutBoosterContractsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBoosterContractsInput, UserUpdateWithoutBoosterContractsInput>, UserUncheckedUpdateWithoutBoosterContractsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput = {
+    create?: XOR<UserCreateWithoutIssuedBoosterContractsInput, UserUncheckedCreateWithoutIssuedBoosterContractsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIssuedBoosterContractsInput
+    upsert?: UserUpsertWithoutIssuedBoosterContractsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIssuedBoosterContractsInput, UserUpdateWithoutIssuedBoosterContractsInput>, UserUncheckedUpdateWithoutIssuedBoosterContractsInput>
   }
 
   export type UserCreateNestedOneWithoutSupportThreadInput = {
@@ -39901,6 +44776,13 @@ export namespace Prisma {
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
   }
 
+  export type BoosterContributionCreateNestedManyWithoutOrderInput = {
+    create?: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput> | BoosterContributionCreateWithoutOrderInput[] | BoosterContributionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutOrderInput | BoosterContributionCreateOrConnectWithoutOrderInput[]
+    createMany?: BoosterContributionCreateManyOrderInputEnvelope
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+  }
+
   export type AssignmentRequestCreateNestedManyWithoutOrderInput = {
     create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
@@ -39931,6 +44813,13 @@ export namespace Prisma {
     connectOrCreate?: OrderAssignmentCreateOrConnectWithoutOrderInput | OrderAssignmentCreateOrConnectWithoutOrderInput[]
     createMany?: OrderAssignmentCreateManyOrderInputEnvelope
     connect?: OrderAssignmentWhereUniqueInput | OrderAssignmentWhereUniqueInput[]
+  }
+
+  export type BoosterContributionUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput> | BoosterContributionCreateWithoutOrderInput[] | BoosterContributionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutOrderInput | BoosterContributionCreateOrConnectWithoutOrderInput[]
+    createMany?: BoosterContributionCreateManyOrderInputEnvelope
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
   }
 
   export type AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput = {
@@ -40030,6 +44919,20 @@ export namespace Prisma {
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
   }
 
+  export type BoosterContributionUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput> | BoosterContributionCreateWithoutOrderInput[] | BoosterContributionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutOrderInput | BoosterContributionCreateOrConnectWithoutOrderInput[]
+    upsert?: BoosterContributionUpsertWithWhereUniqueWithoutOrderInput | BoosterContributionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: BoosterContributionCreateManyOrderInputEnvelope
+    set?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    disconnect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    delete?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    update?: BoosterContributionUpdateWithWhereUniqueWithoutOrderInput | BoosterContributionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: BoosterContributionUpdateManyWithWhereWithoutOrderInput | BoosterContributionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
+  }
+
   export type AssignmentRequestUpdateManyWithoutOrderNestedInput = {
     create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
@@ -40086,6 +44989,20 @@ export namespace Prisma {
     update?: OrderAssignmentUpdateWithWhereUniqueWithoutOrderInput | OrderAssignmentUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderAssignmentUpdateManyWithWhereWithoutOrderInput | OrderAssignmentUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderAssignmentScalarWhereInput | OrderAssignmentScalarWhereInput[]
+  }
+
+  export type BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput> | BoosterContributionCreateWithoutOrderInput[] | BoosterContributionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: BoosterContributionCreateOrConnectWithoutOrderInput | BoosterContributionCreateOrConnectWithoutOrderInput[]
+    upsert?: BoosterContributionUpsertWithWhereUniqueWithoutOrderInput | BoosterContributionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: BoosterContributionCreateManyOrderInputEnvelope
+    set?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    disconnect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    delete?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    connect?: BoosterContributionWhereUniqueInput | BoosterContributionWhereUniqueInput[]
+    update?: BoosterContributionUpdateWithWhereUniqueWithoutOrderInput | BoosterContributionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: BoosterContributionUpdateManyWithWhereWithoutOrderInput | BoosterContributionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
   }
 
   export type AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput = {
@@ -40194,6 +45111,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutProvidedAssignmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProvidedAssignmentsInput, UserUpdateWithoutProvidedAssignmentsInput>, UserUncheckedUpdateWithoutProvidedAssignmentsInput>
+  }
+
+  export type OrderCreateNestedOneWithoutContributionsInput = {
+    create?: XOR<OrderCreateWithoutContributionsInput, OrderUncheckedCreateWithoutContributionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutContributionsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutContributionsInput = {
+    create?: XOR<UserCreateWithoutContributionsInput, UserUncheckedCreateWithoutContributionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutContributionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutContributionsNestedInput = {
+    create?: XOR<OrderCreateWithoutContributionsInput, OrderUncheckedCreateWithoutContributionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutContributionsInput
+    upsert?: OrderUpsertWithoutContributionsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutContributionsInput, OrderUpdateWithoutContributionsInput>, OrderUncheckedUpdateWithoutContributionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutContributionsNestedInput = {
+    create?: XOR<UserCreateWithoutContributionsInput, UserUncheckedCreateWithoutContributionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutContributionsInput
+    upsert?: UserUpsertWithoutContributionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutContributionsInput, UserUpdateWithoutContributionsInput>, UserUncheckedUpdateWithoutContributionsInput>
   }
 
   export type UserCreateNestedOneWithoutRewardHistoryInput = {
@@ -40935,6 +45880,159 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
+  export type BoosterProfileCreateWithoutUserInput = {
+    startedAt?: Date | string | null
+  }
+
+  export type BoosterProfileUncheckedCreateWithoutUserInput = {
+    startedAt?: Date | string | null
+  }
+
+  export type BoosterProfileCreateOrConnectWithoutUserInput = {
+    where: BoosterProfileWhereUniqueInput
+    create: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+  }
+
+  export type BoosterContributionCreateWithoutBoosterInput = {
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+    order: OrderCreateNestedOneWithoutContributionsInput
+  }
+
+  export type BoosterContributionUncheckedCreateWithoutBoosterInput = {
+    orderId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
+  export type BoosterContributionCreateOrConnectWithoutBoosterInput = {
+    where: BoosterContributionWhereUniqueInput
+    create: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type BoosterContributionCreateManyBoosterInputEnvelope = {
+    data: BoosterContributionCreateManyBoosterInput | BoosterContributionCreateManyBoosterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BoosterContractCreateWithoutBoosterInput = {
+    id?: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+  }
+
+  export type BoosterContractUncheckedCreateWithoutBoosterInput = {
+    id?: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type BoosterContractCreateOrConnectWithoutBoosterInput = {
+    where: BoosterContractWhereUniqueInput
+    create: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type BoosterContractCreateManyBoosterInputEnvelope = {
+    data: BoosterContractCreateManyBoosterInput | BoosterContractCreateManyBoosterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BoosterContractCreateWithoutIssuedByInput = {
+    id?: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    booster: UserCreateNestedOneWithoutBoosterContractsInput
+  }
+
+  export type BoosterContractUncheckedCreateWithoutIssuedByInput = {
+    id?: string
+    boosterId: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type BoosterContractCreateOrConnectWithoutIssuedByInput = {
+    where: BoosterContractWhereUniqueInput
+    create: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput>
+  }
+
+  export type BoosterContractCreateManyIssuedByInputEnvelope = {
+    data: BoosterContractCreateManyIssuedByInput | BoosterContractCreateManyIssuedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SupportThreadCreateWithoutCustomerInput = {
     id?: string
     createdAt?: Date | string
@@ -41229,6 +46327,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -41295,6 +46394,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -41438,6 +46538,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -41475,6 +46579,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -41515,6 +46623,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -41551,6 +46663,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -41751,6 +46867,114 @@ export namespace Prisma {
   export type NotificationCreateManyUserInputEnvelope = {
     data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
+  }
+
+  export type BoosterProfileUpsertWithoutUserInput = {
+    update: XOR<BoosterProfileUpdateWithoutUserInput, BoosterProfileUncheckedUpdateWithoutUserInput>
+    create: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
+    where?: BoosterProfileWhereInput
+  }
+
+  export type BoosterProfileUpdateToOneWithWhereWithoutUserInput = {
+    where?: BoosterProfileWhereInput
+    data: XOR<BoosterProfileUpdateWithoutUserInput, BoosterProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BoosterProfileUpdateWithoutUserInput = {
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterProfileUncheckedUpdateWithoutUserInput = {
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput = {
+    where: BoosterContributionWhereUniqueInput
+    update: XOR<BoosterContributionUpdateWithoutBoosterInput, BoosterContributionUncheckedUpdateWithoutBoosterInput>
+    create: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type BoosterContributionUpdateWithWhereUniqueWithoutBoosterInput = {
+    where: BoosterContributionWhereUniqueInput
+    data: XOR<BoosterContributionUpdateWithoutBoosterInput, BoosterContributionUncheckedUpdateWithoutBoosterInput>
+  }
+
+  export type BoosterContributionUpdateManyWithWhereWithoutBoosterInput = {
+    where: BoosterContributionScalarWhereInput
+    data: XOR<BoosterContributionUpdateManyMutationInput, BoosterContributionUncheckedUpdateManyWithoutBoosterInput>
+  }
+
+  export type BoosterContributionScalarWhereInput = {
+    AND?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
+    OR?: BoosterContributionScalarWhereInput[]
+    NOT?: BoosterContributionScalarWhereInput | BoosterContributionScalarWhereInput[]
+    orderId?: StringFilter<"BoosterContribution"> | string
+    boosterId?: StringFilter<"BoosterContribution"> | string
+    submittedMatches?: IntFilter<"BoosterContribution"> | number
+    approvedMatches?: IntNullableFilter<"BoosterContribution"> | number | null
+    revision?: IntFilter<"BoosterContribution"> | number
+    submittedAt?: DateTimeFilter<"BoosterContribution"> | Date | string
+    reviewedAt?: DateTimeNullableFilter<"BoosterContribution"> | Date | string | null
+    reviewedBy?: StringNullableFilter<"BoosterContribution"> | string | null
+    reviewNote?: StringNullableFilter<"BoosterContribution"> | string | null
+  }
+
+  export type BoosterContractUpsertWithWhereUniqueWithoutBoosterInput = {
+    where: BoosterContractWhereUniqueInput
+    update: XOR<BoosterContractUpdateWithoutBoosterInput, BoosterContractUncheckedUpdateWithoutBoosterInput>
+    create: XOR<BoosterContractCreateWithoutBoosterInput, BoosterContractUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type BoosterContractUpdateWithWhereUniqueWithoutBoosterInput = {
+    where: BoosterContractWhereUniqueInput
+    data: XOR<BoosterContractUpdateWithoutBoosterInput, BoosterContractUncheckedUpdateWithoutBoosterInput>
+  }
+
+  export type BoosterContractUpdateManyWithWhereWithoutBoosterInput = {
+    where: BoosterContractScalarWhereInput
+    data: XOR<BoosterContractUpdateManyMutationInput, BoosterContractUncheckedUpdateManyWithoutBoosterInput>
+  }
+
+  export type BoosterContractScalarWhereInput = {
+    AND?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
+    OR?: BoosterContractScalarWhereInput[]
+    NOT?: BoosterContractScalarWhereInput | BoosterContractScalarWhereInput[]
+    id?: StringFilter<"BoosterContract"> | string
+    boosterId?: StringFilter<"BoosterContract"> | string
+    issuedById?: StringFilter<"BoosterContract"> | string
+    title?: StringFilter<"BoosterContract"> | string
+    templateId?: StringFilter<"BoosterContract"> | string
+    accountId?: StringFilter<"BoosterContract"> | string
+    environment?: StringFilter<"BoosterContract"> | string
+    envelopeId?: StringNullableFilter<"BoosterContract"> | string | null
+    signerName?: StringFilter<"BoosterContract"> | string
+    signerEmail?: StringFilter<"BoosterContract"> | string
+    status?: StringFilter<"BoosterContract"> | string
+    sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    sendError?: StringNullableFilter<"BoosterContract"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    startsAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    createdAt?: DateTimeFilter<"BoosterContract"> | Date | string
+    signedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signedName?: StringNullableFilter<"BoosterContract"> | string | null
+    viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+  }
+
+  export type BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput = {
+    where: BoosterContractWhereUniqueInput
+    update: XOR<BoosterContractUpdateWithoutIssuedByInput, BoosterContractUncheckedUpdateWithoutIssuedByInput>
+    create: XOR<BoosterContractCreateWithoutIssuedByInput, BoosterContractUncheckedCreateWithoutIssuedByInput>
+  }
+
+  export type BoosterContractUpdateWithWhereUniqueWithoutIssuedByInput = {
+    where: BoosterContractWhereUniqueInput
+    data: XOR<BoosterContractUpdateWithoutIssuedByInput, BoosterContractUncheckedUpdateWithoutIssuedByInput>
+  }
+
+  export type BoosterContractUpdateManyWithWhereWithoutIssuedByInput = {
+    where: BoosterContractScalarWhereInput
+    data: XOR<BoosterContractUpdateManyMutationInput, BoosterContractUncheckedUpdateManyWithoutIssuedByInput>
   }
 
   export type SupportThreadUpsertWithoutCustomerInput = {
@@ -42218,6 +47442,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -42255,6 +47483,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -42488,6 +47720,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -42525,6 +47761,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -42576,6 +47816,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -42613,10 +47857,542 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
     supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutBoosterProfileInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBoosterProfileInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBoosterProfileInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBoosterProfileInput, UserUncheckedCreateWithoutBoosterProfileInput>
+  }
+
+  export type UserUpsertWithoutBoosterProfileInput = {
+    update: XOR<UserUpdateWithoutBoosterProfileInput, UserUncheckedUpdateWithoutBoosterProfileInput>
+    create: XOR<UserCreateWithoutBoosterProfileInput, UserUncheckedCreateWithoutBoosterProfileInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBoosterProfileInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBoosterProfileInput, UserUncheckedUpdateWithoutBoosterProfileInput>
+  }
+
+  export type UserUpdateWithoutBoosterProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBoosterProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutBoosterContractsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBoosterContractsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBoosterContractsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
+  }
+
+  export type UserCreateWithoutIssuedBoosterContractsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutIssuedBoosterContractsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutIssuedBoosterContractsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutIssuedBoosterContractsInput, UserUncheckedCreateWithoutIssuedBoosterContractsInput>
+  }
+
+  export type UserUpsertWithoutBoosterContractsInput = {
+    update: XOR<UserUpdateWithoutBoosterContractsInput, UserUncheckedUpdateWithoutBoosterContractsInput>
+    create: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBoosterContractsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBoosterContractsInput, UserUncheckedUpdateWithoutBoosterContractsInput>
+  }
+
+  export type UserUpdateWithoutBoosterContractsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBoosterContractsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutIssuedBoosterContractsInput = {
+    update: XOR<UserUpdateWithoutIssuedBoosterContractsInput, UserUncheckedUpdateWithoutIssuedBoosterContractsInput>
+    create: XOR<UserCreateWithoutIssuedBoosterContractsInput, UserUncheckedCreateWithoutIssuedBoosterContractsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutIssuedBoosterContractsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutIssuedBoosterContractsInput, UserUncheckedUpdateWithoutIssuedBoosterContractsInput>
+  }
+
+  export type UserUpdateWithoutIssuedBoosterContractsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutIssuedBoosterContractsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
@@ -42648,6 +48424,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
     supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
@@ -42685,6 +48465,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
     supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
@@ -42772,6 +48556,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
     supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
@@ -42809,6 +48597,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
     supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
@@ -42883,6 +48675,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
     supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
@@ -42920,6 +48716,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
     supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
@@ -43030,6 +48830,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
     supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
@@ -43067,6 +48871,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
     supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
@@ -43118,6 +48926,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
@@ -43155,6 +48967,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
@@ -43206,6 +49022,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
@@ -43243,6 +49063,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
@@ -43309,6 +49133,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -43346,6 +49174,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -43434,6 +49266,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -43471,6 +49307,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -43506,6 +49346,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -43543,6 +49387,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -43594,6 +49442,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -43631,6 +49483,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -43666,6 +49522,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -43703,6 +49563,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -43754,6 +49618,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -43791,6 +49659,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -43874,6 +49746,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -43940,6 +49813,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -44173,6 +50047,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -44210,6 +50088,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -44298,6 +50180,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -44364,6 +50247,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -44454,6 +50338,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -44491,6 +50379,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -44684,6 +50576,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -44721,6 +50617,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -44791,6 +50691,38 @@ export namespace Prisma {
 
   export type OrderAssignmentCreateManyOrderInputEnvelope = {
     data: OrderAssignmentCreateManyOrderInput | OrderAssignmentCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BoosterContributionCreateWithoutOrderInput = {
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+    booster: UserCreateNestedOneWithoutContributionsInput
+  }
+
+  export type BoosterContributionUncheckedCreateWithoutOrderInput = {
+    boosterId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
+  export type BoosterContributionCreateOrConnectWithoutOrderInput = {
+    where: BoosterContributionWhereUniqueInput
+    create: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type BoosterContributionCreateManyOrderInputEnvelope = {
+    data: BoosterContributionCreateManyOrderInput | BoosterContributionCreateManyOrderInput[]
     skipDuplicates?: boolean
   }
 
@@ -44983,6 +50915,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -45020,6 +50956,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -45086,6 +51026,22 @@ export namespace Prisma {
   export type OrderAssignmentUpdateManyWithWhereWithoutOrderInput = {
     where: OrderAssignmentScalarWhereInput
     data: XOR<OrderAssignmentUpdateManyMutationInput, OrderAssignmentUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type BoosterContributionUpsertWithWhereUniqueWithoutOrderInput = {
+    where: BoosterContributionWhereUniqueInput
+    update: XOR<BoosterContributionUpdateWithoutOrderInput, BoosterContributionUncheckedUpdateWithoutOrderInput>
+    create: XOR<BoosterContributionCreateWithoutOrderInput, BoosterContributionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type BoosterContributionUpdateWithWhereUniqueWithoutOrderInput = {
+    where: BoosterContributionWhereUniqueInput
+    data: XOR<BoosterContributionUpdateWithoutOrderInput, BoosterContributionUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type BoosterContributionUpdateManyWithWhereWithoutOrderInput = {
+    where: BoosterContributionScalarWhereInput
+    data: XOR<BoosterContributionUpdateManyMutationInput, BoosterContributionUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput = {
@@ -45195,6 +51151,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -45261,6 +51218,7 @@ export namespace Prisma {
     totalPrice?: number
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -45343,6 +51301,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -45409,6 +51368,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -45427,6 +51387,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -45464,6 +51428,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -45601,6 +51569,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -45667,6 +51636,7 @@ export namespace Prisma {
     totalPrice?: number
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -45701,6 +51671,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -45738,6 +51712,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -45887,6 +51865,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -45953,6 +51932,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -46019,6 +51999,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -46085,6 +52066,7 @@ export namespace Prisma {
     totalPrice?: number
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -46108,6 +52090,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -46145,6 +52131,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -46244,6 +52234,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -46310,6 +52301,7 @@ export namespace Prisma {
     totalPrice?: FloatFieldUpdateOperationsInput | number
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -46339,6 +52331,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -46376,6 +52372,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -46397,6 +52397,466 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type OrderCreateWithoutContributionsInput = {
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    couponSale?: ServiceSaleCreateNestedOneWithoutCouponOrdersInput
+    couponUse?: CouponUseCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
+    customer: UserCreateNestedOneWithoutOrdersInput
+    service: ServiceCreateNestedOneWithoutOrdersInput
+    assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
+    conversation?: ConversationCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutContributionsInput = {
+    couponSaleId?: string | null
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    customerId: string
+    serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
+    assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
+    conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutContributionsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutContributionsInput, OrderUncheckedCreateWithoutContributionsInput>
+  }
+
+  export type UserCreateWithoutContributionsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutContributionsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutContributionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutContributionsInput, UserUncheckedCreateWithoutContributionsInput>
+  }
+
+  export type OrderUpsertWithoutContributionsInput = {
+    update: XOR<OrderUpdateWithoutContributionsInput, OrderUncheckedUpdateWithoutContributionsInput>
+    create: XOR<OrderCreateWithoutContributionsInput, OrderUncheckedCreateWithoutContributionsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutContributionsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutContributionsInput, OrderUncheckedUpdateWithoutContributionsInput>
+  }
+
+  export type OrderUpdateWithoutContributionsInput = {
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    couponSale?: ServiceSaleUpdateOneWithoutCouponOrdersNestedInput
+    couponUse?: CouponUseUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutContributionsInput = {
+    couponSaleId?: NullableStringFieldUpdateOperationsInput | string | null
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
+    assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutContributionsInput = {
+    update: XOR<UserUpdateWithoutContributionsInput, UserUncheckedUpdateWithoutContributionsInput>
+    create: XOR<UserCreateWithoutContributionsInput, UserUncheckedCreateWithoutContributionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutContributionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutContributionsInput, UserUncheckedUpdateWithoutContributionsInput>
+  }
+
+  export type UserUpdateWithoutContributionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutContributionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutRewardHistoryInput = {
     id?: string
     email: string
@@ -46411,6 +52871,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -46448,6 +52912,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -46499,6 +52967,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -46536,6 +53008,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -46620,6 +53096,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
 
@@ -46686,6 +53163,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
 
@@ -46708,6 +53186,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -46745,6 +53227,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -46785,6 +53271,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -46822,6 +53312,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -46922,6 +53416,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
 
@@ -46988,6 +53483,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
@@ -47016,6 +53512,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -47053,6 +53553,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -47099,6 +53603,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -47136,6 +53644,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -47220,6 +53732,7 @@ export namespace Prisma {
     customer: UserCreateNestedOneWithoutOrdersInput
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
   }
 
@@ -47286,6 +53799,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
     confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -47428,6 +53942,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
   }
 
@@ -47494,6 +54009,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -47566,6 +54082,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -47603,6 +54123,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -47683,6 +54207,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -47720,6 +54248,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -47778,6 +54310,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -47815,6 +54351,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -47895,6 +54435,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -47932,6 +54476,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -47967,6 +54515,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -48004,6 +54556,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -48055,6 +54611,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -48092,6 +54652,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -48127,6 +54691,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -48164,6 +54732,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -48215,6 +54787,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -48252,6 +54828,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -48287,6 +54867,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
@@ -48324,6 +54908,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
     supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
     supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
     supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
@@ -48375,6 +54963,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -48412,6 +55004,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -48431,6 +55027,61 @@ export namespace Prisma {
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  }
+
+  export type BoosterContributionCreateManyBoosterInput = {
+    orderId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
+  export type BoosterContractCreateManyBoosterInput = {
+    id?: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type BoosterContractCreateManyIssuedByInput = {
+    id?: string
+    boosterId: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
   }
 
   export type SupportMessageCreateManySenderInput = {
@@ -48653,6 +55304,171 @@ export namespace Prisma {
     read?: boolean
     active?: boolean
     createdAt?: Date | string
+  }
+
+  export type BoosterContributionUpdateWithoutBoosterInput = {
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: OrderUpdateOneRequiredWithoutContributionsNestedInput
+  }
+
+  export type BoosterContributionUncheckedUpdateWithoutBoosterInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BoosterContributionUncheckedUpdateManyWithoutBoosterInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BoosterContractUpdateWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+  }
+
+  export type BoosterContractUncheckedUpdateWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractUncheckedUpdateManyWithoutBoosterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractUpdateWithoutIssuedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
+  }
+
+  export type BoosterContractUncheckedUpdateWithoutIssuedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterContractUncheckedUpdateManyWithoutIssuedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SupportMessageUpdateWithoutSenderInput = {
@@ -48909,6 +55725,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -48975,6 +55792,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -49138,6 +55956,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
@@ -49174,6 +55996,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
     supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
     supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
     supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
@@ -49621,6 +56447,7 @@ export namespace Prisma {
     confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -49687,6 +56514,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -49980,6 +56808,7 @@ export namespace Prisma {
     customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -50046,6 +56875,7 @@ export namespace Prisma {
     couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
     confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -50141,6 +56971,17 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type BoosterContributionCreateManyOrderInput = {
+    boosterId: string
+    submittedMatches: number
+    approvedMatches?: number | null
+    revision?: number
+    submittedAt?: Date | string
+    reviewedAt?: Date | string | null
+    reviewedBy?: string | null
+    reviewNote?: string | null
+  }
+
   export type AssignmentRequestCreateManyOrderInput = {
     id?: string
     boosterId: string
@@ -50166,6 +57007,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     boosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoosterContributionUpdateWithoutOrderInput = {
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    booster?: UserUpdateOneRequiredWithoutContributionsNestedInput
+  }
+
+  export type BoosterContributionUncheckedUpdateWithoutOrderInput = {
+    boosterId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BoosterContributionUncheckedUpdateManyWithoutOrderInput = {
+    boosterId?: StringFieldUpdateOperationsInput | string
+    submittedMatches?: IntFieldUpdateOperationsInput | number
+    approvedMatches?: NullableIntFieldUpdateOperationsInput | number | null
+    revision?: IntFieldUpdateOperationsInput | number
+    submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AssignmentRequestUpdateWithoutOrderInput = {

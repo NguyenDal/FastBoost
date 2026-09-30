@@ -8,31 +8,35 @@ datasource db {
 }
 
 model User {
-  supportThread       SupportThread?
-  supportMessages     SupportMessage[]
-  supportPresence     SupportPresence[]
-  supportAlerts       SupportEmailAlert[]
-  registrationConsent RegistrationConsent?
-  socialIdentities    SocialIdentity[]
-  personalCoupons     ServiceSale[]        @relation("PersonalCouponRecipient")
-  couponUses          CouponUse[]
-  id                  String               @id @default(cuid())
-  email               String               @unique
-  username            String?              @unique
-  emailVerifiedAt     DateTime?
-  passwordHash        String
-  role                UserRole             @default(CUSTOMER)
-  isOwner             Boolean              @default(false)
-  hasBoosterAccess    Boolean              @default(false)
-  suspendedAt         DateTime?
-  suspendedReason     String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  orders              Order[]
-  verificationCodes   VerificationCode[]
-  passwordResetTokens PasswordResetToken[]
-  profile             Profile?
-  rewardHistory       RewardHistory[]
+  boosterProfile         BoosterProfile?
+  contributions          BoosterContribution[]
+  boosterContracts       BoosterContract[]     @relation("BoosterContracts")
+  issuedBoosterContracts BoosterContract[]     @relation("IssuedBoosterContracts")
+  supportThread          SupportThread?
+  supportMessages        SupportMessage[]
+  supportPresence        SupportPresence[]
+  supportAlerts          SupportEmailAlert[]
+  registrationConsent    RegistrationConsent?
+  socialIdentities       SocialIdentity[]
+  personalCoupons        ServiceSale[]         @relation("PersonalCouponRecipient")
+  couponUses             CouponUse[]
+  id                     String                @id @default(cuid())
+  email                  String                @unique
+  username               String?               @unique
+  emailVerifiedAt        DateTime?
+  passwordHash           String
+  role                   UserRole              @default(CUSTOMER)
+  isOwner                Boolean               @default(false)
+  hasBoosterAccess       Boolean               @default(false)
+  suspendedAt            DateTime?
+  suspendedReason        String?
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  orders                 Order[]
+  verificationCodes      VerificationCode[]
+  passwordResetTokens    PasswordResetToken[]
+  profile                Profile?
+  rewardHistory          RewardHistory[]
 
   referralCode String? @unique
   referredById String?
@@ -58,6 +62,39 @@ model RegistrationConsent {
   termsAcceptedAt      DateTime  @default(now())
   promotionalEmails    Boolean   @default(false)
   promotionalConsentAt DateTime?
+}
+
+model BoosterProfile {
+  userId    String    @id
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt DateTime?
+}
+
+model BoosterContract {
+  id            String    @id @default(cuid())
+  boosterId     String
+  booster       User      @relation("BoosterContracts", fields: [boosterId], references: [id], onDelete: Restrict)
+  issuedById    String
+  issuedBy      User      @relation("IssuedBoosterContracts", fields: [issuedById], references: [id], onDelete: Restrict)
+  title         String
+  templateId    String
+  accountId     String
+  environment   String
+  envelopeId    String?   @unique
+  signerName    String
+  signerEmail   String
+  status        String    @default("pending")
+  sendAttemptAt DateTime?
+  sendError     String?
+  lastSyncedAt  DateTime?
+  startsAt      DateTime
+  createdAt     DateTime  @default(now())
+  signedAt      DateTime?
+  signedName    String?
+  viewedAt      DateTime?
+  revokedAt     DateTime?
+
+  @@index([boosterId, createdAt])
 }
 
 model SupportThread {
@@ -299,10 +336,11 @@ model Order {
   referralDiscount Float @default(0)
   totalPrice       Float @default(0)
 
-  customer           User                @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  service            Service             @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customer           User                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service            Service               @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   // Chat / assignment back-relations
   assignments        OrderAssignment[]
+  contributions      BoosterContribution[]
   assignmentRequests AssignmentRequest[]
   conversation       Conversation?
 
@@ -353,6 +391,23 @@ model OrderAssignment {
   booster User  @relation(fields: [boosterId], references: [id], onDelete: Cascade)
 
   @@unique([orderId, boosterId])
+  @@index([boosterId])
+}
+
+model BoosterContribution {
+  orderId          String
+  boosterId        String
+  submittedMatches Int
+  approvedMatches  Int?
+  revision         Int       @default(1)
+  submittedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+  reviewedBy       String?
+  reviewNote       String?
+  order            Order     @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  booster          User      @relation(fields: [boosterId], references: [id], onDelete: Restrict)
+
+  @@id([orderId, boosterId])
   @@index([boosterId])
 }
 
@@ -518,6 +573,7 @@ enum PaymentStatus {
 }
 
 enum NotificationType {
+  BOOSTER_CONTRACT
   FIRST_PURCHASE_DISCOUNT
   REFERRAL_REWARD
   ORDER_COMPLETED

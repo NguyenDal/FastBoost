@@ -39,7 +39,7 @@ function finish(res, origin, payload) {
   return res.type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><title>FastBoost sign-in</title><body><p>You can close this window and return to FastBoost.</p><script nonce="${nonce}">if(window.opener){window.opener.postMessage(${data},${JSON.stringify(origin)});window.close();}</script></body></html>`);
 }
 function sessionPayload(user, rememberMe) {
-  const token = jwt.sign({ userId: user.id, email: user.email, username: user.username || undefined, role: user.role }, process.env.JWT_SECRET, { expiresIn: '3d' });
+  const token = require('../utils/sessionToken').signSessionToken(user, rememberMe);
   return { token, rememberMe: Boolean(rememberMe), user: { id: user.id, email: user.email, username: user.username, role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess), profile: user.profile } };
 }
 // Signup tickets cannot be used as app session tokens or OAuth state cookies.
@@ -191,7 +191,7 @@ async function resolveSocialUser(db, provider, identity, context) {
     throw Object.assign(new Error('Allow linking to sign in faster next time.'), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED', userId: existing.id });
   }
   if (context.username === undefined || context.termsAccepted !== true) {
-    const error = new Error('Choose a username and agree to the Terms and Conditions to create an account.');
+    const error = new Error('Choose a username and agree to the Privacy Policy and Terms and Conditions to create an account.');
     error.code = 'SOCIAL_SIGNUP_REQUIRED';
     throw error;
   }

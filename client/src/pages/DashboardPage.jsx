@@ -190,14 +190,14 @@ export default function DashboardPage() {
                 <>
                     <section className="dashboard-grid dashboard-overview-grid">
                         <DashboardListCard
-                            title="New Notifications"
+                            title="Notifications"
                             emptyText="No notifications yet."
                             items={newNotifications}
                             onItemClick={openNotificationTarget}
                         />
 
                         <DashboardListCard
-                            title="New Messages"
+                            title="Messages"
                             emptyText="No messages yet."
                             items={newMessages}
                             onItemClick={openNotificationTarget}

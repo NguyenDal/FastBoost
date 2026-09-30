@@ -66,7 +66,7 @@ exports.listMyNotifications = async (req, res) => {
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take: dashboard ? 3 : 30,
       }),
-      prisma.notification.findMany({
+      dashboard ? require('../utils/dashboardMessages').dashboardMessages(prisma, userId) : prisma.notification.findMany({
         where: { userId, active: true, type: "CHAT_MESSAGE" },
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take: dashboard ? 3 : 30,

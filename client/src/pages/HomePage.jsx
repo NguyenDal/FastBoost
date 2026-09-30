@@ -6,7 +6,7 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -59,6 +59,7 @@ function saveCachedServices(services) {
 function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const contractReturn = useRef(/^\/provider\/(contracts\/[a-zA-Z0-9-]+|workspace)$/.test(location.state?.from || '') ? location.state.from : null);
   const { referralCode } = useParams();
 
   const cachedServices = getCachedServices();
@@ -532,6 +533,7 @@ function HomePage() {
 
     setTimeout(() => {
       closeAuthModal();
+      if (contractReturn.current) navigate(contractReturn.current, { replace: true });
     }, 350);
   };
 

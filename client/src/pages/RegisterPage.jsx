@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SocialAuthButtons from "../components/SocialAuthButtons";
+import LegalAgreement from "../components/LegalAgreement";
 import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
 
@@ -410,7 +411,7 @@ function RegisterPage({
                     <input ref={termsRef} type="checkbox" name="termsAccepted" checked={Boolean(registerForm.termsAccepted)}
                       onChange={(event) => { setTermsAttempted(false); handleRegisterInputChange(event); }}
                       onInvalid={(event) => { event.preventDefault(); highlightTerms(); }} aria-invalid={termsInvalid} required/>
-                    <span>I agree to the <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>. <span className="auth-required" aria-hidden="true">*</span></span>
+                    <span><LegalAgreement /> <span className="auth-required" aria-hidden="true">*</span></span>
                   </label>
                   <label className="auth-check-row"><input type="checkbox" name="promotionalEmails" checked={Boolean(registerForm.promotionalEmails)} onChange={handleRegisterInputChange}/><span>I agree to receive promotional emails.</span></label>
                 </div>

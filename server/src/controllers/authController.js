@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const prisma = require("../prisma");
 const { generateReferralCode } = require("../utils/referralCode");
@@ -47,18 +46,7 @@ const validatePassword = (password) => {
   return null;
 };
 
-const signToken = (user) => {
-  return jwt.sign(
-    {
-      userId: user.id,
-      email: user.email,
-      username: user.username || undefined,
-      role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess),
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "3d" }
-  );
-};
+const { signSessionToken: signToken } = require('../utils/sessionToken');
 
 const createTransporter = () => {
   return nodemailer.createTransport({
@@ -186,7 +174,7 @@ const registerUser = async (req, res) => {
       },
     });
 
-    const token = signToken(user);
+    const token = signToken(user, req.body.rememberMe === true);
 
     return res.status(201).json({
       ok: true,
@@ -254,7 +242,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const token = signToken(user);
+    const token = signToken(user, req.body.rememberMe === true);
 
     return res.status(200).json({
       ok: true,

@@ -109,6 +109,7 @@ export default function ProviderOrdersPage() {
             <div className="page-container provider-orders-page">
                 <div className="provider-orders-header">
                     <h1 className="admin-order-title">Assigned Orders</h1>
+                    <Link to="/provider/workspace">My earnings, contributions & contracts →</Link>
                     <div className="admin-stat-card provider-assigned-count">
                         <span>Assigned Orders</span>
                         <strong>{data.total}</strong>

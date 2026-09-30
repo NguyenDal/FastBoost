@@ -20,6 +20,16 @@ router.get('/social/:provider/callback', socialCallback);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+// Called on foreground user activity, never from background polling.
+router.post('/session/activity', protect, async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    if (req.user.rememberMe !== true) return res.json({ ok: true });
+    try {
+        const user = await require('../prisma').user.findUnique({ where: { id: req.user.userId || req.user.id } });
+        if (!user || user.suspendedAt) return res.status(401).json({ ok: false, message: 'Please sign in again.' });
+        return res.json({ ok: true, token: require('../utils/sessionToken').signSessionToken(user, true) });
+    } catch { return res.status(503).json({ ok: false, message: 'Session refresh unavailable.' }); }
+});
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 

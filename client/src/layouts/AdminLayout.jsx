@@ -5,6 +5,8 @@ import { SupportIcon } from "../components/SupportChat";
 import "../styles/AdminLayout.css";
 
 const adminLinks = [
+    { label: 'Earnings', path: '/admin/earnings', icon: <PriceIcon /> },
+    { label: 'Booster Management', path: '/admin/boosters', icon: <UsersIcon /> },
     { label: "Support Inbox", path: "/admin/support", icon: <SupportIcon /> },
     {
         label: "Order Management",

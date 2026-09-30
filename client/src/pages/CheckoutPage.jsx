@@ -5,6 +5,7 @@ import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
 import CheckoutPaymentForm, { CheckoutIcon } from "../components/CheckoutPaymentForm";
 import CheckoutSkeleton, { PaymentFormSkeleton } from "../components/CheckoutSkeleton";
 import PaymentErrorDialog from "../components/PaymentErrorDialog";
+import LegalAgreement from "../components/LegalAgreement";
 import { paymentErrorMessage } from "../utils/paymentError";
 import PaymentResultPage from "./PaymentResultPage";
 import Navbar from "../components/Navbar";
@@ -190,7 +191,7 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     return <dialog ref={dialog} className={`checkout-gold-dialog${closing ? " is-closing" : ""}`} aria-labelledby="gold-confirm-title" aria-describedby="gold-confirm-description" onCancel={event => { event.preventDefault(); if (!busy) setClosing(true); }}>
         <h2 id="gold-confirm-title">Pay with {gold} gold?</h2>
         <p id="gold-confirm-description">Your gold covers this order in full. Confirm to spend {gold} gold and place your order.</p>
-        <p className="checkout-agreement">By placing this order, you agree to our <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>.</p>
+        <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
         <button className="checkout-pay" disabled={busy || closing} onClick={onConfirm}>{busy ? "Processing…" : `Pay with ${gold} gold`}</button>
         <button className="checkout-gold-back" autoFocus disabled={busy || closing} onClick={() => setClosing(true)}>Back to card payment</button>
     </dialog>;

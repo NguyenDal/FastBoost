@@ -3,6 +3,7 @@ import { ExpressCheckoutElement, useCheckoutElements } from "@stripe/react-strip
 import { COUNTRIES } from "../utils/countries";
 import { PaymentFormSkeleton } from "./CheckoutSkeleton";
 import PaymentErrorDialog from "./PaymentErrorDialog";
+import LegalAgreement from "./LegalAgreement";
 import { paymentErrorMessage } from "../utils/paymentError";
 
 const fieldStyle = { base: { color: "#e5e7eb", fontFamily: "Arial, sans-serif", fontSize: "15px", "::placeholder": { color: "#8797b3" } }, invalid: { color: "#fda4af" } };
@@ -126,7 +127,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
             <div className="checkout-input"><CheckoutIcon type="globe"/><select id="checkout-country" autoComplete="country" required value={country} onChange={event=>setCountry(event.target.value)}><option value="">Select country</option>{COUNTRIES.map(item=><option key={item.code} value={item.code}>{item.name}</option>)}</select></div>
             {error && <PaymentErrorDialog message={error} action={ready ? "Back to Payment" : "Reload Checkout"} onClose={() => { if (ready) setError(""); else window.location.reload(); }} />}
             <button className="checkout-pay" disabled={busy || !ready} type="submit"><CheckoutIcon type="lock"/><span>{busy ? "Processing…" : `Pay Securely — ${total}`}</span><CheckoutIcon type="arrow"/></button>
-            <p className="checkout-agreement">By placing this order, you agree to our <a href="/terms-and-conditions" target="_blank" rel="noreferrer">Terms and Conditions</a>.</p>
+            <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
         </form>
     </>;
 }
