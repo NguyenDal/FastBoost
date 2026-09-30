@@ -1,12 +1,11 @@
 import Navbar from "../components/Navbar";
 import "../styles/LegalDocument.css";
 
-export default function LegalDocumentPage({ provider = false, privacy = false }) {
-  const title = provider ? "Provider Agreement" : privacy ? "Privacy Policy" : "Terms and Conditions";
-  if (provider) return <iframe title={title} src="/legal/provider-agreement.html"
-    style={{ display: "block", width: "100%", height: "100dvh", border: 0 }} />;
+export default function LegalDocumentPage({ privacy = false }) {
+  const title = privacy ? "Privacy Policy" : "Terms and Conditions";
+  const documentPath = privacy ? "privacy-policy" : "terms-and-conditions";
   return <div className="legal-document-page">
     <Navbar />
-    <iframe title={title} src={privacy ? "/legal/privacy-policy.html" : "/legal/terms-and-conditions.html"} className="legal-document-frame" />
+    <iframe key={documentPath} title={title} src={`/legal/${documentPath}.html`} className="legal-document-frame" />
   </div>;
 }

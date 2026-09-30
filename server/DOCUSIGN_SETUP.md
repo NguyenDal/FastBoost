@@ -23,14 +23,56 @@ contract has been sent by the coding agent.
 
 ## 2. Contract template
 
-1. In the sandbox's Templates area, upload your existing PDF and save a template.
-2. Add one signer role named exactly **Booster**, leaving its name and email blank.
-3. Place required signature and date-signed fields on the PDF. The admin enters
-   the booster's full legal name before sending; the registered email is used.
-4. Record the Template ID. This version supports one booster signer per agreement.
-   Company countersignatures require an additional explicitly configured role.
-5. The FastBoost start date tracks tenure. It does not edit the wording or dates
-   in your PDF; ensure the document reflects the agreed terms before sending.
+The review page `/provider-agreement` requires an active admin or booster account.
+The HTML and PDF live in `server/private/legal/`, outside the frontend's public
+assets and bundles. Both `/api/operations/provider-agreement` and its `/document`
+download check the current account's permissions and return `Cache-Control: no-store`.
+The frontend fetches them with an Authorization header; no token is put in a URL.
+Deploy both API and frontend changes together; do not copy these files into a
+public folder. Terms and Privacy Policy remain public. Rebuild the PDF from the
+wording with `python scripts/build-provider-agreement-pdf.py` at the repository
+root (ReportLab, lxml, and Arial or Liberation Sans TTF fonts are required).
+The current FB-PA-1.1 PDF is an unsigned **review draft**, not a final signing
+template. Approve the remaining commercial settings and finalize the wording
+before removing its review labels and uploading a signing version.
+
+1. In the sandbox's Templates area, upload the finalized PDF and save a template.
+2. Enable signing order. Add exactly two signer roles, with name/email blank:
+   **FastBoost** at order **1**, and **Booster** at order **2**. Do not add other
+   recipients. The server validates both roles and inherits template routing.
+3. Give each role a required Signature and Date Signed field in its own signature
+   block. Add required initials for Schedule A approval. Add the appropriate Full
+   Name field for the provider signature block; do not leave placeholder text there.
+4. Add Booster-owned text fields with these exact **Data Labels**. The server fills
+   and locks them before either signer opens the envelope:
+
+   | Data Label | Source |
+   | --- | --- |
+   | `ProviderLegalName` | Legal name entered by the admin |
+   | `ProviderEmail` | Booster's registered email |
+   | `ProviderAccountId` | FastBoost booster account ID |
+   | `AgreementId` | FastBoost contract reference |
+   | `EffectiveDate` | Admin's requested start date (`YYYY-MM-DD`) |
+
+5. Replace the remaining bracketed placeholders with required FastBoost-owned
+   fields (or finalized fixed wording): authorized signatory if applicable, work
+   location, optional end date, payment method/payee/currency, conversion rule,
+   transfer fees, permitted scope, time zone/data-access countries, language, and
+   any jurisdiction addendum. Make enough room for realistic values; replace the
+   placeholder text rather than overlapping it. FastBoost completes these and
+   signs first, so the booster reviews the completed terms before signing.
+6. Record the Template ID in the backend. New sends reject missing identity
+   fields or a single-signer template. Published webpage edits never amend an
+   issued envelope. Keep a separate template/version for revised terms.
+
+Only the configured FastBoost signer can open its company signing session; their
+FastBoost login must be an active admin. The sender's DocuSign API user can be a
+different account. Both recipient identities are saved on each contract, so
+changing configuration does not transfer an already-issued signing invitation.
+Tenure starts on the later of the requested effective date and verified completion
+of both signatures. An established provider's original tenure is preserved.
+Existing legacy single-signer envelopes remain verifiable; all new sends require
+two signers.
 
 ## 3. Server settings
 
@@ -47,6 +89,8 @@ DOCUSIGN_PRIVATE_KEY_PATH=<absolute-path-to-private-PEM-file>
 DOCUSIGN_RETURN_ORIGIN=http://localhost:5173
 DOCUSIGN_CONSENT_REDIRECT_URI=http://localhost:5173/
 DOCUSIGN_CONNECT_HMAC_KEYS=<connect-hmac-secret>
+DOCUSIGN_COMPANY_SIGNER_NAME=<FastBoost-signers-full-legal-name>
+DOCUSIGN_COMPANY_SIGNER_EMAIL=<FastBoost-signers-admin-login-email>
 ```
 
 For hosts without private files, use `DOCUSIGN_PRIVATE_KEY` with the PEM content
@@ -68,7 +112,8 @@ See https://www.docusign.com/blog/developers/oauth-jwt-granting-consent .
 In DocuSign Settings → Connect, create a JSON SIM webhook configuration:
 
 - URL: `https://<your-api-host>/api/operations/docusign/webhook`
-- Events: envelope completed, declined, voided, delivered, and sent.
+- Events: envelope completed, declined, voided, delivered, and sent; also
+  **recipient completed** so the first signature promptly unlocks booster signing.
 - Enable HMAC signing and copy its secret into `DOCUSIGN_CONNECT_HMAC_KEYS`.
 - Enable retries/acknowledgement. Do not include document bytes in event payloads.
 - For key rotation, the server accepts a comma-separated list of HMAC secrets.
@@ -81,17 +126,24 @@ the saved status; manual provider status checks are throttled to 15 minutes.
 
 ## 5. Database and verification
 
-The new migration is `20260930000000_booster_contracts`. Apply it to the intended
+The migrations are `20260930000000_booster_contracts` and
+`20260930010000_contract_countersignature`. Apply them to the intended
 development database after checking migration history; the local project has
 historical migration drift, so do not reset the database or blindly apply unrelated
 migrations. Regenerate Prisma after migration (`npx prisma generate`).
 
 1. Open Management Utilities → Booster Management; configuration should show sandbox.
-2. Send a **test** template to a test booster account.
-3. Sign in as that booster, open Assigned Orders → My earnings, contributions & contracts.
-4. Review/sign through DocuSign. Verify the signed state, PDF, and certificate.
-5. Test cancellation, decline, forged return parameters, other-user access,
-   duplicate send retries, and a repeated Connect event.
+2. Send a **test** template to a test booster account using fictional test details.
+3. Sign in as the configured FastBoost signer; open the contract notification,
+   complete the required terms, and personally review/sign through DocuSign.
+4. Confirm recipient-completed Connect delivery records the company signature
+   and unlocks the booster. Before this, neither tenure nor full completion may
+   be recorded. Sign in as the booster, open Assigned Orders → My earnings,
+   contributions & contracts, and personally review/sign the completed agreement.
+5. Verify both signature timestamps, full completion, tenure date, PDF, and
+   certificate. Confirm another admin cannot open the owner's signing session.
+6. Test cancellation, decline, forged return parameters, other-user access,
+   duplicate send retries, and repeated/out-of-order Connect events.
 
 The test suite uses mocked DocuSign responses; a real sandbox round trip is still
 required after credentials and the template are supplied. A successful send is a
@@ -119,6 +171,8 @@ DOCUSIGN_PRIVATE_KEY_PATH=/etc/secrets/docusign-production.pem
 DOCUSIGN_RETURN_ORIGIN=https://www.fastboost.gg
 DOCUSIGN_CONSENT_REDIRECT_URI=https://www.fastboost.gg/
 DOCUSIGN_CONNECT_HMAC_KEYS=<production-connect-secret>
+DOCUSIGN_COMPANY_SIGNER_NAME=<FastBoost-signers-full-legal-name>
+DOCUSIGN_COMPANY_SIGNER_EMAIL=<FastBoost-signers-admin-login-email>
 ```
 
 For a hosted sandbox test use a separate test/staging service, demo credentials,

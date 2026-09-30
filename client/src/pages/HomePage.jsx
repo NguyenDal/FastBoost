@@ -59,7 +59,7 @@ function saveCachedServices(services) {
 function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const contractReturn = useRef(/^\/provider\/(contracts\/[a-zA-Z0-9-]+|workspace)$/.test(location.state?.from || '') ? location.state.from : null);
+  const contractReturn = useRef(/^\/(provider-agreement|provider\/(contracts\/[a-zA-Z0-9-]+|workspace))$/.test(location.state?.from || '') ? location.state.from : null);
   const { referralCode } = useParams();
 
   const cachedServices = getCachedServices();

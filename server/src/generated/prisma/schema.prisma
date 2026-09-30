@@ -71,28 +71,32 @@ model BoosterProfile {
 }
 
 model BoosterContract {
-  id            String    @id @default(cuid())
-  boosterId     String
-  booster       User      @relation("BoosterContracts", fields: [boosterId], references: [id], onDelete: Restrict)
-  issuedById    String
-  issuedBy      User      @relation("IssuedBoosterContracts", fields: [issuedById], references: [id], onDelete: Restrict)
-  title         String
-  templateId    String
-  accountId     String
-  environment   String
-  envelopeId    String?   @unique
-  signerName    String
-  signerEmail   String
-  status        String    @default("pending")
-  sendAttemptAt DateTime?
-  sendError     String?
-  lastSyncedAt  DateTime?
-  startsAt      DateTime
-  createdAt     DateTime  @default(now())
-  signedAt      DateTime?
-  signedName    String?
-  viewedAt      DateTime?
-  revokedAt     DateTime?
+  id                 String    @id @default(cuid())
+  boosterId          String
+  booster            User      @relation("BoosterContracts", fields: [boosterId], references: [id], onDelete: Restrict)
+  issuedById         String
+  issuedBy           User      @relation("IssuedBoosterContracts", fields: [issuedById], references: [id], onDelete: Restrict)
+  title              String
+  templateId         String
+  accountId          String
+  environment        String
+  envelopeId         String?   @unique
+  signerName         String
+  signerEmail        String
+  companySignerName  String?
+  companySignerEmail String?
+  boosterSignedAt    DateTime?
+  companySignedAt    DateTime?
+  status             String    @default("pending")
+  sendAttemptAt      DateTime?
+  sendError          String?
+  lastSyncedAt       DateTime?
+  startsAt           DateTime
+  createdAt          DateTime  @default(now())
+  signedAt           DateTime?
+  signedName         String?
+  viewedAt           DateTime?
+  revokedAt          DateTime?
 
   @@index([boosterId, createdAt])
 }

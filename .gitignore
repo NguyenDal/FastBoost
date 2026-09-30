@@ -15,3 +15,7 @@ server/dist/
 # Local AI session context; never publish with the application.
 /.agent-handoff/
 /AGENTS.md
+
+# Local document build output; the authenticated copy lives in server/private/legal.
+/output/pdf/
+/tmp/pdfs/

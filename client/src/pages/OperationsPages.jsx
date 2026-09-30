@@ -83,12 +83,12 @@ function BoosterDetails({ booster, reload, configured }) {
             const body = new FormData(form);
             await operations(`/boosters/${booster.id}${contract ? '/contracts' : ''}`, contract ? { requestId, title: body.get('title'), startsAt: body.get('startsAt'), signerName: body.get('signerName') } : { startedAt: body.get('startedAt') }, contract ? 'POST' : 'PATCH');
             if (contract) { form.reset(); setRequestId(crypto.randomUUID()); }
-            setMessage(contract ? 'Contract sent to the booster’s account for signature.' : 'Start date updated.'); reload();
+            setMessage(contract ? 'Agreement created. FastBoost signs first, then the booster can sign.' : 'Start date updated.'); reload();
         } catch (e) { setError(e.message); reload(); } finally { setBusy(false); }
     }
     return <details className="ops-card"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span><strong>{booster.profile?.displayName || booster.username}</strong><small>{tenure(booster.boosterProfile?.startedAt)}</small></span><span className="ops-amounts"><Amounts values={booster.earnings} /></span><span className="ops-badge">{booster.suspendedAt ? 'Suspended' : `${booster.providedAssignments.length} active orders`}</span></summary>
         <div className="ops-detail"><form onSubmit={e => submit(e, false)} className="ops-actions"><label>Joined FastBoost<input type="date" name="startedAt" required defaultValue={booster.boosterProfile?.startedAt?.slice(0, 10)} /></label><button disabled={busy}>Save date</button></form>
-            <h3>Send a DocuSign contract</h3><p>Uses your configured Booster agreement template. Recipient: {booster.email}</p><form className="ops-form" onSubmit={e => submit(e, true)}><label>Contract title<input name="title" placeholder="Booster service agreement" required maxLength={100} /></label><label>Start date<input type="date" name="startsAt" required /></label><label>Signer’s full legal name<input name="signerName" required minLength={2} maxLength={100} /></label><button className="ops-primary" disabled={!configured || busy || booster.suspendedAt}>{busy ? 'Sending…' : 'Send with DocuSign'}</button></form>
+            <h3>Send a DocuSign contract</h3><p>Uses your two-party agreement template. FastBoost signs first, then the booster. Booster: {booster.email}</p><form className="ops-form" onSubmit={e => submit(e, true)}><label>Contract title<input name="title" placeholder="Booster service agreement" required maxLength={100} /></label><label>Start date<input type="date" name="startsAt" required /></label><label>Signer’s full legal name<input name="signerName" required minLength={2} maxLength={100} /></label><button className="ops-primary" disabled={!configured || busy || booster.suspendedAt}>{busy ? 'Sending…' : 'Send with DocuSign'}</button></form>
             <Feedback error={error} />{message && <p role="status">{message}</p>}<h3>Contracts</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No contracts sent yet.</p>}</div>
     </details>;
 }
@@ -98,7 +98,7 @@ export function BoosterManagementPage() {
     const [query, setQuery] = useState('');
     return <div className="ops-page"><Heading title="Booster Management">Your team, their contributions, and agreements in one place.</Heading><Feedback error={error} loading={!data} />
         <div className="ops-toolbar"><h2>Your team <small>{data?.boosters.length || 0}</small></h2><input aria-label="Search boosters" placeholder="Search boosters…" value={query} onChange={e => setQuery(e.target.value)} /></div>
-        {signing && <div className="ops-callout"><strong>DocuSign · {signing.configured ? signing.environment === 'demo' ? 'Sandbox ready' : 'Production ready' : 'Setup required'}</strong><span>{signing.configured ? 'Agreement signatures are collected through DocuSign.' : 'Complete the DocuSign account setup before sending contracts.'}</span></div>}
+        {signing && <div className="ops-callout"><strong>DocuSign · {signing.configured ? signing.environment === 'demo' ? 'Sandbox configured' : 'Production configured' : 'Setup required'}</strong><span>{signing.configured ? 'Agreement signatures are collected through DocuSign.' : 'Complete the DocuSign account setup before sending contracts.'}</span></div>}
         {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} reload={reload} configured={signing?.configured} />)}
         {data?.boosters.length === 0 && <section className="ops-card ops-empty">Add booster access in <Link to="/admin/accounts">Account Management</Link> to grow your team.</section>}<Contributions admin onChange={reload} /></div>;
 }
@@ -114,8 +114,11 @@ export function BoosterContractPage() {
     const [notice, setNotice] = useState('');
     const [busy, setBusy] = useState(false);
     const contract = data?.contract;
-    const own = contract?.boosterId === getStoredUser()?.id;
-    const admin = getStoredUser()?.role === 'ADMIN';
+    const viewer = getStoredUser();
+    const own = contract?.boosterId === viewer?.id;
+    const admin = viewer?.role === 'ADMIN';
+    const company = admin && contract?.companySignerEmail && viewer?.email?.toLowerCase() === contract.companySignerEmail.toLowerCase();
+    const canSign = company ? !contract?.companySignedAt : own && !contract?.boosterSignedAt && (!contract?.companySignerEmail || contract?.companySignedAt);
     const returning = window.self !== window.top && new URLSearchParams(window.location.search).get('signingReturn') === '1';
     async function action(kind) {
         setBusy(true); setActionError(''); setNotice('');
@@ -145,15 +148,16 @@ export function BoosterContractPage() {
     return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · Signed with DocuSign</Heading><Link to={own ? '/provider/workspace' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
         {contract && <section className="ops-card"><div className="ops-toolbar"><div><strong>{contract.signerName}</strong><small>{contract.signerEmail} · Starts {date(contract.startsAt)}</small></div><span className={`ops-badge ${contract.signedAt ? 'approved' : ''}`}>{contract.signedAt ? 'Signed' : contract.status.replace(/_/g, ' ')}</span></div>
             {contract.environment === 'demo' && <p>Sandbox contract · For testing only.</p>}
+            {contract.companySignerEmail && <div className="ops-callout"><strong>Both signatures required</strong><span>FastBoost · {contract.companySignerName} · {contract.companySignedAt ? `Signed ${date(contract.companySignedAt)}` : 'Awaiting signature'}</span><span>Booster · {contract.signerName} · {contract.boosterSignedAt ? `Signed ${date(contract.boosterSignedAt)}` : 'Awaiting signature'}</span><span>FastBoost completes the commercial terms and signs first. The booster then reviews and signs the completed agreement.</span></div>}
             {contract.sendError && <p role="alert">{contract.sendError}</p>}
             <div className="ops-actions">
-                {own && contract.envelopeId && !contract.signedAt && !['voided', 'declined', 'completed'].includes(contract.status) && <button className="ops-primary" disabled={busy} onClick={() => action('signing-view')}>Review & sign with DocuSign</button>}
+                {canSign && contract.envelopeId && !contract.signedAt && !['voided', 'declined', 'completed'].includes(contract.status) && <button className="ops-primary" disabled={busy} onClick={() => action('signing-view')}>{company ? 'Review & sign for FastBoost' : 'Review & sign with DocuSign'}</button>}
                 {contract.envelopeId && <><button disabled={busy} onClick={() => action('document')}>{contract.signedAt ? 'Download signed PDF & certificate' : 'Download agreement PDF'}</button><button disabled={busy} onClick={() => action('sync')}>Check signature status</button></>}
                 {admin && !contract.envelopeId && <button disabled={busy} onClick={() => action('retry')}>Retry delivery</button>}
             </div>
             {notice && <p role="status">{notice}</p>}
             {signingUrl && !contract.signedAt && <><iframe className="ops-pdf" title="DocuSign contract signing" src={signingUrl} allow="geolocation" /><a href={signingUrl}>Open signing full screen</a></>}
-            {contract.signedAt && <div className="ops-callout"><strong>Signed by {contract.signedName}</strong><span>{new Date(contract.signedAt).toLocaleString()}</span><span>Completion verified with DocuSign.</span></div>}
+            {contract.signedAt && <div className="ops-callout"><strong>{contract.companySignerEmail ? 'Signed by both parties' : `Signed by ${contract.signedName}`}</strong><span>{new Date(contract.signedAt).toLocaleString()}</span><span>Completion verified with DocuSign.</span></div>}
         </section>}
     </main></div>;
 }

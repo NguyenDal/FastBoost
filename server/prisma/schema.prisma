@@ -83,6 +83,10 @@ model BoosterContract {
   envelopeId String? @unique
   signerName String
   signerEmail String
+  companySignerName String?
+  companySignerEmail String?
+  boosterSignedAt DateTime?
+  companySignedAt DateTime?
   status String @default("pending")
   sendAttemptAt DateTime?
   sendError String?

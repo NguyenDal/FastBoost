@@ -22,9 +22,16 @@ function configuration() {
     return config;
 }
 function readiness() {
-    try { const config = configuration(); return { configured: true, environment: config.environment }; }
+    try { const config = configuration(); companySigner(); return { configured: true, environment: config.environment }; }
     catch { return { configured: false, environment: process.env.DOCUSIGN_ENVIRONMENT || 'demo' }; }
 }
+function companySigner() {
+    const name = String(process.env.DOCUSIGN_COMPANY_SIGNER_NAME || '').trim();
+    const email = String(process.env.DOCUSIGN_COMPANY_SIGNER_EMAIL || '').trim().toLowerCase();
+    if (name.length < 2 || name.length > 100 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw failure('Configure the FastBoost countersigner name and admin login email before sending agreements.');
+    return { name, email };
+}
+const companyClientId = contract => `fastboost:${contract.id}`;
 async function checkedFetch(url, options = {}) {
     let response;
     try { response = await fetch(url, { ...options, signal: AbortSignal.timeout(20000), redirect: 'error' }); }
@@ -69,27 +76,62 @@ async function sendContract(contract) {
         const found = await api(`/envelopes/status?transaction_ids=${encodeURIComponent(contract.id)}`, {}, contract);
         if (found.envelopes?.length) return found.envelopes[0].envelopeId;
     }
+    if (!contract.companySignerName || !contract.companySignerEmail) throw failure('This unsent agreement has no FastBoost countersigner. Create a new two-party agreement.', 409);
+    const template = await api(`/templates/${encodeURIComponent(contract.templateId)}/recipients?include_tabs=true`, {}, contract);
+    const roles = template.signers || [];
+    const required = [['FastBoost', '1'], ['Booster', '2']];
+    const otherRecipients = Object.entries(template).some(([key, value]) => key !== 'signers' && Array.isArray(value) && value.length);
+    if (roles.length !== 2 || otherRecipients || required.some(([role, order]) => {
+        const signer = roles.find(s => s.roleName === role);
+        return !signer || String(signer.routingOrder) !== order || !signer.tabs?.signHereTabs?.some(t => t.optional !== 'true' && t.optional !== true) || !signer.tabs?.dateSignedTabs?.length;
+    })) throw failure('Use a two-signer template: FastBoost first, Booster second, each with a required signature and signed-date field.');
+    const providerFields = ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate'];
+    const textTabs = roles.find(s => s.roleName === 'Booster').tabs.textTabs || [];
+    if (providerFields.some(label => !textTabs.some(t => t.tabLabel === label))) throw failure('The template is missing required provider identity or agreement fields. Follow the DocuSign setup guide.');
     const result = await api('/envelopes', { method: 'POST', body: {
         templateId: contract.templateId, transactionId: contract.id, status: 'sent', emailSubject: contract.title,
-        templateRoles: [{ roleName: 'Booster', name: contract.signerName, email: contract.signerEmail, clientUserId: contract.boosterId }],
+        // FastBoost completes the commercial fields and signs first (template order 1).
+        // The booster then reviews those completed terms and signs (template order 2).
+        templateRoles: [
+            { roleName: 'Booster', name: contract.signerName, email: contract.signerEmail, clientUserId: contract.boosterId,
+                tabs: { textTabs: [
+                    { tabLabel: 'ProviderLegalName', value: contract.signerName, locked: 'true' },
+                    { tabLabel: 'ProviderEmail', value: contract.signerEmail, locked: 'true' },
+                    { tabLabel: 'ProviderAccountId', value: contract.boosterId, locked: 'true' },
+                    { tabLabel: 'AgreementId', value: contract.id, locked: 'true' },
+                    { tabLabel: 'EffectiveDate', value: new Date(contract.startsAt).toISOString().slice(0, 10), locked: 'true' },
+                ] } },
+            { roleName: 'FastBoost', name: contract.companySignerName, email: contract.companySignerEmail, clientUserId: companyClientId(contract) },
+        ],
     } }, contract);
     if (!result.envelopeId) throw failure('DocuSign has not returned an envelope ID. Retry this contract.');
     return result.envelopeId;
 }
-async function signingView(contract) {
+async function signingView(contract, company = false) {
     const config = configuration();
     return api(`/envelopes/${encodeURIComponent(contract.envelopeId)}/views/recipient`, { method: 'POST', body: {
         returnUrl: `${config.origin}/provider/contracts/${encodeURIComponent(contract.id)}?signingReturn=1`,
-        authenticationMethod: 'none', email: contract.signerEmail, userName: contract.signerName, clientUserId: contract.boosterId,
+        authenticationMethod: 'none',
+        email: company ? contract.companySignerEmail : contract.signerEmail,
+        userName: company ? contract.companySignerName : contract.signerName,
+        clientUserId: company ? companyClientId(contract) : contract.boosterId,
     } }, contract);
 }
 async function getStatus(contract) {
     const envelope = await api(`/envelopes/${encodeURIComponent(contract.envelopeId)}`, {}, contract);
-    if (envelope.status !== 'completed') return { status: envelope.status };
+    if (envelope.status !== 'completed' && !contract.companySignerEmail) return { status: envelope.status };
     const recipients = await api(`/envelopes/${encodeURIComponent(contract.envelopeId)}/recipients`, {}, contract);
     const signer = recipients.signers?.find(s => s.clientUserId === contract.boosterId && s.email?.toLowerCase() === contract.signerEmail.toLowerCase());
-    if (!signer || signer.status !== 'completed' || !Number.isFinite(Date.parse(signer.signedDateTime))) throw failure('DocuSign completion could not be verified for this booster.');
-    return { status: 'completed', signedAt: new Date(signer.signedDateTime), signedName: signer.name };
+    const signed = s => s?.status === 'completed' && Number.isFinite(Date.parse(s.signedDateTime));
+    const company = contract.companySignerEmail ? recipients.signers?.find(s => s.clientUserId === companyClientId(contract) && s.email?.toLowerCase() === contract.companySignerEmail.toLowerCase()) : null;
+    if (envelope.status === 'completed' && (!signed(signer) || (contract.companySignerEmail && !signed(company)))) throw failure('DocuSign completion could not be verified for every required signer.');
+    const progress = {
+        status: envelope.status,
+        ...(signed(signer) && { boosterSignedAt: new Date(signer.signedDateTime) }),
+        ...(signed(company) && { companySignedAt: new Date(company.signedDateTime) }),
+    };
+    if (envelope.status !== 'completed') return progress;
+    return { ...progress, signedAt: new Date(Math.max(Date.parse(signer.signedDateTime), signed(company) ? Date.parse(company.signedDateTime) : 0)), signedName: signer.name };
 }
 function validWebhook(body, headers) {
     const secrets = String(process.env.DOCUSIGN_CONNECT_HMAC_KEYS || '').split(',').map(k => k.trim()).filter(Boolean);
@@ -104,4 +146,4 @@ function validWebhook(body, headers) {
     });
 }
 const document = contract => api(`/envelopes/${encodeURIComponent(contract.envelopeId)}/documents/combined?certificate=true`, { pdf: true }, contract);
-module.exports = { configuration, readiness, sendContract, signingView, getStatus, validWebhook, document };
+module.exports = { configuration, companySigner, readiness, sendContract, signingView, getStatus, validWebhook, document };

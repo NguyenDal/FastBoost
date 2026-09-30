@@ -31,15 +31,17 @@
   window.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('resize', onScroll, {passive:true});
   const mobile = document.querySelector('.fb-mobile-contents');
-  mobile.querySelectorAll('a').forEach(link => link.addEventListener('click', event => {
-    const section = document.getElementById(link.dataset.toc);
+  document.querySelectorAll('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
+    const section = document.getElementById(link.getAttribute('href').slice(1));
     if (!section) return;
     event.preventDefault();
-    mobile.open = false;
-    window.history.pushState(null, '', '#' + section.id);
+    if (mobile.contains(link)) mobile.open = false;
+    // Authenticated srcdoc previews must scroll within the document instead of
+    // navigating the iframe to the parent app's URL.
+    if (window.location.protocol !== 'about:') window.history.pushState(null, '', '#' + section.id);
     const heading = section.querySelector('h2');
-    heading.setAttribute('tabindex', '-1');
-    heading.focus({preventScroll:true});
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus({preventScroll:true});
     window.requestAnimationFrame(() => section.scrollIntoView({block:'start'}));
   }));
   updateCurrent();

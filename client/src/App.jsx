@@ -4,6 +4,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-
 
 import HomePage from "./pages/HomePage";
 import LegalDocumentPage from "./pages/LegalDocumentPage";
+import ProviderAgreementPage from "./pages/ProviderAgreementPage";
 import LoginPage from "./pages/LoginPage";
 import OrderPage from "./pages/OrderPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -108,7 +109,7 @@ function App() {
         <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
         <Route path="/privacy-policy" element={<LegalDocumentPage privacy />} />
-        <Route path="/provider-agreement" element={<LegalDocumentPage provider />} />
+        <Route path="/provider-agreement" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><ProviderAgreementPage /></ProtectedRoute>} />
         <Route path="/order/:serviceId" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />

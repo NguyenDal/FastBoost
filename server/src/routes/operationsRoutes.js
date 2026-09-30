@@ -12,6 +12,7 @@ router.use(protect, handle(async (req, res, next) => {
     res.set('Cache-Control', 'no-store'); next();
 }));
 const admin = (req, res, next) => req.actor.role === 'ADMIN' ? next() : next(Object.assign(new Error('Admins only.'), { status: 403 }));
+router.use('/provider-agreement', require('./providerAgreementRoutes'));
 
 async function earnings() {
     const orders = await db.order.findMany({ where: { paymentStatus: 'PAID', status: 'COMPLETED' },

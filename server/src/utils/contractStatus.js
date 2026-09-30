@@ -7,10 +7,15 @@ async function syncContract(db, contract) {
         const current = await tx.boosterContract.findUnique({ where: { id: contract.id } });
         if (current.signedAt) return current;
         const updated = await tx.boosterContract.update({ where: { id: current.id }, data: { ...status, lastSyncedAt: new Date() } });
+        if (status.companySignedAt && !current.companySignedAt && !status.signedAt) {
+            await tx.notification.updateMany({ where: { id: `contract-${current.id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });
+        }
         if (status.signedAt) {
-            await tx.boosterProfile.upsert({ where: { userId: current.boosterId }, create: { userId: current.boosterId, startedAt: current.startsAt }, update: {} });
-            await tx.boosterProfile.updateMany({ where: { userId: current.boosterId, startedAt: null }, data: { startedAt: current.startsAt } });
+            const startedAt = current.companySignerEmail ? new Date(Math.max(new Date(current.startsAt).getTime(), status.signedAt.getTime())) : current.startsAt;
+            await tx.boosterProfile.upsert({ where: { userId: current.boosterId }, create: { userId: current.boosterId, startedAt }, update: {} });
+            await tx.boosterProfile.updateMany({ where: { userId: current.boosterId, startedAt: null }, data: { startedAt } });
             await tx.notification.updateMany({ where: { id: `contract-${current.id}`, userId: current.boosterId }, data: { read: true } });
+            await tx.notification.updateMany({ where: { id: `contract-company-${current.id}` }, data: { read: true } });
         }
         return updated;
     });

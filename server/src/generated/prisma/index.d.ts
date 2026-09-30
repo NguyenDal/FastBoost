@@ -7758,6 +7758,10 @@ export namespace Prisma {
     envelopeId: string | null
     signerName: string | null
     signerEmail: string | null
+    companySignerName: string | null
+    companySignerEmail: string | null
+    boosterSignedAt: Date | null
+    companySignedAt: Date | null
     status: string | null
     sendAttemptAt: Date | null
     sendError: string | null
@@ -7781,6 +7785,10 @@ export namespace Prisma {
     envelopeId: string | null
     signerName: string | null
     signerEmail: string | null
+    companySignerName: string | null
+    companySignerEmail: string | null
+    boosterSignedAt: Date | null
+    companySignedAt: Date | null
     status: string | null
     sendAttemptAt: Date | null
     sendError: string | null
@@ -7804,6 +7812,10 @@ export namespace Prisma {
     envelopeId: number
     signerName: number
     signerEmail: number
+    companySignerName: number
+    companySignerEmail: number
+    boosterSignedAt: number
+    companySignedAt: number
     status: number
     sendAttemptAt: number
     sendError: number
@@ -7829,6 +7841,10 @@ export namespace Prisma {
     envelopeId?: true
     signerName?: true
     signerEmail?: true
+    companySignerName?: true
+    companySignerEmail?: true
+    boosterSignedAt?: true
+    companySignedAt?: true
     status?: true
     sendAttemptAt?: true
     sendError?: true
@@ -7852,6 +7868,10 @@ export namespace Prisma {
     envelopeId?: true
     signerName?: true
     signerEmail?: true
+    companySignerName?: true
+    companySignerEmail?: true
+    boosterSignedAt?: true
+    companySignedAt?: true
     status?: true
     sendAttemptAt?: true
     sendError?: true
@@ -7875,6 +7895,10 @@ export namespace Prisma {
     envelopeId?: true
     signerName?: true
     signerEmail?: true
+    companySignerName?: true
+    companySignerEmail?: true
+    boosterSignedAt?: true
+    companySignedAt?: true
     status?: true
     sendAttemptAt?: true
     sendError?: true
@@ -7971,6 +7995,10 @@ export namespace Prisma {
     envelopeId: string | null
     signerName: string
     signerEmail: string
+    companySignerName: string | null
+    companySignerEmail: string | null
+    boosterSignedAt: Date | null
+    companySignedAt: Date | null
     status: string
     sendAttemptAt: Date | null
     sendError: string | null
@@ -8011,6 +8039,10 @@ export namespace Prisma {
     envelopeId?: boolean
     signerName?: boolean
     signerEmail?: boolean
+    companySignerName?: boolean
+    companySignerEmail?: boolean
+    boosterSignedAt?: boolean
+    companySignedAt?: boolean
     status?: boolean
     sendAttemptAt?: boolean
     sendError?: boolean
@@ -8036,6 +8068,10 @@ export namespace Prisma {
     envelopeId?: boolean
     signerName?: boolean
     signerEmail?: boolean
+    companySignerName?: boolean
+    companySignerEmail?: boolean
+    boosterSignedAt?: boolean
+    companySignedAt?: boolean
     status?: boolean
     sendAttemptAt?: boolean
     sendError?: boolean
@@ -8061,6 +8097,10 @@ export namespace Prisma {
     envelopeId?: boolean
     signerName?: boolean
     signerEmail?: boolean
+    companySignerName?: boolean
+    companySignerEmail?: boolean
+    boosterSignedAt?: boolean
+    companySignedAt?: boolean
     status?: boolean
     sendAttemptAt?: boolean
     sendError?: boolean
@@ -8086,6 +8126,10 @@ export namespace Prisma {
     envelopeId?: boolean
     signerName?: boolean
     signerEmail?: boolean
+    companySignerName?: boolean
+    companySignerEmail?: boolean
+    boosterSignedAt?: boolean
+    companySignedAt?: boolean
     status?: boolean
     sendAttemptAt?: boolean
     sendError?: boolean
@@ -8098,7 +8142,7 @@ export namespace Prisma {
     revokedAt?: boolean
   }
 
-  export type BoosterContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boosterId" | "issuedById" | "title" | "templateId" | "accountId" | "environment" | "envelopeId" | "signerName" | "signerEmail" | "status" | "sendAttemptAt" | "sendError" | "lastSyncedAt" | "startsAt" | "createdAt" | "signedAt" | "signedName" | "viewedAt" | "revokedAt", ExtArgs["result"]["boosterContract"]>
+  export type BoosterContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boosterId" | "issuedById" | "title" | "templateId" | "accountId" | "environment" | "envelopeId" | "signerName" | "signerEmail" | "companySignerName" | "companySignerEmail" | "boosterSignedAt" | "companySignedAt" | "status" | "sendAttemptAt" | "sendError" | "lastSyncedAt" | "startsAt" | "createdAt" | "signedAt" | "signedName" | "viewedAt" | "revokedAt", ExtArgs["result"]["boosterContract"]>
   export type BoosterContractInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -8129,6 +8173,10 @@ export namespace Prisma {
       envelopeId: string | null
       signerName: string
       signerEmail: string
+      companySignerName: string | null
+      companySignerEmail: string | null
+      boosterSignedAt: Date | null
+      companySignedAt: Date | null
       status: string
       sendAttemptAt: Date | null
       sendError: string | null
@@ -8574,6 +8622,10 @@ export namespace Prisma {
     readonly envelopeId: FieldRef<"BoosterContract", 'String'>
     readonly signerName: FieldRef<"BoosterContract", 'String'>
     readonly signerEmail: FieldRef<"BoosterContract", 'String'>
+    readonly companySignerName: FieldRef<"BoosterContract", 'String'>
+    readonly companySignerEmail: FieldRef<"BoosterContract", 'String'>
+    readonly boosterSignedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly companySignedAt: FieldRef<"BoosterContract", 'DateTime'>
     readonly status: FieldRef<"BoosterContract", 'String'>
     readonly sendAttemptAt: FieldRef<"BoosterContract", 'DateTime'>
     readonly sendError: FieldRef<"BoosterContract", 'String'>
@@ -35747,6 +35799,10 @@ export namespace Prisma {
     envelopeId: 'envelopeId',
     signerName: 'signerName',
     signerEmail: 'signerEmail',
+    companySignerName: 'companySignerName',
+    companySignerEmail: 'companySignerEmail',
+    boosterSignedAt: 'boosterSignedAt',
+    companySignedAt: 'companySignedAt',
     status: 'status',
     sendAttemptAt: 'sendAttemptAt',
     sendError: 'sendError',
@@ -36660,6 +36716,10 @@ export namespace Prisma {
     envelopeId?: StringNullableFilter<"BoosterContract"> | string | null
     signerName?: StringFilter<"BoosterContract"> | string
     signerEmail?: StringFilter<"BoosterContract"> | string
+    companySignerName?: StringNullableFilter<"BoosterContract"> | string | null
+    companySignerEmail?: StringNullableFilter<"BoosterContract"> | string | null
+    boosterSignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    companySignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     status?: StringFilter<"BoosterContract"> | string
     sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     sendError?: StringNullableFilter<"BoosterContract"> | string | null
@@ -36685,6 +36745,10 @@ export namespace Prisma {
     envelopeId?: SortOrderInput | SortOrder
     signerName?: SortOrder
     signerEmail?: SortOrder
+    companySignerName?: SortOrderInput | SortOrder
+    companySignerEmail?: SortOrderInput | SortOrder
+    boosterSignedAt?: SortOrderInput | SortOrder
+    companySignedAt?: SortOrderInput | SortOrder
     status?: SortOrder
     sendAttemptAt?: SortOrderInput | SortOrder
     sendError?: SortOrderInput | SortOrder
@@ -36713,6 +36777,10 @@ export namespace Prisma {
     environment?: StringFilter<"BoosterContract"> | string
     signerName?: StringFilter<"BoosterContract"> | string
     signerEmail?: StringFilter<"BoosterContract"> | string
+    companySignerName?: StringNullableFilter<"BoosterContract"> | string | null
+    companySignerEmail?: StringNullableFilter<"BoosterContract"> | string | null
+    boosterSignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    companySignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     status?: StringFilter<"BoosterContract"> | string
     sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     sendError?: StringNullableFilter<"BoosterContract"> | string | null
@@ -36738,6 +36806,10 @@ export namespace Prisma {
     envelopeId?: SortOrderInput | SortOrder
     signerName?: SortOrder
     signerEmail?: SortOrder
+    companySignerName?: SortOrderInput | SortOrder
+    companySignerEmail?: SortOrderInput | SortOrder
+    boosterSignedAt?: SortOrderInput | SortOrder
+    companySignedAt?: SortOrderInput | SortOrder
     status?: SortOrder
     sendAttemptAt?: SortOrderInput | SortOrder
     sendError?: SortOrderInput | SortOrder
@@ -36767,6 +36839,10 @@ export namespace Prisma {
     envelopeId?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
     signerName?: StringWithAggregatesFilter<"BoosterContract"> | string
     signerEmail?: StringWithAggregatesFilter<"BoosterContract"> | string
+    companySignerName?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    companySignerEmail?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    boosterSignedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    companySignedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
     status?: StringWithAggregatesFilter<"BoosterContract"> | string
     sendAttemptAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
     sendError?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
@@ -38986,6 +39062,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -39011,6 +39091,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -39032,6 +39116,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39057,6 +39145,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39080,6 +39172,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -39101,6 +39197,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39124,6 +39224,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41647,6 +41751,10 @@ export namespace Prisma {
     envelopeId?: SortOrder
     signerName?: SortOrder
     signerEmail?: SortOrder
+    companySignerName?: SortOrder
+    companySignerEmail?: SortOrder
+    boosterSignedAt?: SortOrder
+    companySignedAt?: SortOrder
     status?: SortOrder
     sendAttemptAt?: SortOrder
     sendError?: SortOrder
@@ -41670,6 +41778,10 @@ export namespace Prisma {
     envelopeId?: SortOrder
     signerName?: SortOrder
     signerEmail?: SortOrder
+    companySignerName?: SortOrder
+    companySignerEmail?: SortOrder
+    boosterSignedAt?: SortOrder
+    companySignedAt?: SortOrder
     status?: SortOrder
     sendAttemptAt?: SortOrder
     sendError?: SortOrder
@@ -41693,6 +41805,10 @@ export namespace Prisma {
     envelopeId?: SortOrder
     signerName?: SortOrder
     signerEmail?: SortOrder
+    companySignerName?: SortOrder
+    companySignerEmail?: SortOrder
+    boosterSignedAt?: SortOrder
+    companySignedAt?: SortOrder
     status?: SortOrder
     sendAttemptAt?: SortOrder
     sendError?: SortOrder
@@ -45934,6 +46050,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -45957,6 +46077,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -45988,6 +46112,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -46011,6 +46139,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -46949,6 +47081,10 @@ export namespace Prisma {
     envelopeId?: StringNullableFilter<"BoosterContract"> | string | null
     signerName?: StringFilter<"BoosterContract"> | string
     signerEmail?: StringFilter<"BoosterContract"> | string
+    companySignerName?: StringNullableFilter<"BoosterContract"> | string | null
+    companySignerEmail?: StringNullableFilter<"BoosterContract"> | string | null
+    boosterSignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    companySignedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     status?: StringFilter<"BoosterContract"> | string
     sendAttemptAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     sendError?: StringNullableFilter<"BoosterContract"> | string | null
@@ -55050,6 +55186,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -55072,6 +55212,10 @@ export namespace Prisma {
     envelopeId?: string | null
     signerName: string
     signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
     status?: string
     sendAttemptAt?: Date | string | null
     sendError?: string | null
@@ -55348,6 +55492,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55371,6 +55519,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55393,6 +55545,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55414,6 +55570,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55437,6 +55597,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55459,6 +55623,10 @@ export namespace Prisma {
     envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
     signerName?: StringFieldUpdateOperationsInput | string
     signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sendError?: NullableStringFieldUpdateOperationsInput | string | null
