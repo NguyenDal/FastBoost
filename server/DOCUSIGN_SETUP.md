@@ -36,6 +36,17 @@ The current FB-PA-1.1 PDF is an unsigned **review draft**, not a final signing
 template. Approve the remaining commercial settings and finalize the wording
 before removing its review labels and uploading a signing version.
 
+For sandbox setup while commercial settings are still pending, run
+`python scripts/build-provider-agreement-pdf.py --sandbox-template`. This creates
+a separate 13-page test PDF, field-coordinate manifest, and importable template
+JSON in `output/pdf/`; it does not replace the review PDF served by FastBoost.
+Every page is marked as a sandbox test copy, not for real contract execution.
+In DocuSign, choose **Templates → Start → Envelope Templates → Upload Template**
+and select `FastBoost_Provider_Agreement_EN_sandbox.template.json`. This imports
+the PDF, both roles in signing order, and 26 fields. Check the first-page identity
+fields and final signature page, then save. Use the resulting template ID only
+with `DOCUSIGN_ENVIRONMENT=demo`. Do not send this draft for real execution.
+
 1. In the sandbox's Templates area, upload the finalized PDF and save a template.
 2. Enable signing order. Add exactly two signer roles, with name/email blank:
    **FastBoost** at order **1**, and **Booster** at order **2**. Do not add other
@@ -123,6 +134,18 @@ local frontend. Do not point sandbox events at production. Events are authentica
 against raw bytes, then the API independently verifies the envelope and signer.
 Return URL parameters never mark an agreement signed. Refreshing FastBoost reads
 the saved status; manual provider status checks are throttled to 15 minutes.
+
+For a tunnel on the developer computer, use the restricted relay rather than
+exposing the entire API. After setting the sandbox HMAC secret, start
+`node scripts/docusign-local-relay.js` from `server`, then direct the HTTPS tunnel
+to `http://127.0.0.1:5011`. Register its public URL plus
+`/api/operations/docusign/webhook` in the sandbox Connect configuration. The relay
+accepts only POST JSON on that exact path, rejects invalid signatures and bodies
+over 2 MB, and forwards the unchanged signed bytes to the local API. All other
+paths are blocked. It uses `PORT` for the API port (default 5000) and
+`DOCUSIGN_RELAY_PORT` for its own port (default 5011). Restart the API and relay
+after changing secrets. Stop the tunnel and disable its Connect configuration
+when the test ends; temporary tunnel URLs change between sessions.
 
 ## 5. Database and verification
 

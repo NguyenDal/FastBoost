@@ -18,4 +18,5 @@ server/dist/
 
 # Local document build output; the authenticated copy lives in server/private/legal.
 /output/pdf/
+/output/docusign/
 /tmp/pdfs/
