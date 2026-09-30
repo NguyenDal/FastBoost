@@ -122,11 +122,14 @@ export function BoosterContractPage() {
     const returning = window.self !== window.top && new URLSearchParams(window.location.search).get('signingReturn') === '1';
     async function action(kind) {
         setBusy(true); setActionError(''); setNotice('');
+        const signing = kind === 'signing-view' || kind === 'signing-fullscreen';
+        if (signing) setSigningUrl('');
         try {
             if (kind === 'document') await downloadContract(id);
             else {
-                const result = await operations(`/contracts/${id}/${kind}`, {});
-                if (kind === 'signing-view') setSigningUrl(result.url);
+                const result = await operations(`/contracts/${id}/${signing ? 'signing-view' : kind}`, {});
+                if (kind === 'signing-fullscreen') window.location.assign(result.url);
+                else if (kind === 'signing-view') setSigningUrl(result.url);
                 else { reload(); if (result.pending) setNotice('Waiting for DocuSign’s confirmation. Status updates arrive automatically; a manual check is available every 15 minutes.'); }
             }
         } catch (e) { setActionError(e.message); } finally { setBusy(false); }
@@ -144,6 +147,15 @@ export function BoosterContractPage() {
         window.addEventListener('message', receive);
         return () => { window.removeEventListener('focus', refresh); window.removeEventListener('message', receive); };
     }, [reload, id, returning]);
+    // Connect can arrive after the browser return, or the local iframe return can be blocked.
+    // Refresh only our stored status; this never polls DocuSign or trusts return parameters.
+    const signingReturn = new URLSearchParams(window.location.search).get('signingReturn') === '1';
+    useEffect(() => {
+        if (!canSign || !contract?.envelopeId || contract.signedAt || ['completed', 'voided', 'declined'].includes(contract.status) || (!signingUrl && !notice && !signingReturn)) return;
+        const timer = window.setInterval(() => { if (document.visibilityState === 'visible') reload(); }, 5000);
+        const deadline = window.setTimeout(() => window.clearInterval(timer), 10 * 60000);
+        return () => { window.clearInterval(timer); window.clearTimeout(deadline); };
+    }, [canSign, contract?.envelopeId, contract?.signedAt, contract?.status, signingUrl, notice, signingReturn, reload]);
     if (returning) return <p>Returning to your agreement…</p>;
     return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · Signed with DocuSign</Heading><Link to={own ? '/provider/workspace' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
         {contract && <section className="ops-card"><div className="ops-toolbar"><div><strong>{contract.signerName}</strong><small>{contract.signerEmail} · Starts {date(contract.startsAt)}</small></div><span className={`ops-badge ${contract.signedAt ? 'approved' : ''}`}>{contract.signedAt ? 'Signed' : contract.status.replace(/_/g, ' ')}</span></div>
@@ -155,8 +167,8 @@ export function BoosterContractPage() {
                 {contract.envelopeId && <><button disabled={busy} onClick={() => action('document')}>{contract.signedAt ? 'Download signed PDF & certificate' : 'Download agreement PDF'}</button><button disabled={busy} onClick={() => action('sync')}>Check signature status</button></>}
                 {admin && !contract.envelopeId && <button disabled={busy} onClick={() => action('retry')}>Retry delivery</button>}
             </div>
-            {notice && <p role="status">{notice}</p>}
-            {signingUrl && !contract.signedAt && <><iframe className="ops-pdf" title="DocuSign contract signing" src={signingUrl} allow="geolocation" /><a href={signingUrl}>Open signing full screen</a></>}
+            {notice && !contract.signedAt && <p role="status">{notice}</p>}
+            {signingUrl && canSign && !contract.signedAt && <><iframe className="ops-pdf" title="DocuSign contract signing" src={signingUrl} allow="geolocation" /><button disabled={busy} onClick={() => action('signing-fullscreen')}>Open signing full screen</button></>}
             {contract.signedAt && <div className="ops-callout"><strong>{contract.companySignerEmail ? 'Signed by both parties' : `Signed by ${contract.signedName}`}</strong><span>{new Date(contract.signedAt).toLocaleString()}</span><span>Completion verified with DocuSign.</span></div>}
         </section>}
     </main></div>;

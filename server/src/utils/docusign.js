@@ -86,14 +86,16 @@ async function sendContract(contract) {
         return !signer || String(signer.routingOrder) !== order || !signer.tabs?.signHereTabs?.some(t => t.optional !== 'true' && t.optional !== true) || !signer.tabs?.dateSignedTabs?.length;
     })) throw failure('Use a two-signer template: FastBoost first, Booster second, each with a required signature and signed-date field.');
     const providerFields = ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate'];
-    const textTabs = roles.find(s => s.roleName === 'Booster').tabs.textTabs || [];
+    // Prefilled fields belong to the first signer so both parties see them before signing.
+    const textTabs = roles.find(s => s.roleName === 'FastBoost').tabs.textTabs || [];
     if (providerFields.some(label => !textTabs.some(t => t.tabLabel === label))) throw failure('The template is missing required provider identity or agreement fields. Follow the DocuSign setup guide.');
     const result = await api('/envelopes', { method: 'POST', body: {
         templateId: contract.templateId, transactionId: contract.id, status: 'sent', emailSubject: contract.title,
         // FastBoost completes the commercial fields and signs first (template order 1).
         // The booster then reviews those completed terms and signs (template order 2).
         templateRoles: [
-            { roleName: 'Booster', name: contract.signerName, email: contract.signerEmail, clientUserId: contract.boosterId,
+            { roleName: 'Booster', name: contract.signerName, email: contract.signerEmail, clientUserId: contract.boosterId },
+            { roleName: 'FastBoost', name: contract.companySignerName, email: contract.companySignerEmail, clientUserId: companyClientId(contract),
                 tabs: { textTabs: [
                     { tabLabel: 'ProviderLegalName', value: contract.signerName, locked: 'true' },
                     { tabLabel: 'ProviderEmail', value: contract.signerEmail, locked: 'true' },
@@ -101,7 +103,6 @@ async function sendContract(contract) {
                     { tabLabel: 'AgreementId', value: contract.id, locked: 'true' },
                     { tabLabel: 'EffectiveDate', value: new Date(contract.startsAt).toISOString().slice(0, 10), locked: 'true' },
                 ] } },
-            { roleName: 'FastBoost', name: contract.companySignerName, email: contract.companySignerEmail, clientUserId: companyClientId(contract) },
         ],
     } }, contract);
     if (!result.envelopeId) throw failure('DocuSign has not returned an envelope ID. Retry this contract.');

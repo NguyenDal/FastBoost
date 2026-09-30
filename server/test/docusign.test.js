@@ -22,8 +22,8 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         if (url.endsWith('/oauth/userinfo')) return Response.json({ accounts: [{ account_id: 'account', base_uri: 'https://demo.docusign.net' }] });
         if (url.includes('/envelopes/status')) return Response.json({ envelopes: [{ envelopeId: 'recovered' }] });
         if (url.includes('/templates/template/recipients')) return Response.json({ signers: [
-            { roleName: 'FastBoost', routingOrder: '1', tabs: { signHereTabs: invalidTemplate ? [] : [{}], dateSignedTabs: [{}] } },
-            { roleName: 'Booster', routingOrder: '2', tabs: { signHereTabs: [{}], dateSignedTabs: [{}], textTabs: (missingFields ? [] : ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate']).map(tabLabel => ({ tabLabel })) } },
+            { roleName: 'FastBoost', routingOrder: '1', tabs: { signHereTabs: invalidTemplate ? [] : [{}], dateSignedTabs: [{}], textTabs: (missingFields ? [] : ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate']).map(tabLabel => ({ tabLabel })) } },
+            { roleName: 'Booster', routingOrder: '2', tabs: { signHereTabs: [{}], dateSignedTabs: [{}] } },
         ] });
         if (url.endsWith('/envelopes')) return Response.json({ envelopeId: 'envelope' });
         if (url.endsWith('/views/recipient')) return Response.json({ url: 'https://demo.docusign.net/signing/test' });
@@ -46,8 +46,10 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         assert.equal(body.templateRoles[1].roleName, 'FastBoost');
         assert.equal(body.templateRoles[1].clientUserId, 'fastboost:request-uuid');
         assert.equal(body.templateRoles[1].email, 'owner@example.test');
-        assert.equal(body.templateRoles[0].tabs.textTabs.find(t => t.tabLabel === 'ProviderLegalName').value, 'Test Booster');
-        assert.equal(body.templateRoles[0].tabs.textTabs.find(t => t.tabLabel === 'EffectiveDate').value, '2026-09-30');
+        assert.equal(body.templateRoles[0].tabs, undefined);
+        assert.equal(body.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'ProviderLegalName').value, 'Test Booster');
+        assert.equal(body.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'EffectiveDate').value, '2026-09-30');
+        assert.ok(body.templateRoles[1].tabs.textTabs.every(t => t.locked === 'true'));
         assert.equal(ds.readiness().configured, true);
         delete process.env.DOCUSIGN_COMPANY_SIGNER_EMAIL;
         assert.equal(ds.readiness().configured, false);

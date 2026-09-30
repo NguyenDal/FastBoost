@@ -54,8 +54,10 @@ with `DOCUSIGN_ENVIRONMENT=demo`. Do not send this draft for real execution.
 3. Give each role a required Signature and Date Signed field in its own signature
    block. Add required initials for Schedule A approval. Add the appropriate Full
    Name field for the provider signature block; do not leave placeholder text there.
-4. Add Booster-owned text fields with these exact **Data Labels**. The server fills
-   and locks them before either signer opens the envelope:
+4. Add FastBoost-owned text fields with these exact **Data Labels**. The server fills
+   and locks them before either signer opens the envelope. Assign them to the first
+   signer, FastBoost, so that identity and reference details are visible from the
+   first signing step, independently of the account's initial-field visibility setting:
 
    | Data Label | Source |
    | --- | --- |
