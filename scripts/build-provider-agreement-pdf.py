@@ -29,7 +29,7 @@ field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
     'PROVIDER_LEGAL_NAME': ('ProviderLegalName', 'Provider legal name', '1'),
     'PROVIDER_EMAIL': ('ProviderEmail', 'Provider email', '1'),
-    'PROVIDER_ACCOUNT_ID': ('ProviderAccountId', 'FastBoost account ID', '1'),
+    'PROVIDER_USERNAME': ('ProviderUsername', 'FastBoost username', '1'),
     'EFFECTIVE_DATE': ('EffectiveDate', 'Requested effective date', '1'),
     'SIGNATORY_NAME_AND_TITLE / NOT APPLICABLE': ('AuthorizedSignatory', 'Business signatory, or Not applicable', '1'),
     'WORK_COUNTRY_AND_STATE_OR_PROVINCE': ('WorkLocation', 'Work country and state / province', '1'),
@@ -214,7 +214,7 @@ if args.sandbox_template:
                 continue
             tab = {k: v for k, v in field.items() if k != 'type'}
             if field['type'] == 'textTabs':
-                tab.update(required='true', locked='true' if field['tabLabel'] in ('AgreementId', 'ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'EffectiveDate') else 'false',
+                tab.update(required='true', locked='true' if field['tabLabel'] in ('AgreementId', 'ProviderLegalName', 'ProviderEmail', 'ProviderUsername', 'EffectiveDate') else 'false',
                     font='Arial', fontSize='Size10', maxLength='500' if int(field['height']) > 30 else '100')
             elif field['type'] in ('signHereTabs', 'initialHereTabs'):
                 tab.update(optional='false', scaleValue='1')

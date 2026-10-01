@@ -1,7 +1,7 @@
 # FastBoost DocuSign setup
 
-The integration uses the eSignature REST API, JWT grant, embedded signing, and
-HMAC-authenticated Connect events. Start in the free developer sandbox. No actual
+The integration uses the eSignature REST API, JWT grant, recipient-view signing
+in a separate browser tab, and HMAC-authenticated Connect events. Start in the free developer sandbox. No actual
 contract has been sent by the coding agent.
 
 ## 1. Developer account and integration
@@ -63,7 +63,7 @@ with `DOCUSIGN_ENVIRONMENT=demo`. Do not send this draft for real execution.
    | --- | --- |
    | `ProviderLegalName` | Legal name entered by the admin |
    | `ProviderEmail` | Booster's registered email |
-   | `ProviderAccountId` | FastBoost booster account ID |
+   | `ProviderUsername` | Booster's saved FastBoost username |
    | `AgreementId` | FastBoost contract reference |
    | `EffectiveDate` | Admin's requested start date (`YYYY-MM-DD`) |
 
@@ -86,6 +86,20 @@ Tenure starts on the later of the requested effective date and verified completi
 of both signatures. An established provider's original tenure is preserved.
 Existing legacy single-signer envelopes remain verifiable; all new sends require
 two signers.
+
+Section 01 displays the saved username, not the internal account UUID. Older
+templates with the `ProviderAccountId` data label are supported by filling that
+field with the username on new sends; import the regenerated template to update
+its printed caption too. Issued envelopes keep the document and values captured
+when sent. Internal recipient IDs and ownership checks still use the account UUID.
+
+Review & sign opens a fresh DocuSign recipient-view URL in a new tab. No signing
+iframe is loaded on the contract page. The return route
+`/provider/contracts/:id/signing-return` notifies the original tab to refresh and
+closes the signing tab where supported, with a return link as fallback. This route
+contains no contract data and never treats return parameters as proof of signing.
+The booster cannot see or download the issued agreement until FastBoost's signature
+has been verified; admins retain document access while preparing and signing it.
 
 ## 3. Server settings
 
@@ -134,8 +148,12 @@ In DocuSign Settings → Connect, create a JSON SIM webhook configuration:
 Local testing requires a HTTPS tunnel to the local API; signing returns to the
 local frontend. Do not point sandbox events at production. Events are authenticated
 against raw bytes, then the API independently verifies the envelope and signer.
-Return URL parameters never mark an agreement signed. Refreshing FastBoost reads
-the saved status; manual provider status checks are throttled to 15 minutes.
+Return URL parameters never mark an agreement signed. FastBoost reads saved status
+on return, focus, and visibility changes, and every 5 seconds while a pending
+contract is visible, for up to 10 minutes. Opening a signing tab restarts that
+bounded refresh period. This does not poll DocuSign; an active Connect callback is
+required for automatic signature confirmation. The manual API sync endpoint
+remains throttled to 15 minutes and has no button in the contract UI.
 
 For a tunnel on the developer computer, use the restricted relay rather than
 exposing the entire API. After setting the sandbox HMAC secret, start
@@ -157,17 +175,20 @@ development database after checking migration history; the local project has
 historical migration drift, so do not reset the database or blindly apply unrelated
 migrations. Regenerate Prisma after migration (`npx prisma generate`).
 
-1. Open Management Utilities → Booster Management; configuration should show sandbox.
+1. Confirm the server uses the sandbox configuration, then open Management Utilities
+   → Booster Management.
 2. Send a **test** template to a test booster account using fictional test details.
 3. Sign in as the configured FastBoost signer; open the contract notification,
-   complete the required terms, and personally review/sign through DocuSign.
+   click Review & sign, and confirm DocuSign opens in a separate tab. Complete the
+   required terms and personally review/sign there.
 4. Confirm recipient-completed Connect delivery records the company signature
    and unlocks the booster. Before this, neither tenure nor full completion may
    be recorded. Sign in as the booster, open Assigned Orders → My earnings,
    contributions & contracts, and personally review/sign the completed agreement.
 5. Verify both signature timestamps, full completion, tenure date, PDF, and
    certificate. Confirm another admin cannot open the owner's signing session.
-6. Test cancellation, decline, forged return parameters, other-user access,
+6. Test blocked tabs/pop-ups, closing a signing tab early, cancellation, decline,
+   forged return parameters, other-user access, downloads before FastBoost signs,
    duplicate send retries, and repeated/out-of-order Connect events.
 
 The test suite uses mocked DocuSign responses; a real sandbox round trip is still

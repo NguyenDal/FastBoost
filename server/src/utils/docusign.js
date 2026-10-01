@@ -85,10 +85,14 @@ async function sendContract(contract) {
         const signer = roles.find(s => s.roleName === role);
         return !signer || String(signer.routingOrder) !== order || !signer.tabs?.signHereTabs?.some(t => t.optional !== 'true' && t.optional !== true) || !signer.tabs?.dateSignedTabs?.length;
     })) throw failure('Use a two-signer template: FastBoost first, Booster second, each with a required signature and signed-date field.');
-    const providerFields = ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate'];
+    const providerFields = ['ProviderLegalName', 'ProviderEmail', 'AgreementId', 'EffectiveDate'];
     // Prefilled fields belong to the first signer so both parties see them before signing.
     const textTabs = roles.find(s => s.roleName === 'FastBoost').tabs.textTabs || [];
-    if (providerFields.some(label => !textTabs.some(t => t.tabLabel === label))) throw failure('The template is missing required provider identity or agreement fields. Follow the DocuSign setup guide.');
+    // Older templates retain the old data label; new sends still display the username.
+    const usernameLabel = ['ProviderUsername', 'ProviderAccountId'].find(label => textTabs.some(t => t.tabLabel === label));
+    if (!usernameLabel || providerFields.some(label => !textTabs.some(t => t.tabLabel === label))) throw failure('The template is missing required provider identity or agreement fields. Follow the DocuSign setup guide.');
+    const providerUsername = String(contract.providerUsername || '').trim();
+    if (!providerUsername) throw failure('Set the booster’s username in Account Management before sending an agreement.', 400);
     const result = await api('/envelopes', { method: 'POST', body: {
         templateId: contract.templateId, transactionId: contract.id, status: 'sent', emailSubject: contract.title,
         // FastBoost completes the commercial fields and signs first (template order 1).
@@ -99,7 +103,7 @@ async function sendContract(contract) {
                 tabs: { textTabs: [
                     { tabLabel: 'ProviderLegalName', value: contract.signerName, locked: 'true' },
                     { tabLabel: 'ProviderEmail', value: contract.signerEmail, locked: 'true' },
-                    { tabLabel: 'ProviderAccountId', value: contract.boosterId, locked: 'true' },
+                    { tabLabel: usernameLabel, value: providerUsername, locked: 'true' },
                     { tabLabel: 'AgreementId', value: contract.id, locked: 'true' },
                     { tabLabel: 'EffectiveDate', value: new Date(contract.startsAt).toISOString().slice(0, 10), locked: 'true' },
                 ] } },
@@ -111,7 +115,7 @@ async function sendContract(contract) {
 async function signingView(contract, company = false) {
     const config = configuration();
     return api(`/envelopes/${encodeURIComponent(contract.envelopeId)}/views/recipient`, { method: 'POST', body: {
-        returnUrl: `${config.origin}/provider/contracts/${encodeURIComponent(contract.id)}?signingReturn=1`,
+        returnUrl: `${config.origin}/provider/contracts/${encodeURIComponent(contract.id)}/signing-return`,
         authenticationMethod: 'none',
         email: company ? contract.companySignerEmail : contract.signerEmail,
         userName: company ? contract.companySignerName : contract.signerName,

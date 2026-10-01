@@ -32,7 +32,7 @@ import SaleFooter from "./components/SaleFooter";
 import SupportChat from "./components/SupportChat";
 import SessionActivity from "./components/SessionActivity";
 import AdminSupportPage from "./pages/AdminSupportPage";
-import { EarningsPage, BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage } from './pages/OperationsPages';
+import { EarningsPage, BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
 
 import {
   clearExpiredSession,
@@ -107,6 +107,7 @@ function App() {
         <Route path="/support" element={<HomePage />} />
         <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterWorkspacePage /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
+        <Route path="/provider/contracts/:id/signing-return" element={<ContractSigningReturnPage />} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
         <Route path="/privacy-policy" element={<LegalDocumentPage privacy />} />
         <Route path="/provider-agreement" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><ProviderAgreementPage /></ProtectedRoute>} />

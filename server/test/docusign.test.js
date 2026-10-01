@@ -10,7 +10,7 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
     const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
     Object.assign(process.env, { DOCUSIGN_ENVIRONMENT: 'demo', DOCUSIGN_INTEGRATION_KEY: 'integration', DOCUSIGN_USER_ID: 'sender', DOCUSIGN_ACCOUNT_ID: 'account', DOCUSIGN_TEMPLATE_ID: 'template',
         DOCUSIGN_PRIVATE_KEY: privateKey.export({ type: 'pkcs8', format: 'pem' }), DOCUSIGN_RETURN_ORIGIN: 'http://localhost:5173', DOCUSIGN_CONNECT_HMAC_KEYS: 'rotation-key,test-hmac', DOCUSIGN_COMPANY_SIGNER_NAME: 'Test Owner', DOCUSIGN_COMPANY_SIGNER_EMAIL: 'owner@example.test' });
-    const calls = []; let complete = false, wrongSigner = false, companyComplete = false, wrongCompany = false, invalidTemplate = false, missingFields = false;
+    const calls = []; let complete = false, wrongSigner = false, companyComplete = false, wrongCompany = false, invalidTemplate = false, missingFields = false, legacyUsernameLabel = false;
     global.fetch = async (url, options) => {
         calls.push({ url, options });
         if (url.endsWith('/oauth/token')) {
@@ -22,7 +22,7 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         if (url.endsWith('/oauth/userinfo')) return Response.json({ accounts: [{ account_id: 'account', base_uri: 'https://demo.docusign.net' }] });
         if (url.includes('/envelopes/status')) return Response.json({ envelopes: [{ envelopeId: 'recovered' }] });
         if (url.includes('/templates/template/recipients')) return Response.json({ signers: [
-            { roleName: 'FastBoost', routingOrder: '1', tabs: { signHereTabs: invalidTemplate ? [] : [{}], dateSignedTabs: [{}], textTabs: (missingFields ? [] : ['ProviderLegalName', 'ProviderEmail', 'ProviderAccountId', 'AgreementId', 'EffectiveDate']).map(tabLabel => ({ tabLabel })) } },
+            { roleName: 'FastBoost', routingOrder: '1', tabs: { signHereTabs: invalidTemplate ? [] : [{}], dateSignedTabs: [{}], textTabs: (missingFields ? [] : ['ProviderLegalName', 'ProviderEmail', legacyUsernameLabel ? 'ProviderAccountId' : 'ProviderUsername', 'AgreementId', 'EffectiveDate']).map(tabLabel => ({ tabLabel })) } },
             { roleName: 'Booster', routingOrder: '2', tabs: { signHereTabs: [{}], dateSignedTabs: [{}] } },
         ] });
         if (url.endsWith('/envelopes')) return Response.json({ envelopeId: 'envelope' });
@@ -36,7 +36,7 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
     };
     const path = require.resolve('../src/utils/docusign'); delete require.cache[path];
     const ds = require(path);
-    const contract = { id: 'request-uuid', boosterId: 'booster', signerName: 'Test Booster', signerEmail: 'booster@example.test', title: 'Agreement', templateId: 'template', accountId: 'account', environment: 'demo', envelopeId: 'envelope', startsAt: new Date('2026-09-30'), companySignerName: 'Test Owner', companySignerEmail: 'owner@example.test' };
+    const contract = { id: 'request-uuid', boosterId: 'booster', providerUsername: 'LolBoost', signerName: 'Test Booster', signerEmail: 'booster@example.test', title: 'Agreement', templateId: 'template', accountId: 'account', environment: 'demo', envelopeId: 'envelope', startsAt: new Date('2026-09-30'), companySignerName: 'Test Owner', companySignerEmail: 'owner@example.test' };
     try {
         assert.equal(await ds.sendContract(contract), 'envelope');
         const body = JSON.parse(calls.find(c => c.url.endsWith('/envelopes')).options.body);
@@ -48,8 +48,17 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         assert.equal(body.templateRoles[1].email, 'owner@example.test');
         assert.equal(body.templateRoles[0].tabs, undefined);
         assert.equal(body.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'ProviderLegalName').value, 'Test Booster');
+        assert.equal(body.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'ProviderUsername').value, 'LolBoost');
         assert.equal(body.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'EffectiveDate').value, '2026-09-30');
         assert.ok(body.templateRoles[1].tabs.textTabs.every(t => t.locked === 'true'));
+        const sendsBeforeMissingUsername = calls.filter(c => c.url.endsWith('/envelopes')).length;
+        await assert.rejects(ds.sendContract({ ...contract, providerUsername: null }), /Set the booster’s username/);
+        assert.equal(calls.filter(c => c.url.endsWith('/envelopes')).length, sendsBeforeMissingUsername, 'never send the internal ID as a fallback');
+        legacyUsernameLabel = true;
+        await ds.sendContract(contract);
+        const legacyBody = JSON.parse(calls.filter(c => c.url.endsWith('/envelopes')).at(-1).options.body);
+        assert.equal(legacyBody.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'ProviderAccountId').value, 'LolBoost');
+        legacyUsernameLabel = false;
         assert.equal(ds.readiness().configured, true);
         delete process.env.DOCUSIGN_COMPANY_SIGNER_EMAIL;
         assert.equal(ds.readiness().configured, false);
@@ -61,7 +70,7 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         await assert.rejects(ds.sendContract({ ...contract, sendAttemptAt: new Date(Date.now() - 8 * 86400000) }), /recovery window/);
         await ds.signingView(contract);
         const view = JSON.parse(calls.find(c => c.url.endsWith('/views/recipient')).options.body);
-        assert.equal(view.returnUrl, 'http://localhost:5173/provider/contracts/request-uuid?signingReturn=1');
+        assert.equal(view.returnUrl, 'http://localhost:5173/provider/contracts/request-uuid/signing-return');
         await ds.signingView(contract, true);
         const companyView = JSON.parse(calls.filter(c => c.url.endsWith('/views/recipient')).at(-1).options.body);
         assert.equal(companyView.email, 'owner@example.test');

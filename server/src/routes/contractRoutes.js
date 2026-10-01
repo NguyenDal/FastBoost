@@ -19,7 +19,8 @@ async function send(contract) {
     ] }, data: { status: 'sending', lastSyncedAt: new Date(), sendAttemptAt: contract.sendAttemptAt || new Date() } });
     if (!claim.count) fail(409, 'This contract is being sent. Refresh shortly.');
     try {
-        const envelopeId = await docusign.sendContract(contract);
+        const booster = await db.user.findUnique({ where: { id: contract.boosterId }, select: { username: true } });
+        const envelopeId = await docusign.sendContract({ ...contract, providerUsername: booster?.username });
         return await db.$transaction(async tx => {
             const updated = await tx.boosterContract.update({ where: { id: contract.id }, data: { envelopeId, status: 'sent', sendError: null } });
             await tx.notification.upsert({ where: { id: `contract-${contract.id}` }, update: {}, create: { id: `contract-${contract.id}`, userId: contract.boosterId,
@@ -84,6 +85,7 @@ router.post('/contracts/:id/signing-view', handle(async (req, res) => {
 router.get('/contracts/:id/document', handle(async (req, res) => {
     const contract = await authorized(req);
     if (!contract.envelopeId) fail(409, 'The contract has not been sent yet.');
+    if (req.actor.role !== 'ADMIN' && contract.companySignerEmail && !contract.companySignedAt) fail(403, 'The agreement will be available after FastBoost signs.');
     const buffer = await docusign.document(contract);
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-contract.pdf"' }).send(buffer);
 }));
