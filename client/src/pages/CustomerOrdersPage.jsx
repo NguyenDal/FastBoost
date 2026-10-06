@@ -5,6 +5,7 @@ import { customerListMyOrders } from "../api/customerOrders";
 import "../styles/Admin.css";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPagination from "../components/OrderPagination";
+import { formatOrderTotal } from '../utils/orderPricing';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -185,7 +186,7 @@ export default function CustomerOrdersPage() {
                                     <td>{order.region || "-"}</td>
 
                                     <td className="price-cell">
-                                        ${Number(order.totalPrice || 0).toFixed(2)}
+                                        {formatOrderTotal(order)}
                                     </td>
 
                                     <td className="right">

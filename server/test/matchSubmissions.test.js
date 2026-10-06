@@ -11,6 +11,7 @@ test('selected match submissions protect ownership, customer visibility, quotes 
     let matches = Array.from({ length: 12 }, (_, i) => ({ id: `m${i}`, orderId: 'order', externalId: `NA1_${i}`,
         playedAt: new Date(), details: {}, status: 'PENDING', boosterId: null, revision: 1 }));
     let reviews = [];
+    let failWithdrawal = false;
     const matchesWhere = (match, where) => Object.entries(where).every(([key, value]) => {
         if (key === 'OR') return value.some(clause => matchesWhere(match, clause));
         if (value && typeof value === 'object') {
@@ -29,6 +30,7 @@ test('selected match submissions protect ownership, customer visibility, quotes 
             findMany: async ({ where }) => structuredClone(matches.filter(m => matchesWhere(m, where))),
             findFirst: async ({ where }) => structuredClone(matches.find(m => matchesWhere(m, where)) || null),
             updateMany: async ({ where, data }) => {
+                if (failWithdrawal && data.boosterId === null) return { count: 0 };
                 const changed = matches.filter(m => matchesWhere(m, where));
                 for (const match of changed) Object.assign(match, data, { revision: match.revision + 1 });
                 return { count: changed.length };
@@ -73,6 +75,7 @@ test('selected match submissions protect ownership, customer visibility, quotes 
         assert.equal((await request('/m0/player-details', 'a')).status, 200);
         assert.equal((await visible('a')).matches.length, 12);
         assert.equal((await visible('a')).canSubmit, true);
+        assert.equal((await visible('a')).submission.boosterId, 'a');
         assert.equal((await visible('admin')).canSubmit, false, 'admin role alone is not a booster assignment');
         assert.equal((await request('/submission-preview', 'customer', select('m0'))).status, 403);
         assert.equal((await request('/submission-preview', 'foreign', select('m0'))).status, 404);
@@ -116,6 +119,58 @@ test('selected match submissions protect ownership, customer visibility, quotes 
         assert.equal((await visible('a')).submission.estimatedCents, 4200);
         assert.equal((await request('/m0/review', 'a', { decision: 'APPROVED', revision: matches[0].revision, boosterId: 'a' })).status, 403);
 
+        // Editing replaces only this booster's pending claims, across all pages.
+        const beforeEdits = structuredClone({ order, matches, reviews });
+        const edit = (...ids) => ({ ...select(...ids), mode: 'edit', revision: order.matchHistoryRevision });
+        assert.equal((await request('/submission-preview', 'a', edit('m0', 'm6', 'm3'))).status, 400, 'unchanged submissions need no new audit or revision');
+        assert.equal((await request('/submission-preview', 'a', edit('m0', 'm2'))).status, 409, 'editing cannot claim another booster’s match');
+        assert.equal((await request('/submission-preview', 'customer', edit())).status, 403);
+        assert.equal((await request('/submission-preview', 'a', { ...edit('m0'), revision: undefined })).status, 409, 'replacement requires the history revision the booster saw');
+        const revised = edit('m0', 'm6', 'm4');
+        const revisedQuote = await preview('a', revised);
+        assert.equal(revisedQuote.addedCount, 1); assert.equal(revisedQuote.removedCount, 1);
+        assert.equal(revisedQuote.totalMatches, 3); assert.equal(revisedQuote.estimatedCents, 4200);
+        assert.deepEqual({ order, matches, reviews }, beforeEdits, 'preview and cancel leave the submission untouched');
+        failWithdrawal = true;
+        assert.equal((await submit('a', revised, revisedQuote)).status, 409);
+        failWithdrawal = false;
+        assert.deepEqual({ order, matches, reviews }, beforeEdits, 'a withdrawal conflict rolls back additions and audit records too');
+        const edited = await submit('a', revised, revisedQuote);
+        assert.equal(edited.status, 200);
+        const savedEdit = await edited.json();
+        assert.deepEqual(savedEdit.addedIds, ['m4']); assert.deepEqual(savedEdit.removedIds, ['m3']);
+        assert.equal(matches[0].revision, beforeEdits.matches[0].revision, 'retained claims keep their revisions');
+        assert.equal(matches[3].boosterId, null); assert.equal(matches[3].status, 'PENDING');
+        assert.deepEqual(reviews.slice(-2).map(r => [r.matchId, r.decision, r.reviewerId, r.revision]), [['m4', 'SUBMITTED', 'a', 2], ['m3', 'WITHDRAWN', 'a', 3]]);
+        assert.deepEqual((await visible('customer')).matches.map(m => m.id), ['m0', 'm2', 'm4', 'm6']);
+        assert.equal((await request('/m3/player-details', 'customer')).status, 404);
+        assert.equal((await submit('a', revised, revisedQuote)).status, 409, 'repeating a saved edit cannot overwrite newer history');
+        assert.equal((await request('/submission-preview', 'a', { ...edit('m0'), matches: [{ id: 'm0', revision: 1 }] })).status, 409);
+
+        const beforeReview = edit('m6');
+        const beforeReviewQuote = await preview('a', beforeReview);
+        await request('/m0/review', 'admin', { decision: 'APPROVED', revision: matches[0].revision, boosterId: 'a' });
+        assert.equal((await submit('a', beforeReview, beforeReviewQuote)).status, 409, 'a new admin decision invalidates an open edit confirmation');
+        assert.equal(matches[4].boosterId, 'a', 'stale edits must not partially remove pending claims');
+        assert.equal((await request('/submission-preview', 'a', edit('m0'))).status, 409, 'approved claims cannot be edited');
+        const clearPending = edit(); const clearQuote = await preview('a', clearPending);
+        assert.equal(clearQuote.removedCount, 2); assert.equal(clearQuote.totalMatches, 1); assert.equal(clearQuote.estimatedCents, 2800);
+        assert.equal((await submit('a', clearPending, clearQuote)).status, 200, 'all pending matches may be deselected');
+        assert.equal(matches[0].status, 'APPROVED'); assert.equal(matches[0].boosterId, 'a');
+        assert.equal(matches[2].boosterId, 'b', 'another booster’s submission remains intact');
+        assert.deepEqual((await visible('customer')).matches.map(m => m.id), ['m0', 'm2']);
+        const clearB = edit(); const clearBQuote = await preview('b', clearB);
+        assert.equal(clearBQuote.totalMatches, 0); assert.equal(clearBQuote.estimatedCents, 0);
+        assert.equal((await submit('b', clearB, clearBQuote)).status, 200, 'removing the last own claim handles a zero earnings share');
+        assert.equal((await visible('b')).submission.matches, 0);
+        const resubmitB = select('m2'); const resubmitQuote = await preview('b', resubmitB);
+        assert.equal((await submit('b', resubmitB, resubmitQuote)).status, 200, 'withdrawn matches can be submitted again');
+        const staleEdit = edit('m6');
+        const extraClaim = select('m5'); const extraClaimQuote = await preview('a', extraClaim);
+        await submit('a', extraClaim, extraClaimQuote);
+        assert.equal((await request('/submission-preview', 'a', staleEdit)).status, 409, 'an old selection cannot silently withdraw new claims from another tab');
+        ({ order, matches, reviews } = beforeEdits);
+
         order.status = 'COMPLETED';
         assert.equal((await request('/confirm', 'admin', { revision: order.matchHistoryRevision })).status, 409);
         for (const id of ['m0', 'm6', 'm2']) {
@@ -131,6 +186,7 @@ test('selected match submissions protect ownership, customer visibility, quotes 
         assert.deepEqual(final.earnings.shares.sort((a, b) => a.boosterId.localeCompare(b.boosterId)), [{ boosterId: 'a', matches: 2, cents: 3733 }, { boosterId: 'b', matches: 1, cents: 1867 }]);
         assert.equal((await visible('a')).submission.confirmedCents, 3733);
         assert.equal((await request('/submission-preview', 'a', select('m4'))).status, 409, 'finalized history cannot accept new claims');
+        assert.equal((await request('/submission-preview', 'a', edit())).status, 409, 'finalized history cannot be edited either');
         await request('/reopen', 'admin', { revision: order.matchHistoryRevision });
         assert.equal((await visible('a')).submission.confirmedCents, null);
         order.matchHistoryEnabled = false;

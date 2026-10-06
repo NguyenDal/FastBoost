@@ -162,10 +162,13 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
     const teamKills = teams.find(team => team.id === player.team).kills;
     const participation = teamKills ? Math.round((player.kills + player.assists) / teamKills * 100) : 0;
     const detailsId = `match-details-${match.id}`;
-    return <article className={`mh-card ${player.win ? 'mh-win' : 'mh-loss'}${checked ? ' mh-checked' : ''}`}>
+    return <article className={`mh-card ${player.win ? 'mh-win' : 'mh-loss'}${canSelect ? ' mh-selectable' : ''}${checked ? ' mh-checked' : ''}`} onClick={event => {
+        if (canSelect && !busy && !event.target.closest('button, a, input, select, textarea, [role="button"]')) onSelect();
+    }}>
+        {canSelect && <input className="mh-card-select mh-sr-only" type="checkbox" checked={checked} disabled={busy} onChange={onSelect} aria-label={`Select match ${match.externalId}`} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); onSelect(); } }} />}
         <div className="mh-overview">
             <div className="mh-match-summary">
-                <div className="mh-result"><strong className="mh-queue">{queues[details.queueId] || details.mode}</strong><time dateTime={match.playedAt} title={new Date(match.playedAt).toLocaleString()}>{relativeTime(match.playedAt, now)}</time><strong className="mh-outcome">{result}</strong><small>{duration(details.duration)}</small>{canSelect && <label className="mh-pick"><input type="checkbox" checked={checked} disabled={busy} onChange={onSelect} aria-label={`I played ${match.externalId}`} />I played this</label>}</div>
+                <div className="mh-result"><strong className="mh-queue">{queues[details.queueId] || details.mode}</strong><time dateTime={match.playedAt} title={new Date(match.playedAt).toLocaleString()}>{relativeTime(match.playedAt, now)}</time><strong className="mh-outcome">{result}</strong><small>{duration(details.duration)}</small></div>
                 <div className="mh-build"><Loadout player={player} assets={assets} /><Items items={player.items} assets={assets} /></div>
                 <div className="mh-score"><strong>{player.kills} <span className="mh-slash">/</span> <span className="mh-deaths">{player.deaths}</span> <span className="mh-slash">/</span> {player.assists}</strong><small>{kda(player)} KDA</small>{match.booster && <small className="mh-played-by" title={`Played by ${match.booster.username}`}>{match.booster.username}</small>}</div>
                 <dl className="mh-stats"><div><dt title="Kill participation">P/Kill</dt><dd>{participation}%</dd></div><div><dt>CS</dt><dd>{player.cs} <small>({csPerMinute(player, details.duration)}/m)</small></dd></div><div><dt>Damage</dt><dd>{compactNumber(player.damage)}</dd></div><div><dt>Gold</dt><dd>{compactNumber(player.gold)}</dd></div></dl>
@@ -186,6 +189,7 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
 
 function SubmissionConfirmation({ quote, busy, error, onClose, onConfirm }) {
     const dialog = useRef(null);
+    const editing = quote.mode === 'edit';
     useEffect(() => {
         const element = dialog.current;
         element.showModal();
@@ -193,12 +197,12 @@ function SubmissionConfirmation({ quote, busy, error, onClose, onConfirm }) {
     }, []);
     return <dialog ref={dialog} className="mh-confirmation" aria-labelledby="mh-confirm-title" aria-describedby="mh-confirm-description" onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
         <span className="mh-confirm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="m5 12 4 4L19 6" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-        <h2 id="mh-confirm-title">Submit {quote.selectedCount} {quote.selectedCount === 1 ? 'match' : 'matches'}?</h2>
-        <p id="mh-confirm-description">Only the matches you selected will be added to the customer’s history.</p>
-        <dl className="mh-confirm-totals"><div><dt>Selected now</dt><dd>{quote.selectedCount} matches</dd></div><div><dt>Your submitted total</dt><dd>{quote.totalMatches} matches</dd></div><div className="mh-confirm-pay"><dt>Your estimated earnings</dt><dd>{money(quote.estimatedCents, quote.currency)}</dd></div></dl>
+        <h2 id="mh-confirm-title">{editing ? 'Update your submission?' : `Submit ${quote.selectedCount} ${quote.selectedCount === 1 ? 'match' : 'matches'}?`}</h2>
+        <p id="mh-confirm-description">{editing ? 'Your selected matches will remain submitted. Deselected pending matches will be removed from the customer’s history.' : 'Only the matches you selected will be added to the customer’s history.'}</p>
+        <dl className="mh-confirm-totals">{editing ? <><div><dt>Matches added</dt><dd>{quote.addedCount}</dd></div><div><dt>Matches removed</dt><dd>{quote.removedCount}</dd></div></> : <div><dt>Selected now</dt><dd>{quote.selectedCount} matches</dd></div>}<div><dt>Your submitted total</dt><dd>{quote.totalMatches} matches</dd></div><div className="mh-confirm-pay"><dt>Your estimated earnings</dt><dd>{money(quote.estimatedCents, quote.currency)}</dd></div></dl>
         <p className="mh-confirm-help">Estimated total for all your submitted matches. Final pay depends on admin approval and other booster submissions.</p>
         {error && <p className="mh-error" role="alert">{error}</p>}
-        <div className="mh-confirm-actions"><button type="button" disabled={busy} onClick={onClose} autoFocus>Back</button><button type="button" className="mh-primary" disabled={busy || Boolean(error)} onClick={onConfirm}>{busy ? 'Submitting…' : 'Confirm submission'}</button></div>
+        <div className="mh-confirm-actions"><button type="button" disabled={busy} onClick={onClose} autoFocus>Back</button><button type="button" className="mh-primary" disabled={busy || Boolean(error)} onClick={onConfirm}>{busy ? 'Saving…' : editing ? 'Confirm changes' : 'Confirm submission'}</button></div>
     </dialog>;
 }
 
@@ -211,13 +215,15 @@ export default function MatchHistory({ orderId }) {
     const [notice, setNotice] = useState('');
     const [page, setPage] = useState(1);
     const [selection, setSelection] = useState({});
+    const [selecting, setSelecting] = useState(false);
+    const [selectionRevision, setSelectionRevision] = useState(null);
     const [quote, setQuote] = useState(null);
     const [submitError, setSubmitError] = useState('');
     const listStart = useRef(null);
     const path = `/match-history/${orderId}`;
     useEffect(() => {
         let active = true;
-        operations(path).then(result => { if (active) { setData(result); setError(''); setSelection({}); setPage(1); setQuote(null); } }).catch(e => { if (active) setError(e.message); });
+        operations(path).then(result => { if (active) { setData(result); setError(''); setSelection({}); setSelecting(false); setPage(1); setQuote(null); } }).catch(e => { if (active) setError(e.message); });
         return () => { active = false; };
     }, [path]);
     useEffect(() => {
@@ -234,7 +240,16 @@ export default function MatchHistory({ orderId }) {
     }
     const counts = { APPROVED: 0, PENDING: 0, REJECTED: 0, unsubmitted: 0 };
     data?.matches.forEach(m => { if (selectable(m)) counts.unsubmitted++; else counts[m.status]++; });
-    const selected = data?.canSubmit ? data.matches.filter(m => selectable(m) && selection[m.id] === m.revision) : [];
+    const ownPending = data?.matches.filter(m => m.status === 'PENDING' && m.boosterId === data.submission?.boosterId) || [];
+    const ownApproved = data?.matches.filter(m => m.status === 'APPROVED' && m.boosterId === data.submission?.boosterId) || [];
+    const editing = Boolean(data?.submission?.matches);
+    const canSelect = match => selectable(match) || ownPending.some(m => m.id === match.id);
+    const selected = data?.canSubmit ? data.matches.filter(m => canSelect(m) && selection[m.id] === m.revision) : [];
+    const changed = selected.length !== ownPending.length || selected.some(m => !ownPending.some(own => own.id === m.id));
+    function startSelection() {
+        setSelection(Object.fromEntries(ownPending.map(m => [m.id, m.revision])));
+        setSelectionRevision(data.order.revision); setSelecting(true); setError(''); setNotice('');
+    }
     const totalPages = Math.max(1, Math.ceil((data?.matches.length || 0) / PAGE_SIZE));
     const currentPage = Math.min(page, totalPages);
     const firstMatch = (currentPage - 1) * PAGE_SIZE;
@@ -242,39 +257,41 @@ export default function MatchHistory({ orderId }) {
         setBusy(true); setError(''); setSubmitError('');
         try {
             const matches = selected.map(({ id, revision }) => ({ id, revision }));
-            const preview = await operations(`${path}/submission-preview`, { matches });
+            const preview = await operations(`${path}/submission-preview`, { matches, mode: editing ? 'edit' : 'add', revision: selectionRevision });
             setQuote({ ...preview, matches });
         } catch (e) { setError(e.message); } finally { setBusy(false); }
     }
     async function submitMatches() {
         setBusy(true); setSubmitError('');
         try {
-            const result = await operations(`${path}/submit`, { matches: quote.matches, revision: quote.revision, estimatedCents: quote.estimatedCents });
-            setSelection({}); setQuote(null);
-            setNotice(`${quote.selectedCount} matches submitted for review.`);
+            const result = await operations(`${path}/submit`, { matches: quote.matches, mode: quote.mode, revision: quote.revision, estimatedCents: quote.estimatedCents });
+            setSelection({}); setSelecting(false); setQuote(null);
+            setNotice(quote.mode === 'edit' ? 'Submission updated.' : `${quote.selectedCount} matches submitted for review.`);
             // Submission has succeeded even if the following read fails.
-            setData(previous => ({ ...previous, order: { ...previous.order, revision: quote.revision + 1 },
-                submission: { ...previous.submission, matches: quote.totalMatches, estimatedCents: quote.estimatedCents },
-                matches: previous.matches.map(m => quote.matches.some(s => s.id === m.id) ? { ...m, boosterId: result.boosterId, revision: m.revision + 1 } : m) }));
-            try { setData(await operations(path)); } catch { setError('Matches submitted. Refresh to see the updated totals.'); }
+            setData(previous => ({ ...previous, order: { ...previous.order, revision: result.revision },
+                submission: { ...previous.submission, boosterId: result.boosterId, matches: result.totalMatches, estimatedCents: result.estimatedCents },
+                matches: previous.matches.map(m => result.removedIds.includes(m.id) ? { ...m, boosterId: null, booster: null, revision: m.revision + 1 }
+                    : result.addedIds.includes(m.id) ? { ...m, boosterId: result.boosterId, revision: m.revision + 1 } : m) }));
+            try { setData(await operations(path)); } catch { setError('Submission saved. Refresh to see the updated totals.'); }
         } catch (e) { setSubmitError(e.message); } finally { setBusy(false); }
     }
     return <section className="mh-panel" aria-label="Match history">
-        <header className="mh-heading"><h2>Match history</h2><div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy || !data} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => data?.canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div></header>
+        <header className="mh-heading"><h2>Match history</h2><div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy || selecting || !data} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => data?.canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div></header>
         {error && <p className="mh-error" role="alert">{error}</p>}{notice && <p className="mh-sr-only" role="status">{notice}</p>}
         {!data && !error && <MatchHistorySkeleton contentOnly />}
         {data && <>
             {!data.order.enabled && <p className="mh-notice">This order uses match-count contribution approvals.</p>}
             {data.importIssue && <p className="mh-notice">{data.importIssue}</p>}
-            <div className="mh-counts"><span><strong>{counts.APPROVED + counts.PENDING}</strong> submitted</span><span><strong>{counts.APPROVED}</strong> approved</span>{!data.customerView && <><span><strong>{counts.PENDING}</strong> to review</span><span><strong>{counts.unsubmitted}</strong> not submitted</span>{counts.REJECTED > 0 && <span><strong>{counts.REJECTED}</strong> excluded</span>}</>}</div>
-            {data.submission && <div className="mh-own-earnings"><span>Your {data.submission.confirmedCents === null ? 'estimated' : 'confirmed'} earnings <small>{data.submission.matches} submitted matches</small></span><strong>{money(data.submission.confirmedCents ?? data.submission.estimatedCents, data.submission.currency)}</strong></div>}
-            {data.canSubmit && <div className="mh-selection-bar"><div><strong>{selected.length} {selected.length === 1 ? 'match' : 'matches'} selected</strong><p>Select only the games you played. Selections stay checked across pages.</p></div><div className="mh-actions">{selected.length > 0 && <button className="mh-clear" disabled={busy} onClick={() => setSelection({})}>Clear</button>}<button className="mh-primary" disabled={busy || !selected.length} onClick={previewSubmission}>Submit selected</button></div></div>}
+            <div className="mh-counts"><span><strong>{counts.APPROVED + counts.PENDING}</strong> submitted</span><span><strong>{counts.APPROVED}</strong> approved</span>{!data.customerView && <><span><strong>{counts.PENDING}</strong> to review</span><span><strong>{counts.unsubmitted}</strong> not submitted</span>{counts.REJECTED > 0 && <span><strong>{counts.REJECTED}</strong> excluded</span>}</>}
+                {data.canSubmit && <div className="mh-actions mh-count-actions">{selecting ? <><button className="mh-clear" disabled={busy} onClick={() => { setSelection({}); setSelecting(false); }}>Cancel</button><button className="mh-primary" disabled={busy || !changed} onClick={previewSubmission}>{editing ? 'Save changes' : 'Submit selected'}</button></> : <button className="mh-primary" disabled={busy || (!counts.unsubmitted && !editing)} aria-controls={`match-list-${orderId}`} onClick={startSelection}>{editing ? 'Edit submission' : 'Select matches'}</button>}</div>}
+            </div>
+            {data.canSubmit && selecting && <div className="mh-selection-bar"><strong role="status">{selected.length + ownApproved.length} {selected.length + ownApproved.length === 1 ? 'match' : 'matches'} selected</strong><p>Click a card to select or deselect it. Selections stay checked across pages.{ownApproved.length > 0 && ' Approved matches stay locked.'}</p></div>}
             <div ref={listStart} className="mh-page-start" tabIndex={-1} />
             {data.matches.length === 0 ? <div className="mh-empty"><span aria-hidden="true">◇</span><h3>No matches yet</h3><p>{data.canImport ? 'Use refresh to check for ranked matches played after this order was paid.' : 'Submitted matches for this order will appear here.'}</p></div> : <>
-                <div className="mh-list" id={`match-list-${orderId}`}>{data.matches.slice(firstMatch, firstMatch + PAGE_SIZE).map(match => <MatchCard key={`${match.id}-${match.revision}`} match={match} path={path} boosters={data.boosters} canReview={data.canReview} canSelect={data.canSubmit && selectable(match)} checked={selected.some(m => m.id === match.id)} onSelect={() => setSelection(previous => ({ ...previous, [match.id]: previous[match.id] === match.revision ? null : match.revision }))} busy={busy} now={now} onReview={(m, decision, boosterId, note) => action(`/${m.id}/review`, { revision: m.revision, decision, boosterId, note })} />)}</div>
+                <div className="mh-list" id={`match-list-${orderId}`}>{data.matches.slice(firstMatch, firstMatch + PAGE_SIZE).map(match => <MatchCard key={`${match.id}-${match.revision}`} match={match} path={path} boosters={data.boosters} canReview={data.canReview} canSelect={selecting && data.canSubmit && canSelect(match)} checked={selecting && (selected.some(m => m.id === match.id) || ownApproved.some(m => m.id === match.id))} onSelect={() => setSelection(previous => ({ ...previous, [match.id]: previous[match.id] === match.revision ? null : match.revision }))} busy={busy} now={now} onReview={(m, decision, boosterId, note) => action(`/${m.id}/review`, { revision: m.revision, decision, boosterId, note })} />)}</div>
                 <div className="mh-pagination"><p role="status">Showing {firstMatch + 1}–{Math.min(firstMatch + PAGE_SIZE, data.matches.length)} of {data.matches.length} matches · {PAGE_SIZE} per page</p><OrderPagination currentPage={currentPage} totalPages={totalPages} tableId={`match-list-${orderId}`} label="Match history pages" onPageChange={next => { setPage(next); listStart.current?.focus({ preventScroll: true }); listStart.current?.scrollIntoView({ block: 'start' }); }} /></div>
             </>}
-            {data.canImport && nextStart !== null && <button disabled={busy} onClick={() => action('/import', { start: nextStart })}>Load older matches</button>}
+            {data.canImport && nextStart !== null && <button disabled={busy || selecting} onClick={() => action('/import', { start: nextStart })}>Load older matches</button>}
             {data.earnings && data.order.enabled && <footer className="mh-earnings"><div><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3><p>70% of the service revenue, split by approved matches. Unsubmitted games do not count. {data.order.confirmedAt ? 'Earnings confirmed.' : 'Estimates below depend on admin approval.'}</p>{(data.order.confirmedAt ? data.earnings.shares : data.earnings.estimates || []).map(s => <div className="mh-share" key={s.boosterId}><span>{data.boosters.find(b => b.id === s.boosterId)?.username || data.matches.find(m => m.boosterId === s.boosterId)?.booster?.username || 'Booster'} · {s.matches} matches</span><strong>{money(s.cents, data.earnings.currency)}{!data.order.confirmedAt && <small> estimated</small>}</strong></div>)}</div>
                 {data.canConfirm && <button className="mh-primary" disabled={busy || !counts.APPROVED || counts.PENDING > 0} onClick={() => action('/confirm', { revision: data.order.revision })}>Confirm matches for earnings</button>}
                 {data.canReview && !data.canConfirm && <small>Earnings can be confirmed once the order is completed.</small>}

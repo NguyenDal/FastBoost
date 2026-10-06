@@ -11,6 +11,7 @@ import PaymentResultPage from "./PaymentResultPage";
 import Navbar from "../components/Navbar";
 import { LiveSaleFooter } from "../components/SaleFooter";
 import CleanIcon from "../components/CleanIcon";
+import OrderPriceSummary from '../components/OrderPriceSummary';
 import { createCheckoutSession, verifyCheckoutSession, checkServiceAvailability } from "../api/orders";
 import "../styles/Checkout.css";
 
@@ -31,7 +32,13 @@ export default function CheckoutPage() {
     const [paid, setPaid] = useState(false);
     const [verification, setVerification] = useState(null);
     const [celebratePaid, setCelebratePaid] = useState(false);
-    const markPaid = useCallback(() => setPaid(true), []);
+    const markPaid = useCallback(() => {
+        setPaid(true);
+        // Reload the saved receipt after verification, including the final Gold/cash split.
+        createCheckoutSession(orderId).then(result => {
+            if (result.paid) setData(result);
+        }).catch(() => { /* Keep the confirmed checkout quote if the receipt read fails. */ });
+    }, [orderId]);
     const completeConfirmation = useCallback(() => {
         setVerification(null);
         setCelebratePaid(true);
@@ -59,6 +66,7 @@ export default function CheckoutPage() {
                 setPaid(true);
                 if (params.get("session_id")) setVerification({ orderId: result.orderId });
             } else if (result.paidWithGoldOnly) {
+                setData(result);
                 setVerification({ orderId: result.orderId, gold: "1" });
             } else if (result.completed) {
                 setData(result);
@@ -138,6 +146,7 @@ export default function CheckoutPage() {
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
             if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paidWithGoldOnly) {
+                setData(result);
                 setGoldConfirmation(null);
                 setVerification({ orderId: result.orderId, gold: "1" });
             } else if (result.clientSecret) { setData(result); setGoldConfirmation(null); }
@@ -200,7 +209,6 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
 function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, onGoToOrder }) {
     const [promoCode, setPromoCode] = useState("");
     const enteredCode = promoCode.trim();
-    const price = value => money(value, summary.currency);
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
         <div className="checkout-summary-heading"><h2>{paid ? `Order #${summary.orderNumber || "…"}` : "Order Summary"}</h2>{!paid && <Link to={"/order/" + summary.serviceId}>Edit Order</Link>}</div>
         {!paid && <div className="checkout-game"><CleanIcon src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p className="checkout-service-meta">{[summary.serviceType || summary.title?.replace(/^TFT\s+/i, ""), summary.queueType, summary.region].filter(Boolean).map((value, index) => <span key={index}>{value}</span>)}</p></div></div>}
@@ -222,6 +230,7 @@ function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, 
                     <div><span className="checkout-next-icon"><CheckoutIcon type="chat" /></span><div><strong>Track Progress in Chat</strong><p>Open your order page to message support.</p></div></div>
                 </section>
             </div>
+            <OrderPriceSummary summary={summary.priceSummary} variant="checkout" />
             <p className="checkout-paid-notice" role="status"><span aria-hidden="true">✓</span>Your order has been paid. Your boost is ready to begin.</p>
             <button className="checkout-pay checkout-confirmed-button" onClick={onGoToOrder}>Go to Order <CheckoutIcon type="arrow" /></button>
         </div> : <>
@@ -232,13 +241,7 @@ function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, 
             <div className="checkout-promo-controls"><div className="checkout-input"><input id="checkout-promo-code" placeholder="Enter your coupon code" autoComplete="off" spellCheck={false} maxLength={32} value={promoCode} disabled={paymentBusy} onChange={event => setPromoCode(event.target.value)} aria-describedby="checkout-promo-help" /></div><button type="submit" disabled={!enteredCode || paymentBusy}>Apply</button></div>
             <p id="checkout-promo-help">Coupons count as used only after successful payment. We apply the larger sale or coupon discount.</p>
         </form>
-        <dl className="checkout-totals">
-            <div><dt>Base Price</dt><dd>{price(summary.basePriceCents)}</dd></div>
-            {summary.addonPriceCents > 0 && <div><dt>Add-ons</dt><dd>{price(summary.addonPriceCents)}</dd></div>}
-            {[["Sale Discount", summary.saleDiscountCents], ["Referral Discount", summary.referralDiscountCents], ["Gold Discount", summary.goldDiscountCents]].filter(([, value]) => value > 0).map(([label, value]) => <div className="checkout-discount" key={label}><dt>{label}</dt><dd>−{price(value)}</dd></div>)}
-            {summary.promoDiscount?.title && summary.promoDiscount.amountCents > 0 && <div className="checkout-discount"><dt className="checkout-coupon-label"><span>{summary.promoDiscount.title}</span><button type="button" className="checkout-coupon-remove" disabled={paymentBusy} onClick={() => onApplyCoupon("")} aria-label={"Remove coupon " + summary.promoDiscount.title} title="Remove coupon">Remove</button></dt><dd>−{price(summary.promoDiscount.amountCents)}</dd></div>}
-            <div className="checkout-total"><dt>Total</dt><dd>{price(summary.totalCents)}</dd></div>
-        </dl>
+        <OrderPriceSummary summary={summary.priceSummary} variant="checkout" onRemoveCoupon={() => onApplyCoupon('')} busy={paymentBusy} />
         <div className="checkout-security"><strong>Secure Payment</strong><p>Powered by Stripe. FastBoost does not receive or store your full card details.</p><p><a href="https://stripe.com/legal/consumer" target="_blank" rel="noreferrer">Stripe Terms</a> · <a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></p></div>
         </>}
     </aside>;

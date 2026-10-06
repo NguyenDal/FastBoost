@@ -1,0 +1,8 @@
+.price-summary { display: grid; gap: 12px; }
+.price-summary .price-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; color: #e5e7eb; padding: 8px 0; border-bottom: 1px solid #ffffff0f; }
+.price-summary .price-row > span { min-width: 0; overflow-wrap: anywhere; }
+.price-summary .price-row > strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.price-summary .price-discount { color: #a1cfb9; }
+.price-summary .price-row.total { font-size: 18px; font-weight: 800; color: #fff; border-bottom: none; padding-top: 14px; }
+.checkout-totals dd { flex-shrink: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.checkout-totals .checkout-coupon-label { flex-wrap: wrap; }

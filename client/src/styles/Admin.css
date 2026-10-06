@@ -294,33 +294,6 @@
   gap: 16px;
 }
 
-.price-summary {
-  display: grid;
-  gap: 12px;
-}
-
-.price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #e5e7eb;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, .06);
-}
-
-.price-row.total {
-  font-size: 18px;
-  font-weight: 800;
-  color: #fff;
-  border-bottom: none;
-  padding-top: 14px;
-}
-
-.price-summary .price-row { gap: 16px; }
-.price-summary .price-row > span { min-width: 0; overflow-wrap: anywhere; }
-.price-summary .price-row > strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.price-summary .price-discount { color: #a1cfb9; }
-
 .conversation-box {
   display: grid;
   gap: 12px;
@@ -519,9 +492,42 @@
     align-items: stretch;
   }
 
+  .assign-header .admin-input {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    box-sizing: border-box;
+  }
+
   .status-control {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .status-row .status-control {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .status-row .status-control > button {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-hero-actions .secondary-btn {
+    width: auto;
+    padding: 8px 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 600;
   }
 }
 

@@ -5,6 +5,7 @@ import { adminListOrders } from "../api/admin";
 import "../styles/Admin.css";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPagination from "../components/OrderPagination";
+import { formatOrderTotal } from '../utils/orderPricing';
 
 function useAdminGuard() {
     const navigate = useNavigate();
@@ -150,7 +151,7 @@ export default function AdminOrdersPage() {
                                             </div>
                                         </td>
                                         <td className="price-cell">
-                                            ${Number(o.totalPrice || 0).toFixed(2)}
+                                            {formatOrderTotal(o)}
                                         </td>
                                         <td>
                                             {o.assignments?.length > 0 ? (

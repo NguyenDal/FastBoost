@@ -60,6 +60,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.code,200);
     assert.equal(res.body.summary.totalCents,1700);
     assert.equal(res.body.summary.referralDiscountCents,300);
+    assert.deepEqual(res.body.summary.priceSummary, {currency:'cad',subtotalCents:3000,promotionCents:0,coupon:null,referralCents:300,goldRedeemed:100,goldDiscountCents:1000,totalCents:1700});
     assert.equal(res.body.checkoutUrl,undefined);
     await createCheckoutSession(req,res);
     assert.equal(creates,1);
@@ -90,6 +91,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.body.goldOnlyReady,true);
     assert.equal(res.body.summary.availableGold,100);
     assert.equal(res.body.summary.totalCents,0);
+    assert.equal(res.body.summary.priceSummary.totalCents,0);
     assert.equal(order.paymentStatus,'PENDING');
     assert.equal(existing.status,'expired');
     assert.equal(queued.length,0);
@@ -106,6 +108,8 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     await createCheckoutSession(req,res);
     assert.equal(res.code,200);
     assert.equal(res.body.paid,true);
+    assert.equal(res.body.summary.priceSummary.totalCents,0);
+    assert.equal(res.body.summary.priceSummary.goldDiscountCents,1000);
     assert.equal(queued.length,1);
     assert.equal(res.body.orderId,order.id);
     assert.equal(creates,2);

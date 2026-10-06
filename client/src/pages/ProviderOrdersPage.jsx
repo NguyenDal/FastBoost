@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPagination from "../components/OrderPagination";
+import { formatOrderTotal } from '../utils/orderPricing';
 import { providerListAssignedOrders } from "../api/providerOrders";
 import "../styles/Admin.css";
 
@@ -189,7 +190,7 @@ export default function ProviderOrdersPage() {
                                         <td>{o.region || "-"}</td>
 
                                         <td className="price-cell">
-                                            ${Number(o.totalPrice || 0).toFixed(2)}
+                                            {formatOrderTotal(o)}
                                         </td>
 
                                         <td className="right">

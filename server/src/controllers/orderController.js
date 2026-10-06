@@ -51,6 +51,7 @@ async function formatOrderForDetailResponse(order, req, options = {}) {
     const safeOrder = stripEncryptedPasswordFields(order);
 
     safeOrder.hasAccountPassword = hasEncryptedPasswordFields(order);
+    safeOrder.priceSummary = savedOrderPriceSummary(order);
 
     if (includeDecryptedLoginPassword && canViewOrderLoginInfo(order, req)) {
         safeOrder.accountPassword = await decryptOrderPassword(order);
@@ -62,6 +63,7 @@ async function formatOrderForDetailResponse(order, req, options = {}) {
 function formatOrderForListResponse(order) {
     const safeOrder = stripEncryptedPasswordFields(order);
     safeOrder.hasAccountPassword = hasEncryptedPasswordFields(order);
+    safeOrder.priceSummary = savedOrderPriceSummary(order);
     return safeOrder;
 }
 
@@ -874,7 +876,7 @@ module.exports.getOrderAdminById = async (req, res) => {
 
         return res.json({
             ok: true,
-            order: { ...safeOrder, priceSummary: savedOrderPriceSummary(order) },
+            order: safeOrder,
         });
     } catch (error) {
         console.error("getOrderAdminById error:", error);
@@ -998,7 +1000,7 @@ module.exports.updateOrderStatus = async (req, res) => {
                 status === "COMPLETED"
                     ? "Order marked as completed"
                     : "Order cancelled",
-            order: { ...formatOrderForListResponse(updated), priceSummary: savedOrderPriceSummary(updated) },
+            order: formatOrderForListResponse(updated),
             loyaltyBonusSync,
             referralReward,
         });

@@ -52,7 +52,7 @@ router.get('/match-history/:orderId', handle(async (req, res) => {
     const paidShare = amounts?.shares.find(s => s.boosterId === req.actor.id);
     res.json({ ok: true, matches, boosters, canReview: admin && mutable,
         canSubmit: provider && mutable, customerView: customer,
-        submission: provider ? { matches: ownShare?.matches || 0, estimatedCents: ownShare?.cents ?? 0,
+        submission: provider ? { boosterId: req.actor.id, matches: ownShare?.matches || 0, estimatedCents: ownShare?.cents ?? 0,
             confirmedCents: paidShare?.cents ?? null, currency: order.currency } : undefined,
         canImport: (admin || assigned(order, req.actor)) && mutable && !importIssue && riot.configured(),
         importIssue: admin || assigned(order, req.actor) ? importIssue || (!riot.configured() ? 'Riot imports are not configured on the server.' : '') : '',
@@ -65,9 +65,10 @@ router.get('/match-history/:orderId', handle(async (req, res) => {
 
 function selectedMatches(body) {
     const selections = body.matches;
-    if (!Array.isArray(selections) || !selections.length || selections.length > 1000 ||
+    if (body.mode !== undefined && !['add', 'edit'].includes(body.mode)) fail(400, 'Choose a valid submission mode.');
+    if (!Array.isArray(selections) || (!selections.length && body.mode !== 'edit') || selections.length > 1000 ||
         selections.some(m => !m || typeof m.id !== 'string' || !Number.isInteger(m.revision) || m.revision < 1) ||
-        new Set(selections.map(m => m.id)).size !== selections.length) fail(400, 'Select between 1 and 1,000 different matches.');
+        new Set(selections.map(m => m.id)).size !== selections.length) fail(400, 'Select up to 1,000 different matches, or clear an existing submission.');
     return selections.map(({ id, revision }) => ({ id, revision }));
 }
 router.get('/match-history/:orderId/:matchId/player-details', handle(async (req, res) => {
@@ -78,43 +79,57 @@ router.get('/match-history/:orderId/:matchId/player-details', handle(async (req,
     if (!match) fail(404, 'Match not found.');
     res.json({ ok: true, ...await riot.matchPlayerDetails(match) });
 }));
-async function submissionPreview(tx, order, actor, selections) {
+async function submissionPreview(tx, order, actor, selections, body) {
     if (!assigned(order, actor)) fail(403, 'Only a currently assigned booster can submit their matches.');
     writable(order);
+    const editing = body.mode === 'edit';
+    // Replacing a selection must start from the history the booster actually saw.
+    if (editing && body.revision !== order.matchHistoryRevision) fail(409, 'History changed. Refresh before editing your submission.');
     const matches = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { id: true, revision: true, status: true, boosterId: true } });
     const selected = new Map(selections.map(m => [m.id, m.revision]));
     for (const selection of selections) {
         const match = matches.find(m => m.id === selection.id);
-        if (!match || match.revision !== selection.revision || match.status !== 'PENDING' || match.boosterId) {
+        if (!match || match.revision !== selection.revision || match.status !== 'PENDING' ||
+            (match.boosterId && !(editing && match.boosterId === actor.id))) {
             fail(409, 'A selected match changed or has already been submitted. Refresh and select again.');
         }
     }
-    const estimate = estimateMatchEarnings({ ...order, matches: matches.map(m => selected.has(m.id) ? { ...m, boosterId: actor.id } : m) });
+    const additions = matches.filter(m => selected.has(m.id) && !m.boosterId);
+    const withdrawals = editing ? matches.filter(m => m.status === 'PENDING' && m.boosterId === actor.id && !selected.has(m.id)) : [];
+    if (!additions.length && !withdrawals.length) fail(400, 'Change your match selection before saving.');
+    const withdrawn = new Set(withdrawals.map(m => m.id));
+    const estimate = estimateMatchEarnings({ ...order, matches: matches.map(m => selected.has(m.id) ? { ...m, boosterId: actor.id } : withdrawn.has(m.id) ? { ...m, boosterId: null } : m) });
     if (!estimate) fail(409, 'This order needs a service amount before matches can be submitted.');
     const share = estimate.shares.find(s => s.boosterId === actor.id);
-    return { revision: order.matchHistoryRevision, selectedCount: selections.length, totalMatches: share.matches,
-        estimatedCents: share.cents, currency: order.currency };
+    return { additions, withdrawals, quote: { mode: editing ? 'edit' : 'add', revision: order.matchHistoryRevision,
+        selectedCount: selections.length, addedCount: additions.length, removedCount: withdrawals.length,
+        totalMatches: share?.matches || 0, estimatedCents: share?.cents || 0, currency: order.currency } };
 }
 router.post('/match-history/:orderId/submission-preview', handle(async (req, res) => {
     const selections = selectedMatches(req.body);
-    const preview = await locked(req.params.orderId, req.actor, (tx, order) => submissionPreview(tx, order, req.actor, selections));
-    res.json({ ok: true, ...preview });
+    const { quote } = await locked(req.params.orderId, req.actor, (tx, order) => submissionPreview(tx, order, req.actor, selections, req.body));
+    res.json({ ok: true, ...quote });
 }));
 router.post('/match-history/:orderId/submit', handle(async (req, res) => {
     const selections = selectedMatches(req.body);
-    await locked(req.params.orderId, req.actor, async (tx, order) => {
-        const preview = await submissionPreview(tx, order, req.actor, selections);
+    const result = await locked(req.params.orderId, req.actor, async (tx, order) => {
+        const { quote: preview, additions, withdrawals } = await submissionPreview(tx, order, req.actor, selections, req.body);
         if (req.body.revision !== preview.revision || req.body.estimatedCents !== preview.estimatedCents) {
             fail(409, 'The match count or earnings estimate changed. Review a new confirmation before submitting.');
         }
-        const changed = await tx.orderMatch.updateMany({ where: { orderId: order.id, OR: selections,
-            status: 'PENDING', boosterId: null }, data: { boosterId: req.actor.id, revision: { increment: 1 } } });
-        if (changed.count !== selections.length) fail(409, 'A selected match changed. Refresh and select again.');
-        await tx.orderMatchReview.createMany({ data: selections.map(match => ({ matchId: match.id, reviewerId: req.actor.id,
-            revision: match.revision + 1, decision: 'SUBMITTED', boosterId: req.actor.id })) });
+        for (const [records, withdrawing] of [[additions, false], [withdrawals, true]]) {
+            if (!records.length) continue;
+            const changed = await tx.orderMatch.updateMany({ where: { orderId: order.id,
+                OR: records.map(({ id, revision }) => ({ id, revision })), status: 'PENDING', boosterId: withdrawing ? req.actor.id : null },
+                data: { boosterId: withdrawing ? null : req.actor.id, revision: { increment: 1 } } });
+            if (changed.count !== records.length) fail(409, 'A selected match changed. Refresh and select again.');
+            await tx.orderMatchReview.createMany({ data: records.map(match => ({ matchId: match.id, reviewerId: req.actor.id,
+                revision: match.revision + 1, decision: withdrawing ? 'WITHDRAWN' : 'SUBMITTED', boosterId: req.actor.id })) });
+        }
         await invalidate(tx, order.id);
+        return { ...preview, revision: preview.revision + 1, addedIds: additions.map(m => m.id), removedIds: withdrawals.map(m => m.id) };
     });
-    res.json({ ok: true, submitted: selections.length, boosterId: req.actor.id });
+    res.json({ ok: true, ...result, submitted: selections.length, boosterId: req.actor.id });
 }));
 
 router.post('/match-history/:orderId/import', handle(async (req, res) => {

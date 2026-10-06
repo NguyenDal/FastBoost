@@ -1,4 +1,5 @@
-function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents) {
+function checkoutSummary(order, goldRedeemed = order.goldRedeemed || 0, goldDiscountCents = order.goldDiscountCents || 0,
+    cashAmountCents = order.cashAmountCents ?? Math.max(0, (order.amountCents ?? Math.round(Number(order.totalPrice || 0) * 100)) - goldDiscountCents)) {
     const cents = (value) => Math.round(Number(value || 0) * 100);
     const addonPriceCents = cents(order.addonPrice);
     const referralDiscountCents = cents(order.referralDiscount);
@@ -13,7 +14,7 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
         : serviceType === "Win Boost" ? ["Ranked Wins", order.desiredWins]
         : serviceType === "Pro Duo" ? ["Games", order.numberOfGames] : null;
     const details = [[serviceType === "Placement Boost" ? "Peak Rank" : "Current Rank", currentRank], ["Target Rank", targetRank], quantity, ["Queue Type", order.queueType], ["Server / Region", order.region]].filter(row => row && row[1]);
-    return {
+    const summary = {
         orderId: order.id,
         orderNumber: order.orderNumber,
         serviceId: order.serviceId,
@@ -37,14 +38,7 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
         goldDiscountCents,
         totalCents: cashAmountCents,
     };
-}
-
-function savedOrderPriceSummary(order) {
-    const amountCents = order.amountCents ?? Math.round(Number(order.totalPrice || 0) * 100);
-    const goldDiscountCents = order.goldDiscountCents || 0;
-    const summary = checkoutSummary(order, order.goldRedeemed || 0, goldDiscountCents,
-        order.cashAmountCents ?? Math.max(0, amountCents - goldDiscountCents));
-    return {
+    summary.priceSummary = {
         currency: summary.currency,
         subtotalCents: summary.basePriceCents + summary.addonPriceCents,
         promotionCents: summary.saleDiscountCents,
@@ -54,6 +48,11 @@ function savedOrderPriceSummary(order) {
         goldDiscountCents: summary.goldDiscountCents,
         totalCents: summary.totalCents,
     };
+    return summary;
+}
+
+function savedOrderPriceSummary(order) {
+    return checkoutSummary(order).priceSummary;
 }
 
 module.exports = { checkoutSummary, savedOrderPriceSummary };

@@ -224,7 +224,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
 
         if (order.paymentStatus === "PAID") {
             return res.json({ ok: true, paid: true, orderId: order.id,
-                summary: checkoutSummary(order, order.goldRedeemed || 0, order.goldDiscountCents || 0, order.cashAmountCents ?? order.amountCents) });
+                summary: checkoutSummary(order) });
         }
 
         if (order.status === "CANCELLED") {
@@ -238,7 +238,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         if (order.stripeCheckoutSessionId) {
             previousSession = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
             if (previousSession.status === "complete") return res.json({ ok: true, completed: true, sessionId: previousSession.id,
-                summary: checkoutSummary(order, order.goldRedeemed || 0, order.goldDiscountCents || 0, order.cashAmountCents ?? order.amountCents) });
+                summary: checkoutSummary(order) });
         }
         const availableRule = await db.servicePriceRule.findFirst({ where: { serviceId: order.serviceId, active: true }, select: { id: true } });
         if (!availableRule) return res.status(409).json({ ok: false, code: "SERVICE_UNAVAILABLE", message: "This service is currently unavailable. Please choose another service or check back later." });

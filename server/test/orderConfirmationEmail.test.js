@@ -16,7 +16,10 @@ test("confirmation contains actual service, cash and gold; escapes content and r
     assert.equal(mail.to, "changed@example.com");
     assert.match(mail.text, /Placement Matches: 5/);
     assert.doesNotMatch(mail.text, /Target Rank/);
-    assert.match(mail.text, /Gold used: 100/);
+    assert.match(mail.text, /Subtotal: CAD\s*30\.00/);
+    assert.match(mail.text, /Gold used \(100 Gold\): −CAD\s*10\.00/);
+    assert.match(mail.text, /Total: CAD\s*17\.00/);
+    assert.doesNotMatch(mail.text, /Base price|Add-ons|Gold discount|Amount paid by card/);
     assert.match(mail.text, /CAD\s*17\.00/);
     assert.match(mail.text, /https:\/\/fastboost.example\/match\/internal-id/);
     assert.doesNotMatch(mail.html, /<script>/);

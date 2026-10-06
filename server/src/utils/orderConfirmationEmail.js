@@ -13,17 +13,17 @@ function buildConfirmation(order, email) {
     const local = ["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname);
     if (origin.protocol !== "https:" && !(local && origin.protocol === "http:" && process.env.NODE_ENV !== "production")) throw new Error("CLIENT_URL must be a public HTTPS origin in production");
     if (local && process.env.NODE_ENV === "production") throw new Error("Production email links cannot use localhost");
-    const summary = checkoutSummary(order, order.goldRedeemed || 0, order.goldDiscountCents || 0, order.cashAmountCents ?? order.amountCents);
+    const summary = checkoutSummary(order);
+    const pricing = summary.priceSummary;
     const money = cents => new Intl.NumberFormat("en-CA", { style: "currency", currency: summary.currency.toUpperCase(), currencyDisplay: "code" }).format(cents / 100);
     const rows = [
         ["Game", summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"],
         ["Service", summary.serviceType], ...summary.details,
-        ["Base price", money(summary.basePriceCents)],
-        ...(summary.addonPriceCents ? [["Add-ons", money(summary.addonPriceCents)]] : []),
-        ...(summary.promoDiscount ? [[summary.promoDiscount.title, `−${money(summary.promoDiscount.amountCents)}`]] : []),
-        ...[["Sale discount", summary.saleDiscountCents], ["Referral discount", summary.referralDiscountCents], ["Gold discount", summary.goldDiscountCents]].filter(([, amount]) => amount > 0).map(([label, amount]) => [label, `−${money(amount)}`]),
-        ["Gold used", String(summary.goldRedeemed)],
-        ["Amount paid by card / wallet", money(summary.totalCents)],
+        ["Subtotal", money(pricing.subtotalCents)],
+        ...[["Promotion", pricing.promotionCents], [`Coupon${pricing.coupon?.code ? ` (${pricing.coupon.code})` : ''}`, pricing.coupon?.amountCents],
+            ["Referral discount", pricing.referralCents], [`Gold used${pricing.goldRedeemed ? ` (${pricing.goldRedeemed.toLocaleString()} Gold)` : ''}`, pricing.goldDiscountCents]]
+            .filter(([, amount]) => amount > 0).map(([label, amount]) => [label, `−${money(amount)}`]),
+        ["Total", money(pricing.totalCents)],
     ];
     const url = new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;
     const subject = `FastBoost order #${order.orderNumber} confirmed`;

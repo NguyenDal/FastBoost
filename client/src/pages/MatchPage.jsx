@@ -19,6 +19,7 @@ import {
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
+import { formatOrderTotal } from '../utils/orderPricing';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
 function MatchPage() {
@@ -798,7 +799,7 @@ function MatchPage() {
                         <p className="section-label">Order Status</p>
                         <h1 className="service-banner-title">{getOrderTitle(order)}</h1>
                         <p className="service-banner-meta">
-                            #{order.orderNumber} • Total ${order.totalPrice}
+                            #{order.orderNumber} • Total {formatOrderTotal(order)}
                         </p>
                     </div>
 
