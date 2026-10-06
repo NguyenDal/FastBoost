@@ -337,7 +337,12 @@ exports.Prisma.OrderScalarFieldEnum = {
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
   referralDiscount: 'referralDiscount',
-  totalPrice: 'totalPrice'
+  totalPrice: 'totalPrice',
+  matchHistoryEnabled: 'matchHistoryEnabled',
+  matchHistoryRevision: 'matchHistoryRevision',
+  matchHistoryConfirmedAt: 'matchHistoryConfirmedAt',
+  matchHistoryConfirmedBy: 'matchHistoryConfirmedBy',
+  matchHistorySyncedAt: 'matchHistorySyncedAt'
 };
 
 exports.Prisma.OrderConfirmationEmailScalarFieldEnum = {
@@ -381,6 +386,31 @@ exports.Prisma.BoosterContributionScalarFieldEnum = {
   reviewedAt: 'reviewedAt',
   reviewedBy: 'reviewedBy',
   reviewNote: 'reviewNote'
+};
+
+exports.Prisma.OrderMatchScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  game: 'game',
+  externalId: 'externalId',
+  participantId: 'participantId',
+  playedAt: 'playedAt',
+  details: 'details',
+  boosterId: 'boosterId',
+  status: 'status',
+  revision: 'revision',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.OrderMatchReviewScalarFieldEnum = {
+  id: 'id',
+  matchId: 'matchId',
+  reviewerId: 'reviewerId',
+  revision: 'revision',
+  decision: 'decision',
+  boosterId: 'boosterId',
+  note: 'note',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.RewardHistoryScalarFieldEnum = {
@@ -578,6 +608,8 @@ exports.Prisma.ModelName = {
   OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',
   BoosterContribution: 'BoosterContribution',
+  OrderMatch: 'OrderMatch',
+  OrderMatchReview: 'OrderMatchReview',
   RewardHistory: 'RewardHistory',
   AssignmentRequest: 'AssignmentRequest',
   Conversation: 'Conversation',

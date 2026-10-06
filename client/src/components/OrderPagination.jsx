@@ -1,3 +1,5 @@
+import '../styles/OrderPagination.css';
+
 function pageItems(currentPage, totalPages) {
     if (totalPages <= 7) {
         return Array.from({ length: totalPages }, (_, index) => index + 1);

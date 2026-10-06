@@ -23,7 +23,7 @@ function Feedback({ error, loading }) { return error ? <p className="ops-error" 
 function Amounts({ values }) { return Object.keys(values || {}).length ? Object.entries(values).map(([currency, cents]) => <strong key={currency}>{money(cents, currency)} <small>{currency}</small></strong>) : <span>No confirmed earnings yet</span>; }
 
 export function EarningsPage() {
-    const { data, error } = useData('/earnings');
+    const { data, error, reload } = useData('/earnings');
     const [currency, setCurrency] = useState('');
     const [page, setPage] = useState(0);
     const selected = currency || data?.totals[0]?.currency;
@@ -33,10 +33,11 @@ export function EarningsPage() {
         <Feedback error={error} loading={!data} />
         {data && <><div className="ops-toolbar"><span>All time · Completed and paid orders</span><label>Currency <select value={selected || ''} onChange={e => { setCurrency(e.target.value); setPage(0); }}>{data.totals.map(t => <option key={t.currency}>{t.currency}</option>)}</select></label></div>
             <div className="ops-stats">{[['Service revenue', total?.revenueCents], ['FastBoost share · 30%', total?.platformCents], ['Booster pool · 70%', total?.boosterCents]].map(([label, value]) => <section className="ops-card" key={label}><span>{label}</span><h2>{money(value || 0, selected)}</h2><small>After discounts and redemption · Before sales tax</small></section>)}</div>
-            <div className="ops-callout"><strong>{money(total?.unallocatedCents || 0, selected)} awaiting allocation</strong><span>Booster shares are confirmed when every participant’s match count is approved. FastBoost’s share is before fees and operating costs.</span></div>
+            <div className="ops-callout"><strong>{money(total?.unallocatedCents || 0, selected)} awaiting allocation</strong><span>Confirm the completed order’s match history to allocate booster shares. FastBoost’s share is before fees and operating costs.</span></div>
             {data.missingAmounts > 0 && <p role="status">{data.missingAmounts} older orders have no verified subtotal and are excluded.</p>}
             <section className="ops-card"><h2>Completed orders <small>{rows.length}</small></h2>{!rows.length ? <div className="ops-empty">Completed paid orders will appear here.</div> : <div className="ops-table-wrap"><table><thead><tr><th>Order</th><th>Revenue</th><th>FastBoost</th><th>Booster pool</th><th>Allocation</th></tr></thead><tbody>{rows.slice(page * 10, page * 10 + 10).map(row => <tr key={row.id}><td><Link to={`/admin/orders/${row.id}`}>#{row.orderNumber}</Link><small>{row.boostType}</small></td><td>{money(row.revenueCents, selected)}</td><td>{money(row.platformCents, selected)}</td><td>{money(row.boosterCents, selected)}</td><td><span className={`ops-badge ${row.shares.length ? 'approved' : ''}`}>{row.shares.length ? 'Confirmed' : 'Awaiting approval'}</span></td></tr>)}</tbody></table></div>}
                 {rows.length > 10 && <div className="ops-toolbar"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Previous</button><span>{page + 1} / {Math.ceil(rows.length / 10)}</span><button disabled={(page + 1) * 10 >= rows.length} onClick={() => setPage(p => p + 1)}>Next</button></div>}</section></>}
+        <Contributions admin onChange={reload} />
     </div>;
 }
 
@@ -63,8 +64,9 @@ function ContributionRow({ order, record, admin, reload }) {
 function Contributions({ admin = false, onChange }) {
     const { data, error, reload } = useData('/contributions');
     const [filter, setFilter] = useState('');
-    return <section className="ops-card"><h2>{admin ? 'Contribution approvals' : 'Your match contributions'}</h2><p>Submit all matches played on the order. Approved match counts determine each booster’s share of the 70% pool.</p><input className="ops-search" aria-label="Find order" placeholder="Find order number…" value={filter} onChange={e => setFilter(e.target.value)} /><Feedback error={error} loading={!data} />
+    return <section className="ops-card"><h2>{admin ? 'Match reviews' : 'Your match contributions'}</h2><p>Admin-approved matches determine each booster’s share of the 70% pool.</p><input className="ops-search" aria-label="Find order" placeholder="Find order number…" value={filter} onChange={e => setFilter(e.target.value)} /><Feedback error={error} loading={!data} />
         {data?.orders.filter(o => (o.orderNumber || '').toLowerCase().includes(filter.toLowerCase())).map(order => {
+            if (order.matchHistoryEnabled) return <Link className="ops-contract-link" key={order.id} to={`/match/${order.id}?tab=history`}><span>#{order.orderNumber}<small>{order.boostType}</small></span><span className={`ops-badge ${order.matchHistoryConfirmedAt ? 'approved' : ''}`}>{order.matchHistoryConfirmedAt ? 'Confirmed' : 'Review matches'} →</span></Link>;
             const records = new Map(order.assignments.map(a => [a.boosterId, a]));
             for (const record of order.contributions) records.set(record.boosterId, record);
             return [...records.values()].map(record => <ContributionRow key={`${order.id}-${record.boosterId}-${record.revision || 0}-${record.reviewedAt || ''}`} order={order} record={record} admin={admin} reload={() => { reload(); onChange?.(); }} />);

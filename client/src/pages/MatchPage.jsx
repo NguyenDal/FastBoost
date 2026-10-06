@@ -1,6 +1,6 @@
 import { authStorage } from "../utils/authStorage";
 import { formatChatDateDivider, shouldRenderDateDivider } from "../utils/chatDates";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
@@ -18,11 +18,18 @@ import {
     getMessageAttachmentViewUrl,
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
+const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
 function MatchPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const showHistory = new URLSearchParams(location.search).get('tab') === 'history';
+    function setHistoryTab(history) {
+        const search = new URLSearchParams(location.search);
+        if (history) search.set('tab', 'history'); else search.delete('tab');
+        navigate({ pathname: location.pathname, search: search.toString() }, { replace: true, state: location.state });
+    }
 
     const [hasSession, setHasSession] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -802,11 +809,12 @@ function MatchPage() {
                 </section>
 
                 <div className="match-tabs">
-                    <button className="match-tab active">Details</button>
-                    <button className="match-tab">Match History</button>
+                    <button className={`match-tab ${!showHistory ? 'active' : ''}`} aria-pressed={!showHistory} onClick={() => setHistoryTab(false)}>Details</button>
+                    <button className={`match-tab ${showHistory ? 'active' : ''}`} aria-pressed={showHistory} onClick={() => setHistoryTab(true)}>Match History</button>
                 </div>
 
-                <div className="match-layout">
+                {showHistory && <Suspense fallback={<p role="status">Loading match history…</p>}><MatchHistory key={orderId} orderId={orderId} /></Suspense>}
+                <div className="match-layout" hidden={showHistory}>
                     <section className="match-main-panel">
                         <div className="chat-panel">
                             <div className="chat-panel-header">
@@ -1097,7 +1105,7 @@ function MatchPage() {
                                         </span>
 
                                         <div className="login-info-copy">
-                                            <small>In-game name</small>
+                                            <small>Riot ID</small>
                                             <strong>{inGameName}</strong>
                                         </div>
                                     </div>
@@ -1186,7 +1194,7 @@ function MatchPage() {
                         )}
 
                         <label className="login-info-form-field">
-                            <span>In-game name</span>
+                            <span>Riot ID (name#tag)</span>
                             <input
                                 type="text"
                                 value={loginInfoForm.inGameName}

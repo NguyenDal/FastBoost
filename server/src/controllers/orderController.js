@@ -330,6 +330,7 @@ const createOrder = async (req, res) => {
                  */
                 serviceId: selectedService.id,
                 boostType: selectedService.title,
+                matchHistoryEnabled: !selectedService.title.startsWith('TFT '),
 
                 currentRank: currentRank || null,
                 desiredRank: desiredRank || null,

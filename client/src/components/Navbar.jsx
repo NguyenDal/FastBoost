@@ -1058,6 +1058,8 @@ function MessagePanelContent({ messages, onClosePanel, clearMode, clearBusy, rem
 function NotificationCard({ notification, onRefresh, onClosePanel }) {
     const navigate = useNavigate();
     const [actionLoading, setActionLoading] = useState(false);
+    const contractPath = notification.type === 'BOOSTER_CONTRACT' && /^\/provider\/contracts\/[a-zA-Z0-9-]+$/.test(notification.data?.targetPath || '') ? notification.data.targetPath : null;
+    const Card = contractPath ? Link : 'div';
 
     const isAssignmentRequest =
         notification.type === "ASSIGNMENT_REQUEST" &&
@@ -1097,7 +1099,7 @@ function NotificationCard({ notification, onRefresh, onClosePanel }) {
     };
 
     return (
-        <div className={`notification-card ${notification.read ? "" : "unread"}`}>
+        <Card className={`notification-card ${contractPath ? 'notification-card-link' : ''} ${notification.read ? "" : "unread"}`} {...(contractPath ? { to: contractPath, onClick: () => onClosePanel?.() } : {})}>
             <div className="notification-card-top">
                 <div>
                     <h4>{notification.title}</h4>
@@ -1127,14 +1129,10 @@ function NotificationCard({ notification, onRefresh, onClosePanel }) {
                 </div>
             )}
 
-            {notification.type === 'BOOSTER_CONTRACT' && /^\/provider\/contracts\/[a-zA-Z0-9-]+$/.test(notification.data?.targetPath || '') && (
-                <button className="notification-action-btn accept" onClick={() => { onClosePanel?.(); navigate(notification.data.targetPath); }}>Review contract</button>
-            )}
-
             <span className="notification-time">
                 {new Date(notification.createdAt).toLocaleString()}
             </span>
-        </div>
+        </Card>
     );
 }
 

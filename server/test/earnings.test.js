@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { orderEarnings } = require('../src/utils/earnings');
+const { orderEarnings, estimateMatchEarnings } = require('../src/utils/earnings');
 const order = (counts, amountCents = 10000, goldDiscountCents = 2000) => ({ amountCents, goldDiscountCents,
     assignments: counts.map((_, i) => ({ boosterId: String(i) })),
     contributions: counts.map((matches, i) => ({ boosterId: String(i), approvedMatches: matches, submittedMatches: matches })) });
@@ -34,4 +34,31 @@ test('fractional cents are conserved and zero contributors earn zero', () => {
 test('fully redeemed and missing historical amounts never invent earnings', () => {
     assert.equal(orderEarnings(order([1], 1000, 1000)).boosterCents, 0);
     assert.equal(orderEarnings({ amountCents: null }), null);
+});
+
+test('match-based earnings require full confirmation and never also count legacy submissions', () => {
+    const input = { ...order([100, 100]), matchHistoryEnabled: true,
+        matches: [...Array.from({ length: 9 }, () => ({ status: 'APPROVED', boosterId: 'a' })),
+            { status: 'APPROVED', boosterId: 'b' }, { status: 'REJECTED', boosterId: null }] };
+    assert.deepEqual(orderEarnings(input).shares, []);
+    input.matchHistoryConfirmedAt = new Date();
+    assert.deepEqual(orderEarnings(input).shares, [{ boosterId: 'a', matches: 9, cents: 5040 }, { boosterId: 'b', matches: 1, cents: 560 }]);
+    input.matches.push({ status: 'PENDING' });
+    assert.equal(orderEarnings(input).shares.length, 2, 'unsubmitted games do not block confirmed earnings');
+    input.matches.push({ status: 'PENDING', boosterId: 'b' });
+    assert.deepEqual(orderEarnings(input).shares, []);
+    input.matches = [{ status: 'REJECTED' }];
+    assert.deepEqual(orderEarnings(input).shares, []);
+});
+
+test('submission estimates exclude unrelated and rejected games and never create payable earnings', () => {
+    const input = { amountCents: 10001, goldDiscountCents: 2000, matchHistoryEnabled: true,
+        matches: [{ status: 'APPROVED', boosterId: 'a' }, { status: 'PENDING', boosterId: 'a' },
+            { status: 'PENDING', boosterId: 'b' }, { status: 'REJECTED', boosterId: 'b' },
+            ...Array.from({ length: 17 }, () => ({ status: 'PENDING', boosterId: null }))] };
+    const estimate = estimateMatchEarnings(input);
+    assert.deepEqual(estimate.shares, [{ boosterId: 'a', matches: 2, cents: 3734 }, { boosterId: 'b', matches: 1, cents: 1867 }]);
+    assert.equal(estimate.shares.reduce((sum, share) => sum + share.cents, 0), estimate.boosterCents);
+    assert.deepEqual(orderEarnings(input).shares, []);
+    assert.equal(input.matches[1].status, 'PENDING', 'preview must not approve the evidence');
 });

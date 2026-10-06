@@ -1018,3 +1018,7 @@
 .brand-wordmark { font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff1f8; font-size:23px; line-height:1; font-weight:850; font-style:italic; letter-spacing:-1.1px; white-space:nowrap; }
 .brand-wordmark > span { color:#b4a5ff; }
 @media (max-width:700px) { .brand-wordmark { display:none; } }
+
+.notification-card-link { display: block; color: inherit; text-decoration: none; }
+.notification-card-link:focus-visible { outline: 2px solid #b99bff; outline-offset: 3px; }
+.notification-card-link:hover { border-color: #9d72de80; }

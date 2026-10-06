@@ -10,6 +10,8 @@ datasource db {
 model User {
   boosterProfile         BoosterProfile?
   contributions          BoosterContribution[]
+  playedMatches          OrderMatch[]          @relation("MatchBooster")
+  matchReviews           OrderMatchReview[]
   boosterContracts       BoosterContract[]     @relation("BoosterContracts")
   issuedBoosterContracts BoosterContract[]     @relation("IssuedBoosterContracts")
   supportThread          SupportThread?
@@ -340,13 +342,19 @@ model Order {
   referralDiscount Float @default(0)
   totalPrice       Float @default(0)
 
-  customer           User                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  service            Service               @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customer                User                  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service                 Service               @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   // Chat / assignment back-relations
-  assignments        OrderAssignment[]
-  contributions      BoosterContribution[]
-  assignmentRequests AssignmentRequest[]
-  conversation       Conversation?
+  assignments             OrderAssignment[]
+  contributions           BoosterContribution[]
+  matches                 OrderMatch[]
+  matchHistoryEnabled     Boolean               @default(true)
+  matchHistoryRevision    Int                   @default(0)
+  matchHistoryConfirmedAt DateTime?
+  matchHistoryConfirmedBy String?
+  matchHistorySyncedAt    DateTime?
+  assignmentRequests      AssignmentRequest[]
+  conversation            Conversation?
 
   @@index([customerId, paymentStatus, paidAt])
 }
@@ -413,6 +421,43 @@ model BoosterContribution {
 
   @@id([orderId, boosterId])
   @@index([boosterId])
+}
+
+model OrderMatch {
+  id            String             @id @default(cuid())
+  orderId       String
+  game          String
+  externalId    String
+  participantId String
+  playedAt      DateTime
+  details       Json
+  boosterId     String?
+  status        String             @default("PENDING")
+  revision      Int                @default(1)
+  createdAt     DateTime           @default(now())
+  order         Order              @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  booster       User?              @relation("MatchBooster", fields: [boosterId], references: [id], onDelete: Restrict)
+  reviews       OrderMatchReview[]
+
+  // A partial database index also prevents approving the same participation on two orders.
+  @@unique([orderId, game, externalId, participantId])
+  @@index([orderId, playedAt])
+  @@index([boosterId])
+}
+
+model OrderMatchReview {
+  id         String     @id @default(cuid())
+  matchId    String
+  reviewerId String
+  revision   Int
+  decision   String
+  boosterId  String?
+  note       String?
+  createdAt  DateTime   @default(now())
+  match      OrderMatch @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  reviewer   User       @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([matchId, createdAt])
 }
 
 model RewardHistory {

@@ -13,10 +13,12 @@ router.use(protect, handle(async (req, res, next) => {
 }));
 const admin = (req, res, next) => req.actor.role === 'ADMIN' ? next() : next(Object.assign(new Error('Admins only.'), { status: 403 }));
 router.use('/provider-agreement', require('./providerAgreementRoutes'));
+router.use(require('./matchHistoryRoutes'));
 
 async function earnings() {
     const orders = await db.order.findMany({ where: { paymentStatus: 'PAID', status: 'COMPLETED' },
         select: { id: true, orderNumber: true, boostType: true, amountCents: true, goldDiscountCents: true, currency: true, paidAt: true, updatedAt: true,
+            matchHistoryEnabled: true, matchHistoryConfirmedAt: true, matches: { select: { status: true, boosterId: true } },
             assignments: { select: { boosterId: true } }, contributions: true }, orderBy: { updatedAt: 'desc' } });
     const totals = {}, boosters = {};
     let missingAmounts = 0;
@@ -33,7 +35,7 @@ async function earnings() {
             const amount = boosters[share.boosterId] ||= {};
             amount[currency] = (amount[currency] || 0) + share.cents;
         }
-        rows.push({ ...order, assignments: undefined, ...amounts, currency });
+        rows.push({ ...order, assignments: undefined, matches: undefined, ...amounts, currency });
     }
     return { totals: Object.values(totals), boosters, rows, missingAmounts };
 }
@@ -43,7 +45,7 @@ router.get('/contributions', handle(async (req, res) => {
     const isAdmin = req.actor.role === 'ADMIN';
     const rows = await db.order.findMany({ where: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
         ...(isAdmin ? {} : { OR: [{ assignments: { some: { boosterId: req.actor.id } } }, { contributions: { some: { boosterId: req.actor.id } } }] }) },
-        select: { id: true, orderNumber: true, boostType: true, status: true,
+        select: { id: true, orderNumber: true, boostType: true, status: true, matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
             assignments: { select: { boosterId: true, booster: { select: { username: true } } } },
             contributions: { include: { booster: { select: { username: true } } } } }, orderBy: { updatedAt: 'desc' } });
     res.json({ ok: true, orders: rows.map(order => ({ ...order, assignments: isAdmin ? order.assignments : order.assignments.filter(a => a.boosterId === req.actor.id),
@@ -55,6 +57,7 @@ router.post('/contributions/:orderId', handle(async (req, res) => {
     if (!Number.isInteger(matches) || matches < 0 || matches > 10000) fail(400, 'Enter a whole match count from 0 to 10,000.');
     const assigned = await db.orderAssignment.findUnique({ where: { orderId_boosterId: { orderId: req.params.orderId, boosterId: req.actor.id } }, include: { order: true } });
     if (!assigned || assigned.order.paymentStatus !== 'PAID' || assigned.order.status === 'CANCELLED') fail(403, 'Only your assigned paid orders accept submissions.');
+    if (assigned.order.matchHistoryEnabled) fail(409, 'Review individual matches in Match History for this order.');
     // Revisions invalidate approval; the admin must review the exact submitted version.
     await db.boosterContribution.upsert({ where: { orderId_boosterId: { orderId: assigned.orderId, boosterId: req.actor.id } },
         create: { orderId: assigned.orderId, boosterId: req.actor.id, submittedMatches: matches },
@@ -64,8 +67,9 @@ router.post('/contributions/:orderId', handle(async (req, res) => {
 router.post('/contributions/:orderId/:boosterId/review', admin, handle(async (req, res) => {
     if (!Number.isInteger(req.body.revision) || !['approve', 'return'].includes(req.body.decision)) fail(400, 'Choose an approval decision.');
     const key = { orderId: req.params.orderId, boosterId: req.params.boosterId };
-    const contribution = await db.boosterContribution.findUnique({ where: { orderId_boosterId: key } });
+    const contribution = await db.boosterContribution.findUnique({ where: { orderId_boosterId: key }, include: { order: { select: { matchHistoryEnabled: true } } } });
     if (!contribution) fail(404, 'Submission not found.');
+    if (contribution.order?.matchHistoryEnabled) fail(409, 'Review individual matches in Match History for this order.');
     const note = String(req.body.note || '').trim().slice(0, 500);
     if (req.body.decision === 'return' && !note) fail(400, 'Explain what needs correcting.');
     const result = await db.boosterContribution.updateMany({ where: { ...key, revision: req.body.revision, reviewedAt: null },
