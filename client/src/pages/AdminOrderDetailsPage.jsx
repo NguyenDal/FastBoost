@@ -16,6 +16,7 @@ import {
 } from "../api/assignmentRequests";
 
 import { GenericPageSkeleton } from "../components/PageSkeletons";
+import OrderPriceSummary from '../components/OrderPriceSummary';
 import "../styles/Admin.css";
 
 function useAdminGuard() {
@@ -323,22 +324,7 @@ export default function AdminOrderDetailsPage() {
                                 <div className="admin-card premium-card">
                                     <h3 className="card-title">Price Summary</h3>
 
-                                    <div className="price-summary">
-                                        <div className="price-row">
-                                            <span>Base Price</span>
-                                            <strong>${Number(order.basePrice || 0).toFixed(2)}</strong>
-                                        </div>
-
-                                        <div className="price-row">
-                                            <span>Add-on Price</span>
-                                            <strong>${Number(order.addonPrice || 0).toFixed(2)}</strong>
-                                        </div>
-
-                                        <div className="price-row total">
-                                            <span>Total</span>
-                                            <strong>${Number(order.totalPrice || 0).toFixed(2)}</strong>
-                                        </div>
-                                    </div>
+                                    <OrderPriceSummary summary={order.priceSummary} />
                                 </div>
 
                                 {order.conversation ? (

@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { operations, money } from '../api/operations';
 import OrderPagination from './OrderPagination';
+import MatchHistorySkeleton from './MatchHistorySkeleton';
+import { Skeleton } from './Skeleton';
 import '../styles/MatchHistory.css';
 
 const assetCache = new Map();
@@ -53,7 +55,6 @@ function Loadout({ player, assets }) {
 }
 const queues = { 400: 'Normal draft', 420: 'Ranked Solo/Duo', 430: 'Normal blind', 440: 'Ranked Flex', 450: 'ARAM', 490: 'Quickplay', 1700: 'Arena' };
 const duration = seconds => `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`;
-const statusLabel = match => match.status === 'PENDING' ? (match.boosterId ? 'Submitted' : 'Not submitted') : match.status === 'APPROVED' ? 'Approved' : 'Excluded';
 const selectable = match => match.status === 'PENDING' && !match.boosterId;
 const PAGE_SIZE = 5;
 const playerName = player => `${player.name}${player.tag ? `#${player.tag}` : ''}`;
@@ -72,17 +73,51 @@ function Chevron() {
 }
 function Roster({ teams, selected, assets }) {
     return <div className="mh-rosters">{teams.map(team => <div className={`mh-roster mh-team-${team.win ? 'win' : 'loss'}`} key={team.id}>
-        <span className="mh-roster-label">{team.ours ? 'Our team' : 'Enemy team'}</span>
-        <ul>{team.players.map(p => <li key={p.index} className={p.index === selected ? 'mh-roster-selected' : ''} title={playerName(p)}><Champion player={p} assets={assets} compact /><span>{p.name}</span></li>)}</ul>
+        <ul aria-label={`${team.id === 100 ? 'Blue' : 'Red'} team players`}>{team.players.map(p => <li key={p.index} className={p.index === selected ? 'mh-roster-selected' : ''} title={playerName(p)}><Champion player={p} assets={assets} compact /><span>{p.name}</span></li>)}</ul>
     </div>)}</div>;
 }
 function Rank({ rank, loading, queueId, checkedAt }) {
+    if (loading) return <span className="mh-rank-loading" aria-label="Loading rank"><Skeleton width={72} height={10} /></span>;
     const tier = rank?.unranked ? 'unranked' : rank?.tier?.toLowerCase();
     const division = { I: 1, II: 2, III: 3, IV: 4 }[rank?.division];
     const label = rank?.unranked ? 'Unranked' : tier ? `${tier[0].toUpperCase()}${tier.slice(1)}${division && !['master', 'grandmaster', 'challenger'].includes(tier) ? ` ${division}` : ''}` : loading ? 'Loading rank…' : 'Rank unavailable';
     return <small className={`mh-rank mh-rank-${tier || 'unknown'}`} title={`Current ${queues[queueId] || 'ranked'} rank${checkedAt ? ` · checked ${new Date(checkedAt).toLocaleString()}` : ''}${rank?.lp !== undefined ? ` · ${rank.lp} LP` : ''}`}>
         {tier && <img src={`https://fastboost-assets.s3.amazonaws.com/services/ranks/${tier}.${tier === 'unranked' ? 'webp' : 'png'}`} alt="" loading="lazy" />}{label}
     </small>;
+}
+const objectives = [
+    { key: 'baron', label: 'Baron Nashors', icon: 'M5 4 8 8h8l3-4-1 10-6 6-6-6ZM8 12h1m6 0h1M9 16l3 2 3-2' },
+    { key: 'dragon', label: 'Dragons', icon: 'm4 4 7 4 6-3-1 5 4 3-7 6-6-1 3-5-5-2ZM11 8l1 5 5 2' },
+    { key: 'riftHerald', label: 'Rift Heralds', icon: 'm5 5-1 7 4 7h8l4-7-1-7-4 4H9ZM8 13l4-3 4 3-4 3Z' },
+    { key: 'horde', label: 'Void Grubs', icon: 'M8 7 12 3l4 4-4 4ZM3 16l4-4 4 4-4 4Zm10 0 4-4 4 4-4 4Z' },
+    { key: 'tower', label: 'Towers', icon: 'M7 3v5h10V3m-5 0v5M6 8h12l-3 4 1 8H8l1-8ZM6 20h12' },
+    { key: 'inhibitor', label: 'Inhibitors', icon: 'm12 3 7 9-7 9-7-9ZM5 12h14M12 3v18' },
+    { key: 'atakhan', label: 'Atakhans', icon: 'm4 5 5 3 3-5 3 5 5-3-2 10-6 6-6-6ZM9 12h6m-5 4h4' },
+];
+function TeamComparison({ teams, details, loading }) {
+    if (teams.length !== 2) return null;
+    const [left, right] = teams;
+    const visibleObjectives = objectives.filter(({ key }) => !['horde', 'atakhan'].includes(key) || details?.some(t => Number.isFinite(t.objectives?.[key])));
+    const objectiveCounts = team => <ul className={`mh-objectives mh-team-${team.win ? 'win' : 'loss'}`} aria-label={`${team.id === 100 ? 'Blue' : 'Red'} team objectives`}>
+        {visibleObjectives.map(({ key, label, icon }) => {
+            const count = details?.find(t => t.id === team.id)?.objectives?.[key];
+            return <li key={key} title={`${label}: ${Number.isFinite(count) ? count : loading ? 'Loading…' : 'Unavailable'}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true"><path d={icon} /></svg>
+                <span className="mh-sr-only">{label}: </span>{Number.isFinite(count) ? <span>{count}</span> : loading ? <Skeleton width={12} height={10} /> : <span>—</span>}
+            </li>;
+        })}
+    </ul>;
+    return <div className="mh-comparison" role="group" aria-label="Team totals comparison">
+        {objectiveCounts(left)}
+        <div className="mh-comparison-bars">{[['kills', 'Total kills'], ['gold', 'Total gold']].map(([key, label]) => {
+            const share = left[key] + right[key] ? left[key] / (left[key] + right[key]) * 100 : 50;
+            return <div className="mh-comparison-row" key={key}>
+                <div className="mh-comparison-track" aria-hidden="true"><span className={left.win ? 'mh-total-win' : 'mh-total-loss'} style={{ width: `${share}%` }} /><span className={right.win ? 'mh-total-win' : 'mh-total-loss'} style={{ width: `${100 - share}%` }} /></div>
+                <span title={`${left.id === 100 ? 'Blue' : 'Red'} team`}>{left[key].toLocaleString()}</span><strong>{label}</strong><span title={`${right.id === 100 ? 'Blue' : 'Red'} team`}>{right[key].toLocaleString()}</span>
+            </div>;
+        })}</div>
+        {objectiveCounts(right)}
+    </div>;
 }
 function Scoreboard({ match, teams, assets, path }) {
     const [ranks, setRanks] = useState(null);
@@ -94,14 +129,10 @@ function Scoreboard({ match, teams, assets, path }) {
     const maxDamage = Math.max(1, ...match.details.players.map(p => p.damage));
     const takenByPlayer = match.details.players.map((p, index) => p.damageTaken ?? ranks?.damageTaken?.[index]);
     const maxTaken = Math.max(1, ...takenByPlayer.filter(Number.isFinite));
-    return <div className="mh-scoreboards">{teams.map(team => <section key={team.id} className={`mh-team mh-team-${team.win ? 'win' : 'loss'}`} aria-label={team.ours ? 'Our team scoreboard' : 'Enemy team scoreboard'}>
-        <header className="mh-team-heading">
-            <div><h3>{team.ours ? 'Our team' : 'Enemy team'}</h3><span className="mh-team-side">{team.id === 100 ? 'Blue' : 'Red'} side</span><strong className={team.win ? 'mh-victory' : 'mh-defeat'}>{match.details.remake ? 'Remake' : team.win ? 'Victory' : 'Defeat'}</strong></div>
-            <div className="mh-team-totals"><span><strong>{team.kills}</strong> kills</span><span><strong>{compactNumber(team.gold)}</strong> gold</span></div>
-        </header>
-        <div className="mh-scoreboard-wrap" tabIndex={0} role="region" aria-label={`${team.ours ? 'Our' : 'Enemy'} team match statistics`}><table className="mh-scoreboard">
-            <caption className="mh-sr-only">{match.externalId} · {team.ours ? 'Our team' : 'Enemy team'} scoreboard</caption>
-            <thead><tr><th scope="col">Player <span className="mh-rank-caption">· current rank</span></th><th scope="col">K / D / A</th><th scope="col">CS</th><th scope="col">Damage</th><th scope="col">Vision</th><th scope="col">Items</th></tr></thead>
+    return <div className="mh-scoreboards">{teams.map((team, index) => <Fragment key={team.id}><section className={`mh-team mh-team-${team.win ? 'win' : 'loss'}`} aria-label={`${team.id === 100 ? 'Blue' : 'Red'} team scoreboard`}>
+        <div className="mh-scoreboard-wrap" tabIndex={0} role="region" aria-label={`${team.id === 100 ? 'Blue' : 'Red'} team match statistics`}><table className="mh-scoreboard">
+            <caption className="mh-sr-only">{match.externalId} · {team.id === 100 ? 'Blue' : 'Red'} team scoreboard. Players show their current ranked tier.</caption>
+            <thead><tr><th scope="col" className="mh-team-title"><strong className={team.win ? 'mh-victory' : 'mh-defeat'}>{match.details.remake ? 'Remake' : team.win ? 'Victory' : 'Defeat'}</strong> <span>({team.id === 100 ? 'Blue' : 'Red'} team)</span></th><th scope="col">K / D / A</th><th scope="col">CS</th><th scope="col">Damage</th><th scope="col">Vision</th><th scope="col">Items</th></tr></thead>
             <tbody>{team.players.map(p => <tr key={p.index} className={p.index === match.details.selected ? 'mh-selected' : ''}>
                 <th scope="row"><div className="mh-player mh-player-loadout"><Loadout player={p} assets={assets} /><span><strong title={playerName(p)}>{p.name}</strong><Rank rank={ranks?.ranks[p.index]} loading={!ranks} queueId={match.details.queueId} checkedAt={ranks?.checkedAt} /></span></div></th>
                 <td><strong>{p.kills} / <span className="mh-deaths">{p.deaths}</span> / {p.assists}</strong><small>{kda(p)} KDA</small></td>
@@ -110,7 +141,7 @@ function Scoreboard({ match, teams, assets, path }) {
                 <td>{p.vision}</td><td><Items items={p.items} assets={assets} /></td>
             </tr>)}</tbody>
         </table></div>
-    </section>)}</div>;
+    </section>{index === 0 && <TeamComparison teams={teams} details={match.details.teams?.length ? match.details.teams : ranks?.teams} loading={!ranks} />}</Fragment>)}</div>;
 }
 
 function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, busy, onReview, now, path }) {
@@ -123,12 +154,12 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
     const [hasExpanded, setHasExpanded] = useState(false);
     const result = details.remake ? 'Remake' : player.win ? 'Victory' : 'Defeat';
     const teams = [...new Set(details.players.map(p => p.team))]
-        .sort((a, b) => Number(b === player.team) - Number(a === player.team))
+        .sort((a, b) => a - b)
         .map(id => {
             const players = details.players.map((p, index) => ({ ...p, index })).filter(p => p.team === id);
-            return { id, players, ours: id === player.team, win: players[0].win, kills: players.reduce((sum, p) => sum + p.kills, 0), gold: players.reduce((sum, p) => sum + p.gold, 0) };
+            return { id, players, win: players[0].win, kills: players.reduce((sum, p) => sum + p.kills, 0), gold: players.reduce((sum, p) => sum + p.gold, 0) };
         });
-    const teamKills = teams[0].kills;
+    const teamKills = teams.find(team => team.id === player.team).kills;
     const participation = teamKills ? Math.round((player.kills + player.assists) / teamKills * 100) : 0;
     const detailsId = `match-details-${match.id}`;
     return <article className={`mh-card ${player.win ? 'mh-win' : 'mh-loss'}${checked ? ' mh-checked' : ''}`}>
@@ -136,7 +167,7 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
             <div className="mh-match-summary">
                 <div className="mh-result"><strong className="mh-queue">{queues[details.queueId] || details.mode}</strong><time dateTime={match.playedAt} title={new Date(match.playedAt).toLocaleString()}>{relativeTime(match.playedAt, now)}</time><strong className="mh-outcome">{result}</strong><small>{duration(details.duration)}</small>{canSelect && <label className="mh-pick"><input type="checkbox" checked={checked} disabled={busy} onChange={onSelect} aria-label={`I played ${match.externalId}`} />I played this</label>}</div>
                 <div className="mh-build"><Loadout player={player} assets={assets} /><Items items={player.items} assets={assets} /></div>
-                <div className="mh-score"><strong>{player.kills} <span className="mh-slash">/</span> <span className="mh-deaths">{player.deaths}</span> <span className="mh-slash">/</span> {player.assists}</strong><small>{kda(player)} KDA</small><div className="mh-review-status"><span className={`mh-status mh-${match.status.toLowerCase()}`}>{statusLabel(match)}</span>{match.booster && <small>{match.booster.username}</small>}</div></div>
+                <div className="mh-score"><strong>{player.kills} <span className="mh-slash">/</span> <span className="mh-deaths">{player.deaths}</span> <span className="mh-slash">/</span> {player.assists}</strong><small>{kda(player)} KDA</small>{match.booster && <small className="mh-played-by" title={`Played by ${match.booster.username}`}>{match.booster.username}</small>}</div>
                 <dl className="mh-stats"><div><dt title="Kill participation">P/Kill</dt><dd>{participation}%</dd></div><div><dt>CS</dt><dd>{player.cs} <small>({csPerMinute(player, details.duration)}/m)</small></dd></div><div><dt>Damage</dt><dd>{compactNumber(player.damage)}</dd></div><div><dt>Gold</dt><dd>{compactNumber(player.gold)}</dd></div></dl>
                 <Roster teams={teams} selected={details.selected} assets={assets} />
             </div>
@@ -229,9 +260,9 @@ export default function MatchHistory({ orderId }) {
         } catch (e) { setSubmitError(e.message); } finally { setBusy(false); }
     }
     return <section className="mh-panel" aria-label="Match history">
-        <header className="mh-heading"><div><h2>Match history</h2><p>Results, builds, and reviewed contributions.</p></div><div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => data?.canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div></header>
+        <header className="mh-heading"><h2>Match history</h2><div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy || !data} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => data?.canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div></header>
         {error && <p className="mh-error" role="alert">{error}</p>}{notice && <p className="mh-sr-only" role="status">{notice}</p>}
-        {!data && !error && <p role="status">Loading match history…</p>}
+        {!data && !error && <MatchHistorySkeleton contentOnly />}
         {data && <>
             {!data.order.enabled && <p className="mh-notice">This order uses match-count contribution approvals.</p>}
             {data.importIssue && <p className="mh-notice">{data.importIssue}</p>}

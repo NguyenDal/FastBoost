@@ -46,6 +46,22 @@ test('uses region and saved Riot ID, pages history and filters matches before pa
     assert.equal(result.matches.length, 1);
     assert.equal(result.nextStart, null);
 });
+test('objective totals retain team identity and distinguish unavailable counts from zero', () => {
+    const raw = rawMatch();
+    raw.info.teams = [
+        { teamId: 200, objectives: { baron: { kills: 0 }, dragon: { kills: 3 }, horde: { kills: 2 }, tower: { kills: 8 }, secret: 'private-value' } },
+        { teamId: 100, objectives: { inhibitor: { kills: 2 }, riftHerald: { kills: -1 }, dragon: { kills: '3' } } },
+        null, { teamId: 999 },
+    ];
+    const teams = normalizeMatch(raw, 'account').details.teams;
+    assert.deepEqual(teams.map(t => t.id), [200, 100]);
+    assert.deepEqual(teams[0].objectives, { baron: 0, dragon: 3, riftHerald: null, horde: 2, tower: 8, inhibitor: null, atakhan: null });
+    assert.equal(teams[1].objectives.inhibitor, 2);
+    assert.equal(teams[1].objectives.riftHerald, null);
+    assert.equal(teams[1].objectives.dragon, null);
+    assert.equal(JSON.stringify(teams).includes('private-value'), false);
+    assert.deepEqual(normalizeMatch(rawMatch(), 'account').details.teams, []);
+});
 test('provider failures stay generic and Retry-After halts further calls', async () => {
     const saved = process.env.RIOT_API_KEY;
     process.env.RIOT_API_KEY = 'synthetic-test-key';

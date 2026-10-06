@@ -39,4 +39,21 @@ function checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents
     };
 }
 
-module.exports = { checkoutSummary };
+function savedOrderPriceSummary(order) {
+    const amountCents = order.amountCents ?? Math.round(Number(order.totalPrice || 0) * 100);
+    const goldDiscountCents = order.goldDiscountCents || 0;
+    const summary = checkoutSummary(order, order.goldRedeemed || 0, goldDiscountCents,
+        order.cashAmountCents ?? Math.max(0, amountCents - goldDiscountCents));
+    return {
+        currency: summary.currency,
+        subtotalCents: summary.basePriceCents + summary.addonPriceCents,
+        promotionCents: summary.saleDiscountCents,
+        coupon: summary.promoDiscount,
+        referralCents: summary.referralDiscountCents,
+        goldRedeemed: summary.goldRedeemed,
+        goldDiscountCents: summary.goldDiscountCents,
+        totalCents: summary.totalCents,
+    };
+}
+
+module.exports = { checkoutSummary, savedOrderPriceSummary };

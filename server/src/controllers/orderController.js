@@ -6,6 +6,7 @@ const { mutateCheckoutOrder } = require("../utils/checkoutCoupon");
 const { notifyOrderStatus } = require("../utils/orderNotifications");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
+const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
 const {
     applyReferralFirstPurchaseDiscount,
     getReferralFirstPurchaseOffer,
@@ -873,7 +874,7 @@ module.exports.getOrderAdminById = async (req, res) => {
 
         return res.json({
             ok: true,
-            order: safeOrder,
+            order: { ...safeOrder, priceSummary: savedOrderPriceSummary(order) },
         });
     } catch (error) {
         console.error("getOrderAdminById error:", error);
@@ -997,7 +998,7 @@ module.exports.updateOrderStatus = async (req, res) => {
                 status === "COMPLETED"
                     ? "Order marked as completed"
                     : "Order cancelled",
-            order: formatOrderForListResponse(updated),
+            order: { ...formatOrderForListResponse(updated), priceSummary: savedOrderPriceSummary(updated) },
             loyaltyBonusSync,
             referralReward,
         });

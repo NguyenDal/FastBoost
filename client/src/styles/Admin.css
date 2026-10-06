@@ -316,6 +316,11 @@
   padding-top: 14px;
 }
 
+.price-summary .price-row { gap: 16px; }
+.price-summary .price-row > span { min-width: 0; overflow-wrap: anywhere; }
+.price-summary .price-row > strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.price-summary .price-discount { color: #a1cfb9; }
+
 .conversation-box {
   display: grid;
   gap: 12px;

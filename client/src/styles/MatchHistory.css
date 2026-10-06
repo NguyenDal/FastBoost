@@ -3,7 +3,8 @@
 .mh-panel { padding: 28px; border: 1px solid #7365ac33; border-radius: 24px; background: #080e22ed; color: #ececf6; container-type: inline-size; }
 .mh-heading, .mh-actions, .mh-counts, .mh-share { display: flex; align-items: center; gap: 12px; }
 .mh-heading { justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-.mh-heading h2, .mh-earnings h3 { margin: 0 0 8px; }
+.mh-heading h2 { margin: 0; }
+.mh-earnings h3 { margin: 0 0 8px; }
 .mh-heading p, .mh-earnings p, .mh-empty p { margin: 0; color: #aeb7d2; line-height: 1.6; }
 .mh-panel button, .mh-panel input, .mh-panel select { font: inherit; border-radius: 8px; padding: 11px 14px; border: 1px solid #9d8bc32b; color: inherit; background: #171b30; }
 .mh-panel button { cursor: pointer; font-weight: 600; white-space: nowrap; transition: background .18s, border-color .18s; }
@@ -19,21 +20,18 @@
 @keyframes mh-spin { to { transform: rotate(360deg); } }
 .mh-counts { flex-wrap: wrap; padding: 16px 0; margin-bottom: 18px; border-block: 1px solid #a8a2c51a; color: #aeb7d2; gap: 12px 24px; font-size: 13px; }
 .mh-counts strong { color: #edeefa; font-size: 18px; margin-right: 5px; }
-.mh-status { display: inline-block; font-size: 10px; border-radius: 20px; padding: 5px 8px; background: #aa8bea14; color: #cfb6f9; white-space: nowrap; }
-.mh-status.mh-approved { background: #36ca981a; color: #79ddba; }
-.mh-status.mh-rejected { background: #ef829013; color: #e89ca9; }
 .mh-list { display: grid; gap: 14px; margin-bottom: 20px; }
 .mh-card { --mh-result: #e49aa7; --mh-tint: #d5748410; border: 1px solid #9e9bbb26; border-left: 3px solid #c97484; border-radius: 12px; overflow: hidden; background: #141a2be6; }
 .mh-card.mh-win { --mh-result: #94b9e9; --mh-tint: #729bd710; border-left-color: #729bd770; }
 .mh-overview { display: grid; grid-template-columns: minmax(0, 1fr) 36px; background: linear-gradient(100deg, var(--mh-tint), transparent 55%); }
-.mh-match-summary { display: grid; grid-template-columns: 100px minmax(210px, 1.15fr) minmax(96px, .65fr) minmax(112px, .7fr) minmax(190px, 1.2fr); align-items: center; gap: 16px; padding: 18px; min-width: 0; }
+.mh-match-summary { display: grid; grid-template-columns: 94px minmax(207px, 1fr) minmax(96px, .55fr) minmax(135px, .75fr) minmax(232px, 1.4fr); align-items: center; gap: 12px; padding: 12px 14px; min-width: 0; }
 .mh-match-summary small, .mh-player small, .mh-scoreboard td > small { display: block; color: #a6afc8; font-size: 11px; margin-top: 5px; font-weight: 400; }
 .mh-result { display: flex; flex-direction: column; align-items: start; font-size: 12px; }
 .mh-result .mh-queue { font-size: 12px; line-height: 1.5; }
 .mh-result time { margin-top: 3px; color: #a6afc8; font-size: 11px; }
-.mh-result .mh-outcome { margin-top: 14px; color: var(--mh-result); font-size: 13px; }
+.mh-result .mh-outcome { margin-top: 10px; color: var(--mh-result); font-size: 13px; }
 .mh-result small { margin-top: 3px; }
-.mh-build { display: grid; gap: 16px; min-width: 0; }
+.mh-build { display: grid; gap: 10px; min-width: 0; }
 .mh-loadout { display: flex; align-items: center; gap: 6px; }
 .mh-loadout > .mh-champion { width: 48px; height: 48px; flex-basis: 48px; border-radius: 50%; margin-right: 3px; }
 .mh-loadout > .mh-champion small { bottom: -1px; right: -1px; }
@@ -52,25 +50,23 @@
 .mh-score > strong { letter-spacing: .2px; }
 .mh-slash { color: #747e99; font-weight: 400; }
 .mh-deaths { color: #e598a6; }
-.mh-review-status { margin-top: 13px; }
-.mh-review-status small { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
-.mh-stats { display: grid; gap: 8px; margin: 0; font-size: 11px; font-variant-numeric: tabular-nums; }
+.mh-played-by { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
+.mh-stats { display: grid; gap: 6px; margin: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
 .mh-stats > div { display: flex; justify-content: space-between; gap: 8px; }
 .mh-stats dt { color: #98a3bf; }
 .mh-stats dd { margin: 0; white-space: nowrap; }
-.mh-stats dd small { display: inline; font-size: 10px; }
+.mh-stats dd small { display: inline; font-size: 11px; }
 .mh-items { display: flex; gap: 4px; flex-shrink: 0; }
 .mh-item { width: 26px; height: 26px; border-radius: 4px; border: 1px solid #9585b82b; background: #090e1d; display: grid; place-items: center; font-size: 8px; overflow: hidden; }
 .mh-item img { width: 100%; height: 100%; object-fit: cover; }
 .mh-trinket { margin-left: 3px; border-radius: 50%; }
-.mh-rosters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; padding-left: 14px; border-left: 1px solid #9d8bc31c; }
+.mh-rosters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-width: 0; padding-left: 12px; border-left: 1px solid #9d8bc31c; }
 .mh-roster { min-width: 0; }
-.mh-roster-label { display: inline-block; font-size: 9px; color: #b6bfd3; margin-bottom: 7px; text-transform: uppercase; letter-spacing: .5px; border: 1px solid var(--mh-team-border); border-radius: 4px; padding: 3px 5px; background: var(--mh-team-bg); }
-.mh-roster ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
-.mh-roster li { display: flex; align-items: center; gap: 5px; min-width: 0; color: #a6afc8; font-size: 10px; line-height: 17px; }
+.mh-roster ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+.mh-roster li { display: flex; align-items: center; gap: 5px; min-width: 0; color: #b4bdd2; font-size: 12px; line-height: 20px; }
 .mh-roster li > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mh-roster .mh-roster-selected { color: #f2efff; font-weight: 700; }
-.mh-champion.mh-champion-mini { width: 17px; height: 17px; flex-basis: 17px; border-radius: 4px; font-size: 8px; }
+.mh-champion.mh-champion-mini { width: 20px; height: 20px; flex-basis: 20px; border-radius: 4px; font-size: 8px; }
 .mh-panel .mh-expand { padding: 0; width: 36px; border: 0; border-left: 1px solid #9d8bc31a; border-radius: 0; color: var(--mh-result); background: var(--mh-tint); display: grid; place-items: center; }
 .mh-expand svg { transition: transform .2s; }
 .mh-expand[aria-expanded="true"] svg { transform: rotate(180deg); }
@@ -81,15 +77,22 @@
 .mh-scoreboards { border-top: 1px solid #9585b826; }
 .mh-team-win { --mh-team-color: #94b9e9; --mh-team-bg: #729bd709; --mh-team-border: #729bd730; }
 .mh-team-loss { --mh-team-color: #dca0aa; --mh-team-bg: #d0809509; --mh-team-border: #d0809530; }
-.mh-team-heading, .mh-team-heading > div { display: flex; align-items: center; gap: 10px; }
-.mh-team-heading { justify-content: space-between; gap: 14px; padding: 12px 18px; background: var(--mh-team-bg); border-block: 1px solid var(--mh-team-border); font-size: 11px; }
-.mh-team-heading h3 { margin: 0; font-size: 12px; color: #dfe3ef; padding: 5px 8px; border: 1px solid var(--mh-team-border); border-radius: 5px; }
-.mh-team-side { color: #a2acc4; }
-.mh-team-heading :is(.mh-victory, .mh-defeat) { margin-left: 6px; }
+.mh-team-title { font-size: 12px; }
+.mh-team-title > span { color: #909bb5; }
 .mh-victory { color: #94b9e9; }
 .mh-defeat { color: #e49aa7; }
-.mh-team-totals { color: #a5aec8; font-variant-numeric: tabular-nums; }
-.mh-team-totals strong { color: #d8deef; font-weight: 600; }
+.mh-comparison { display: grid; grid-template-columns: minmax(145px, 1fr) minmax(250px, 2fr) minmax(145px, 1fr); gap: 16px; align-items: center; padding: 12px 16px; border-block: 1px solid #9585b81c; background: #090f1d40; }
+.mh-objectives { display: grid; grid-template-columns: repeat(3, max-content); gap: 6px 12px; margin: 0; padding: 0; list-style: none; }
+.mh-objectives:last-child { justify-content: end; }
+.mh-objectives li { display: flex; align-items: center; gap: 5px; color: #aab3cc; font-size: 11px; font-variant-numeric: tabular-nums; }
+.mh-objectives svg { width: 18px; height: 18px; color: var(--mh-team-color); }
+.mh-comparison-bars { display: grid; gap: 5px; min-width: 0; }
+.mh-comparison-row { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px; padding: 3px 8px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.mh-comparison-row > span:last-child { text-align: right; }
+.mh-comparison-row strong { font-weight: 500; }
+.mh-comparison-track { position: absolute; inset: 0; display: flex; z-index: -1; border-radius: 3px; overflow: hidden; }
+.mh-total-loss { background: #9e506488; }
+.mh-total-win { background: #5176ae88; }
 .mh-scoreboard-wrap { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #685c86 #11182b; }
 .mh-scoreboard { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: left; font-size: 12px; white-space: nowrap; }
 .mh-scoreboard :is(th, td) { padding: 10px 16px; border-top: 1px solid #9585b817; }
@@ -103,7 +106,7 @@
 .mh-scoreboard thead th:last-child { width: 26%; }
 .mh-scoreboard tbody th strong { color: #e1e5f2; }
 .mh-scoreboard .mh-selected { background: #ac90e612; }
-.mh-scoreboard .mh-selected th:first-child { box-shadow: inset 2px 0 #ae92e5; }
+.mh-scoreboard tbody th:first-child { box-shadow: inset 2px 0 var(--mh-team-border); }
 .mh-scoreboard .mh-champion { width: 32px; height: 32px; flex-basis: 32px; }
 .mh-scoreboard .mh-player > span:last-child { overflow: hidden; }
 .mh-player-loadout { gap: 9px; }
@@ -113,7 +116,7 @@
 .mh-scoreboard .mh-spells > span, .mh-scoreboard .mh-runes > span { width: 16px; height: 16px; }
 .mh-player .mh-rank { display: flex; align-items: center; gap: 4px; font-size: 10px; }
 .mh-rank img { width: 17px; height: 17px; object-fit: contain; }
-.mh-rank-caption { color: #77839d; font-size: 9px; }
+.mh-rank-loading { display: block; margin-top: 7px; }
 .mh-player .mh-rank-emerald { color: #89c5ab; }
 .mh-player .mh-rank-diamond { color: #a8bbeb; }
 .mh-player .mh-rank-master, .mh-player .mh-rank-grandmaster { color: #c1a5e3; }
@@ -175,7 +178,9 @@
 .mh-confirmation .mh-error { margin-top: 16px; color: #ffb8c4; }
 .mh-confirm-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 .mh-confirm-actions button { font-size: 13px; }
-@container (max-width: 970px) {
+.mh-skeleton-card { display: grid; grid-template-columns: 94px minmax(120px, 1fr) minmax(100px, .8fr) minmax(150px, 1.4fr); gap: 24px; padding: 20px 18px; border: 1px solid #9e9bbb26; border-radius: 12px; background: #141a2be6; }
+.mh-skeleton-lines { display: grid; align-content: center; gap: 10px; min-width: 0; }
+@container (max-width: 900px) {
     .mh-match-summary { grid-template-columns: 92px minmax(210px, 1.4fr) minmax(96px, .7fr) minmax(110px, 1fr); gap: 14px; }
     .mh-rosters { grid-column: 2 / -1; padding-left: 0; border-left: 0; padding-top: 12px; border-top: 1px solid #9d8bc31a; }
     .mh-roster ul { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
@@ -186,7 +191,7 @@
     .mh-scoreboard .mh-item { width: 22px; height: 22px; }
     .mh-scoreboard .mh-items { gap: 3px; }
 }
-@container (max-width: 660px) {
+@container (max-width: 740px) {
     .mh-match-summary { grid-template-columns: 100px minmax(0, 1fr); padding: 16px; }
     .mh-result { grid-column: 1; grid-row: 1; }
     .mh-build { grid-column: 2; grid-row: 1; }
@@ -194,9 +199,12 @@
     .mh-stats { grid-column: 2; grid-row: 2; max-width: 230px; }
     .mh-rosters { grid-column: 1 / -1; }
     .mh-roster ul { grid-template-columns: 1fr; gap: 5px; }
-    .mh-roster li { flex-direction: row; gap: 6px; font-size: 11px; }
-    .mh-roster-label { font-size: 10px; }
-    .mh-team-heading { align-items: start; flex-direction: column; gap: 8px; }
+    .mh-roster li { flex-direction: row; gap: 6px; }
+    .mh-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; }
+    .mh-comparison-bars { grid-column: 1 / -1; grid-row: 1; }
+    .mh-objectives { gap: 6px 10px; }
+    .mh-skeleton-card { grid-template-columns: 80px minmax(0, 1fr); gap: 20px; padding: 18px 14px; }
+    .mh-skeleton-roster { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .mh-review .mh-note { min-width: 150px; }
 }
 @container (max-width: 400px) {
@@ -213,8 +221,8 @@
     .mh-spells, .mh-runes { gap: 3px; }
     .mh-spells > span, .mh-runes > span { width: 18px; height: 18px; }
     .mh-score { font-size: 13px; }
-    .mh-stats { font-size: 10px; }
-    .mh-stats dd small { font-size: 9px; }
+    .mh-stats > div { gap: 4px; }
+    .mh-stats dd small { display: block; text-align: right; }
     .mh-review { padding: 12px; }
     .mh-review label, .mh-review .mh-note { flex: 1 1 100%; min-width: 0; }
 }

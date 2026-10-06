@@ -52,6 +52,18 @@ async function riotRequest(region, path, fetcher = fetch) {
     try { return await response.json(); } catch { fail(502, 'Riot returned an invalid response. Please try again.'); }
 }
 
+function normalizeTeams(teams) {
+    if (!Array.isArray(teams)) return [];
+    return teams.filter(team => [100, 200].includes(team?.teamId)).slice(0, 2).map(team => ({
+        id: team.teamId,
+        objectives: Object.fromEntries(['baron', 'dragon', 'riftHerald', 'horde', 'tower', 'inhibitor', 'atakhan'].map(key => {
+            const kills = team.objectives?.[key]?.kills;
+            // Missing objectives in older patches are unknown, not zero.
+            return [key, Number.isFinite(kills) && kills >= 0 ? number(kills) : null];
+        })),
+    }));
+}
+
 function normalizeMatch(raw, puuid) {
     const info = raw?.info;
     const players = info?.participants;
@@ -67,6 +79,7 @@ function normalizeMatch(raw, puuid) {
         details: {
             version, queueId: number(info.queueId), mode: text(info.gameMode), duration: Math.max(0, duration),
             selected, remake: players.some(p => p.gameEndedInEarlySurrender),
+            teams: normalizeTeams(info.teams),
             players: players.map(p => ({
                 name: text(p.riotIdGameName || p.summonerName || 'Player'), tag: text(p.riotIdTagline),
                 champion: text(p.championName), championId: number(p.championId), team: number(p.teamId), win: Boolean(p.win),
@@ -138,14 +151,14 @@ function createRankLookup(request = riotRequest) {
                 ranks.push({ name: text(player?.riotIdGameName || player?.summonerName || 'Player'), tag: text(player?.riotIdTagline),
                     team: number(player?.teamId), championId: number(player?.championId), damageTaken: number(player?.totalDamageTaken), rank });
             }
-            return { players: ranks, checkedAt: new Date().toISOString() };
+            return { players: ranks, teams: normalizeTeams(raw.info.teams), checkedAt: new Date().toISOString() };
         });
         // Retry missing ranks later without repeatedly hitting a throttled service.
         const cachedGame = games.get(match.externalId);
         if (cachedGame && result.players.some(p => p.rank === null)) cachedGame.until = Math.min(cachedGame.until, Date.now() + 60000);
         const mapped = match.details.players.map(player => result.players.find(p =>
             p.name === player.name && p.tag === player.tag && p.team === player.team && p.championId === player.championId));
-        return { checkedAt: result.checkedAt, ranks: mapped.map(p => p?.rank || null), damageTaken: mapped.map(p => p?.damageTaken ?? null) };
+        return { checkedAt: result.checkedAt, ranks: mapped.map(p => p?.rank || null), damageTaken: mapped.map(p => p?.damageTaken ?? null), teams: result.teams };
     };
 }
 const matchPlayerDetails = createRankLookup();

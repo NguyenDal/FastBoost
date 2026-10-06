@@ -49,6 +49,7 @@ test('history ownership, import deduplication, review revisions and complete ear
         assert.equal(order.matchHistoryRevision, 1, 'duplicate evidence must not invalidate reviews');
         participantId = 'rotated-app-puuid';
         importedDetails.players[0] = { ...importedDetails.players[0], kills: 99, summonerSpells: [4, 14], runes: [8112, 8200] };
+        importedDetails.teams = [{ id: 100, objectives: { baron: 0, dragon: 3, tower: 8 } }];
         order.matchHistorySyncedAt = null;
         const rotatedImport = await request('/import', 'admin', {});
         assert.equal(rotatedImport.status, 200);
@@ -59,6 +60,7 @@ test('history ownership, import deduplication, review revisions and complete ear
         assert.equal(matches[0].details.players[0].kills, 7, 'icon enrichment must preserve original review evidence');
         assert.deepEqual(matches[0].details.players[0].summonerSpells, [4, 14]);
         assert.deepEqual(matches[0].details.players[0].runes, [8112, 8200]);
+        assert.deepEqual(matches[0].details.teams, importedDetails.teams, 'new objective details enrich existing matches without invalidating review');
         assert.equal(reviews.length, 0);
         const customerView = await (await request('', 'customer')).json();
         assert.equal(customerView.canReview, false);

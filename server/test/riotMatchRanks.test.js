@@ -4,7 +4,7 @@ const { createRankLookup } = require('../src/utils/riotMatches');
 
 const players = [0, 1].map(i => ({ name: `Player${i}`, tag: 'NA1', team: i ? 200 : 100, championId: 103 + i }));
 const match = id => ({ externalId: `NA1_${id}`, details: { queueId: 440, players } });
-const raw = { info: { participants: players.map((p, i) => ({ puuid: `private-${i}`, riotIdGameName: p.name, riotIdTagline: p.tag,
+const raw = { info: { teams: [{ teamId: 200, objectives: { baron: { kills: 0 }, dragon: { kills: 3 }, tower: { kills: 8 } } }], participants: players.map((p, i) => ({ puuid: `private-${i}`, riotIdGameName: p.name, riotIdTagline: p.tag,
     teamId: p.team, championId: p.championId, totalDamageTaken: 30000 + i })) } };
 
 test('player details use the match queue and platform, preserve player mapping and cache concurrent reads', async () => {
@@ -21,6 +21,10 @@ test('player details use the match queue and platform, preserve player mapping a
     assert.match(calls[1].path, /league\/v4\/entries\/by-puuid\//);
     assert.deepEqual(results[0].ranks[0], { tier: 'EMERALD', division: 'IV', lp: 63 });
     assert.deepEqual(results[0].damageTaken, [30000, 30001]);
+    assert.equal(results[0].teams[0].id, 200);
+    assert.equal(results[0].teams[0].objectives.baron, 0);
+    assert.equal(results[0].teams[0].objectives.tower, 8);
+    assert.equal(results[0].teams[0].objectives.inhibitor, null);
     assert.equal(JSON.stringify(results).includes('private-'), false, 'PUUIDs must remain server-side');
     await lookup(match(2)); assert.equal(calls.length, 4, 'a player shared by another match reuses rank data');
     const reversed = await lookup({ ...match(1), details: { queueId: 440, players: [...players].reverse() } });
@@ -35,6 +39,7 @@ test('rank failures keep stored scoreboards usable and never imply unranked', as
     });
     const result = await lookup(match(3));
     assert.deepEqual(result.ranks, [null, null]); assert.deepEqual(result.damageTaken, [30000, 30001]);
+    assert.equal(result.teams[0].objectives.dragon, 3, 'rank throttling must not discard match objective data');
     assert.equal(calls, 2, 'stop further rank requests when throttled');
     await lookup(match(3)); assert.equal(calls, 2, 'cooldown prevents repeated requests from expanding again');
 });

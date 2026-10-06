@@ -136,7 +136,7 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
         // One order tracks one game account. App-scoped Riot identifiers can change
         // with the API key, but that must not turn the same game into new evidence.
         const existing = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { id: true, game: true, externalId: true, details: true } });
-        // Add newly supported icon data without changing the evidence used in review.
+        // Add newly supported match details without changing the evidence used in review.
         for (const match of result.matches) {
             const saved = existing.find(m => m.game === match.game && m.externalId === match.externalId);
             if (!saved?.details?.players || !match.details?.players) continue;
@@ -145,8 +145,10 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
                 return fresh ? { ...player, summonerSpells: fresh.summonerSpells, runes: fresh.runes,
                     damageTaken: player.damageTaken ?? fresh.damageTaken } : player;
             });
-            if (JSON.stringify(players) !== JSON.stringify(saved.details.players)) {
-                await tx.orderMatch.update({ where: { id: saved.id }, data: { details: { ...saved.details, players } } });
+            const details = { ...saved.details, players };
+            if (!saved.details.teams?.length && match.details.teams?.length) details.teams = match.details.teams;
+            if (JSON.stringify(details) !== JSON.stringify(saved.details)) {
+                await tx.orderMatch.update({ where: { id: saved.id }, data: { details } });
             }
         }
         const seen = new Set(existing.map(match => `${match.game}:${match.externalId}`));

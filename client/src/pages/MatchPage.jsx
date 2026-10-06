@@ -18,6 +18,7 @@ import {
     getMessageAttachmentViewUrl,
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
+import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
 function MatchPage() {
@@ -813,7 +814,7 @@ function MatchPage() {
                     <button className={`match-tab ${showHistory ? 'active' : ''}`} aria-pressed={showHistory} onClick={() => setHistoryTab(true)}>Match History</button>
                 </div>
 
-                {showHistory && <Suspense fallback={<p role="status">Loading match history…</p>}><MatchHistory key={orderId} orderId={orderId} /></Suspense>}
+                {showHistory && <Suspense fallback={<MatchHistorySkeleton />}><MatchHistory key={orderId} orderId={orderId} /></Suspense>}
                 <div className="match-layout" hidden={showHistory}>
                     <section className="match-main-panel">
                         <div className="chat-panel">
