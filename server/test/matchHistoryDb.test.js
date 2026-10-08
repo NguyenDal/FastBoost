@@ -13,14 +13,14 @@ test('real match storage, review audit and cross-order duplicate-pay guard (roll
         await db.$transaction(async tx => {
             const user = await tx.user.create({ data: { id, email: `${id}@example.invalid`, passwordHash: 'synthetic-unusable-password', role: 'PROVIDER' } });
             const service = await tx.service.create({ data: { title: 'Synthetic match-history test' } });
-            const data = { customerId: user.id, serviceId: service.id, orderNumber: `TEST-${id}`, boostType: 'Rank Boost',
+            const data = { customerId: user.id, serviceId: service.id, orderNumber: `TEST-${id}`, boostType: 'Rank Boost', queueType: 'Solo/Duo',
                 status: 'COMPLETED', paymentStatus: 'PAID', amountCents: 10000, goldDiscountCents: 2000 };
             const order = await tx.order.create({ data });
             const other = await tx.order.create({ data: { ...data, orderNumber: `OTHER-${id}` } });
             assert.equal(order.matchHistoryEnabled, true);
             await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${order.id} FOR UPDATE`;
             const matchData = { orderId: order.id, game: 'LOL', externalId: `NA1_${Date.now()}`, participantId: id,
-                playedAt: new Date(), details: { players: [] } };
+                playedAt: new Date(), details: { queueId: 420, players: [] } };
             const match = await tx.orderMatch.create({ data: matchData });
             assert.equal((await tx.orderMatch.createMany({ data: [matchData], skipDuplicates: true })).count, 0);
             const second = await tx.orderMatch.create({ data: { ...matchData, orderId: other.id } });

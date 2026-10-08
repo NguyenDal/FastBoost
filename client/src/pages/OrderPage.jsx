@@ -1098,7 +1098,7 @@ function OrderPage() {
               : [],
           numberOfGames: formData.numberOfGames,
           region: formData.region,
-          queueType: formData.queueType,
+          queueType: isTftService ? "Ranked" : formData.queueType,
           playMode: formData.playMode,
           priorityOrder: formData.priorityOrder,
           premiumCoaching: formData.premiumCoaching,
@@ -1527,11 +1527,10 @@ function OrderPage() {
                               <label>Queue Type</label>
                               <select
                                 name="queueType"
-                                value={formData.queueType}
+                                value={isTftService ? "Ranked" : formData.queueType}
                                 onChange={handleInputChange}
                               >
-                                <option>Solo/Duo</option>
-                                <option>Flex</option>
+                                {isTftService ? <option>Ranked</option> : <><option>Solo/Duo</option><option>Flex</option></>}
                               </select>
                             </div>
                           </div>
@@ -1561,11 +1560,10 @@ function OrderPage() {
                             <label>Queue Type</label>
                             <select
                               name="queueType"
-                              value={formData.queueType}
+                              value={isTftService ? "Ranked" : formData.queueType}
                               onChange={handleInputChange}
                             >
-                              <option>Solo/Duo</option>
-                              <option>Flex</option>
+                              {isTftService ? <option>Ranked</option> : <><option>Solo/Duo</option><option>Flex</option></>}
                             </select>
                           </div>
                         </div>
@@ -1681,11 +1679,10 @@ function OrderPage() {
                             <label>Queue Type</label>
                             <select
                               name="queueType"
-                              value={formData.queueType}
+                              value={isTftService ? "Ranked" : formData.queueType}
                               onChange={handleInputChange}
                             >
-                              <option>Solo/Duo</option>
-                              <option>Flex</option>
+                              {isTftService ? <option>Ranked</option> : <><option>Solo/Duo</option><option>Flex</option></>}
                             </select>
                           </div>
 
@@ -1861,11 +1858,10 @@ function OrderPage() {
                           <label>Queue Type</label>
                           <select
                             name="queueType"
-                            value={formData.queueType}
+                            value={isTftService ? "Ranked" : formData.queueType}
                             onChange={handleInputChange}
                           >
-                            <option>Solo/Duo</option>
-                            <option>Flex</option>
+                            {isTftService ? <option>Ranked</option> : <><option>Solo/Duo</option><option>Flex</option></>}
                           </select>
                         </div>
                       </div>
@@ -2020,11 +2016,10 @@ function OrderPage() {
                           <label>Queue Type</label>
                           <select
                             name="queueType"
-                            value={formData.queueType}
+                            value={isTftService ? "Ranked" : formData.queueType}
                             onChange={handleInputChange}
                           >
-                            <option>Solo/Duo</option>
-                            <option>Flex</option>
+                            {isTftService ? <option>Ranked</option> : <><option>Solo/Duo</option><option>Flex</option></>}
                           </select>
                         </div>
                       </div>

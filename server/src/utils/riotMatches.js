@@ -1,7 +1,9 @@
+const { matchScope, matchesOrder } = require('./orderMatchScope');
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const regions = {
     'North America': 'americas', NA: 'americas', NA1: 'americas',
     Brazil: 'americas', BR1: 'americas', LAN: 'americas', LAS: 'americas',
+    'Latin America North': 'americas', 'Latin America South': 'americas', LA1: 'americas', LA2: 'americas',
     'Europe West': 'europe', EUW: 'europe', EUW1: 'europe',
     'Europe Nordic & East': 'europe', EUNE: 'europe', EUN1: 'europe', TR1: 'europe', RU: 'europe',
     Korea: 'asia', KR: 'asia', Japan: 'asia', JP1: 'asia',
@@ -11,26 +13,29 @@ const buckets = new Map();
 const platforms = { na1: 'americas', br1: 'americas', la1: 'americas', la2: 'americas',
     euw1: 'europe', eun1: 'europe', tr1: 'europe', ru: 'europe', kr: 'asia', jp1: 'asia',
     oc1: 'sea', sg2: 'sea', tw2: 'sea', vn2: 'sea' };
-const configured = () => Boolean(process.env.RIOT_API_KEY?.trim());
+const apiKey = game => (game === 'TFT' ? process.env.RIOT_TFT_API_KEY?.trim() || process.env.RIOT_API_KEY?.trim() : process.env.RIOT_API_KEY?.trim());
+const configured = (game = 'LOL') => Boolean(apiKey(game));
 const number = n => Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
 const text = value => String(value || '').slice(0, 120);
 
 function importSettings(order) {
-    if (String(order.boostType).startsWith('TFT ')) fail(400, 'Automatic imports currently support League of Legends orders.');
     const region = regions[order.region];
-    if (!region) fail(400, 'Choose a supported League of Legends region on this order.');
+    if (!region) fail(400, 'Choose a supported Riot region on this order.');
     const parts = String(order.inGameName || '').trim().split('#');
     if (parts.length !== 2 || !parts.every(p => p.trim())) fail(400, 'Add the Riot ID (name#tag) in this order’s Login Info first.');
-    return { region, gameName: parts[0].trim(), tagLine: parts[1].trim() };
+    const scope = matchScope(order);
+    if (!scope) fail(400, 'Choose a supported service and ranked queue on this order before importing matches.');
+    return { ...scope, region, gameName: parts[0].trim(), tagLine: parts[1].trim() };
 }
 
-async function riotRequest(region, path, fetcher = fetch) {
-    if (!configured()) fail(503, 'Riot imports are not configured on the server.');
+async function riotRequest(region, path, fetcher = fetch, game = 'LOL') {
+    if (!configured(game)) fail(503, 'Riot imports are not configured on the server.');
     if (!['americas', 'europe', 'asia', 'sea', ...Object.keys(platforms)].includes(region)) fail(400, 'Unsupported Riot region.');
     const now = Date.now();
-    const bucket = buckets.get(region) || { times: [], blockedUntil: 0 };
+    const bucketKey = `${game === 'TFT' && process.env.RIOT_TFT_API_KEY?.trim() ? 'TFT' : 'LOL'}:${region}`;
+    const bucket = buckets.get(bucketKey) || { times: [], blockedUntil: 0 };
     bucket.times = bucket.times.filter(t => now - t < 120000);
-    buckets.set(region, bucket);
+    buckets.set(bucketKey, bucket);
     if (bucket.blockedUntil > now || bucket.times.length >= 95 || bucket.times.filter(t => now - t < 1000).length >= 18) {
         fail(429, 'Riot’s request limit was reached. Wait a moment before importing again.');
     }
@@ -38,7 +43,7 @@ async function riotRequest(region, path, fetcher = fetch) {
     let response;
     try {
         response = await fetcher(`https://${region}.api.riotgames.com${path}`, {
-            headers: { 'X-Riot-Token': process.env.RIOT_API_KEY.trim() }, signal: AbortSignal.timeout(15000), redirect: 'error',
+            headers: { 'X-Riot-Token': apiKey(game) }, signal: AbortSignal.timeout(15000), redirect: 'error',
         });
     } catch { fail(502, 'Riot could not be reached. Please try again.'); }
     if (response.status === 429) {
@@ -95,19 +100,49 @@ function normalizeMatch(raw, puuid) {
     };
 }
 
+function normalizeTftMatch(raw, puuid, account = {}) {
+    const info = raw?.info;
+    const players = info?.participants;
+    if (!Array.isArray(players) || !players.length || players.length > 8 || players.some(p => !p || typeof p !== 'object')) return null;
+    const selected = players.findIndex(p => p.puuid === puuid);
+    if (selected < 0 || !/^[A-Z0-9]+_\d+$/.test(raw?.metadata?.match_id || '')) return null;
+    const startedAt = Number(info.gameCreation || info.game_datetime);
+    if (!Number.isFinite(startedAt) || startedAt <= 0 || players.some(p => !Number.isInteger(p.placement) || p.placement < 1 || p.placement > 8)) return null;
+    const objects = value => Array.isArray(value) ? value.filter(v => v && typeof v === 'object').slice(0, 30) : [];
+    return { game: 'TFT', externalId: raw.metadata.match_id, participantId: puuid, playedAt: new Date(startedAt), details: {
+        version: /\d+\.\d+/.exec(String(info.game_version))?.[0] || '', queueId: number(info.queue_id ?? info.queueId),
+        mode: text(info.tft_game_type), duration: number(info.game_length), set: number(info.tft_set_number), selected,
+        players: players.map((p, index) => ({
+            name: text(p.riotIdGameName || (index === selected ? account.gameName : '') || `Player ${index + 1}`),
+            tag: text(p.riotIdTagline || (index === selected ? account.tagLine : '')),
+            placement: p.placement, win: p.placement <= 4, level: number(p.level), goldLeft: number(p.gold_left),
+            lastRound: number(p.last_round), damage: number(p.total_damage_to_players), eliminated: number(p.players_eliminated),
+            traits: objects(p.traits).map(t => ({ id: text(t.name), units: number(t.num_units), tier: number(t.tier_current), style: number(t.style) })),
+            units: objects(p.units).map(u => ({ id: text(u.character_id), name: text(u.name), tier: Math.min(4, number(u.tier)), rarity: number(u.rarity),
+                items: (Array.isArray(u.itemNames) && u.itemNames.length ? u.itemNames : Array.isArray(u.items) ? u.items : []).slice(0, 3).map(text) })),
+        })),
+    } };
+}
+
 async function importMatches(order, start = 0, request = riotRequest) {
-    const { region, gameName, tagLine } = importSettings(order);
-    const account = await request(region === 'sea' ? 'asia' : region, `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
+    const { region, gameName, tagLine, game, queueId } = importSettings(order);
+    const call = (route, path) => request(route, path, undefined, game);
+    const account = await call(region === 'sea' ? 'asia' : region, `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
     if (typeof account.puuid !== 'string' || !account.puuid) fail(502, 'Riot returned an incomplete account.');
     const since = new Date(order.paidAt || order.createdAt).getTime();
-    const ids = await request(region, `/lol/match/v5/matches/by-puuid/${encodeURIComponent(account.puuid)}/ids?startTime=${Math.floor(since / 1000)}&start=${start}&count=10&type=ranked`);
+    if (!Number.isFinite(since)) fail(400, 'This order needs a valid payment date before importing matches.');
+    const endpoint = game === 'TFT' ? '/tft/match/v1' : '/lol/match/v5';
+    // TFT's match-list endpoint has no queue filter. Validate each result below.
+    const filter = game === 'LOL' ? `&type=ranked&queue=${queueId}` : '';
+    const ids = await call(region, `${endpoint}/matches/by-puuid/${encodeURIComponent(account.puuid)}/ids?startTime=${Math.floor(since / 1000)}&start=${start}&count=10${filter}`);
     if (!Array.isArray(ids) || ids.length > 10) fail(502, 'Riot returned an invalid match list.');
     const matches = [];
     // Serial requests keep one import below the development key's burst limit.
     for (const id of ids) {
         if (!/^[A-Z0-9]+_\d+$/.test(id)) fail(502, 'Riot returned an invalid match ID.');
-        const match = normalizeMatch(await request(region, `/lol/match/v5/matches/${id}`), account.puuid);
-        if (match && match.playedAt.getTime() >= since && match.playedAt.getTime() <= Date.now()) matches.push(match);
+        const raw = await call(region, `${endpoint}/matches/${id}`);
+        const match = game === 'TFT' ? normalizeTftMatch(raw, account.puuid, { gameName, tagLine }) : normalizeMatch(raw, account.puuid);
+        if (match && match.externalId === id && matchesOrder(order, match) && match.playedAt.getTime() >= since && match.playedAt.getTime() <= Date.now()) matches.push(match);
     }
     return { matches, nextStart: ids.length === 10 ? start + 10 : null };
 }
@@ -162,4 +197,4 @@ function createRankLookup(request = riotRequest) {
     };
 }
 const matchPlayerDetails = createRankLookup();
-module.exports = { configured, importSettings, importMatches, normalizeMatch, riotRequest, createRankLookup, matchPlayerDetails };
+module.exports = { configured, importSettings, importMatches, normalizeMatch, normalizeTftMatch, riotRequest, createRankLookup, matchPlayerDetails };

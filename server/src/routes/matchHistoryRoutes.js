@@ -2,9 +2,10 @@ const router = require('express').Router();
 const db = require('../prisma');
 const riot = require('../utils/riotMatches');
 const { orderEarnings, estimateMatchEarnings } = require('../utils/earnings');
+const { matchScope, matchesOrder, usesMatchHistory } = require('../utils/orderMatchScope');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
-const orderSelect = { id: true, orderNumber: true, customerId: true, boostType: true, inGameName: true, region: true,
+const orderSelect = { id: true, orderNumber: true, customerId: true, boostType: true, queueType: true, inGameName: true, region: true,
     createdAt: true, paidAt: true, paymentStatus: true, status: true, amountCents: true, goldDiscountCents: true, currency: true,
     matchHistoryEnabled: true, matchHistoryRevision: true, matchHistoryConfirmedAt: true, matchHistorySyncedAt: true,
     assignments: { select: { boosterId: true } }, contributions: { select: { boosterId: true } } };
@@ -16,7 +17,7 @@ async function loadOrder(client, id, actor) {
     return order;
 }
 function writable(order) {
-    if (!order.matchHistoryEnabled) fail(409, 'This historical order uses its original contribution review.');
+    if (!usesMatchHistory(order)) fail(409, 'This historical order uses its original contribution review.');
     if (order.paymentStatus !== 'PAID' || order.status === 'CANCELLED') fail(409, 'Only paid, active or completed orders accept match reviews.');
     if (order.matchHistoryConfirmedAt) fail(409, 'Reopen the history before changing confirmed matches.');
 }
@@ -38,26 +39,27 @@ router.get('/match-history/:orderId', handle(async (req, res) => {
     const provider = assigned(order, req.actor);
     // Customer history contains submitted work, never the account's unrelated games.
     const customer = !admin && !provider;
-    const matches = await db.orderMatch.findMany({ where: { orderId: order.id,
+    const records = await db.orderMatch.findMany({ where: { orderId: order.id,
         ...(customer ? { boosterId: { not: null }, status: { in: ['PENDING', 'APPROVED'] } } : {}) }, orderBy: [{ playedAt: 'desc' }, { id: 'desc' }],
-        select: { id: true, externalId: true, playedAt: true, details: true, status: true, revision: true, boosterId: true,
+        select: { id: true, game: true, externalId: true, playedAt: true, details: true, status: true, revision: true, boosterId: true,
             booster: { select: { username: true } }, ...(admin ? { reviews: { orderBy: { createdAt: 'desc' }, take: 1, select: { note: true, createdAt: true } } } : {}) } });
+    const matches = records.filter(match => matchesOrder(order, match));
     const boosters = admin ? await db.user.findMany({ where: { suspendedAt: null, OR: [{ role: 'PROVIDER' }, { hasBoosterAccess: true }] }, select: { id: true, username: true }, orderBy: { username: 'asc' } }) : [];
     let importIssue = '';
     try { riot.importSettings(order); } catch (e) { importIssue = e.message; }
-    const mutable = order.matchHistoryEnabled && order.paymentStatus === 'PAID' && order.status !== 'CANCELLED' && !order.matchHistoryConfirmedAt;
+    const mutable = usesMatchHistory(order) && order.paymentStatus === 'PAID' && order.status !== 'CANCELLED' && !order.matchHistoryConfirmedAt;
     const amounts = orderEarnings({ ...order, matches });
     const estimate = estimateMatchEarnings({ ...order, matches });
     const ownShare = estimate?.shares.find(s => s.boosterId === req.actor.id);
     const paidShare = amounts?.shares.find(s => s.boosterId === req.actor.id);
-    res.json({ ok: true, matches, boosters, canReview: admin && mutable,
+    res.json({ ok: true, matches, boosters, scope: matchScope(order), canReview: admin && mutable,
         canSubmit: provider && mutable, customerView: customer,
         submission: provider ? { boosterId: req.actor.id, matches: ownShare?.matches || 0, estimatedCents: ownShare?.cents ?? 0,
             confirmedCents: paidShare?.cents ?? null, currency: order.currency } : undefined,
-        canImport: (admin || assigned(order, req.actor)) && mutable && !importIssue && riot.configured(),
-        importIssue: admin || assigned(order, req.actor) ? importIssue || (!riot.configured() ? 'Riot imports are not configured on the server.' : '') : '',
+        canImport: (admin || assigned(order, req.actor)) && mutable && !importIssue && riot.configured(matchScope(order)?.game),
+        importIssue: admin || assigned(order, req.actor) ? importIssue || (!riot.configured(matchScope(order)?.game) ? 'Riot imports are not configured on the server.' : '') : '',
         order: { id: order.id, revision: order.matchHistoryRevision, confirmedAt: order.matchHistoryConfirmedAt,
-            syncedAt: order.matchHistorySyncedAt, enabled: order.matchHistoryEnabled, status: order.status },
+            syncedAt: order.matchHistorySyncedAt, enabled: usesMatchHistory(order), status: order.status },
         canConfirm: admin && mutable && order.status === 'COMPLETED', canReopen: admin && Boolean(order.matchHistoryConfirmedAt),
         earnings: admin && amounts ? { ...amounts, estimates: estimate?.shares || [], currency: order.currency } : undefined,
     });
@@ -75,8 +77,9 @@ router.get('/match-history/:orderId/:matchId/player-details', handle(async (req,
     const order = await loadOrder(db, req.params.orderId, req.actor);
     const customer = !isAdmin(req.actor) && !assigned(order, req.actor);
     const match = await db.orderMatch.findFirst({ where: { id: req.params.matchId, orderId: order.id,
-        ...(customer ? { boosterId: { not: null }, status: { in: ['PENDING', 'APPROVED'] } } : {}) }, select: { externalId: true, details: true } });
-    if (!match) fail(404, 'Match not found.');
+        ...(customer ? { boosterId: { not: null }, status: { in: ['PENDING', 'APPROVED'] } } : {}) }, select: { game: true, externalId: true, details: true } });
+    if (!match || !matchesOrder(order, match)) fail(404, 'Match not found.');
+    if (match.game === 'TFT') return res.json({ ok: true, ranks: [] });
     res.json({ ok: true, ...await riot.matchPlayerDetails(match) });
 }));
 async function submissionPreview(tx, order, actor, selections, body) {
@@ -85,7 +88,8 @@ async function submissionPreview(tx, order, actor, selections, body) {
     const editing = body.mode === 'edit';
     // Replacing a selection must start from the history the booster actually saw.
     if (editing && body.revision !== order.matchHistoryRevision) fail(409, 'History changed. Refresh before editing your submission.');
-    const matches = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { id: true, revision: true, status: true, boosterId: true } });
+    const records = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { id: true, game: true, details: true, revision: true, status: true, boosterId: true } });
+    const matches = records.filter(match => matchesOrder(order, match));
     const selected = new Map(selections.map(m => [m.id, m.revision]));
     for (const selection of selections) {
         const match = matches.find(m => m.id === selection.id);
@@ -138,7 +142,7 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
     const order = await locked(req.params.orderId, req.actor, async (tx, order) => {
         if (!isAdmin(req.actor) && !assigned(order, req.actor)) fail(403, 'Only admins and the assigned booster can import matches.');
         writable(order); riot.importSettings(order);
-        if (!riot.configured()) fail(503, 'Riot imports are not configured on the server.');
+        if (!riot.configured(matchScope(order)?.game)) fail(503, 'Riot imports are not configured on the server.');
         if (order.matchHistorySyncedAt && Date.now() - order.matchHistorySyncedAt.getTime() < 60000) fail(429, 'Please wait one minute between imports.');
         await tx.order.update({ where: { id: order.id }, data: { matchHistorySyncedAt: new Date() } });
         return order;
@@ -147,12 +151,13 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
     const count = await locked(order.id, req.actor, async (tx, current) => {
         if (!isAdmin(req.actor) && !assigned(current, req.actor)) fail(403, 'Your assignment changed. Ask an admin to import these matches.');
         writable(current);
-        if (current.inGameName !== order.inGameName || current.region !== order.region) fail(409, 'The saved game account changed. Import again.');
+        if (current.inGameName !== order.inGameName || current.region !== order.region || current.boostType !== order.boostType || current.queueType !== order.queueType) fail(409, 'The saved account, service or queue changed. Import again.');
         // One order tracks one game account. App-scoped Riot identifiers can change
         // with the API key, but that must not turn the same game into new evidence.
         const existing = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { id: true, game: true, externalId: true, details: true } });
         // Add newly supported match details without changing the evidence used in review.
         for (const match of result.matches) {
+            if (match.game !== 'LOL' || !matchesOrder(current, match)) continue;
             const saved = existing.find(m => m.game === match.game && m.externalId === match.externalId);
             if (!saved?.details?.players || !match.details?.players) continue;
             const players = saved.details.players.map(player => {
@@ -168,13 +173,15 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
         }
         const seen = new Set(existing.map(match => `${match.game}:${match.externalId}`));
         const additions = result.matches.filter(match => {
+            if (!matchesOrder(current, match)) return false;
             const key = `${match.game}:${match.externalId}`;
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
         });
         const inserted = additions.length ? await tx.orderMatch.createMany({ data: additions.map(match => ({ ...match, orderId: order.id })), skipDuplicates: true }) : { count: 0 };
-        if (inserted.count) await invalidate(tx, order.id);
+        if (!current.matchHistoryEnabled) await tx.order.update({ where: { id: order.id }, data: { matchHistoryEnabled: true } });
+        if (inserted.count || !current.matchHistoryEnabled) await invalidate(tx, order.id);
         return inserted.count;
     });
     res.json({ ok: true, imported: count, nextStart: result.nextStart });
@@ -189,6 +196,8 @@ router.post('/match-history/:orderId/:matchId/review', handle(async (req, res) =
     await locked(req.params.orderId, req.actor, async (tx, order) => {
         writable(order);
         if (decision === 'APPROVED') {
+            const match = await tx.orderMatch.findFirst({ where: { id: req.params.matchId, orderId: order.id }, select: { game: true, details: true } });
+            if (!match || !matchesOrder(order, match)) fail(409, 'This match does not belong to the order’s game and ranked queue.');
             if (typeof boosterId !== 'string') fail(400, 'Choose the booster who played this match.');
             const booster = await tx.user.findUnique({ where: { id: boosterId }, select: { role: true, hasBoosterAccess: true, suspendedAt: true } });
             if (!booster || booster.suspendedAt || !(booster.role === 'PROVIDER' || booster.hasBoosterAccess)) fail(400, 'Choose an active booster.');
@@ -209,7 +218,8 @@ router.post('/match-history/:orderId/confirm', handle(async (req, res) => {
         writable(order);
         if (req.body.revision !== order.matchHistoryRevision) fail(409, 'History changed. Refresh before confirming.');
         if (order.status !== 'COMPLETED') fail(409, 'Complete the order before confirming earnings.');
-        const matches = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { status: true, boosterId: true } });
+        const records = await tx.orderMatch.findMany({ where: { orderId: order.id }, select: { game: true, details: true, status: true, boosterId: true } });
+        const matches = records.filter(match => matchesOrder(order, match));
         if (!matches.some(m => m.status === 'APPROVED') || matches.some(m => m.status === 'PENDING' && m.boosterId)) fail(409, 'Review every submitted match and approve at least one before confirming.');
         await tx.order.update({ where: { id: order.id }, data: { matchHistoryConfirmedAt: new Date(), matchHistoryConfirmedBy: req.actor.id, matchHistoryRevision: { increment: 1 } } });
     });

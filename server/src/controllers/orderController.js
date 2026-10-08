@@ -333,7 +333,7 @@ const createOrder = async (req, res) => {
                  */
                 serviceId: selectedService.id,
                 boostType: selectedService.title,
-                matchHistoryEnabled: !selectedService.title.startsWith('TFT '),
+                matchHistoryEnabled: true,
 
                 currentRank: currentRank || null,
                 desiredRank: desiredRank || null,
@@ -373,7 +373,7 @@ const createOrder = async (req, res) => {
                     : [],
 
                 region: region || null,
-                queueType: queueType || null,
+                queueType: selectedService.title.startsWith('TFT ') ? 'Ranked' : queueType || null,
                 playMode: playMode || null,
 
                 priorityOrder: Boolean(priorityOrder),

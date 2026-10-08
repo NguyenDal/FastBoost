@@ -6,10 +6,12 @@ test('selected match submissions protect ownership, customer visibility, quotes 
     const paths = ['../src/prisma', '../src/utils/riotMatches', '../src/routes/matchHistoryRoutes'].map(p => require.resolve(p));
     const saved = paths.map(p => [p, require.cache[p]]);
     let order = { id: 'order', customerId: 'customer', paymentStatus: 'PAID', status: 'IN_PROGRESS',
-        amountCents: 10000, goldDiscountCents: 2000, currency: 'cad', matchHistoryEnabled: true, matchHistoryRevision: 0,
+        amountCents: 10000, goldDiscountCents: 2000, currency: 'cad', boostType: 'Rank Boost', queueType: 'Solo/Duo', matchHistoryEnabled: true, matchHistoryRevision: 0,
         assignments: [{ boosterId: 'a' }, { boosterId: 'b' }], contributions: [] };
     let matches = Array.from({ length: 12 }, (_, i) => ({ id: `m${i}`, orderId: 'order', externalId: `NA1_${i}`,
-        playedAt: new Date(), details: {}, status: 'PENDING', boosterId: null, revision: 1 }));
+        playedAt: new Date(), game: 'LOL', details: { queueId: 420 }, status: 'PENDING', boosterId: null, revision: 1 }));
+    matches.push({ ...matches[0], id: 'wrong-queue', details: { queueId: 440 }, boosterId: 'a', status: 'APPROVED' },
+        { ...matches[0], id: 'wrong-game', game: 'TFT', details: { queueId: 1100 }, boosterId: 'a' });
     let reviews = [];
     let failWithdrawal = false;
     const matchesWhere = (match, where) => Object.entries(where).every(([key, value]) => {
@@ -74,6 +76,9 @@ test('selected match submissions protect ownership, customer visibility, quotes 
         assert.equal((await request('/m0/player-details', 'foreign')).status, 404);
         assert.equal((await request('/m0/player-details', 'a')).status, 200);
         assert.equal((await visible('a')).matches.length, 12);
+        assert.equal((await request('/wrong-queue/player-details', 'a')).status, 404);
+        assert.equal((await request('/wrong-game/review', 'admin', { decision: 'APPROVED', revision: 1, boosterId: 'a' })).status, 409);
+        assert.equal((await request('/submission-preview', 'a', select('wrong-queue'))).status, 409);
         assert.equal((await visible('a')).canSubmit, true);
         assert.equal((await visible('a')).submission.boosterId, 'a');
         assert.equal((await visible('admin')).canSubmit, false, 'admin role alone is not a booster assignment');

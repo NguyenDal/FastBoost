@@ -3,6 +3,7 @@ import { operations, money } from '../api/operations';
 import OrderPagination from './OrderPagination';
 import MatchHistorySkeleton from './MatchHistorySkeleton';
 import { Skeleton } from './Skeleton';
+import { TftMatchSummary, TftScoreboard } from './TftMatchContent';
 import '../styles/MatchHistory.css';
 
 const assetCache = new Map();
@@ -22,9 +23,9 @@ function assetsFor(patch) {
     }
     return assetCache.get(patch);
 }
-function useAssets(patch) {
+function useAssets(patch, enabled = true) {
     const [assets, setAssets] = useState(null);
-    useEffect(() => { let active = true; assetsFor(patch).then(value => { if (active) setAssets(value); }); return () => { active = false; }; }, [patch]);
+    useEffect(() => { let active = true; if (enabled) assetsFor(patch).then(value => { if (active) setAssets(value); }); return () => { active = false; }; }, [patch, enabled]);
     return assets;
 }
 function Items({ items, assets }) {
@@ -147,19 +148,20 @@ function Scoreboard({ match, teams, assets, path }) {
 function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, busy, onReview, now, path }) {
     const { details } = match;
     const player = details.players[details.selected];
-    const assets = useAssets(details.version);
+    const isTft = match.game === 'TFT';
+    const assets = useAssets(details.version, !isTft);
     const [boosterId, setBoosterId] = useState(match.boosterId || '');
     const [note, setNote] = useState(match.reviews?.[0]?.note || '');
     const [expanded, setExpanded] = useState(false);
     const [hasExpanded, setHasExpanded] = useState(false);
     const result = details.remake ? 'Remake' : player.win ? 'Victory' : 'Defeat';
-    const teams = [...new Set(details.players.map(p => p.team))]
+    const teams = (isTft ? [] : [...new Set(details.players.map(p => p.team))])
         .sort((a, b) => a - b)
         .map(id => {
             const players = details.players.map((p, index) => ({ ...p, index })).filter(p => p.team === id);
             return { id, players, win: players[0].win, kills: players.reduce((sum, p) => sum + p.kills, 0), gold: players.reduce((sum, p) => sum + p.gold, 0) };
         });
-    const teamKills = teams.find(team => team.id === player.team).kills;
+    const teamKills = isTft ? 0 : teams.find(team => team.id === player.team).kills;
     const participation = teamKills ? Math.round((player.kills + player.assists) / teamKills * 100) : 0;
     const detailsId = `match-details-${match.id}`;
     return <article className={`mh-card ${player.win ? 'mh-win' : 'mh-loss'}${canSelect ? ' mh-selectable' : ''}${checked ? ' mh-checked' : ''}`} onClick={event => {
@@ -167,16 +169,16 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
     }}>
         {canSelect && <input className="mh-card-select mh-sr-only" type="checkbox" checked={checked} disabled={busy} onChange={onSelect} aria-label={`Select match ${match.externalId}`} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); onSelect(); } }} />}
         <div className="mh-overview">
-            <div className="mh-match-summary">
+            {isTft ? <TftMatchSummary match={match} timeLabel={relativeTime(match.playedAt, now)} /> : <div className="mh-match-summary">
                 <div className="mh-result"><strong className="mh-queue">{queues[details.queueId] || details.mode}</strong><time dateTime={match.playedAt} title={new Date(match.playedAt).toLocaleString()}>{relativeTime(match.playedAt, now)}</time><strong className="mh-outcome">{result}</strong><small>{duration(details.duration)}</small></div>
                 <div className="mh-build"><Loadout player={player} assets={assets} /><Items items={player.items} assets={assets} /></div>
                 <div className="mh-score"><strong>{player.kills} <span className="mh-slash">/</span> <span className="mh-deaths">{player.deaths}</span> <span className="mh-slash">/</span> {player.assists}</strong><small>{kda(player)} KDA</small>{match.booster && <small className="mh-played-by" title={`Played by ${match.booster.username}`}>{match.booster.username}</small>}</div>
                 <dl className="mh-stats"><div><dt title="Kill participation">P/Kill</dt><dd>{participation}%</dd></div><div><dt>CS</dt><dd>{player.cs} <small>({csPerMinute(player, details.duration)}/m)</small></dd></div><div><dt>Damage</dt><dd>{compactNumber(player.damage)}</dd></div><div><dt>Gold</dt><dd>{compactNumber(player.gold)}</dd></div></dl>
                 <Roster teams={teams} selected={details.selected} assets={assets} />
-            </div>
+            </div>}
             <button type="button" className="mh-expand" aria-expanded={expanded} aria-controls={detailsId} aria-label={`${expanded ? 'Hide' : 'Show'} match details for ${match.externalId}`} title={expanded ? 'Hide match details' : 'Show match details'} onClick={() => { setHasExpanded(true); setExpanded(value => !value); }}><Chevron /></button>
         </div>
-        <div className={`mh-details${expanded ? ' mh-details-open' : ''}`} id={detailsId} aria-hidden={!expanded} inert={!expanded}><div className="mh-details-inner">{hasExpanded && <Scoreboard match={match} teams={teams} assets={assets} path={path} />}</div></div>
+        <div className={`mh-details${expanded ? ' mh-details-open' : ''}`} id={detailsId} aria-hidden={!expanded} inert={!expanded}><div className="mh-details-inner">{hasExpanded && (isTft ? <TftScoreboard match={match} /> : <Scoreboard match={match} teams={teams} assets={assets} path={path} />)}</div></div>
         {canReview && <fieldset className="mh-review" disabled={busy}><legend>Admin review</legend>
             <label>Played by<select aria-label={`Booster for ${match.externalId}`} value={boosterId} onChange={e => setBoosterId(e.target.value)}><option value="">Select booster</option>{boosters.map(b => <option key={b.id} value={b.id}>{b.username || 'Booster'}</option>)}</select></label>
             <label className="mh-note">Review note<input aria-label={`Review note for ${match.externalId}`} placeholder="Reason if excluding this match" maxLength={500} value={note} onChange={e => setNote(e.target.value)} /></label>

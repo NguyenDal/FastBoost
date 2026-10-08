@@ -37,25 +37,25 @@ test('fully redeemed and missing historical amounts never invent earnings', () =
 });
 
 test('match-based earnings require full confirmation and never also count legacy submissions', () => {
-    const input = { ...order([100, 100]), matchHistoryEnabled: true,
-        matches: [...Array.from({ length: 9 }, () => ({ status: 'APPROVED', boosterId: 'a' })),
-            { status: 'APPROVED', boosterId: 'b' }, { status: 'REJECTED', boosterId: null }] };
+    const input = { ...order([100, 100]), matchHistoryEnabled: true, boostType: 'Rank Boost', queueType: 'Solo/Duo',
+        matches: [...Array.from({ length: 9 }, () => ({ game: 'LOL', details: { queueId: 420 }, status: 'APPROVED', boosterId: 'a' })),
+            { game: 'LOL', details: { queueId: 420 }, status: 'APPROVED', boosterId: 'b' }, { game: 'LOL', details: { queueId: 420 }, status: 'REJECTED', boosterId: null }] };
     assert.deepEqual(orderEarnings(input).shares, []);
     input.matchHistoryConfirmedAt = new Date();
     assert.deepEqual(orderEarnings(input).shares, [{ boosterId: 'a', matches: 9, cents: 5040 }, { boosterId: 'b', matches: 1, cents: 560 }]);
-    input.matches.push({ status: 'PENDING' });
+    input.matches.push({ game: 'LOL', details: { queueId: 420 }, status: 'PENDING' });
     assert.equal(orderEarnings(input).shares.length, 2, 'unsubmitted games do not block confirmed earnings');
-    input.matches.push({ status: 'PENDING', boosterId: 'b' });
+    input.matches.push({ game: 'LOL', details: { queueId: 420 }, status: 'PENDING', boosterId: 'b' });
     assert.deepEqual(orderEarnings(input).shares, []);
-    input.matches = [{ status: 'REJECTED' }];
+    input.matches = [{ game: 'LOL', details: { queueId: 420 }, status: 'REJECTED' }];
     assert.deepEqual(orderEarnings(input).shares, []);
 });
 
 test('submission estimates exclude unrelated and rejected games and never create payable earnings', () => {
-    const input = { amountCents: 10001, goldDiscountCents: 2000, matchHistoryEnabled: true,
-        matches: [{ status: 'APPROVED', boosterId: 'a' }, { status: 'PENDING', boosterId: 'a' },
-            { status: 'PENDING', boosterId: 'b' }, { status: 'REJECTED', boosterId: 'b' },
-            ...Array.from({ length: 17 }, () => ({ status: 'PENDING', boosterId: null }))] };
+    const input = { amountCents: 10001, goldDiscountCents: 2000, matchHistoryEnabled: true, boostType: 'Rank Boost', queueType: 'Solo/Duo',
+        matches: [{ game: 'LOL', details: { queueId: 420 }, status: 'APPROVED', boosterId: 'a' }, { game: 'LOL', details: { queueId: 420 }, status: 'PENDING', boosterId: 'a' },
+            { game: 'LOL', details: { queueId: 420 }, status: 'PENDING', boosterId: 'b' }, { game: 'LOL', details: { queueId: 420 }, status: 'REJECTED', boosterId: 'b' },
+            ...Array.from({ length: 17 }, () => ({ game: 'LOL', details: { queueId: 420 }, status: 'PENDING', boosterId: null }))] };
     const estimate = estimateMatchEarnings(input);
     assert.deepEqual(estimate.shares, [{ boosterId: 'a', matches: 2, cents: 3734 }, { boosterId: 'b', matches: 1, cents: 1867 }]);
     assert.equal(estimate.shares.reduce((sum, share) => sum + share.cents, 0), estimate.boosterCents);

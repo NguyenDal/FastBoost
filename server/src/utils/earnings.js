@@ -1,3 +1,4 @@
+const { matchesOrder } = require('./orderMatchScope');
 function orderEarnings(order) {
     // amountCents is the discounted service subtotal before gold redemption;
     // Stripe settlement adds redeemed gold back to amount_subtotal when saving it.
@@ -7,7 +8,7 @@ function orderEarnings(order) {
     const records = new Map();
     if (order.matchHistoryEnabled) {
         // Imported evidence only earns a share after the complete history is confirmed.
-        const matches = order.matches || [];
+        const matches = (order.matches || []).filter(match => matchesOrder(order, match));
         if (order.matchHistoryConfirmedAt && !matches.some(m => m.status === 'PENDING' && m.boosterId)) {
             for (const match of matches) if (match.status === 'APPROVED' && match.boosterId) {
                 const record = records.get(match.boosterId) || { boosterId: match.boosterId, approvedMatches: 0, submittedMatches: 0 };

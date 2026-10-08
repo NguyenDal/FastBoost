@@ -2,6 +2,7 @@ const router = require('express').Router();
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
 const { orderEarnings } = require('../utils/earnings');
+const { usesMatchHistory } = require('../utils/orderMatchScope');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const eligible = user => user.role === 'PROVIDER' || user.hasBoosterAccess;
@@ -17,8 +18,8 @@ router.use(require('./matchHistoryRoutes'));
 
 async function earnings() {
     const orders = await db.order.findMany({ where: { paymentStatus: 'PAID', status: 'COMPLETED' },
-        select: { id: true, orderNumber: true, boostType: true, amountCents: true, goldDiscountCents: true, currency: true, paidAt: true, updatedAt: true,
-            matchHistoryEnabled: true, matchHistoryConfirmedAt: true, matches: { select: { status: true, boosterId: true } },
+        select: { id: true, orderNumber: true, boostType: true, queueType: true, amountCents: true, goldDiscountCents: true, currency: true, paidAt: true, updatedAt: true,
+            matchHistoryEnabled: true, matchHistoryConfirmedAt: true, matches: { select: { game: true, details: true, status: true, boosterId: true } },
             assignments: { select: { boosterId: true } }, contributions: true }, orderBy: { updatedAt: 'desc' } });
     const totals = {}, boosters = {};
     let missingAmounts = 0;
@@ -48,16 +49,16 @@ router.get('/contributions', handle(async (req, res) => {
         select: { id: true, orderNumber: true, boostType: true, status: true, matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
             assignments: { select: { boosterId: true, booster: { select: { username: true } } } },
             contributions: { include: { booster: { select: { username: true } } } } }, orderBy: { updatedAt: 'desc' } });
-    res.json({ ok: true, orders: rows.map(order => ({ ...order, assignments: isAdmin ? order.assignments : order.assignments.filter(a => a.boosterId === req.actor.id),
+    res.json({ ok: true, orders: rows.map(order => ({ ...order, matchHistoryEnabled: usesMatchHistory(order), assignments: isAdmin ? order.assignments : order.assignments.filter(a => a.boosterId === req.actor.id),
         contributions: isAdmin ? order.contributions : order.contributions.filter(c => c.boosterId === req.actor.id) })) });
 }));
 router.post('/contributions/:orderId', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
     const matches = req.body.matches;
     if (!Number.isInteger(matches) || matches < 0 || matches > 10000) fail(400, 'Enter a whole match count from 0 to 10,000.');
-    const assigned = await db.orderAssignment.findUnique({ where: { orderId_boosterId: { orderId: req.params.orderId, boosterId: req.actor.id } }, include: { order: true } });
+    const assigned = await db.orderAssignment.findUnique({ where: { orderId_boosterId: { orderId: req.params.orderId, boosterId: req.actor.id } }, include: { order: { include: { contributions: { select: { boosterId: true } } } } } });
     if (!assigned || assigned.order.paymentStatus !== 'PAID' || assigned.order.status === 'CANCELLED') fail(403, 'Only your assigned paid orders accept submissions.');
-    if (assigned.order.matchHistoryEnabled) fail(409, 'Review individual matches in Match History for this order.');
+    if (usesMatchHistory(assigned.order)) fail(409, 'Review individual matches in Match History for this order.');
     // Revisions invalidate approval; the admin must review the exact submitted version.
     await db.boosterContribution.upsert({ where: { orderId_boosterId: { orderId: assigned.orderId, boosterId: req.actor.id } },
         create: { orderId: assigned.orderId, boosterId: req.actor.id, submittedMatches: matches },
