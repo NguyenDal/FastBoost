@@ -324,6 +324,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 ok: true,
                 paidWithGoldOnly: true,
                 orderId: order.id,
+                summary: { ...summary, availableGold: Math.max(0, availableGold - goldRedeemed) },
                 redirectUrl: `${clientUrl}/payment/success/${order.serviceId}?orderId=${order.id}&gold=1`,
             });
         }

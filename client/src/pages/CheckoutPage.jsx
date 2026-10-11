@@ -36,7 +36,7 @@ export default function CheckoutPage() {
         setPaid(true);
         // Reload the saved receipt after verification, including the final Gold/cash split.
         createCheckoutSession(orderId).then(result => {
-            if (result.paid) setData(result);
+            if (result.paid && result.summary) setData(result);
         }).catch(() => { /* Keep the confirmed checkout quote if the receipt read fails. */ });
     }, [orderId]);
     const completeConfirmation = useCallback(() => {
@@ -53,6 +53,14 @@ export default function CheckoutPage() {
     const [couponNotice, setCouponNotice] = useState(null);
     const request = useRef(null);
     const gold = Math.max(0, Math.floor(Number(params.get("gold")) || 0));
+    const confirmGoldPayment = useCallback(result => {
+        // Older servers omit the receipt on Gold success. Keep the order visible
+        // while verification reloads it, without displaying the previous cash total.
+        setData(previous => ({ ...result, summary: result.summary || (previous?.summary
+            ? { ...previous.summary, priceSummary: undefined } : undefined) }));
+        setGoldConfirmation(null);
+        setVerification({ orderId: result.orderId || orderId, gold: "1" });
+    }, [orderId]);
 
     useEffect(() => {
         let cancelled = false;
@@ -66,8 +74,7 @@ export default function CheckoutPage() {
                 setPaid(true);
                 if (params.get("session_id")) setVerification({ orderId: result.orderId });
             } else if (result.paidWithGoldOnly) {
-                setData(result);
-                setVerification({ orderId: result.orderId, gold: "1" });
+                confirmGoldPayment(result);
             } else if (result.completed) {
                 setData(result);
                 setVerification({ session_id: result.sessionId });
@@ -102,7 +109,7 @@ export default function CheckoutPage() {
             if (!cancelled) setError(failure.message || "Unable to load checkout.");
         });
         return () => { cancelled = true; };
-    }, [orderId, gold, attempt, params]);
+    }, [orderId, gold, attempt, params, confirmGoldPayment]);
 
     const applyGold = value => {
         if (paymentBusy) return;
@@ -145,17 +152,15 @@ export default function CheckoutPage() {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
             if (result.couponNotice) setCouponNotice(result.couponNotice);
-            if (result.paidWithGoldOnly) {
-                setData(result);
-                setGoldConfirmation(null);
-                setVerification({ orderId: result.orderId, gold: "1" });
+            if (result.paidWithGoldOnly || result.paid) {
+                confirmGoldPayment(result);
             } else if (result.clientSecret) { setData(result); setGoldConfirmation(null); }
             else throw new Error("Your balance changed. Please review your payment again.");
         } catch (failure) { setGoldConfirmation(null); setGoldError(paymentErrorMessage(failure)); }
         finally { setPaymentBusy(false); }
     };
 
-    return <div className={"checkout-shell checkout-" + (data?.summary.game || "lol")}>
+    return <div className={"checkout-shell checkout-" + (data?.summary?.game || "lol")}>
         <Navbar />
         <main className="checkout-container">
             <h1>Secure Payment</h1>
@@ -164,7 +169,7 @@ export default function CheckoutPage() {
                 <li className={showPaid ? "done active" : "active"} aria-current={showPaid ? undefined : "step"}><span>{showPaid ? "✓" : "2"}</span><strong>Payment</strong><small>{showPaid ? "Completed" : "Complete your payment"}</small></li>
                 <li className={showPaid ? "active" : undefined} aria-current={showPaid ? "step" : undefined}><span>3</span><strong>Boost Begins</strong><small>{showPaid ? "Ready to start" : "After payment"}</small></li>
             </ol>
-            {error && !showPaid ? <section className="checkout-card"><button className="checkout-pay" onClick={() => { setError(""); setAttempt(value => value + 1); }}>Try again</button></section> : !data && !showPaid ? <CheckoutSkeleton /> :
+            {error && !showPaid ? <section className="checkout-card"><button className="checkout-pay" onClick={() => { setError(""); setAttempt(value => value + 1); }}>Try again</button></section> : !data?.summary && !showPaid ? <CheckoutSkeleton /> :
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>

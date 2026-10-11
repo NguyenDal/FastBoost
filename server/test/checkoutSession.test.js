@@ -103,6 +103,15 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     req.body.contactEmail='receipt@example.com';
     await createCheckoutSession(req,res);
     assert.equal(res.body.paidWithGoldOnly,true);
+    assert.equal(res.body.summary.orderId,order.id, 'Gold payment must return the receipt needed for the immediate checkout render');
+    assert.equal(res.body.summary.game,'lol');
+    assert.equal(res.body.summary.currency,'cad');
+    assert.equal(res.body.summary.goldRedeemed,100);
+    assert.equal(res.body.summary.goldDiscountCents,1000);
+    assert.equal(res.body.summary.totalCents,0);
+    assert.equal(res.body.summary.availableGold,0);
+    assert.equal(res.body.summary.priceSummary.totalCents,0);
+    assert.equal(res.body.summary.priceSummary.goldDiscountCents,1000);
     assert.equal(order.paymentStatus,'PAID');
     assert.deepEqual(queued,[{id:order.id,email:'receipt@example.com'}]);
     await createCheckoutSession(req,res);
