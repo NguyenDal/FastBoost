@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
-import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
 import CheckoutPaymentForm, { CheckoutIcon } from "../components/CheckoutPaymentForm";
 import CheckoutSkeleton, { PaymentFormSkeleton } from "../components/CheckoutSkeleton";
 import PaymentErrorDialog from "../components/PaymentErrorDialog";
@@ -47,6 +46,9 @@ export default function CheckoutPage() {
     const showPaid = paid && !verification;
     const [attempt, setAttempt] = useState(0);
     const [paymentBusy, setPaymentBusy] = useState(false);
+    const [updatingPrice, setUpdatingPrice] = useState(false);
+    const [priceUpdateError, setPriceUpdateError] = useState(null);
+    const priceRequest = useRef(false);
     const [goldConfirmation, setGoldConfirmation] = useState(null);
     const [goldError, setGoldError] = useState("");
     const [contactEmail, setContactEmail] = useState(null);
@@ -66,6 +68,9 @@ export default function CheckoutPage() {
         let cancelled = false;
         const key = `${orderId}:${gold}:${attempt}`;
         if (request.current?.key !== key) request.current = { key, promise: createCheckoutSession(orderId, gold) };
+        // Applying a discount already refreshed the quote. Syncing its URL must
+        // not send another request or replay the checkout loading state.
+        if (request.current.handled) return;
         request.current.promise.then(async (result) => {
             if (cancelled) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
@@ -111,40 +116,55 @@ export default function CheckoutPage() {
         return () => { cancelled = true; };
     }, [orderId, gold, attempt, params, confirmGoldPayment]);
 
+    const updatePrice = async (goldToUse, couponCode) => {
+        if (paymentBusy || priceRequest.current) return;
+        priceRequest.current = true;
+        setUpdatingPrice(true);
+        try {
+            let result = await createCheckoutSession(orderId, goldToUse, true, undefined, couponCode);
+            const notice = result.couponNotice;
+            let confirmGold = null;
+            if (result.goldOnlyReady) {
+                confirmGold = result.summary.goldRedeemed;
+                result = await createCheckoutSession(orderId, 0);
+            }
+            if (!result.summary || !(result.clientSecret || result.paid || result.paidWithGoldOnly || result.completed)) throw new Error("Unable to update checkout.");
+            const appliedGold = result.summary.goldRedeemed || 0;
+            request.current = { key: `${orderId}:${appliedGold}:${attempt}`, handled: true };
+            setParams(previous => {
+                const next = new URLSearchParams(previous);
+                next.set("gold", String(appliedGold));
+                return next;
+            }, { replace: true });
+            setData(result);
+            setPriceUpdateError(null);
+            if (result.paid) setPaid(true);
+            if (result.paidWithGoldOnly) confirmGoldPayment(result);
+            if (result.completed) setVerification({ session_id: result.sessionId });
+            if (confirmGold !== null) setGoldConfirmation(confirmGold);
+            if (notice) setCouponNotice(notice);
+        } catch (failure) {
+            if (failure.code === "COUPON_UNAVAILABLE") {
+                setCouponNotice({ title: "Coupon not applied", message: failure.message });
+            } else {
+                // The server may have expired the old session before a network
+                // failure. Preserve the form, but require a fresh quote to pay.
+                setPriceUpdateError({ goldToUse, couponCode });
+            }
+        } finally { priceRequest.current = false; setUpdatingPrice(false); }
+    };
     const applyGold = value => {
-        if (paymentBusy) return;
-        if (data && value * 10 >= data.summary.totalCents + data.summary.goldDiscountCents) {
+        if (paymentBusy || priceRequest.current) return;
+        if (!priceUpdateError && data && value * 10 >= data.summary.totalCents + data.summary.goldDiscountCents) {
             setGoldError("");
             setGoldConfirmation(value);
             return;
         }
-        setData(null);
-        setError("");
-        setParams({ gold: String(value) }, { replace: true });
-        setAttempt(value => value + 1);
+        updatePrice(value);
     };
-    const applyCoupon = async code => {
-        if (paymentBusy) return;
-        setPaymentBusy(true);
-        try {
-            let result = await createCheckoutSession(orderId, data?.summary.goldRedeemed || 0, true, undefined, code);
-            const notice = result.couponNotice;
-            if (result.goldOnlyReady) {
-                const goldAmount = result.summary.goldRedeemed;
-                result = await createCheckoutSession(orderId, 0);
-                setGoldConfirmation(goldAmount);
-            }
-            setData(result);
-            if (result.paid) setPaid(true);
-            if (result.completed) setVerification({ session_id: result.sessionId });
-            if (notice) setCouponNotice(notice);
-        } catch (failure) {
-            setCouponNotice({ title: "Coupon not applied", message: failure.code === "COUPON_UNAVAILABLE" ? failure.message : "We couldn’t update your coupon. Please try again shortly. Your coupon has not been used." });
-            if (failure.code !== "COUPON_UNAVAILABLE") { setData(null); setAttempt(value => value + 1); }
-        } finally { setPaymentBusy(false); }
-    };
+    const applyCoupon = code => updatePrice(data?.summary.goldRedeemed || 0, code);
     const payWithGold = async () => {
-        if (paymentBusy || goldConfirmation === null) return;
+        if (paymentBusy || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
         setGoldError("");
         setPaymentBusy(true);
         try {
@@ -173,11 +193,9 @@ export default function CheckoutPage() {
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutElementsProvider key={data.sessionId} stripe={stripePromise} options={{ clientSecret: data.clientSecret, elementsOptions: { appearance } }}>
-                            <CheckoutPaymentForm email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} stripePromise={stripePromise} onBusyChange={setPaymentBusy} onSuccess={setVerification} onBeforeConfirm={() => checkServiceAvailability(data.summary.serviceId)} />
-                        </CheckoutElementsProvider> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError)} onBusyChange={setPaymentBusy} onSuccess={setVerification} onBeforeConfirm={() => checkServiceAvailability(data.summary.serviceId)} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
                     </section>
-                    <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || paid || Boolean(verification)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
+                    <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification)} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
         </main>
         {data?.summary?.serviceId && !paid && !verification && <LiveSaleFooter key={data.summary.serviceId} serviceId={data.summary.serviceId} />}
@@ -211,7 +229,7 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     </dialog>;
 }
 
-function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, onGoToOrder }) {
+function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, updatingPrice, priceUpdateError, onRetryPrice, paid, onGoToOrder }) {
     const [promoCode, setPromoCode] = useState("");
     const enteredCode = promoCode.trim();
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
@@ -247,6 +265,7 @@ function OrderSummary({ summary, onApplyGold, onApplyCoupon, paymentBusy, paid, 
             <p id="checkout-promo-help">Coupons count as used only after successful payment. We apply the larger sale or coupon discount.</p>
         </form>
         <OrderPriceSummary summary={summary.priceSummary} variant="checkout" onRemoveCoupon={() => onApplyCoupon('')} busy={paymentBusy} />
+        {priceUpdateError && <div className="checkout-price-error" role="alert"><p>We couldn’t refresh your total. Retry before paying. Your entered details are still here.</p><button type="button" disabled={paymentBusy} onClick={onRetryPrice}>{updatingPrice ? "Updating…" : "Retry update"}</button></div>}
         <div className="checkout-security"><strong>Secure Payment</strong><p>Powered by Stripe. FastBoost does not receive or store your full card details.</p><p><a href="https://stripe.com/legal/consumer" target="_blank" rel="noreferrer">Stripe Terms</a> · <a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></p></div>
         </>}
     </aside>;

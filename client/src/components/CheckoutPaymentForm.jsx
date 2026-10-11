@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ExpressCheckoutElement, useCheckoutElements } from "@stripe/react-stripe-js/checkout";
+import { CheckoutElementsProvider, ExpressCheckoutElement, useCheckoutElements } from "@stripe/react-stripe-js/checkout";
 import { COUNTRIES } from "../utils/countries";
-import { PaymentFormSkeleton } from "./CheckoutSkeleton";
 import PaymentErrorDialog from "./PaymentErrorDialog";
 import LegalAgreement from "./LegalAgreement";
 import { paymentErrorMessage } from "../utils/paymentError";
@@ -24,8 +23,17 @@ export function CheckoutIcon({ type }) {
     return <svg className="checkout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
 
-export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, stripePromise, onBusyChange, onSuccess, onBeforeConfirm }) {
+// Only session-bound controls restart when a discount replaces the Stripe session.
+// Card Elements belong to their own Elements instance and stay mounted below.
+function CheckoutSession({ sessionId, onStateChange, onConfirm, onWalletsChange }) {
     const state = useCheckoutElements();
+    useEffect(() => { onStateChange({ sessionId, state }); }, [sessionId, state, onStateChange]);
+    return state.type === "success" && <ExpressCheckoutElement options={{ paymentMethods: { applePay: "always" }, buttonTheme: { applePay: "black" }, paymentMethodOrder: ["apple_pay", "link"] }} onConfirm={onConfirm} onReady={({ availablePaymentMethods }) => { onWalletsChange(Boolean(availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean))); }} />;
+}
+
+export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, clientSecret, appearance, stripePromise, updatingPrice, paymentBlocked, onBusyChange, onSuccess, onBeforeConfirm }) {
+    const [session, setSession] = useState(null);
+    const state = session?.sessionId === sessionId ? session.state : { type: "loading" };
     const cardFields = useRef(null);
     const numberNode = useRef(null);
     const expiryNode = useRef(null);
@@ -39,7 +47,6 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
     const [country, setCountry] = useState("");
     const submitting = useRef(false);
     useEffect(() => {
-        if (state.type !== "success") return;
         let cancelled = false;
         let mounted = [];
         stripePromise.then(stripe => {
@@ -57,9 +64,9 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
             number.on("ready", () => { if (!cancelled) setReady(true); });
         }).catch(() => { if (!cancelled) setError("Unable to load secure card fields. Please reload checkout."); });
         return () => { cancelled = true; mounted.forEach(element => element.destroy()); cardFields.current = null; };
-    }, [state.type, stripePromise]);
+    }, [stripePromise]);
     const confirm = async (expressEvent) => {
-        if (submitting.current || state.type !== "success" || !cardFields.current) return;
+        if (submitting.current || updatingPrice || paymentBlocked || state.type !== "success" || !cardFields.current) return;
         submitting.current = true;
         setBusy(true);
         onBusyChange?.(true);
@@ -99,14 +106,18 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
         }
         finally { submitting.current = false; setBusy(false); onBusyChange?.(false); }
     };
-    if (state.type === "loading") return <PaymentFormSkeleton />;
-    if (state.type === "error") return <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />;
     // Stripe requires reading and displaying its current total before confirmation.
-    const total = state.checkout.total.total.amount;
+    const total = state.type === "success" ? state.checkout.total.total.amount : null;
+    const refreshing = updatingPrice || state.type === "loading";
     return <>
-        <div id="checkout-express" className={wallets ? "checkout-express" : "checkout-express-empty"}>
+        {state.type === "error" && <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
+        <div id="checkout-express" className={wallets ? "checkout-express" : "checkout-express-empty"} inert={refreshing || paymentBlocked || busy}>
             {wallets && <h3>Express Checkout</h3>}
-            <ExpressCheckoutElement options={{ paymentMethods: { applePay: "always" }, buttonTheme: { applePay: "black" }, paymentMethodOrder: ["apple_pay", "link"] }} onConfirm={confirm} onReady={({ availablePaymentMethods }) => { setWallets(Boolean(availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean))); }} />
+            <div className={wallets ? "checkout-wallet-slot" : undefined}>
+                <CheckoutElementsProvider key={sessionId} stripe={stripePromise} options={{ clientSecret, elementsOptions: { appearance } }}>
+                    <CheckoutSession sessionId={sessionId} onStateChange={setSession} onConfirm={confirm} onWalletsChange={setWallets} />
+                </CheckoutElementsProvider>
+            </div>
             {wallets && <p className="checkout-or">OR</p>}
         </div>
         <form noValidate onSubmit={event => { event.preventDefault(); confirm(); }}>
@@ -126,7 +137,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, s
             <label className="checkout-field-label" htmlFor="checkout-country">Country / Region</label>
             <div className="checkout-input"><CheckoutIcon type="globe"/><select id="checkout-country" autoComplete="country" required value={country} onChange={event=>setCountry(event.target.value)}><option value="">Select country</option>{COUNTRIES.map(item=><option key={item.code} value={item.code}>{item.name}</option>)}</select></div>
             {error && <PaymentErrorDialog message={error} action={ready ? "Back to Payment" : "Reload Checkout"} onClose={() => { if (ready) setError(""); else window.location.reload(); }} />}
-            <button className="checkout-pay" disabled={busy || !ready} type="submit"><CheckoutIcon type="lock"/><span>{busy ? "Processing…" : `Pay Securely — ${total}`}</span><CheckoutIcon type="arrow"/></button>
+            <button className="checkout-pay" disabled={busy || !ready || refreshing || paymentBlocked || state.type !== "success"} type="submit"><CheckoutIcon type="lock"/><span aria-live="polite">{busy ? "Processing…" : refreshing ? "Updating total…" : paymentBlocked ? "Review total before paying" : `Pay Securely — ${total ?? "…"}`}</span><CheckoutIcon type="arrow"/></button>
             <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
         </form>
     </>;
