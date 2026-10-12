@@ -246,3 +246,5 @@
 @media (forced-colors: active) {
     .mh-panel :is(input, select):focus { outline: 2px solid Highlight; }
 }
+
+.mh-count-review{margin-top:20px}.mh-count-review h3{margin:0}.mh-manual-count{border-top:1px solid #ffffff15;padding-top:18px}.mh-manual-count .ops-actions{align-items:end}.mh-manual-count label{flex:1;min-width:140px}

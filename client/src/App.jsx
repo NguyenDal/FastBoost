@@ -32,7 +32,8 @@ import SaleFooter from "./components/SaleFooter";
 import SupportChat from "./components/SupportChat";
 import SessionActivity from "./components/SessionActivity";
 import AdminSupportPage from "./pages/AdminSupportPage";
-import { EarningsPage, BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
+import { BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
+import EarningsPage from './pages/EarningsPage';
 
 import {
   clearExpiredSession,

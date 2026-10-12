@@ -43,6 +43,7 @@ async function sendTrustpilotReviewInvite(order) {
     const shortOrderId = order.orderNumber;
     const serviceTitle = order.service?.title || order.boostType || "FastBoost order";
 
+    const total = new Intl.NumberFormat("en-US", { style: "currency", currency: order.currency || "USD" }).format(Number(order.totalPrice || 0));
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
 
     const trustpilotPayload = {
@@ -61,7 +62,7 @@ async function sendTrustpilotReviewInvite(order) {
             `Email: ${customerEmail}`,
             `Reference ID: ${order.orderNumber}`,
             `Service: ${serviceTitle}`,
-            `Order Total: $${Number(order.totalPrice || 0).toFixed(2)} CAD`,
+            `Order Total: ${total}`,
         ].join("\n"),
         html: `
         <p>FastBoost completed order #${shortOrderId}</p>
@@ -69,7 +70,7 @@ async function sendTrustpilotReviewInvite(order) {
         <p><strong>Email:</strong> ${customerEmail}</p>
         <p><strong>Reference ID:</strong> ${order.orderNumber}</p>
         <p><strong>Service:</strong> ${serviceTitle}</p>
-        <p><strong>Order Total:</strong> $${Number(order.totalPrice || 0).toFixed(2)} CAD</p>
+        <p><strong>Order Total:</strong> ${total}</p>
 
         <script type="application/json+trustpilot">
             ${JSON.stringify(trustpilotPayload)}

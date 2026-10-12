@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
-const { orderEarnings } = require('../utils/earnings');
+const { buildEarningsReport } = require('../utils/earningsReport');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -17,30 +17,22 @@ router.use('/provider-agreement', require('./providerAgreementRoutes'));
 router.use(require('./matchHistoryRoutes'));
 
 async function earnings() {
+    const boosterIdentity = { id: true, username: true, profile: { select: { displayName: true } } };
     const orders = await db.order.findMany({ where: { paymentStatus: 'PAID', status: 'COMPLETED' },
         select: { id: true, orderNumber: true, boostType: true, queueType: true, amountCents: true, goldDiscountCents: true, currency: true, paidAt: true, updatedAt: true,
-            matchHistoryEnabled: true, matchHistoryConfirmedAt: true, matches: { select: { game: true, details: true, status: true, boosterId: true } },
-            assignments: { select: { boosterId: true } }, contributions: true }, orderBy: { updatedAt: 'desc' } });
-    const totals = {}, boosters = {};
-    let missingAmounts = 0;
-    const rows = [];
-    for (const order of orders) {
-        const amounts = orderEarnings(order);
-        if (!amounts) { missingAmounts++; continue; }
-        const currency = order.currency.toUpperCase();
-        const total = totals[currency] ||= { currency, revenueCents: 0, boosterCents: 0, platformCents: 0, unallocatedCents: 0, orders: 0 };
-        for (const key of ['revenueCents', 'boosterCents', 'platformCents']) total[key] += amounts[key];
-        if (!amounts.shares.length) total.unallocatedCents += amounts.boosterCents;
-        total.orders++;
-        for (const share of amounts.shares) {
-            const amount = boosters[share.boosterId] ||= {};
-            amount[currency] = (amount[currency] || 0) + share.cents;
-        }
-        rows.push({ ...order, assignments: undefined, matches: undefined, ...amounts, currency });
-    }
-    return { totals: Object.values(totals), boosters, rows, missingAmounts };
+            matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
+            matches: { select: { game: true, details: true, status: true, boosterId: true, booster: { select: boosterIdentity } } },
+            assignments: { select: { boosterId: true, booster: { select: boosterIdentity } } },
+            contributions: { include: { booster: { select: boosterIdentity } } } }, orderBy: [{ paidAt: 'desc' }, { id: 'desc' }] });
+    return buildEarningsReport(orders);
 }
-router.get('/earnings', admin, handle(async (req, res) => res.json({ ok: true, ...await earnings() })));
+router.get('/earnings', admin, handle(async (req, res) => {
+    const [report, boosterDirectory] = await Promise.all([earnings(), db.user.findMany({
+        where: { OR: [{ role: 'PROVIDER' }, { hasBoosterAccess: true }] },
+        select: { id: true, username: true, profile: { select: { displayName: true } } }, orderBy: { username: 'asc' },
+    })]);
+    res.json({ ok: true, ...report, boosterDirectory });
+}));
 router.get('/contributions', handle(async (req, res) => {
     if (req.actor.role !== 'ADMIN' && !eligible(req.actor)) fail(403, 'Boosters only.');
     const isAdmin = req.actor.role === 'ADMIN';

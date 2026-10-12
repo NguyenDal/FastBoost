@@ -8,7 +8,8 @@ const fail = (status, message) => { throw Object.assign(new Error(message), { st
 const orderSelect = { id: true, orderNumber: true, customerId: true, boostType: true, queueType: true, inGameName: true, region: true,
     createdAt: true, paidAt: true, paymentStatus: true, status: true, amountCents: true, goldDiscountCents: true, currency: true,
     matchHistoryEnabled: true, matchHistoryRevision: true, matchHistoryConfirmedAt: true, matchHistorySyncedAt: true,
-    assignments: { select: { boosterId: true } }, contributions: { select: { boosterId: true } } };
+    assignments: { select: { boosterId: true, booster: { select: { username: true } } } },
+    contributions: { include: { booster: { select: { username: true } } } } };
 const isAdmin = actor => actor.role === 'ADMIN';
 const assigned = (order, actor) => (actor.role === 'PROVIDER' || Boolean(actor.hasBoosterAccess)) && order.assignments.some(a => a.boosterId === actor.id);
 async function loadOrder(client, id, actor) {
@@ -53,16 +54,51 @@ router.get('/match-history/:orderId', handle(async (req, res) => {
     const ownShare = estimate?.shares.find(s => s.boosterId === req.actor.id);
     const paidShare = amounts?.shares.find(s => s.boosterId === req.actor.id);
     res.json({ ok: true, matches, boosters, scope: matchScope(order), canReview: admin && mutable,
+        countReview: admin && !usesMatchHistory(order) ? { records: order.contributions,
+            assignments: order.assignments, canEdit: order.paymentStatus === 'PAID' && order.status !== 'CANCELLED' } : undefined,
         canSubmit: provider && mutable, customerView: customer,
         submission: provider ? { boosterId: req.actor.id, matches: ownShare?.matches || 0, estimatedCents: ownShare?.cents ?? 0,
             confirmedCents: paidShare?.cents ?? null, currency: order.currency } : undefined,
         canImport: (admin || assigned(order, req.actor)) && mutable && !importIssue && riot.configured(matchScope(order)?.game),
         importIssue: admin || assigned(order, req.actor) ? importIssue || (!riot.configured(matchScope(order)?.game) ? 'Riot imports are not configured on the server.' : '') : '',
-        order: { id: order.id, revision: order.matchHistoryRevision, confirmedAt: order.matchHistoryConfirmedAt,
+        order: { id: order.id, orderNumber: order.orderNumber, revision: order.matchHistoryRevision, confirmedAt: order.matchHistoryConfirmedAt,
             syncedAt: order.matchHistorySyncedAt, enabled: usesMatchHistory(order), status: order.status },
         canConfirm: admin && mutable && order.status === 'COMPLETED', canReopen: admin && Boolean(order.matchHistoryConfirmedAt),
         earnings: admin && amounts ? { ...amounts, estimates: estimate?.shares || [], currency: order.currency } : undefined,
     });
+}));
+
+// Historical count-based orders can be completed by an admin when a booster
+// has not submitted. Keep this separate from individual match approval.
+router.post('/match-history/:orderId/manual-count', handle(async (req, res) => {
+    adminOnly(req.actor);
+    const { boosterId, matches, revision } = req.body;
+    if (typeof boosterId !== 'string' || !Number.isInteger(matches) || matches < 0 || matches > 10000 ||
+        !Number.isInteger(revision) || revision < 0) fail(400, 'Choose a booster and a whole match count from 0 to 10,000.');
+    await locked(req.params.orderId, req.actor, async (tx, order) => {
+        if (usesMatchHistory(order)) fail(409, 'Approve individual matches for this order.');
+        if (order.paymentStatus !== 'PAID' || order.status === 'CANCELLED') fail(409, 'Only paid, active or completed orders accept match reviews.');
+        const booster = await tx.user.findUnique({ where: { id: boosterId }, select: { role: true, hasBoosterAccess: true, suspendedAt: true } });
+        if (!booster || booster.suspendedAt || !(booster.role === 'PROVIDER' || booster.hasBoosterAccess)) fail(400, 'Choose an active booster.');
+        const current = order.contributions.find(record => record.boosterId === boosterId);
+        if ((current?.revision || 0) !== revision || (current && (current.approvedMatches != null || !current.reviewedAt))) {
+            fail(409, 'This submission changed. Refresh and review the submitted count.');
+        }
+        const key = { orderId: order.id, boosterId };
+        const data = { submittedMatches: matches, approvedMatches: matches, submittedAt: new Date(),
+            reviewedAt: new Date(), reviewedBy: req.actor.id, reviewNote: 'Count entered and approved by admin.' };
+        if (current) {
+            const changed = await tx.boosterContribution.updateMany({ where: { ...key, revision, approvedMatches: null, reviewedAt: { not: null } },
+                data: { ...data, revision: { increment: 1 } } });
+            if (!changed.count) fail(409, 'This submission changed. Refresh and review the submitted count.');
+        } else {
+            await tx.boosterContribution.create({ data: { ...key, ...data } }).catch(error => {
+                if (error.code === 'P2002') fail(409, 'A booster submitted this count. Refresh and review it.');
+                throw error;
+            });
+        }
+    });
+    res.json({ ok: true });
 }));
 
 function selectedMatches(body) {

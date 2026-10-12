@@ -20,7 +20,7 @@ const appearance = {
     theme: "night",
     variables: { colorPrimary: "#a855f7", colorBackground: "#111827", colorText: "#e5e7eb", colorDanger: "#fb7185", borderRadius: "10px", fontFamily: "Arial, sans-serif" },
 };
-const money = (cents, currency) => new Intl.NumberFormat("en-CA", { style: "currency", currency: currency.toUpperCase(), currencyDisplay: "symbol" }).format(cents / 100);
+const money = (cents, currency) => new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase(), currencyDisplay: "symbol" }).format(cents / 100);
 
 export default function CheckoutPage() {
     const { orderId } = useParams();

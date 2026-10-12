@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { buildConfirmation, validEmail, queueOrderConfirmation, deliverPendingConfirmations } = require("../src/utils/orderConfirmationEmail");
 
-const order = { id: "internal-id", orderNumber: "LOL-PLC-ABCDE", paymentStatus: "PAID", boostType: "Placement Boost", peakRank: "Silver I", placementGames: 5, region: "North America", queueType: "Solo/Duo", currency: "cad", amountCents: 2700, basePrice: 30, referralDiscount: 3, cashAmountCents: 1700, goldRedeemed: 100, goldDiscountCents: 1000 };
+const order = { id: "internal-id", orderNumber: "LOL-PLC-ABCDE", paymentStatus: "PAID", boostType: "Placement Boost", peakRank: "Silver I", placementGames: 5, region: "North America", queueType: "Solo/Duo", currency: "usd", amountCents: 2700, basePrice: 30, referralDiscount: 3, cashAmountCents: 1700, goldRedeemed: 100, goldDiscountCents: 1000 };
 function configure(t) {
     const previous = { ...process.env };
     process.env.CLIENT_URL = "https://fastboost.example";
@@ -16,15 +16,16 @@ test("confirmation contains actual service, cash and gold; escapes content and r
     assert.equal(mail.to, "changed@example.com");
     assert.match(mail.text, /Placement Matches: 5/);
     assert.doesNotMatch(mail.text, /Target Rank/);
-    assert.match(mail.text, /Subtotal: CAD\s*30\.00/);
-    assert.match(mail.text, /Gold used \(100 Gold\): −CAD\s*10\.00/);
-    assert.match(mail.text, /Total: CAD\s*17\.00/);
+    assert.match(mail.text, /Subtotal: \$30\.00/);
+    assert.match(mail.text, /Gold used \(100 Gold\): −\$10\.00/);
+    assert.match(mail.text, /Total: \$17\.00/);
+    assert.doesNotMatch(mail.text, /US\$|USD|CAD/);
     assert.doesNotMatch(mail.text, /Base price|Add-ons|Gold discount|Amount paid by card/);
-    assert.match(mail.text, /CAD\s*17\.00/);
+    assert.match(mail.text, /\$17\.00/);
     assert.match(mail.text, /https:\/\/fastboost.example\/match\/internal-id/);
     assert.doesNotMatch(mail.html, /<script>/);
     assert.match(mail.html, /&lt;script&gt;/);
-    assert.match(buildConfirmation({ ...order, cashAmountCents: 0, goldRedeemed: 270, goldDiscountCents: 2700 }, "a@example.com").text, /CAD\s*0\.00/);
+    assert.match(buildConfirmation({ ...order, cashAmountCents: 0, goldRedeemed: 270, goldDiscountCents: 2700 }, "a@example.com").text, /\$0\.00/);
     assert.throws(() => buildConfirmation({ ...order, paymentStatus: "PENDING" }, "a@example.com"));
     assert.equal(validEmail("a@example.com\r\nBcc: other@example.com"), false);
     process.env.NODE_ENV = "production";

@@ -402,7 +402,7 @@ const createOrder = async (req, res) => {
                 totalPrice: orderPricing.totalPrice,
 
                 paymentStatus: "PENDING",
-                currency: "cad",
+                currency: "usd",
 
                 amountCents: Math.round(
                     orderPricing.totalPrice * 100

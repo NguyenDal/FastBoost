@@ -23,6 +23,14 @@ test('history ownership, import deduplication, review revisions and complete ear
             updateMany: async ({ where, data }) => { const m = matches.find(m => m.id === where.id && m.orderId === where.orderId && m.revision === where.revision); if (!m) return { count: 0 }; const revision = m.revision + 1; Object.assign(m, data, { revision }); return { count: 1 }; },
         },
         orderMatchReview: { create: async ({ data }) => { reviews.push(data); } },
+        boosterContribution: {
+            create: async ({ data }) => { order.contributions.push({ ...data, revision: 1 }); },
+            updateMany: async ({ where, data }) => {
+                const current = order.contributions.find(record => record.boosterId === where.boosterId && record.revision === where.revision);
+                if (!current || current.approvedMatches != null || !current.reviewedAt) return { count: 0 };
+                Object.assign(current, data, { revision: current.revision + 1 }); return { count: 1 };
+            },
+        },
     };
     db.$transaction = async fn => {
         const backup = structuredClone({ order, matches, reviews });
@@ -126,6 +134,38 @@ test('history ownership, import deduplication, review revisions and complete ear
         const tftEarnings = (await (await request('', 'admin')).json()).earnings;
         assert.equal(tftEarnings.shares[0].matches, 1, 'only the ranked TFT match contributes to this order');
         assert.equal(tftEarnings.shares[0].cents, 7000);
+
+        assert.equal((await request('/manual-count', 'admin', { boosterId: 'booster', matches: 4, revision: 0 })).status, 409, 'individual history cannot be bypassed with a count');
+        order.matchHistoryEnabled = false;
+        order.matchHistoryConfirmedAt = null;
+        order.contributions = [];
+        order.assignments = [];
+        matches = [];
+        const manual = { boosterId: 'booster', matches: 4, revision: 0 };
+        assert.equal((await request('/manual-count', 'booster', manual)).status, 403);
+        assert.equal((await request('/manual-count', 'customer', manual)).status, 403);
+        assert.equal((await request('/manual-count', 'admin', { ...manual, matches: 1.5 })).status, 400);
+        assert.equal((await request('/manual-count', 'admin', { ...manual, boosterId: 'foreign' })).status, 400);
+        order.paymentStatus = 'PENDING';
+        assert.equal((await request('/manual-count', 'admin', manual)).status, 409);
+        order.paymentStatus = 'PAID';
+        order.status = 'CANCELLED';
+        assert.equal((await request('/manual-count', 'admin', manual)).status, 409);
+        order.status = 'COMPLETED';
+        assert.equal((await (await request('', 'admin')).json()).countReview.canEdit, true);
+        assert.equal((await (await request('', 'customer')).json()).countReview, undefined);
+        assert.equal((await request('/manual-count', 'admin', manual)).status, 200, 'admin can enter a count with no submission or assignment');
+        assert.equal(order.contributions[0].approvedMatches, 4);
+        assert.equal(order.contributions[0].reviewedBy, 'admin');
+        assert.equal((await (await request('', 'admin')).json()).earnings.shares[0].cents, 7000);
+        assert.equal((await request('/manual-count', 'admin', manual)).status, 409, 'stale forms cannot overwrite approval');
+        assert.equal((await request('/manual-count', 'admin', { ...manual, revision: 1 })).status, 409, 'approved counts remain locked');
+        Object.assign(order.contributions[0], { approvedMatches: null, reviewedAt: null });
+        assert.equal((await request('/manual-count', 'admin', { ...manual, revision: 1 })).status, 409, 'a pending booster submission must use its normal review');
+        order.contributions[0].reviewedAt = new Date();
+        assert.equal((await request('/manual-count', 'admin', { ...manual, matches: 6, revision: 1 })).status, 200);
+        assert.equal(order.contributions[0].revision, 2);
+        assert.equal(order.contributions[0].approvedMatches, 6);
     } finally {
         if (server) await new Promise(resolve => server.close(resolve));
         for (const [path, value] of saved) { if (value) require.cache[path] = value; else delete require.cache[path]; }

@@ -4,7 +4,7 @@ import '../styles/Skeleton.css';
 
 export default function OrderPriceSummary({ summary, variant = 'default', onRemoveCoupon, busy = false }) {
     if (!summary) return <div role="status" aria-label="Loading price summary"><Skeleton height={120} radius={8} /></div>;
-    const price = cents => new Intl.NumberFormat(undefined, { style: 'currency', currency: summary.currency || 'CAD' }).format(cents / 100);
+    const price = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency || 'USD' }).format(cents / 100);
     const discounts = [
         { label: 'Promotion', cents: summary.promotionCents },
         { label: `Coupon${summary.coupon?.code ? ` (${summary.coupon.code})` : ''}`, title: summary.coupon?.title, cents: summary.coupon?.amountCents, coupon: true },

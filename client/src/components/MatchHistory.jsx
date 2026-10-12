@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { operations, money } from '../api/operations';
 import OrderPagination from './OrderPagination';
 import MatchHistorySkeleton from './MatchHistorySkeleton';
+import CountHistoryReview from './CountHistoryReview';
 import { Skeleton } from './Skeleton';
 import { TftMatchSummary, TftScoreboard } from './TftMatchContent';
 import '../styles/MatchHistory.css';
@@ -282,6 +283,7 @@ export default function MatchHistory({ orderId }) {
         {error && <p className="mh-error" role="alert">{error}</p>}{notice && <p className="mh-sr-only" role="status">{notice}</p>}
         {!data && !error && <MatchHistorySkeleton contentOnly />}
         {data && <>
+            {data.countReview ? <CountHistoryReview data={data} reload={() => action('')} /> : <>
             {!data.order.enabled && <p className="mh-notice">This order uses match-count contribution approvals.</p>}
             {data.importIssue && <p className="mh-notice">{data.importIssue}</p>}
             <div className="mh-counts"><span><strong>{counts.APPROVED + counts.PENDING}</strong> submitted</span><span><strong>{counts.APPROVED}</strong> approved</span>{!data.customerView && <><span><strong>{counts.PENDING}</strong> to review</span><span><strong>{counts.unsubmitted}</strong> not submitted</span>{counts.REJECTED > 0 && <span><strong>{counts.REJECTED}</strong> excluded</span>}</>}
@@ -299,6 +301,7 @@ export default function MatchHistory({ orderId }) {
                 {data.canReview && !data.canConfirm && <small>Earnings can be confirmed once the order is completed.</small>}
                 {data.canReopen && <button disabled={busy} onClick={() => action('/reopen', { revision: data.order.revision })}>Reopen review &amp; unconfirm earnings</button>}
             </footer>}
+            </>}
         </>}
         {quote && <SubmissionConfirmation quote={quote} busy={busy} error={submitError} onClose={() => { setQuote(null); setSubmitError(''); }} onConfirm={submitMatches} />}
     </section>;

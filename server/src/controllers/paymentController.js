@@ -137,7 +137,7 @@ async function completeCheckoutSessionPayment(order, session) {
                     Number(order.goldDiscountCents || 0)
                     : undefined,
                 cashAmountCents: session.amount_total || 0,
-                currency: session.currency || "cad",
+                currency: session.currency || "usd",
             },
         });
 
@@ -299,7 +299,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                         cashAmountCents: 0,
                         goldRedeemed,
                         goldDiscountCents,
-                        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+                        currency: order.currency || "usd",
                     },
                 });
                 if (!result.count) return false;
@@ -340,7 +340,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 {
                     quantity: 1,
                     price_data: {
-                        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+                        currency: order.currency || "usd",
                         unit_amount: cashAmountCents,
                         product_data: {
                             name: order.service?.title || order.boostType || "FastBoost Order",
@@ -376,7 +376,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 cashAmountCents,
                 goldRedeemed,
                 goldDiscountCents,
-                currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+                currency: order.currency || "usd",
             },
         });
 

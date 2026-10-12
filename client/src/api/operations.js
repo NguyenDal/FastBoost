@@ -19,7 +19,7 @@ export async function downloadContract(id) {
     const link = document.createElement('a'); link.href = url; link.download = 'FastBoost-contract.pdf'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
-export const money = (cents, currency = 'USD') => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+export const money = (cents, currency = 'USD') => new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
 export const date = value => value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'Not set';
 export function tenure(value) {
     if (!value) return 'Start date not set';

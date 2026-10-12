@@ -22,26 +22,7 @@ function Heading({ title, children }) { return <header className="ops-heading"><
 function Feedback({ error, loading }) { return error ? <p className="ops-error" role="alert">{error}</p> : loading ? <p role="status">Loading…</p> : null; }
 function Amounts({ values }) { return Object.keys(values || {}).length ? Object.entries(values).map(([currency, cents]) => <strong key={currency}>{money(cents, currency)} <small>{currency}</small></strong>) : <span>No confirmed earnings yet</span>; }
 
-export function EarningsPage() {
-    const { data, error, reload } = useData('/earnings');
-    const [currency, setCurrency] = useState('');
-    const [page, setPage] = useState(0);
-    const selected = currency || data?.totals[0]?.currency;
-    const total = data?.totals.find(t => t.currency === selected);
-    const rows = data?.rows.filter(r => r.currency === selected) || [];
-    return <div className="ops-page"><Heading title="Earnings">Completed orders, clear shares, and contribution approvals.</Heading>
-        <Feedback error={error} loading={!data} />
-        {data && <><div className="ops-toolbar"><span>All time · Completed and paid orders</span><label>Currency <select value={selected || ''} onChange={e => { setCurrency(e.target.value); setPage(0); }}>{data.totals.map(t => <option key={t.currency}>{t.currency}</option>)}</select></label></div>
-            <div className="ops-stats">{[['Service revenue', total?.revenueCents], ['FastBoost share · 30%', total?.platformCents], ['Booster pool · 70%', total?.boosterCents]].map(([label, value]) => <section className="ops-card" key={label}><span>{label}</span><h2>{money(value || 0, selected)}</h2><small>After discounts and redemption · Before sales tax</small></section>)}</div>
-            <div className="ops-callout"><strong>{money(total?.unallocatedCents || 0, selected)} awaiting allocation</strong><span>Confirm the completed order’s match history to allocate booster shares. FastBoost’s share is before fees and operating costs.</span></div>
-            {data.missingAmounts > 0 && <p role="status">{data.missingAmounts} older orders have no verified subtotal and are excluded.</p>}
-            <section className="ops-card"><h2>Completed orders <small>{rows.length}</small></h2>{!rows.length ? <div className="ops-empty">Completed paid orders will appear here.</div> : <div className="ops-table-wrap"><table><thead><tr><th>Order</th><th>Revenue</th><th>FastBoost</th><th>Booster pool</th><th>Allocation</th></tr></thead><tbody>{rows.slice(page * 10, page * 10 + 10).map(row => <tr key={row.id}><td><Link to={`/admin/orders/${row.id}`}>#{row.orderNumber}</Link><small>{row.boostType}</small></td><td>{money(row.revenueCents, selected)}</td><td>{money(row.platformCents, selected)}</td><td>{money(row.boosterCents, selected)}</td><td><span className={`ops-badge ${row.shares.length ? 'approved' : ''}`}>{row.shares.length ? 'Confirmed' : 'Awaiting approval'}</span></td></tr>)}</tbody></table></div>}
-                {rows.length > 10 && <div className="ops-toolbar"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Previous</button><span>{page + 1} / {Math.ceil(rows.length / 10)}</span><button disabled={(page + 1) * 10 >= rows.length} onClick={() => setPage(p => p + 1)}>Next</button></div>}</section></>}
-        <Contributions admin onChange={reload} />
-    </div>;
-}
-
-function ContributionRow({ order, record, admin, reload }) {
+export function ContributionRow({ order, record, admin, readOnly = false, reload }) {
     const [matches, setMatches] = useState(record.submittedMatches ?? '');
     const [note, setNote] = useState('');
     const [busy, setBusy] = useState(false);
@@ -58,7 +39,7 @@ function ContributionRow({ order, record, admin, reload }) {
     return <div className="ops-contribution"><div><strong>{admin ? record.booster?.username || 'Booster' : `#${order.orderNumber}`}</strong><small>{admin ? `#${order.orderNumber}` : order.boostType}</small></div>
         <span className={`ops-badge ${approved ? 'approved' : ''}`}>{approved ? `${record.approvedMatches} matches approved` : record.reviewedAt ? 'Changes requested' : record.submittedMatches != null ? `${record.submittedMatches} matches · Pending` : 'Not submitted'}</span>
         {record.reviewNote && <p>{record.reviewNote}</p>}
-        {admin ? record.submittedMatches != null && !record.reviewedAt && <div className="ops-actions"><button disabled={busy} onClick={() => submit('approve')}>Approve {record.submittedMatches} matches</button><input aria-label="Correction note" placeholder="Reason for correction" maxLength={500} value={note} onChange={e => setNote(e.target.value)} /><button disabled={busy || !note.trim()} onClick={() => submit('return')}>Request correction</button></div> : <form className="ops-actions" onSubmit={e => { e.preventDefault(); submit(); }}><label>Matches played<input type="number" min="0" max="10000" step="1" required value={matches} onChange={e => setMatches(e.target.value)} /></label><button disabled={busy || matches === ''}>{busy ? 'Submitting…' : 'Submit for approval'}</button></form>}
+        {admin ? !readOnly && record.submittedMatches != null && !record.reviewedAt && <div className="ops-actions"><button disabled={busy} onClick={() => submit('approve')}>Approve {record.submittedMatches} matches</button><input aria-label="Correction note" placeholder="Reason for correction" maxLength={500} value={note} onChange={e => setNote(e.target.value)} /><button disabled={busy || !note.trim()} onClick={() => submit('return')}>Request correction</button></div> : <form className="ops-actions" onSubmit={e => { e.preventDefault(); submit(); }}><label>Matches played<input type="number" min="0" max="10000" step="1" required value={matches} onChange={e => setMatches(e.target.value)} /></label><button disabled={busy || matches === ''}>{busy ? 'Submitting…' : 'Submit for approval'}</button></form>}
         <Feedback error={error} /></div>;
 }
 function Contributions({ admin = false, onChange }) {

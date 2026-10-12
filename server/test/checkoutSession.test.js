@@ -5,7 +5,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     let existing = null;
     let creates = 0;
     const queued = [];
-    const order = {id:'order-test',orderNumber:'LOL-RNK-CXBE6',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'cad',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
+    const order = {id:'order-test',orderNumber:'LOL-RNK-CXBE6',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'usd',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
     const prisma = {
         servicePriceRule: { findFirst: async () => ({ id: 'active-rule' }) },
         $queryRaw: async () => [],
@@ -60,7 +60,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.code,200);
     assert.equal(res.body.summary.totalCents,1700);
     assert.equal(res.body.summary.referralDiscountCents,300);
-    assert.deepEqual(res.body.summary.priceSummary, {currency:'cad',subtotalCents:3000,promotionCents:0,coupon:null,referralCents:300,goldRedeemed:100,goldDiscountCents:1000,totalCents:1700});
+    assert.deepEqual(res.body.summary.priceSummary, {currency:'usd',subtotalCents:3000,promotionCents:0,coupon:null,referralCents:300,goldRedeemed:100,goldDiscountCents:1000,totalCents:1700});
     assert.equal(res.body.checkoutUrl,undefined);
     await createCheckoutSession(req,res);
     assert.equal(creates,1);
@@ -105,7 +105,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.body.paidWithGoldOnly,true);
     assert.equal(res.body.summary.orderId,order.id, 'Gold payment must return the receipt needed for the immediate checkout render');
     assert.equal(res.body.summary.game,'lol');
-    assert.equal(res.body.summary.currency,'cad');
+    assert.equal(res.body.summary.currency,'usd');
     assert.equal(res.body.summary.goldRedeemed,100);
     assert.equal(res.body.summary.goldDiscountCents,1000);
     assert.equal(res.body.summary.totalCents,0);

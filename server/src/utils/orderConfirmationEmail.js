@@ -15,7 +15,7 @@ function buildConfirmation(order, email) {
     if (local && process.env.NODE_ENV === "production") throw new Error("Production email links cannot use localhost");
     const summary = checkoutSummary(order);
     const pricing = summary.priceSummary;
-    const money = cents => new Intl.NumberFormat("en-CA", { style: "currency", currency: summary.currency.toUpperCase(), currencyDisplay: "code" }).format(cents / 100);
+    const money = cents => new Intl.NumberFormat("en-US", { style: "currency", currency: summary.currency.toUpperCase(), currencyDisplay: "symbol" }).format(cents / 100);
     const rows = [
         ["Game", summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"],
         ["Service", summary.serviceType], ...summary.details,

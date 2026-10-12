@@ -28,7 +28,7 @@ function checkoutSummary(order, goldRedeemed = order.goldRedeemed || 0, goldDisc
         targetRank,
         queueType: order.queueType,
         region: order.region,
-        currency: order.currency || process.env.STRIPE_CURRENCY || "cad",
+        currency: order.currency || "usd",
         basePriceCents,
         addonPriceCents,
         saleDiscountCents: order.couponSaleId ? 0 : Math.max(0, basePriceCents + addonPriceCents - referralDiscountCents - orderAmountCents),
