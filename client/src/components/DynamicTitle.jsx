@@ -45,6 +45,8 @@ export default function DynamicTitle() {
       title = "Order Details | FastBoost";
     } else if (path === "/admin/accounts") {
       title = "Account Management | FastBoost";
+    } else if (path === "/admin/activity-logs") {
+      title = "Activity Logs | FastBoost";
     } else if (path === "/admin/prices") {
       title = "Price Management | FastBoost";
     } else if (path === "/provider/orders") {

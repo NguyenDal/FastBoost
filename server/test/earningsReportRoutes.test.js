@@ -33,9 +33,13 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
         } } };
         for (const path of paths.slice(3)) require.cache[path] = { exports: express.Router() };
         delete require.cache[paths[2]];
-        const app = express(); app.use(require(paths[2]));
+        const app = express(); app.use(express.json()); app.use(require(paths[2]));
         server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
-        const request = (path, actor) => fetch(`http://127.0.0.1:${server.address().port}${path}`, { headers: actor ? { Authorization: actor } : {} });
+        const request = (path, actor, body) => fetch(`http://127.0.0.1:${server.address().port}${path}`, {
+            method: body === undefined ? 'GET' : 'POST',
+            headers: { ...(actor ? { Authorization: actor } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}) },
+            ...(body ? { body: JSON.stringify(body) } : {}),
+        });
         assert.equal((await request('/earnings')).status, 401);
         assert.equal((await request('/earnings', 'booster')).status, 403);
         assert.equal(earningsReads, 0);
@@ -57,6 +61,14 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
         assert.deepEqual((await (await request('/me', 'booster')).json()).earnings, { CAD: 700 });
         assert.deepEqual((await (await request('/boosters', 'admin')).json()).boosters[0].earnings, { CAD: 700 });
         assert.equal(earningsReads, 3);
+        const exportRequest = { exportType: 'orders', rowCount: 2, from: '2026-10-01', to: '2026-10-12' };
+        assert.equal((await request('/earnings/export', undefined, exportRequest)).status, 401);
+        assert.equal((await request('/earnings/export', 'booster', exportRequest)).status, 403);
+        assert.equal((await request('/earnings/export', 'admin', exportRequest)).status, 200);
+        for (const invalid of [{ exportType: 'all' }, { rowCount: -1 }, { from: '2026-02-30' }, { to: '2026-09-01' }, { query: {} }]) {
+            assert.equal((await request('/earnings/export', 'admin', { ...exportRequest, ...invalid })).status, 400);
+        }
+        assert.equal(earningsReads, 3, 'export requests neither rewrite nor re-read earnings records');
     } finally {
         if (server) await new Promise(resolve => server.close(resolve));
         for (const [path, value] of saved) { if (value) require.cache[path] = value; else delete require.cache[path]; }

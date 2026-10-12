@@ -137,6 +137,26 @@ exports.Prisma.UserScalarFieldEnum = {
   referredById: 'referredById'
 };
 
+exports.Prisma.ManagementAuditLogScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  actorName: 'actorName',
+  actorRole: 'actorRole',
+  actorIsOwner: 'actorIsOwner',
+  category: 'category',
+  action: 'action',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  targetLabel: 'targetLabel',
+  requested: 'requested',
+  before: 'before',
+  after: 'after',
+  outcome: 'outcome',
+  statusCode: 'statusCode',
+  createdAt: 'createdAt',
+  finishedAt: 'finishedAt'
+};
+
 exports.Prisma.RegistrationConsentScalarFieldEnum = {
   userId: 'userId',
   termsVersion: 'termsVersion',
@@ -590,6 +610,7 @@ exports.NotificationType = exports.$Enums.NotificationType = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  ManagementAuditLog: 'ManagementAuditLog',
   RegistrationConsent: 'RegistrationConsent',
   BoosterProfile: 'BoosterProfile',
   BoosterContract: 'BoosterContract',

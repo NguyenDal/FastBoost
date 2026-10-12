@@ -30,6 +30,7 @@ app.post(
 
 app.post('/api/operations/docusign/webhook', express.raw({ type: 'application/json', limit: '2mb' }), require('./utils/contractStatus').webhook);
 app.use(express.json());
+app.use('/api', require('./middleware/managementAudit').createManagementAudit());
 
 app.get("/", (req, res) => {
   res.json({ message: "API is running" });
@@ -49,6 +50,7 @@ app.use("/api/assignment-requests", assignmentRequestRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralRoutes);
+app.use('/api/admin/activity-logs', require('./routes/activityLogRoutes').createActivityLogRouter());
 app.use("/api/admin", adminUserRoutes);
 app.use('/api/operations', require('./routes/operationsRoutes'));
 app.use("/api/payments", paymentRoutes);

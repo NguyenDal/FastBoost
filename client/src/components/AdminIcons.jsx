@@ -24,3 +24,11 @@ export function PriceIcon() {
         </svg>
     );
 }
+
+export function ActivityIcon() {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M14 3H5v18h14v-7M8 8h3M8 12h3M8 16h7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="17" cy="7" r="4" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M17 5v2l1.3 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>;
+}

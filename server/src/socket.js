@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const prisma = require("./prisma");
+const { withAuditedSocketMessage } = require('./utils/auditedSocketMessage');
 const {
     createChatMessageNotifications,
 } = require("./utils/chatNotifications");
@@ -131,48 +132,51 @@ function initSocket(httpServer) {
                     return cb?.({ ok: false, message: "User ID missing from token" });
                 }
 
-                const member = await prisma.conversationParticipant.findUnique({
-                    where: {
-                        conversationId_userId: {
-                            conversationId,
-                            userId,
-                        },
-                    },
-                });
-
-                if (!member) {
-                    return cb?.({ ok: false, message: "Forbidden" });
-                }
-
-                const msg = await prisma.message.create({
-                    data: {
-                        conversationId,
-                        senderId: userId,
-                        content: content.trim(),
-                    },
-                    include: {
-                        sender: {
-                            select: {
-                                id: true,
-                                email: true,
-                                username: true,
-                                role: true,
-                                profile: true,
+                const msg = await withAuditedSocketMessage(prisma, socket.user, conversationId, async () => {
+                    const member = await prisma.conversationParticipant.findUnique({
+                        where: {
+                            conversationId_userId: {
+                                conversationId,
+                                userId,
                             },
                         },
-                    },
-                });
+                    });
 
-                await prisma.conversation.update({
-                    where: { id: conversationId },
-                    data: { lastMessageAt: msg.createdAt },
-                });
+                    if (!member) {
+                        throw Object.assign(new Error('Forbidden'), { status: 403 });
+                    }
 
-                await createChatMessageNotifications({
-                    prisma,
-                    conversationId,
-                    senderId: userId,
-                    message: msg,
+                    const msg = await prisma.message.create({
+                        data: {
+                            conversationId,
+                            senderId: userId,
+                            content: content.trim(),
+                        },
+                        include: {
+                            sender: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    username: true,
+                                    role: true,
+                                    profile: true,
+                                },
+                            },
+                        },
+                    });
+
+                    await prisma.conversation.update({
+                        where: { id: conversationId },
+                        data: { lastMessageAt: msg.createdAt },
+                    });
+
+                    await createChatMessageNotifications({
+                        prisma,
+                        conversationId,
+                        senderId: userId,
+                        message: msg,
+                    });
+                    return msg;
                 });
 
                 const room = `conv:${conversationId}`;

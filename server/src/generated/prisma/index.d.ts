@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model ManagementAuditLog
+ *
+ */
+export type ManagementAuditLog = $Result.DefaultSelection<Prisma.$ManagementAuditLogPayload>
+/**
  * Model RegistrationConsent
  *
  */
@@ -413,6 +418,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.managementAuditLog`: Exposes CRUD operations for the **ManagementAuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ManagementAuditLogs
+    * const managementAuditLogs = await prisma.managementAuditLog.findMany()
+    * ```
+    */
+  get managementAuditLog(): Prisma.ManagementAuditLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.registrationConsent`: Exposes CRUD operations for the **RegistrationConsent** model.
@@ -1128,6 +1143,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    ManagementAuditLog: 'ManagementAuditLog',
     RegistrationConsent: 'RegistrationConsent',
     BoosterProfile: 'BoosterProfile',
     BoosterContract: 'BoosterContract',
@@ -1171,7 +1187,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "registrationConsent" | "boosterProfile" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1246,6 +1262,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      ManagementAuditLog: {
+        payload: Prisma.$ManagementAuditLogPayload<ExtArgs>
+        fields: Prisma.ManagementAuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ManagementAuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ManagementAuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ManagementAuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ManagementAuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.ManagementAuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.ManagementAuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.ManagementAuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ManagementAuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ManagementAuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          update: {
+            args: Prisma.ManagementAuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ManagementAuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ManagementAuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ManagementAuditLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.ManagementAuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagementAuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ManagementAuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateManagementAuditLog>
+          }
+          groupBy: {
+            args: Prisma.ManagementAuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ManagementAuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ManagementAuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ManagementAuditLogCountAggregateOutputType> | number
           }
         }
       }
@@ -3430,6 +3520,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    managementAuditLog?: ManagementAuditLogOmit
     registrationConsent?: RegistrationConsentOmit
     boosterProfile?: BoosterProfileOmit
     boosterContract?: BoosterContractOmit
@@ -5943,6 +6034,1184 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ManagementAuditLog
+   */
+
+  export type AggregateManagementAuditLog = {
+    _count: ManagementAuditLogCountAggregateOutputType | null
+    _avg: ManagementAuditLogAvgAggregateOutputType | null
+    _sum: ManagementAuditLogSumAggregateOutputType | null
+    _min: ManagementAuditLogMinAggregateOutputType | null
+    _max: ManagementAuditLogMaxAggregateOutputType | null
+  }
+
+  export type ManagementAuditLogAvgAggregateOutputType = {
+    statusCode: number | null
+  }
+
+  export type ManagementAuditLogSumAggregateOutputType = {
+    statusCode: number | null
+  }
+
+  export type ManagementAuditLogMinAggregateOutputType = {
+    id: string | null
+    actorId: string | null
+    actorName: string | null
+    actorRole: string | null
+    actorIsOwner: boolean | null
+    category: string | null
+    action: string | null
+    targetType: string | null
+    targetId: string | null
+    targetLabel: string | null
+    outcome: string | null
+    statusCode: number | null
+    createdAt: Date | null
+    finishedAt: Date | null
+  }
+
+  export type ManagementAuditLogMaxAggregateOutputType = {
+    id: string | null
+    actorId: string | null
+    actorName: string | null
+    actorRole: string | null
+    actorIsOwner: boolean | null
+    category: string | null
+    action: string | null
+    targetType: string | null
+    targetId: string | null
+    targetLabel: string | null
+    outcome: string | null
+    statusCode: number | null
+    createdAt: Date | null
+    finishedAt: Date | null
+  }
+
+  export type ManagementAuditLogCountAggregateOutputType = {
+    id: number
+    actorId: number
+    actorName: number
+    actorRole: number
+    actorIsOwner: number
+    category: number
+    action: number
+    targetType: number
+    targetId: number
+    targetLabel: number
+    requested: number
+    before: number
+    after: number
+    outcome: number
+    statusCode: number
+    createdAt: number
+    finishedAt: number
+    _all: number
+  }
+
+
+  export type ManagementAuditLogAvgAggregateInputType = {
+    statusCode?: true
+  }
+
+  export type ManagementAuditLogSumAggregateInputType = {
+    statusCode?: true
+  }
+
+  export type ManagementAuditLogMinAggregateInputType = {
+    id?: true
+    actorId?: true
+    actorName?: true
+    actorRole?: true
+    actorIsOwner?: true
+    category?: true
+    action?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    outcome?: true
+    statusCode?: true
+    createdAt?: true
+    finishedAt?: true
+  }
+
+  export type ManagementAuditLogMaxAggregateInputType = {
+    id?: true
+    actorId?: true
+    actorName?: true
+    actorRole?: true
+    actorIsOwner?: true
+    category?: true
+    action?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    outcome?: true
+    statusCode?: true
+    createdAt?: true
+    finishedAt?: true
+  }
+
+  export type ManagementAuditLogCountAggregateInputType = {
+    id?: true
+    actorId?: true
+    actorName?: true
+    actorRole?: true
+    actorIsOwner?: true
+    category?: true
+    action?: true
+    targetType?: true
+    targetId?: true
+    targetLabel?: true
+    requested?: true
+    before?: true
+    after?: true
+    outcome?: true
+    statusCode?: true
+    createdAt?: true
+    finishedAt?: true
+    _all?: true
+  }
+
+  export type ManagementAuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagementAuditLog to aggregate.
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ManagementAuditLogs to fetch.
+     */
+    orderBy?: ManagementAuditLogOrderByWithRelationInput | ManagementAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: ManagementAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ManagementAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ManagementAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ManagementAuditLogs
+    **/
+    _count?: true | ManagementAuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: ManagementAuditLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: ManagementAuditLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: ManagementAuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: ManagementAuditLogMaxAggregateInputType
+  }
+
+  export type GetManagementAuditLogAggregateType<T extends ManagementAuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateManagementAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateManagementAuditLog[P]>
+      : GetScalarType<T[P], AggregateManagementAuditLog[P]>
+  }
+
+
+
+
+  export type ManagementAuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ManagementAuditLogWhereInput
+    orderBy?: ManagementAuditLogOrderByWithAggregationInput | ManagementAuditLogOrderByWithAggregationInput[]
+    by: ManagementAuditLogScalarFieldEnum[] | ManagementAuditLogScalarFieldEnum
+    having?: ManagementAuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ManagementAuditLogCountAggregateInputType | true
+    _avg?: ManagementAuditLogAvgAggregateInputType
+    _sum?: ManagementAuditLogSumAggregateInputType
+    _min?: ManagementAuditLogMinAggregateInputType
+    _max?: ManagementAuditLogMaxAggregateInputType
+  }
+
+  export type ManagementAuditLogGroupByOutputType = {
+    id: string
+    actorId: string | null
+    actorName: string
+    actorRole: string
+    actorIsOwner: boolean
+    category: string
+    action: string
+    targetType: string
+    targetId: string | null
+    targetLabel: string | null
+    requested: JsonValue | null
+    before: JsonValue | null
+    after: JsonValue | null
+    outcome: string
+    statusCode: number | null
+    createdAt: Date
+    finishedAt: Date | null
+    _count: ManagementAuditLogCountAggregateOutputType | null
+    _avg: ManagementAuditLogAvgAggregateOutputType | null
+    _sum: ManagementAuditLogSumAggregateOutputType | null
+    _min: ManagementAuditLogMinAggregateOutputType | null
+    _max: ManagementAuditLogMaxAggregateOutputType | null
+  }
+
+  type GetManagementAuditLogGroupByPayload<T extends ManagementAuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ManagementAuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ManagementAuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ManagementAuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ManagementAuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ManagementAuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    actorName?: boolean
+    actorRole?: boolean
+    actorIsOwner?: boolean
+    category?: boolean
+    action?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    requested?: boolean
+    before?: boolean
+    after?: boolean
+    outcome?: boolean
+    statusCode?: boolean
+    createdAt?: boolean
+    finishedAt?: boolean
+  }, ExtArgs["result"]["managementAuditLog"]>
+
+  export type ManagementAuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    actorName?: boolean
+    actorRole?: boolean
+    actorIsOwner?: boolean
+    category?: boolean
+    action?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    requested?: boolean
+    before?: boolean
+    after?: boolean
+    outcome?: boolean
+    statusCode?: boolean
+    createdAt?: boolean
+    finishedAt?: boolean
+  }, ExtArgs["result"]["managementAuditLog"]>
+
+  export type ManagementAuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    actorId?: boolean
+    actorName?: boolean
+    actorRole?: boolean
+    actorIsOwner?: boolean
+    category?: boolean
+    action?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    requested?: boolean
+    before?: boolean
+    after?: boolean
+    outcome?: boolean
+    statusCode?: boolean
+    createdAt?: boolean
+    finishedAt?: boolean
+  }, ExtArgs["result"]["managementAuditLog"]>
+
+  export type ManagementAuditLogSelectScalar = {
+    id?: boolean
+    actorId?: boolean
+    actorName?: boolean
+    actorRole?: boolean
+    actorIsOwner?: boolean
+    category?: boolean
+    action?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    targetLabel?: boolean
+    requested?: boolean
+    before?: boolean
+    after?: boolean
+    outcome?: boolean
+    statusCode?: boolean
+    createdAt?: boolean
+    finishedAt?: boolean
+  }
+
+  export type ManagementAuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "actorId" | "actorName" | "actorRole" | "actorIsOwner" | "category" | "action" | "targetType" | "targetId" | "targetLabel" | "requested" | "before" | "after" | "outcome" | "statusCode" | "createdAt" | "finishedAt", ExtArgs["result"]["managementAuditLog"]>
+
+  export type $ManagementAuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ManagementAuditLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      actorId: string | null
+      actorName: string
+      actorRole: string
+      actorIsOwner: boolean
+      category: string
+      action: string
+      targetType: string
+      targetId: string | null
+      targetLabel: string | null
+      requested: Prisma.JsonValue | null
+      before: Prisma.JsonValue | null
+      after: Prisma.JsonValue | null
+      outcome: string
+      statusCode: number | null
+      createdAt: Date
+      finishedAt: Date | null
+    }, ExtArgs["result"]["managementAuditLog"]>
+    composites: {}
+  }
+
+  type ManagementAuditLogGetPayload<S extends boolean | null | undefined | ManagementAuditLogDefaultArgs> = $Result.GetResult<Prisma.$ManagementAuditLogPayload, S>
+
+  type ManagementAuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ManagementAuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ManagementAuditLogCountAggregateInputType | true
+    }
+
+  export interface ManagementAuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ManagementAuditLog'], meta: { name: 'ManagementAuditLog' } }
+    /**
+     * Find zero or one ManagementAuditLog that matches the filter.
+     * @param {ManagementAuditLogFindUniqueArgs} args - Arguments to find a ManagementAuditLog
+     * @example
+     * // Get one ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ManagementAuditLogFindUniqueArgs>(args: SelectSubset<T, ManagementAuditLogFindUniqueArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ManagementAuditLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ManagementAuditLogFindUniqueOrThrowArgs} args - Arguments to find a ManagementAuditLog
+     * @example
+     * // Get one ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ManagementAuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ManagementAuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagementAuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogFindFirstArgs} args - Arguments to find a ManagementAuditLog
+     * @example
+     * // Get one ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ManagementAuditLogFindFirstArgs>(args?: SelectSubset<T, ManagementAuditLogFindFirstArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagementAuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogFindFirstOrThrowArgs} args - Arguments to find a ManagementAuditLog
+     * @example
+     * // Get one ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ManagementAuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ManagementAuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ManagementAuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ManagementAuditLogs
+     * const managementAuditLogs = await prisma.managementAuditLog.findMany()
+     *
+     * // Get first 10 ManagementAuditLogs
+     * const managementAuditLogs = await prisma.managementAuditLog.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const managementAuditLogWithIdOnly = await prisma.managementAuditLog.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ManagementAuditLogFindManyArgs>(args?: SelectSubset<T, ManagementAuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ManagementAuditLog.
+     * @param {ManagementAuditLogCreateArgs} args - Arguments to create a ManagementAuditLog.
+     * @example
+     * // Create one ManagementAuditLog
+     * const ManagementAuditLog = await prisma.managementAuditLog.create({
+     *   data: {
+     *     // ... data to create a ManagementAuditLog
+     *   }
+     * })
+     *
+     */
+    create<T extends ManagementAuditLogCreateArgs>(args: SelectSubset<T, ManagementAuditLogCreateArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ManagementAuditLogs.
+     * @param {ManagementAuditLogCreateManyArgs} args - Arguments to create many ManagementAuditLogs.
+     * @example
+     * // Create many ManagementAuditLogs
+     * const managementAuditLog = await prisma.managementAuditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends ManagementAuditLogCreateManyArgs>(args?: SelectSubset<T, ManagementAuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ManagementAuditLogs and returns the data saved in the database.
+     * @param {ManagementAuditLogCreateManyAndReturnArgs} args - Arguments to create many ManagementAuditLogs.
+     * @example
+     * // Create many ManagementAuditLogs
+     * const managementAuditLog = await prisma.managementAuditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many ManagementAuditLogs and only return the `id`
+     * const managementAuditLogWithIdOnly = await prisma.managementAuditLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends ManagementAuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ManagementAuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ManagementAuditLog.
+     * @param {ManagementAuditLogDeleteArgs} args - Arguments to delete one ManagementAuditLog.
+     * @example
+     * // Delete one ManagementAuditLog
+     * const ManagementAuditLog = await prisma.managementAuditLog.delete({
+     *   where: {
+     *     // ... filter to delete one ManagementAuditLog
+     *   }
+     * })
+     *
+     */
+    delete<T extends ManagementAuditLogDeleteArgs>(args: SelectSubset<T, ManagementAuditLogDeleteArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ManagementAuditLog.
+     * @param {ManagementAuditLogUpdateArgs} args - Arguments to update one ManagementAuditLog.
+     * @example
+     * // Update one ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends ManagementAuditLogUpdateArgs>(args: SelectSubset<T, ManagementAuditLogUpdateArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ManagementAuditLogs.
+     * @param {ManagementAuditLogDeleteManyArgs} args - Arguments to filter ManagementAuditLogs to delete.
+     * @example
+     * // Delete a few ManagementAuditLogs
+     * const { count } = await prisma.managementAuditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends ManagementAuditLogDeleteManyArgs>(args?: SelectSubset<T, ManagementAuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagementAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ManagementAuditLogs
+     * const managementAuditLog = await prisma.managementAuditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends ManagementAuditLogUpdateManyArgs>(args: SelectSubset<T, ManagementAuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagementAuditLogs and returns the data updated in the database.
+     * @param {ManagementAuditLogUpdateManyAndReturnArgs} args - Arguments to update many ManagementAuditLogs.
+     * @example
+     * // Update many ManagementAuditLogs
+     * const managementAuditLog = await prisma.managementAuditLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more ManagementAuditLogs and only return the `id`
+     * const managementAuditLogWithIdOnly = await prisma.managementAuditLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ManagementAuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, ManagementAuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ManagementAuditLog.
+     * @param {ManagementAuditLogUpsertArgs} args - Arguments to update or create a ManagementAuditLog.
+     * @example
+     * // Update or create a ManagementAuditLog
+     * const managementAuditLog = await prisma.managementAuditLog.upsert({
+     *   create: {
+     *     // ... data to create a ManagementAuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ManagementAuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ManagementAuditLogUpsertArgs>(args: SelectSubset<T, ManagementAuditLogUpsertArgs<ExtArgs>>): Prisma__ManagementAuditLogClient<$Result.GetResult<Prisma.$ManagementAuditLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ManagementAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogCountArgs} args - Arguments to filter ManagementAuditLogs to count.
+     * @example
+     * // Count the number of ManagementAuditLogs
+     * const count = await prisma.managementAuditLog.count({
+     *   where: {
+     *     // ... the filter for the ManagementAuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ManagementAuditLogCountArgs>(
+      args?: Subset<T, ManagementAuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ManagementAuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ManagementAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ManagementAuditLogAggregateArgs>(args: Subset<T, ManagementAuditLogAggregateArgs>): Prisma.PrismaPromise<GetManagementAuditLogAggregateType<T>>
+
+    /**
+     * Group by ManagementAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagementAuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends ManagementAuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ManagementAuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: ManagementAuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ManagementAuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetManagementAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ManagementAuditLog model
+   */
+  readonly fields: ManagementAuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ManagementAuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ManagementAuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ManagementAuditLog model
+   */
+  interface ManagementAuditLogFieldRefs {
+    readonly id: FieldRef<"ManagementAuditLog", 'String'>
+    readonly actorId: FieldRef<"ManagementAuditLog", 'String'>
+    readonly actorName: FieldRef<"ManagementAuditLog", 'String'>
+    readonly actorRole: FieldRef<"ManagementAuditLog", 'String'>
+    readonly actorIsOwner: FieldRef<"ManagementAuditLog", 'Boolean'>
+    readonly category: FieldRef<"ManagementAuditLog", 'String'>
+    readonly action: FieldRef<"ManagementAuditLog", 'String'>
+    readonly targetType: FieldRef<"ManagementAuditLog", 'String'>
+    readonly targetId: FieldRef<"ManagementAuditLog", 'String'>
+    readonly targetLabel: FieldRef<"ManagementAuditLog", 'String'>
+    readonly requested: FieldRef<"ManagementAuditLog", 'Json'>
+    readonly before: FieldRef<"ManagementAuditLog", 'Json'>
+    readonly after: FieldRef<"ManagementAuditLog", 'Json'>
+    readonly outcome: FieldRef<"ManagementAuditLog", 'String'>
+    readonly statusCode: FieldRef<"ManagementAuditLog", 'Int'>
+    readonly createdAt: FieldRef<"ManagementAuditLog", 'DateTime'>
+    readonly finishedAt: FieldRef<"ManagementAuditLog", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * ManagementAuditLog findUnique
+   */
+  export type ManagementAuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which ManagementAuditLog to fetch.
+     */
+    where: ManagementAuditLogWhereUniqueInput
+  }
+
+  /**
+   * ManagementAuditLog findUniqueOrThrow
+   */
+  export type ManagementAuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which ManagementAuditLog to fetch.
+     */
+    where: ManagementAuditLogWhereUniqueInput
+  }
+
+  /**
+   * ManagementAuditLog findFirst
+   */
+  export type ManagementAuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which ManagementAuditLog to fetch.
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ManagementAuditLogs to fetch.
+     */
+    orderBy?: ManagementAuditLogOrderByWithRelationInput | ManagementAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ManagementAuditLogs.
+     */
+    cursor?: ManagementAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ManagementAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ManagementAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ManagementAuditLogs.
+     */
+    distinct?: ManagementAuditLogScalarFieldEnum | ManagementAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * ManagementAuditLog findFirstOrThrow
+   */
+  export type ManagementAuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which ManagementAuditLog to fetch.
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ManagementAuditLogs to fetch.
+     */
+    orderBy?: ManagementAuditLogOrderByWithRelationInput | ManagementAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ManagementAuditLogs.
+     */
+    cursor?: ManagementAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ManagementAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ManagementAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ManagementAuditLogs.
+     */
+    distinct?: ManagementAuditLogScalarFieldEnum | ManagementAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * ManagementAuditLog findMany
+   */
+  export type ManagementAuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which ManagementAuditLogs to fetch.
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ManagementAuditLogs to fetch.
+     */
+    orderBy?: ManagementAuditLogOrderByWithRelationInput | ManagementAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ManagementAuditLogs.
+     */
+    cursor?: ManagementAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ManagementAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ManagementAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ManagementAuditLogs.
+     */
+    distinct?: ManagementAuditLogScalarFieldEnum | ManagementAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * ManagementAuditLog create
+   */
+  export type ManagementAuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ManagementAuditLog.
+     */
+    data: XOR<ManagementAuditLogCreateInput, ManagementAuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * ManagementAuditLog createMany
+   */
+  export type ManagementAuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ManagementAuditLogs.
+     */
+    data: ManagementAuditLogCreateManyInput | ManagementAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ManagementAuditLog createManyAndReturn
+   */
+  export type ManagementAuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many ManagementAuditLogs.
+     */
+    data: ManagementAuditLogCreateManyInput | ManagementAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ManagementAuditLog update
+   */
+  export type ManagementAuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ManagementAuditLog.
+     */
+    data: XOR<ManagementAuditLogUpdateInput, ManagementAuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which ManagementAuditLog to update.
+     */
+    where: ManagementAuditLogWhereUniqueInput
+  }
+
+  /**
+   * ManagementAuditLog updateMany
+   */
+  export type ManagementAuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ManagementAuditLogs.
+     */
+    data: XOR<ManagementAuditLogUpdateManyMutationInput, ManagementAuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagementAuditLogs to update
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * Limit how many ManagementAuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagementAuditLog updateManyAndReturn
+   */
+  export type ManagementAuditLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to update ManagementAuditLogs.
+     */
+    data: XOR<ManagementAuditLogUpdateManyMutationInput, ManagementAuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagementAuditLogs to update
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * Limit how many ManagementAuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagementAuditLog upsert
+   */
+  export type ManagementAuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ManagementAuditLog to update in case it exists.
+     */
+    where: ManagementAuditLogWhereUniqueInput
+    /**
+     * In case the ManagementAuditLog found by the `where` argument doesn't exist, create a new ManagementAuditLog with this data.
+     */
+    create: XOR<ManagementAuditLogCreateInput, ManagementAuditLogUncheckedCreateInput>
+    /**
+     * In case the ManagementAuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ManagementAuditLogUpdateInput, ManagementAuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ManagementAuditLog delete
+   */
+  export type ManagementAuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
+    /**
+     * Filter which ManagementAuditLog to delete.
+     */
+    where: ManagementAuditLogWhereUniqueInput
+  }
+
+  /**
+   * ManagementAuditLog deleteMany
+   */
+  export type ManagementAuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagementAuditLogs to delete
+     */
+    where?: ManagementAuditLogWhereInput
+    /**
+     * Limit how many ManagementAuditLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagementAuditLog without action
+   */
+  export type ManagementAuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagementAuditLog
+     */
+    select?: ManagementAuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagementAuditLog
+     */
+    omit?: ManagementAuditLogOmit<ExtArgs> | null
   }
 
 
@@ -38534,6 +39803,29 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const ManagementAuditLogScalarFieldEnum: {
+    id: 'id',
+    actorId: 'actorId',
+    actorName: 'actorName',
+    actorRole: 'actorRole',
+    actorIsOwner: 'actorIsOwner',
+    category: 'category',
+    action: 'action',
+    targetType: 'targetType',
+    targetId: 'targetId',
+    targetLabel: 'targetLabel',
+    requested: 'requested',
+    before: 'before',
+    after: 'after',
+    outcome: 'outcome',
+    statusCode: 'statusCode',
+    createdAt: 'createdAt',
+    finishedAt: 'finishedAt'
+  };
+
+  export type ManagementAuditLogScalarFieldEnum = (typeof ManagementAuditLogScalarFieldEnum)[keyof typeof ManagementAuditLogScalarFieldEnum]
+
+
   export const RegistrationConsentScalarFieldEnum: {
     userId: 'userId',
     termsVersion: 'termsVersion',
@@ -39080,6 +40372,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -39104,20 +40410,6 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal[]'
    */
   export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
 
 
 
@@ -39412,6 +40704,120 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     referralCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     referredById?: StringNullableWithAggregatesFilter<"User"> | string | null
+  }
+
+  export type ManagementAuditLogWhereInput = {
+    AND?: ManagementAuditLogWhereInput | ManagementAuditLogWhereInput[]
+    OR?: ManagementAuditLogWhereInput[]
+    NOT?: ManagementAuditLogWhereInput | ManagementAuditLogWhereInput[]
+    id?: StringFilter<"ManagementAuditLog"> | string
+    actorId?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    actorName?: StringFilter<"ManagementAuditLog"> | string
+    actorRole?: StringFilter<"ManagementAuditLog"> | string
+    actorIsOwner?: BoolFilter<"ManagementAuditLog"> | boolean
+    category?: StringFilter<"ManagementAuditLog"> | string
+    action?: StringFilter<"ManagementAuditLog"> | string
+    targetType?: StringFilter<"ManagementAuditLog"> | string
+    targetId?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    targetLabel?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    requested?: JsonNullableFilter<"ManagementAuditLog">
+    before?: JsonNullableFilter<"ManagementAuditLog">
+    after?: JsonNullableFilter<"ManagementAuditLog">
+    outcome?: StringFilter<"ManagementAuditLog"> | string
+    statusCode?: IntNullableFilter<"ManagementAuditLog"> | number | null
+    createdAt?: DateTimeFilter<"ManagementAuditLog"> | Date | string
+    finishedAt?: DateTimeNullableFilter<"ManagementAuditLog"> | Date | string | null
+  }
+
+  export type ManagementAuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    actorId?: SortOrderInput | SortOrder
+    actorName?: SortOrder
+    actorRole?: SortOrder
+    actorIsOwner?: SortOrder
+    category?: SortOrder
+    action?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    targetLabel?: SortOrderInput | SortOrder
+    requested?: SortOrderInput | SortOrder
+    before?: SortOrderInput | SortOrder
+    after?: SortOrderInput | SortOrder
+    outcome?: SortOrder
+    statusCode?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrderInput | SortOrder
+  }
+
+  export type ManagementAuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ManagementAuditLogWhereInput | ManagementAuditLogWhereInput[]
+    OR?: ManagementAuditLogWhereInput[]
+    NOT?: ManagementAuditLogWhereInput | ManagementAuditLogWhereInput[]
+    actorId?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    actorName?: StringFilter<"ManagementAuditLog"> | string
+    actorRole?: StringFilter<"ManagementAuditLog"> | string
+    actorIsOwner?: BoolFilter<"ManagementAuditLog"> | boolean
+    category?: StringFilter<"ManagementAuditLog"> | string
+    action?: StringFilter<"ManagementAuditLog"> | string
+    targetType?: StringFilter<"ManagementAuditLog"> | string
+    targetId?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    targetLabel?: StringNullableFilter<"ManagementAuditLog"> | string | null
+    requested?: JsonNullableFilter<"ManagementAuditLog">
+    before?: JsonNullableFilter<"ManagementAuditLog">
+    after?: JsonNullableFilter<"ManagementAuditLog">
+    outcome?: StringFilter<"ManagementAuditLog"> | string
+    statusCode?: IntNullableFilter<"ManagementAuditLog"> | number | null
+    createdAt?: DateTimeFilter<"ManagementAuditLog"> | Date | string
+    finishedAt?: DateTimeNullableFilter<"ManagementAuditLog"> | Date | string | null
+  }, "id">
+
+  export type ManagementAuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    actorId?: SortOrderInput | SortOrder
+    actorName?: SortOrder
+    actorRole?: SortOrder
+    actorIsOwner?: SortOrder
+    category?: SortOrder
+    action?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    targetLabel?: SortOrderInput | SortOrder
+    requested?: SortOrderInput | SortOrder
+    before?: SortOrderInput | SortOrder
+    after?: SortOrderInput | SortOrder
+    outcome?: SortOrder
+    statusCode?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrderInput | SortOrder
+    _count?: ManagementAuditLogCountOrderByAggregateInput
+    _avg?: ManagementAuditLogAvgOrderByAggregateInput
+    _max?: ManagementAuditLogMaxOrderByAggregateInput
+    _min?: ManagementAuditLogMinOrderByAggregateInput
+    _sum?: ManagementAuditLogSumOrderByAggregateInput
+  }
+
+  export type ManagementAuditLogScalarWhereWithAggregatesInput = {
+    AND?: ManagementAuditLogScalarWhereWithAggregatesInput | ManagementAuditLogScalarWhereWithAggregatesInput[]
+    OR?: ManagementAuditLogScalarWhereWithAggregatesInput[]
+    NOT?: ManagementAuditLogScalarWhereWithAggregatesInput | ManagementAuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    actorId?: StringNullableWithAggregatesFilter<"ManagementAuditLog"> | string | null
+    actorName?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    actorRole?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    actorIsOwner?: BoolWithAggregatesFilter<"ManagementAuditLog"> | boolean
+    category?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    action?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    targetType?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    targetId?: StringNullableWithAggregatesFilter<"ManagementAuditLog"> | string | null
+    targetLabel?: StringNullableWithAggregatesFilter<"ManagementAuditLog"> | string | null
+    requested?: JsonNullableWithAggregatesFilter<"ManagementAuditLog">
+    before?: JsonNullableWithAggregatesFilter<"ManagementAuditLog">
+    after?: JsonNullableWithAggregatesFilter<"ManagementAuditLog">
+    outcome?: StringWithAggregatesFilter<"ManagementAuditLog"> | string
+    statusCode?: IntNullableWithAggregatesFilter<"ManagementAuditLog"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"ManagementAuditLog"> | Date | string
+    finishedAt?: DateTimeNullableWithAggregatesFilter<"ManagementAuditLog"> | Date | string | null
   }
 
   export type RegistrationConsentWhereInput = {
@@ -41974,6 +43380,146 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ManagementAuditLogCreateInput = {
+    id?: string
+    actorId?: string | null
+    actorName: string
+    actorRole: string
+    actorIsOwner?: boolean
+    category: string
+    action: string
+    targetType: string
+    targetId?: string | null
+    targetLabel?: string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: string
+    statusCode?: number | null
+    createdAt?: Date | string
+    finishedAt?: Date | string | null
+  }
+
+  export type ManagementAuditLogUncheckedCreateInput = {
+    id?: string
+    actorId?: string | null
+    actorName: string
+    actorRole: string
+    actorIsOwner?: boolean
+    category: string
+    action: string
+    targetType: string
+    targetId?: string | null
+    targetLabel?: string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: string
+    statusCode?: number | null
+    createdAt?: Date | string
+    finishedAt?: Date | string | null
+  }
+
+  export type ManagementAuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: StringFieldUpdateOperationsInput | string
+    actorRole?: StringFieldUpdateOperationsInput | string
+    actorIsOwner?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    targetType?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: StringFieldUpdateOperationsInput | string
+    statusCode?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ManagementAuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: StringFieldUpdateOperationsInput | string
+    actorRole?: StringFieldUpdateOperationsInput | string
+    actorIsOwner?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    targetType?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: StringFieldUpdateOperationsInput | string
+    statusCode?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ManagementAuditLogCreateManyInput = {
+    id?: string
+    actorId?: string | null
+    actorName: string
+    actorRole: string
+    actorIsOwner?: boolean
+    category: string
+    action: string
+    targetType: string
+    targetId?: string | null
+    targetLabel?: string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: string
+    statusCode?: number | null
+    createdAt?: Date | string
+    finishedAt?: Date | string | null
+  }
+
+  export type ManagementAuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: StringFieldUpdateOperationsInput | string
+    actorRole?: StringFieldUpdateOperationsInput | string
+    actorIsOwner?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    targetType?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: StringFieldUpdateOperationsInput | string
+    statusCode?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ManagementAuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: StringFieldUpdateOperationsInput | string
+    actorRole?: StringFieldUpdateOperationsInput | string
+    actorIsOwner?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    targetType?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    requested?: NullableJsonNullValueInput | InputJsonValue
+    before?: NullableJsonNullValueInput | InputJsonValue
+    after?: NullableJsonNullValueInput | InputJsonValue
+    outcome?: StringFieldUpdateOperationsInput | string
+    statusCode?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RegistrationConsentCreateInput = {
@@ -44941,6 +46487,144 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ManagementAuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    actorName?: SortOrder
+    actorRole?: SortOrder
+    actorIsOwner?: SortOrder
+    category?: SortOrder
+    action?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    requested?: SortOrder
+    before?: SortOrder
+    after?: SortOrder
+    outcome?: SortOrder
+    statusCode?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+  }
+
+  export type ManagementAuditLogAvgOrderByAggregateInput = {
+    statusCode?: SortOrder
+  }
+
+  export type ManagementAuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    actorName?: SortOrder
+    actorRole?: SortOrder
+    actorIsOwner?: SortOrder
+    category?: SortOrder
+    action?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    outcome?: SortOrder
+    statusCode?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+  }
+
+  export type ManagementAuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    actorId?: SortOrder
+    actorName?: SortOrder
+    actorRole?: SortOrder
+    actorIsOwner?: SortOrder
+    category?: SortOrder
+    action?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    targetLabel?: SortOrder
+    outcome?: SortOrder
+    statusCode?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+  }
+
+  export type ManagementAuditLogSumOrderByAggregateInput = {
+    statusCode?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
 
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
@@ -45094,17 +46778,6 @@ export namespace Prisma {
     adminReadAt?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type SupportThreadScalarRelationFilter = {
     is?: SupportThreadWhereInput
     isNot?: SupportThreadWhereInput
@@ -45160,22 +46833,6 @@ export namespace Prisma {
 
   export type SupportMessageSumOrderByAggregateInput = {
     attachmentSize?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type SupportPresenceCountOrderByAggregateInput = {
@@ -45391,29 +47048,6 @@ export namespace Prisma {
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type ServiceScalarRelationFilter = {
     is?: ServiceWhereInput
@@ -45476,32 +47110,6 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -47741,6 +49349,14 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserCreateNestedOneWithoutRegistrationConsentInput = {
     create?: XOR<UserCreateWithoutRegistrationConsentInput, UserUncheckedCreateWithoutRegistrationConsentInput>
     connectOrCreate?: UserCreateOrConnectWithoutRegistrationConsentInput
@@ -47877,14 +49493,6 @@ export namespace Prisma {
     connectOrCreate?: SupportEmailAlertCreateOrConnectWithoutMessageInput | SupportEmailAlertCreateOrConnectWithoutMessageInput[]
     createMany?: SupportEmailAlertCreateManyMessageInputEnvelope
     connect?: SupportEmailAlertWhereUniqueInput | SupportEmailAlertWhereUniqueInput[]
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type SupportThreadUpdateOneRequiredWithoutMessagesNestedInput = {
@@ -49280,6 +50888,29 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
@@ -49360,29 +50991,6 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
-  }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumSaleScopeFilter<$PrismaModel = never> = {

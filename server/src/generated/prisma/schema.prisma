@@ -57,6 +57,33 @@ model User {
   notifications             Notification[]
 }
 
+// Deliberately independent of account/order foreign keys: deleting a target must
+// not erase the management history. No API permits editing or deleting logs.
+model ManagementAuditLog {
+  id           String    @id @default(cuid())
+  actorId      String?
+  actorName    String
+  actorRole    String
+  actorIsOwner Boolean   @default(false)
+  category     String
+  action       String
+  targetType   String
+  targetId     String?
+  targetLabel  String?
+  requested    Json?
+  before       Json?
+  after        Json?
+  outcome      String    @default("STARTED")
+  statusCode   Int?
+  createdAt    DateTime  @default(now())
+  finishedAt   DateTime?
+
+  @@index([createdAt, id])
+  @@index([actorId, createdAt])
+  @@index([category, createdAt])
+  @@index([outcome, createdAt])
+}
+
 model RegistrationConsent {
   userId               String    @id
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -293,7 +320,7 @@ model Order {
   stripePaymentIntentId   String?
   paidAt                  DateTime?
   trustpilotReviewSentAt  DateTime?
-  currency                String        @default("cad")
+  currency                String        @default("usd")
   amountCents             Int?
 
   goldRedeemed      Int  @default(0)

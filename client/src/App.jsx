@@ -34,6 +34,7 @@ import SessionActivity from "./components/SessionActivity";
 import AdminSupportPage from "./pages/AdminSupportPage";
 import { BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
 import EarningsPage from './pages/EarningsPage';
+import ActivityLogsPage from './pages/ActivityLogsPage';
 
 import {
   clearExpiredSession,
@@ -166,6 +167,7 @@ function App() {
           <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
           <Route path="accounts" element={<AdminAccountsPage />} />
           <Route path="earnings" element={<EarningsPage />} />
+          <Route path="activity-logs" element={<ActivityLogsPage />} />
           <Route path="boosters" element={<BoosterManagementPage />} />
           <Route path="prices" element={<PriceManagementPage />} />
           <Route path="support" element={<AdminSupportPage />} />

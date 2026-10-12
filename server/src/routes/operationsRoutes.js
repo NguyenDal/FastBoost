@@ -33,6 +33,22 @@ router.get('/earnings', admin, handle(async (req, res) => {
     })]);
     res.json({ ok: true, ...report, boosterDirectory });
 }));
+// The CSV is assembled in the browser. Record the export request before allowing
+// the download; this does not claim that the browser saved a file successfully.
+router.post('/earnings/export', admin, handle(async (req, res) => {
+    const body = req.body || {};
+    if (!['orders', 'boosters'].includes(body.exportType) || !Number.isSafeInteger(body.rowCount) || body.rowCount < 0) fail(400, 'Choose a valid earnings export.');
+    for (const field of ['from', 'to']) {
+        if (!body[field]) continue;
+        const date = new Date(`${body[field]}T00:00:00Z`);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(body[field]) || !Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== body[field]) fail(400, 'Choose a valid payment period.');
+    }
+    if (body.from && body.to && body.from > body.to) fail(400, 'Choose a valid payment period.');
+    for (const field of ['query', 'reviewStatus', 'boosterId']) {
+        if (body[field] != null && (typeof body[field] !== 'string' || body[field].length > 1000)) fail(400, 'Choose valid export filters.');
+    }
+    res.json({ ok: true });
+}));
 router.get('/contributions', handle(async (req, res) => {
     if (req.actor.role !== 'ADMIN' && !eligible(req.actor)) fail(403, 'Boosters only.');
     const isAdmin = req.actor.role === 'ADMIN';

@@ -83,6 +83,8 @@ export default function EarningsPage() {
     const [orderQuery, setOrderQuery] = useState('');
     const [orderBooster, setOrderBooster] = useState('');
     const [reviewFilter, setReviewFilter] = useState('all');
+    const [exporting, setExporting] = useState(false);
+    const [exportError, setExportError] = useState('');
     const ordersHeading = useRef(null);
     const boostersHeading = useRef(null);
     const reload = useCallback(() => setVersion(value => value + 1), []);
@@ -119,6 +121,19 @@ export default function EarningsPage() {
     });
     const undated = (data?.rows || []).filter(row => row.currency === selectedCurrency && !row.paidAt).length;
     const amount = value => formatMoney(value, selectedCurrency);
+    const requestExport = async (exportType, download) => {
+        if (exporting) return;
+        setExporting(true); setExportError('');
+        try {
+            await operations('/earnings/export', { exportType, ...dates,
+                rowCount: exportType === 'orders' ? ledger.length : sortedBoosters.length,
+                query: exportType === 'orders' ? orderQuery : boosterQuery,
+                ...(exportType === 'orders' ? { reviewStatus: reviewFilter, boosterId: orderBooster } : {}),
+            });
+            download();
+        } catch (error) { setExportError(error.message); }
+        finally { setExporting(false); }
+    };
     const exportOrders = () => downloadCsv(`fastboost-orders-${selectedCurrency}.csv`, ['Order', 'Service', 'Currency', 'Paid date (UTC)', 'Service revenue', 'FastBoost share', 'Booster pool', 'Confirmed booster earnings', 'Awaiting allocation', 'Amount verified', 'Review status', 'Submitted matches', 'Approved matches', 'Pending matches', 'Boosters'], ledger.map(row => [row.orderNumber, row.boostType, row.currency, row.paidAt?.slice(0, 10), decimal(row.revenueCents), decimal(row.platformCents), decimal(row.boosterCents), decimal(row.confirmedBoosterCents), decimal(row.unallocatedCents), row.amountKnown ? 'Yes' : 'No', reviewLabels[row.reviewStatus], row.matchCounts.submitted, row.matchCounts.approved, row.matchCounts.pending, row.boosters.map(person => person.displayName || person.username || person.id).join('; ')]));
     const exportBoosters = () => downloadCsv(`fastboost-booster-earnings-${selectedCurrency}.csv`, ['Booster', 'Username', 'Currency', 'Confirmed earnings', 'Unconfirmed estimate', 'Orders involved', 'Confirmed orders', 'Confirmed matches', 'Average per confirmed order', 'Average per confirmed match'], sortedBoosters.map(person => [person.name, person.username, selectedCurrency, decimal(person.confirmedCents), decimal(person.pendingCents), person.orderCount, person.confirmedOrders, person.matches, decimal(person.avgOrderCents), decimal(person.avgMatchCents)]));
 
@@ -129,6 +144,7 @@ export default function EarningsPage() {
             {period === 'custom' && <><label>From<input type="date" value={customDates.from} disabled={loading} onChange={event => { setCustomDates(previous => ({ ...previous, from: event.target.value })); resetPages(); }} /></label><label>To<input type="date" value={customDates.to} min={customDates.from || undefined} disabled={loading} onChange={event => { setCustomDates(previous => ({ ...previous, to: event.target.value })); resetPages(); }} /></label></>}
         </section>
         {invalidRange && <p className="ops-error" role="alert">The end date must be on or after the start date.</p>}
+        {exportError && <p className="ops-error" role="alert">{exportError}</p>}
         {state.error && !loading && <div className="ops-error" role="alert"><p>{state.error}{data ? ' Showing the last loaded report.' : ''}</p><button type="button" onClick={reload}>Retry report</button></div>}
         {loading ? <EarningsSkeleton /> : data && <>
             {totals.missingAmounts > 0 && <p className="earnings-data-note" role="status">{totals.missingAmounts} {totals.missingAmounts === 1 ? 'order has' : 'orders have'} no verified amount. These orders remain available for review and are excluded from financial totals and averages.</p>}
@@ -150,7 +166,7 @@ export default function EarningsPage() {
                 </section>
             </div>
             <section className="ops-card earnings-table-card" aria-labelledby="earnings-boosters-heading">
-                <header className="earnings-section-heading"><div><h2 ref={boostersHeading} tabIndex={-1} id="earnings-boosters-heading">Booster earnings <span className="earnings-count">{boosters.length}</span></h2><p>Select a booster to view their earnings records.</p></div><button type="button" disabled={!sortedBoosters.length} onClick={exportBoosters}>Export boosters CSV</button></header>
+                <header className="earnings-section-heading"><div><h2 ref={boostersHeading} tabIndex={-1} id="earnings-boosters-heading">Booster earnings <span className="earnings-count">{boosters.length}</span></h2><p>Select a booster to view their earnings records.</p></div><button type="button" disabled={!sortedBoosters.length || exporting || invalidRange} onClick={() => requestExport('boosters', exportBoosters)}>Export boosters CSV</button></header>
                 <div className="earnings-table-filters"><label><span className="ops-sr-only">Search booster earnings</span><input placeholder="Search boosters…" aria-label="Search booster earnings" value={boosterQuery} onChange={event => { setBoosterQuery(event.target.value); setBoosterPage(1); }} /></label><label>Sort by<select value={boosterSort} onChange={event => { setBoosterSort(event.target.value); setBoosterPage(1); }}><option value="earnings">Highest earnings</option><option value="matches">Most confirmed matches</option><option value="name">Name</option></select></label></div>
                 <div className="earnings-booster-list" id="earnings-boosters-table">{sortedBoosters.slice((currentBoosterPage - 1) * PAGE_SIZE, currentBoosterPage * PAGE_SIZE).map(person => <details className="earnings-booster" key={person.id}>
                     <summary><span className="earnings-person"><span className="ops-avatar" aria-hidden="true">{person.name.slice(0, 1).toUpperCase()}</span><span>{person.name}{person.username && person.username !== person.name && <small>@{person.username}</small>}</span></span><span className="earnings-chevron" aria-hidden="true">⌄</span></summary>
@@ -160,7 +176,7 @@ export default function EarningsPage() {
                 <PageFooter count={sortedBoosters.length} page={currentBoosterPage} onChange={next => { setBoosterPage(next); scrollTo(boostersHeading); }} tableId="earnings-boosters-table" noun="boosters" />
             </section>
             <section className="ops-card earnings-table-card" aria-labelledby="earnings-orders-heading">
-                <header className="earnings-section-heading"><div><h2 id="earnings-orders-heading" ref={ordersHeading} tabIndex={-1}>Completed orders <span className="earnings-count">{rows.length}</span></h2><p>Review submitted matches and confirm booster shares from each order.</p></div><button type="button" disabled={!ledger.length} onClick={exportOrders}>Export orders CSV</button></header>
+                <header className="earnings-section-heading"><div><h2 id="earnings-orders-heading" ref={ordersHeading} tabIndex={-1}>Completed orders <span className="earnings-count">{rows.length}</span></h2><p>Review submitted matches and confirm booster shares from each order.</p></div><button type="button" disabled={!ledger.length || exporting || invalidRange} onClick={() => requestExport('orders', exportOrders)}>Export orders CSV</button></header>
                 <div className="earnings-table-filters earnings-order-filters"><label><span className="ops-sr-only">Find completed order</span><input aria-label="Find completed order" placeholder="Order number, service or booster…" value={orderQuery} onChange={event => { setOrderQuery(event.target.value); setOrderPage(1); }} /></label><label>Review status<select value={reviewFilter} onChange={event => { setReviewFilter(event.target.value); setOrderPage(1); }}><option value="all">All statuses</option><option value="unconfirmed">Not confirmed</option>{Object.entries(reviewLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label><label>Booster<select value={orderBooster} onChange={event => { setOrderBooster(event.target.value); setOrderPage(1); }}><option value="">All boosters</option>{boosters.map(person => <option value={person.id} key={person.id}>{person.name}</option>)}</select></label></div>
                 {orderBooster && <p className="earnings-table-note">Showing orders involving this booster. Revenue and pool columns cover the entire order; select their name above to view individual earnings.</p>}
                 <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Completed orders table"><table id="earnings-orders-table"><thead><tr><th scope="col">Order / paid date</th><th scope="col" className="earnings-number">Revenue</th><th scope="col" className="earnings-number">FastBoost</th><th scope="col" className="earnings-number">Booster pool</th><th scope="col">Matches</th><th scope="col">Review status</th><th scope="col"><span className="ops-sr-only">Review action</span></th></tr></thead><tbody>{ledger.slice((currentOrderPage - 1) * PAGE_SIZE, currentOrderPage * PAGE_SIZE).map(row => <tr key={row.id}><th scope="row"><Link to={`/admin/orders/${row.id}`}>#{row.orderNumber}</Link><small>{row.boostType}{row.queueType ? ` · ${row.queueType}` : ''}</small><small>{row.paidAt ? date(row.paidAt) : 'Payment date unavailable'}</small></th><td className="earnings-number">{amount(row.revenueCents)}{!row.amountKnown && <small className="earnings-warning">Amount missing</small>}</td><td className="earnings-number">{amount(row.platformCents)}</td><td className="earnings-number">{amount(row.boosterCents)}</td><td>{row.matchCounts.approved} / {row.matchCounts.submitted} approved<small>{row.matchCounts.pending ? `${row.matchCounts.pending} to review` : row.matchCounts.rejected ? `${row.matchCounts.rejected} excluded / returned` : row.boosters.length ? `${row.boosters.length} ${row.boosters.length === 1 ? 'booster' : 'boosters'}` : 'No booster submissions'}</small></td><td><span className={`ops-badge earnings-badge ${row.reviewStatus === 'CONFIRMED' ? 'approved' : row.reviewStatus === 'READY_TO_CONFIRM' ? 'ready' : ''}`}>{reviewLabels[row.reviewStatus]}</span></td><td><Link className="earnings-review-link" to={`/match/${row.id}?tab=history`}>{row.reviewStatus === 'CONFIRMED' ? 'View approval' : 'Review & approve'} →</Link></td></tr>)}</tbody></table></div>
