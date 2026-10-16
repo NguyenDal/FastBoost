@@ -6,7 +6,7 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
     const paths = ['../src/prisma', '../src/middleware/authMiddleware', '../src/routes/operationsRoutes',
         '../src/routes/contractRoutes', '../src/routes/matchHistoryRoutes', '../src/routes/providerAgreementRoutes'].map(path => require.resolve(path));
     const saved = paths.map(path => [path, require.cache[path]]);
-    const booster = { id: 'booster', username: 'TestBooster', role: 'PROVIDER', profile: { displayName: 'Test Booster' } };
+    const booster = { id: 'booster', username: 'TestBooster', email: 'booster@example.test', role: 'PROVIDER', profile: { displayName: 'Test Booster' } };
     const source = [{ id: 'known', currency: 'cad', amountCents: 1000, goldDiscountCents: 0, paidAt: new Date('2026-09-02'),
         contributions: [{ boosterId: booster.id, booster, submittedMatches: 1, approvedMatches: 1, revision: 3 }], assignments: [], matches: [] },
     { id: 'unknown', currency: 'cad', amountCents: null, paidAt: null, contributions: [], assignments: [], matches: [] }];
@@ -31,6 +31,11 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
             return source;
         } },
         boosterProfile: { findUnique: async () => null }, boosterContract: { findMany: async () => [] },
+        boosterPreferences: { findUnique: async () => null },
+        orderRating: { aggregate: async query => {
+            assert.deepEqual(query, { where: { recipients: { some: { boosterId: booster.id } } }, _avg: { stars: true }, _count: { _all: true } });
+            return { _avg: { stars: 4.5 }, _count: { _all: 2 } };
+        } },
     };
     let server;
     try {
@@ -66,7 +71,12 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
         assert.equal(report.rows[1].paidAt, null);
         assert.equal(Object.hasOwn(report.rows[0], 'matches'), false);
         assert.equal(Object.hasOwn(report.rows[0], 'assignments'), false);
-        assert.deepEqual((await (await request('/me', 'booster')).json()).earnings, { CAD: 700 });
+        const portal = await (await request('/me', 'booster')).json();
+        assert.deepEqual(portal.earnings, { CAD: 700 });
+        assert.deepEqual(portal.rating, { average: 4.5, count: 2, available: true });
+        assert.deepEqual(portal.preferences, { firstRole: null, secondRole: null, championIds: [] });
+        assert.equal(portal.preferencesAvailable, true);
+        assert.deepEqual(portal.account, { username: booster.username, email: booster.email, profile: booster.profile });
         assert.deepEqual((await (await request('/boosters', 'admin')).json()).boosters[0].earnings, { CAD: 700 });
         assert.equal(earningsReads, 3);
         const exportRequest = { exportType: 'orders', rowCount: 2, from: '2026-10-01', to: '2026-10-12' };

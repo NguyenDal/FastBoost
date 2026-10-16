@@ -32,8 +32,9 @@ import SaleFooter from "./components/SaleFooter";
 import SupportChat from "./components/SupportChat";
 import SessionActivity from "./components/SessionActivity";
 import AdminSupportPage from "./pages/AdminSupportPage";
-import { BoosterManagementPage, BoosterWorkspacePage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
+import { BoosterManagementPage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
 import EarningsPage from './pages/EarningsPage';
+import BoosterPortalPage from './pages/BoosterPortalPage';
 import ActivityLogsPage from './pages/ActivityLogsPage';
 
 import {
@@ -107,7 +108,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Navigate to="/" replace state={{ openAuthModal: true, authMode: "register" }} />} />
         <Route path="/support" element={<HomePage />} />
-        <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterWorkspacePage /></ProtectedRoute>} />
+        <Route path="/provider/portal" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="overview" /></ProtectedRoute>} />
+        <Route path="/provider/earnings" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="earnings" /></ProtectedRoute>} />
+        <Route path="/provider/documents" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="documents" /></ProtectedRoute>} />
+        <Route path="/provider/profile" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="profile" /></ProtectedRoute>} />
+        <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><Navigate to="/provider/portal" replace /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id/signing-return" element={<ContractSigningReturnPage />} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />

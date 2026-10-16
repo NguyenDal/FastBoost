@@ -170,6 +170,14 @@ exports.Prisma.BoosterProfileScalarFieldEnum = {
   startedAt: 'startedAt'
 };
 
+exports.Prisma.BoosterPreferencesScalarFieldEnum = {
+  userId: 'userId',
+  firstRole: 'firstRole',
+  secondRole: 'secondRole',
+  championIds: 'championIds',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.BoosterContractScalarFieldEnum = {
   id: 'id',
   boosterId: 'boosterId',
@@ -363,6 +371,18 @@ exports.Prisma.OrderScalarFieldEnum = {
   matchHistoryConfirmedAt: 'matchHistoryConfirmedAt',
   matchHistoryConfirmedBy: 'matchHistoryConfirmedBy',
   matchHistorySyncedAt: 'matchHistorySyncedAt'
+};
+
+exports.Prisma.OrderRatingScalarFieldEnum = {
+  orderId: 'orderId',
+  customerId: 'customerId',
+  stars: 'stars',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.OrderRatingRecipientScalarFieldEnum = {
+  orderId: 'orderId',
+  boosterId: 'boosterId'
 };
 
 exports.Prisma.OrderConfirmationEmailScalarFieldEnum = {
@@ -613,6 +633,7 @@ exports.Prisma.ModelName = {
   ManagementAuditLog: 'ManagementAuditLog',
   RegistrationConsent: 'RegistrationConsent',
   BoosterProfile: 'BoosterProfile',
+  BoosterPreferences: 'BoosterPreferences',
   BoosterContract: 'BoosterContract',
   SupportThread: 'SupportThread',
   SupportMessage: 'SupportMessage',
@@ -624,6 +645,8 @@ exports.Prisma.ModelName = {
   ServicePriceRule: 'ServicePriceRule',
   ServiceSale: 'ServiceSale',
   Order: 'Order',
+  OrderRating: 'OrderRating',
+  OrderRatingRecipient: 'OrderRatingRecipient',
   OrderConfirmationEmail: 'OrderConfirmationEmail',
   CouponUse: 'CouponUse',
   OrderNumberReservation: 'OrderNumberReservation',

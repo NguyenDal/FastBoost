@@ -9,31 +9,34 @@ datasource db {
 
 model User {
   boosterProfile         BoosterProfile?
+  boosterPreferences     BoosterPreferences?
   contributions          BoosterContribution[]
-  playedMatches          OrderMatch[]          @relation("MatchBooster")
+  playedMatches          OrderMatch[]           @relation("MatchBooster")
   matchReviews           OrderMatchReview[]
-  boosterContracts       BoosterContract[]     @relation("BoosterContracts")
-  issuedBoosterContracts BoosterContract[]     @relation("IssuedBoosterContracts")
+  boosterContracts       BoosterContract[]      @relation("BoosterContracts")
+  issuedBoosterContracts BoosterContract[]      @relation("IssuedBoosterContracts")
   supportThread          SupportThread?
   supportMessages        SupportMessage[]
   supportPresence        SupportPresence[]
   supportAlerts          SupportEmailAlert[]
   registrationConsent    RegistrationConsent?
   socialIdentities       SocialIdentity[]
-  personalCoupons        ServiceSale[]         @relation("PersonalCouponRecipient")
+  personalCoupons        ServiceSale[]          @relation("PersonalCouponRecipient")
   couponUses             CouponUse[]
-  id                     String                @id @default(cuid())
-  email                  String                @unique
-  username               String?               @unique
+  submittedOrderRatings  OrderRating[]
+  receivedOrderRatings   OrderRatingRecipient[]
+  id                     String                 @id @default(cuid())
+  email                  String                 @unique
+  username               String?                @unique
   emailVerifiedAt        DateTime?
   passwordHash           String
-  role                   UserRole              @default(CUSTOMER)
-  isOwner                Boolean               @default(false)
-  hasBoosterAccess       Boolean               @default(false)
+  role                   UserRole               @default(CUSTOMER)
+  isOwner                Boolean                @default(false)
+  hasBoosterAccess       Boolean                @default(false)
   suspendedAt            DateTime?
   suspendedReason        String?
-  createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
   orders                 Order[]
   verificationCodes      VerificationCode[]
   passwordResetTokens    PasswordResetToken[]
@@ -97,6 +100,15 @@ model BoosterProfile {
   userId    String    @id
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   startedAt DateTime?
+}
+
+model BoosterPreferences {
+  userId      String   @id
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstRole   String?
+  secondRole  String?
+  championIds String[] @default([])
+  updatedAt   DateTime @default(now()) @updatedAt
 }
 
 model BoosterContract {
@@ -382,10 +394,35 @@ model Order {
   matchHistorySyncedAt    DateTime?
   assignmentRequests      AssignmentRequest[]
   conversation            Conversation?
+  rating                  OrderRating?
 
   @@index([customerId, paymentStatus, paidAt])
   @@index([customerId, status, paymentStatus, updatedAt, id], map: "Order_customer_reward_page_idx")
   @@index([paymentStatus, status, id], map: "Order_completed_earnings_page_idx")
+}
+
+// One immutable customer review per order. Recipients are captured on submission
+// so later assignment changes cannot transfer a historical review.
+model OrderRating {
+  orderId    String                 @id
+  customerId String
+  stars      Int
+  createdAt  DateTime               @default(now())
+  order      Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customer   User                   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  recipients OrderRatingRecipient[]
+
+  @@index([customerId])
+}
+
+model OrderRatingRecipient {
+  orderId   String
+  boosterId String
+  rating    OrderRating @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  booster   User        @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, boosterId])
+  @@index([boosterId, orderId])
 }
 
 model OrderConfirmationEmail {

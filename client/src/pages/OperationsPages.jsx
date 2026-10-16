@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { operations, downloadContract, money, date, tenure } from '../api/operations';
+import { operations, downloadContract, date, tenure } from '../api/operations';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
 import { CONTRACT_SIGNING_CHANNEL, openContractSigning } from '../utils/contractSigning';
@@ -20,7 +20,6 @@ function useData(path) {
 }
 function Heading({ title, children }) { return <header className="ops-heading"><h1>{title}</h1><div>{children}</div></header>; }
 function Feedback({ error, loading }) { return error ? <p className="ops-error" role="alert">{error}</p> : loading ? <p role="status">Loading…</p> : null; }
-function Amounts({ values }) { return Object.keys(values || {}).length ? Object.entries(values).map(([currency, cents]) => <strong key={currency}>{money(cents, currency)} <small>{currency}</small></strong>) : <span>No confirmed earnings yet</span>; }
 
 export function ContributionRow({ order, record, admin, readOnly = false, reload }) {
     const [matches, setMatches] = useState(record.submittedMatches ?? '');
@@ -42,7 +41,7 @@ export function ContributionRow({ order, record, admin, readOnly = false, reload
         {admin ? !readOnly && record.submittedMatches != null && !record.reviewedAt && <div className="ops-actions"><button disabled={busy} onClick={() => submit('approve')}>Approve {record.submittedMatches} matches</button><input aria-label="Correction note" placeholder="Reason for correction" maxLength={500} value={note} onChange={e => setNote(e.target.value)} /><button disabled={busy || !note.trim()} onClick={() => submit('return')}>Request correction</button></div> : <form className="ops-actions" onSubmit={e => { e.preventDefault(); submit(); }}><label>Matches played<input type="number" min="0" max="10000" step="1" required value={matches} onChange={e => setMatches(e.target.value)} /></label><button disabled={busy || matches === ''}>{busy ? 'Submitting…' : 'Submit for approval'}</button></form>}
         <Feedback error={error} /></div>;
 }
-function Contributions({ admin = false, onChange }) {
+export function Contributions({ admin = false, onChange }) {
     const { data, error, reload } = useData('/contributions');
     const [filter, setFilter] = useState('');
     return <section className="ops-card"><h2>{admin ? 'Match reviews' : 'Your match contributions'}</h2><p>Admin-approved matches determine each booster’s share of the 70% pool.</p><input className="ops-search" aria-label="Find order" placeholder="Find order number…" value={filter} onChange={e => setFilter(e.target.value)} /><Feedback error={error} loading={!data} />
@@ -83,10 +82,6 @@ export function BoosterManagementPage() {
         <div className="ops-toolbar"><h2 className="ops-team-heading">Your team {data && <span className="ops-team-count" aria-label={`${data.boosters.length} ${data.boosters.length === 1 ? 'booster' : 'boosters'}`}>{data.boosters.length}</span>}</h2><input aria-label="Search boosters" placeholder="Search boosters…" value={query} onChange={e => setQuery(e.target.value)} /></div>
         {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} reload={reload} configured={signing?.configured} onError={setActionError} />)}
         {data?.boosters.length === 0 && <section className="ops-card ops-empty">Add booster access in <Link to="/admin/accounts">Account Management</Link> to grow your team.</section>}</div>;
-}
-export function BoosterWorkspacePage() {
-    const { data, error } = useData('/me');
-    return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title="My booster workspace">Contributions, earnings, and contracts.</Heading><Link to="/provider/orders">← Assigned orders</Link><Feedback error={error} loading={!data} />{data && <><section className="ops-card"><span>Confirmed earnings · Completed orders</span><div className="ops-amounts"><Amounts values={data.earnings} /></div><p>{tenure(data.profile?.startedAt)}</p></section><section className="ops-card"><h2>Your contracts</h2>{data.contracts.length ? data.contracts.map(c => <Link className="ops-contract-link" key={c.id} to={`/provider/contracts/${c.id}`}>{c.title}<span className="ops-badge">{c.signedAt ? 'Signed' : 'Review & sign'} →</span></Link>) : <p>No contracts yet.</p>}</section></>}<Contributions /></main></div>;
 }
 export function BoosterContractPage() {
     const { id } = useParams();
@@ -144,7 +139,7 @@ export function BoosterContractPage() {
         ...(contract.companySignerEmail ? [{ role: 'FastBoost', name: contract.companySignerName, signedAt: contract.companySignedAt }] : []),
         { role: 'Booster', name: contract.signedName || contract.signerName, signedAt: contract.boosterSignedAt || (!contract.companySignerEmail && contract.signedAt) },
     ] : [];
-    return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · DocuSign agreement</Heading><Link to={own ? '/provider/workspace' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
+    return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · DocuSign agreement</Heading><Link to={own ? '/provider/documents' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
         {contract && <section className="ops-card ops-contract">
             <header className="ops-contract-header">
                 <div className="ops-contract-identity"><p className="ops-contract-label">Booster</p><h2>{contract.signerName}</h2><p>{contract.signerEmail}</p></div>

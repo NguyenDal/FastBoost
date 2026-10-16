@@ -34,6 +34,11 @@ export type RegistrationConsent = $Result.DefaultSelection<Prisma.$RegistrationC
  */
 export type BoosterProfile = $Result.DefaultSelection<Prisma.$BoosterProfilePayload>
 /**
+ * Model BoosterPreferences
+ *
+ */
+export type BoosterPreferences = $Result.DefaultSelection<Prisma.$BoosterPreferencesPayload>
+/**
  * Model BoosterContract
  *
  */
@@ -88,6 +93,16 @@ export type ServiceSale = $Result.DefaultSelection<Prisma.$ServiceSalePayload>
  *
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
+/**
+ * Model OrderRating
+ *
+ */
+export type OrderRating = $Result.DefaultSelection<Prisma.$OrderRatingPayload>
+/**
+ * Model OrderRatingRecipient
+ *
+ */
+export type OrderRatingRecipient = $Result.DefaultSelection<Prisma.$OrderRatingRecipientPayload>
 /**
  * Model OrderConfirmationEmail
  *
@@ -450,6 +465,16 @@ export class PrismaClient<
   get boosterProfile(): Prisma.BoosterProfileDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.boosterPreferences`: Exposes CRUD operations for the **BoosterPreferences** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BoosterPreferences
+    * const boosterPreferences = await prisma.boosterPreferences.findMany()
+    * ```
+    */
+  get boosterPreferences(): Prisma.BoosterPreferencesDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.boosterContract`: Exposes CRUD operations for the **BoosterContract** model.
     * Example usage:
     * ```ts
@@ -558,6 +583,26 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderRating`: Exposes CRUD operations for the **OrderRating** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderRatings
+    * const orderRatings = await prisma.orderRating.findMany()
+    * ```
+    */
+  get orderRating(): Prisma.OrderRatingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderRatingRecipient`: Exposes CRUD operations for the **OrderRatingRecipient** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderRatingRecipients
+    * const orderRatingRecipients = await prisma.orderRatingRecipient.findMany()
+    * ```
+    */
+  get orderRatingRecipient(): Prisma.OrderRatingRecipientDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderConfirmationEmail`: Exposes CRUD operations for the **OrderConfirmationEmail** model.
@@ -1146,6 +1191,7 @@ export namespace Prisma {
     ManagementAuditLog: 'ManagementAuditLog',
     RegistrationConsent: 'RegistrationConsent',
     BoosterProfile: 'BoosterProfile',
+    BoosterPreferences: 'BoosterPreferences',
     BoosterContract: 'BoosterContract',
     SupportThread: 'SupportThread',
     SupportMessage: 'SupportMessage',
@@ -1157,6 +1203,8 @@ export namespace Prisma {
     ServicePriceRule: 'ServicePriceRule',
     ServiceSale: 'ServiceSale',
     Order: 'Order',
+    OrderRating: 'OrderRating',
+    OrderRatingRecipient: 'OrderRatingRecipient',
     OrderConfirmationEmail: 'OrderConfirmationEmail',
     CouponUse: 'CouponUse',
     OrderNumberReservation: 'OrderNumberReservation',
@@ -1187,7 +1235,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "user" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1484,6 +1532,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BoosterProfileCountArgs<ExtArgs>
             result: $Utils.Optional<BoosterProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      BoosterPreferences: {
+        payload: Prisma.$BoosterPreferencesPayload<ExtArgs>
+        fields: Prisma.BoosterPreferencesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BoosterPreferencesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BoosterPreferencesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          findFirst: {
+            args: Prisma.BoosterPreferencesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BoosterPreferencesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          findMany: {
+            args: Prisma.BoosterPreferencesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>[]
+          }
+          create: {
+            args: Prisma.BoosterPreferencesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          createMany: {
+            args: Prisma.BoosterPreferencesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BoosterPreferencesCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>[]
+          }
+          delete: {
+            args: Prisma.BoosterPreferencesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          update: {
+            args: Prisma.BoosterPreferencesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          deleteMany: {
+            args: Prisma.BoosterPreferencesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BoosterPreferencesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BoosterPreferencesUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>[]
+          }
+          upsert: {
+            args: Prisma.BoosterPreferencesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoosterPreferencesPayload>
+          }
+          aggregate: {
+            args: Prisma.BoosterPreferencesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoosterPreferences>
+          }
+          groupBy: {
+            args: Prisma.BoosterPreferencesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BoosterPreferencesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BoosterPreferencesCountArgs<ExtArgs>
+            result: $Utils.Optional<BoosterPreferencesCountAggregateOutputType> | number
           }
         }
       }
@@ -2298,6 +2420,154 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrderRating: {
+        payload: Prisma.$OrderRatingPayload<ExtArgs>
+        fields: Prisma.OrderRatingFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderRatingFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderRatingFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderRatingFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderRatingFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          findMany: {
+            args: Prisma.OrderRatingFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>[]
+          }
+          create: {
+            args: Prisma.OrderRatingCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          createMany: {
+            args: Prisma.OrderRatingCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderRatingCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderRatingDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          update: {
+            args: Prisma.OrderRatingUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderRatingDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderRatingUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderRatingUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderRatingUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderRatingAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderRating>
+          }
+          groupBy: {
+            args: Prisma.OrderRatingGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderRatingGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderRatingCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderRatingCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrderRatingRecipient: {
+        payload: Prisma.$OrderRatingRecipientPayload<ExtArgs>
+        fields: Prisma.OrderRatingRecipientFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderRatingRecipientFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderRatingRecipientFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderRatingRecipientFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderRatingRecipientFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          findMany: {
+            args: Prisma.OrderRatingRecipientFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>[]
+          }
+          create: {
+            args: Prisma.OrderRatingRecipientCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          createMany: {
+            args: Prisma.OrderRatingRecipientCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderRatingRecipientCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderRatingRecipientDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          update: {
+            args: Prisma.OrderRatingRecipientUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderRatingRecipientDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderRatingRecipientUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderRatingRecipientUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderRatingRecipientUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderRatingRecipientPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderRatingRecipientAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderRatingRecipient>
+          }
+          groupBy: {
+            args: Prisma.OrderRatingRecipientGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderRatingRecipientGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderRatingRecipientCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderRatingRecipientCountAggregateOutputType> | number
           }
         }
       }
@@ -3523,6 +3793,7 @@ export namespace Prisma {
     managementAuditLog?: ManagementAuditLogOmit
     registrationConsent?: RegistrationConsentOmit
     boosterProfile?: BoosterProfileOmit
+    boosterPreferences?: BoosterPreferencesOmit
     boosterContract?: BoosterContractOmit
     supportThread?: SupportThreadOmit
     supportMessage?: SupportMessageOmit
@@ -3534,6 +3805,8 @@ export namespace Prisma {
     servicePriceRule?: ServicePriceRuleOmit
     serviceSale?: ServiceSaleOmit
     order?: OrderOmit
+    orderRating?: OrderRatingOmit
+    orderRatingRecipient?: OrderRatingRecipientOmit
     orderConfirmationEmail?: OrderConfirmationEmailOmit
     couponUse?: CouponUseOmit
     orderNumberReservation?: OrderNumberReservationOmit
@@ -3640,6 +3913,8 @@ export namespace Prisma {
     socialIdentities: number
     personalCoupons: number
     couponUses: number
+    submittedOrderRatings: number
+    receivedOrderRatings: number
     orders: number
     verificationCodes: number
     passwordResetTokens: number
@@ -3665,6 +3940,8 @@ export namespace Prisma {
     socialIdentities?: boolean | UserCountOutputTypeCountSocialIdentitiesArgs
     personalCoupons?: boolean | UserCountOutputTypeCountPersonalCouponsArgs
     couponUses?: boolean | UserCountOutputTypeCountCouponUsesArgs
+    submittedOrderRatings?: boolean | UserCountOutputTypeCountSubmittedOrderRatingsArgs
+    receivedOrderRatings?: boolean | UserCountOutputTypeCountReceivedOrderRatingsArgs
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
     verificationCodes?: boolean | UserCountOutputTypeCountVerificationCodesArgs
     passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
@@ -3764,6 +4041,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCouponUsesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CouponUseWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSubmittedOrderRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderRatingWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReceivedOrderRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderRatingRecipientWhereInput
   }
 
   /**
@@ -4050,6 +4341,37 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountAssignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssignmentRequestWhereInput
+  }
+
+
+  /**
+   * Count Type OrderRatingCountOutputType
+   */
+
+  export type OrderRatingCountOutputType = {
+    recipients: number
+  }
+
+  export type OrderRatingCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    recipients?: boolean | OrderRatingCountOutputTypeCountRecipientsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrderRatingCountOutputType without action
+   */
+  export type OrderRatingCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingCountOutputType
+     */
+    select?: OrderRatingCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrderRatingCountOutputType without action
+   */
+  export type OrderRatingCountOutputTypeCountRecipientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderRatingRecipientWhereInput
   }
 
 
@@ -4365,6 +4687,7 @@ export namespace Prisma {
     referralCode?: boolean
     referredById?: boolean
     boosterProfile?: boolean | User$boosterProfileArgs<ExtArgs>
+    boosterPreferences?: boolean | User$boosterPreferencesArgs<ExtArgs>
     contributions?: boolean | User$contributionsArgs<ExtArgs>
     playedMatches?: boolean | User$playedMatchesArgs<ExtArgs>
     matchReviews?: boolean | User$matchReviewsArgs<ExtArgs>
@@ -4378,6 +4701,8 @@ export namespace Prisma {
     socialIdentities?: boolean | User$socialIdentitiesArgs<ExtArgs>
     personalCoupons?: boolean | User$personalCouponsArgs<ExtArgs>
     couponUses?: boolean | User$couponUsesArgs<ExtArgs>
+    submittedOrderRatings?: boolean | User$submittedOrderRatingsArgs<ExtArgs>
+    receivedOrderRatings?: boolean | User$receivedOrderRatingsArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
@@ -4450,6 +4775,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "username" | "emailVerifiedAt" | "passwordHash" | "role" | "isOwner" | "hasBoosterAccess" | "suspendedAt" | "suspendedReason" | "createdAt" | "updatedAt" | "referralCode" | "referredById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     boosterProfile?: boolean | User$boosterProfileArgs<ExtArgs>
+    boosterPreferences?: boolean | User$boosterPreferencesArgs<ExtArgs>
     contributions?: boolean | User$contributionsArgs<ExtArgs>
     playedMatches?: boolean | User$playedMatchesArgs<ExtArgs>
     matchReviews?: boolean | User$matchReviewsArgs<ExtArgs>
@@ -4463,6 +4789,8 @@ export namespace Prisma {
     socialIdentities?: boolean | User$socialIdentitiesArgs<ExtArgs>
     personalCoupons?: boolean | User$personalCouponsArgs<ExtArgs>
     couponUses?: boolean | User$couponUsesArgs<ExtArgs>
+    submittedOrderRatings?: boolean | User$submittedOrderRatingsArgs<ExtArgs>
+    receivedOrderRatings?: boolean | User$receivedOrderRatingsArgs<ExtArgs>
     orders?: boolean | User$ordersArgs<ExtArgs>
     verificationCodes?: boolean | User$verificationCodesArgs<ExtArgs>
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
@@ -4489,6 +4817,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       boosterProfile: Prisma.$BoosterProfilePayload<ExtArgs> | null
+      boosterPreferences: Prisma.$BoosterPreferencesPayload<ExtArgs> | null
       contributions: Prisma.$BoosterContributionPayload<ExtArgs>[]
       playedMatches: Prisma.$OrderMatchPayload<ExtArgs>[]
       matchReviews: Prisma.$OrderMatchReviewPayload<ExtArgs>[]
@@ -4502,6 +4831,8 @@ export namespace Prisma {
       socialIdentities: Prisma.$SocialIdentityPayload<ExtArgs>[]
       personalCoupons: Prisma.$ServiceSalePayload<ExtArgs>[]
       couponUses: Prisma.$CouponUsePayload<ExtArgs>[]
+      submittedOrderRatings: Prisma.$OrderRatingPayload<ExtArgs>[]
+      receivedOrderRatings: Prisma.$OrderRatingRecipientPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       verificationCodes: Prisma.$VerificationCodePayload<ExtArgs>[]
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
@@ -4926,6 +5257,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     boosterProfile<T extends User$boosterProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterProfileArgs<ExtArgs>>): Prisma__BoosterProfileClient<$Result.GetResult<Prisma.$BoosterProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    boosterPreferences<T extends User$boosterPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterPreferencesArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     contributions<T extends User$contributionsArgs<ExtArgs> = {}>(args?: Subset<T, User$contributionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     playedMatches<T extends User$playedMatchesArgs<ExtArgs> = {}>(args?: Subset<T, User$playedMatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderMatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     matchReviews<T extends User$matchReviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$matchReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderMatchReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4939,6 +5271,8 @@ export namespace Prisma {
     socialIdentities<T extends User$socialIdentitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$socialIdentitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialIdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     personalCoupons<T extends User$personalCouponsArgs<ExtArgs> = {}>(args?: Subset<T, User$personalCouponsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceSalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     couponUses<T extends User$couponUsesArgs<ExtArgs> = {}>(args?: Subset<T, User$couponUsesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CouponUsePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    submittedOrderRatings<T extends User$submittedOrderRatingsArgs<ExtArgs> = {}>(args?: Subset<T, User$submittedOrderRatingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    receivedOrderRatings<T extends User$receivedOrderRatingsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedOrderRatingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     verificationCodes<T extends User$verificationCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$verificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5415,6 +5749,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.boosterPreferences
+   */
+  export type User$boosterPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    where?: BoosterPreferencesWhereInput
+  }
+
+  /**
    * User.contributions
    */
   export type User$contributionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5714,6 +6067,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CouponUseScalarFieldEnum | CouponUseScalarFieldEnum[]
+  }
+
+  /**
+   * User.submittedOrderRatings
+   */
+  export type User$submittedOrderRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    where?: OrderRatingWhereInput
+    orderBy?: OrderRatingOrderByWithRelationInput | OrderRatingOrderByWithRelationInput[]
+    cursor?: OrderRatingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderRatingScalarFieldEnum | OrderRatingScalarFieldEnum[]
+  }
+
+  /**
+   * User.receivedOrderRatings
+   */
+  export type User$receivedOrderRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    where?: OrderRatingRecipientWhereInput
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderRatingRecipientScalarFieldEnum | OrderRatingRecipientScalarFieldEnum[]
   }
 
   /**
@@ -9299,6 +9700,1065 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BoosterProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BoosterPreferences
+   */
+
+  export type AggregateBoosterPreferences = {
+    _count: BoosterPreferencesCountAggregateOutputType | null
+    _min: BoosterPreferencesMinAggregateOutputType | null
+    _max: BoosterPreferencesMaxAggregateOutputType | null
+  }
+
+  export type BoosterPreferencesMinAggregateOutputType = {
+    userId: string | null
+    firstRole: string | null
+    secondRole: string | null
+    updatedAt: Date | null
+  }
+
+  export type BoosterPreferencesMaxAggregateOutputType = {
+    userId: string | null
+    firstRole: string | null
+    secondRole: string | null
+    updatedAt: Date | null
+  }
+
+  export type BoosterPreferencesCountAggregateOutputType = {
+    userId: number
+    firstRole: number
+    secondRole: number
+    championIds: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BoosterPreferencesMinAggregateInputType = {
+    userId?: true
+    firstRole?: true
+    secondRole?: true
+    updatedAt?: true
+  }
+
+  export type BoosterPreferencesMaxAggregateInputType = {
+    userId?: true
+    firstRole?: true
+    secondRole?: true
+    updatedAt?: true
+  }
+
+  export type BoosterPreferencesCountAggregateInputType = {
+    userId?: true
+    firstRole?: true
+    secondRole?: true
+    championIds?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BoosterPreferencesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterPreferences to aggregate.
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterPreferences to fetch.
+     */
+    orderBy?: BoosterPreferencesOrderByWithRelationInput | BoosterPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: BoosterPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned BoosterPreferences
+    **/
+    _count?: true | BoosterPreferencesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: BoosterPreferencesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: BoosterPreferencesMaxAggregateInputType
+  }
+
+  export type GetBoosterPreferencesAggregateType<T extends BoosterPreferencesAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoosterPreferences]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoosterPreferences[P]>
+      : GetScalarType<T[P], AggregateBoosterPreferences[P]>
+  }
+
+
+
+
+  export type BoosterPreferencesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoosterPreferencesWhereInput
+    orderBy?: BoosterPreferencesOrderByWithAggregationInput | BoosterPreferencesOrderByWithAggregationInput[]
+    by: BoosterPreferencesScalarFieldEnum[] | BoosterPreferencesScalarFieldEnum
+    having?: BoosterPreferencesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BoosterPreferencesCountAggregateInputType | true
+    _min?: BoosterPreferencesMinAggregateInputType
+    _max?: BoosterPreferencesMaxAggregateInputType
+  }
+
+  export type BoosterPreferencesGroupByOutputType = {
+    userId: string
+    firstRole: string | null
+    secondRole: string | null
+    championIds: string[]
+    updatedAt: Date
+    _count: BoosterPreferencesCountAggregateOutputType | null
+    _min: BoosterPreferencesMinAggregateOutputType | null
+    _max: BoosterPreferencesMaxAggregateOutputType | null
+  }
+
+  type GetBoosterPreferencesGroupByPayload<T extends BoosterPreferencesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BoosterPreferencesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BoosterPreferencesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BoosterPreferencesGroupByOutputType[P]>
+            : GetScalarType<T[P], BoosterPreferencesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BoosterPreferencesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    championIds?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterPreferences"]>
+
+  export type BoosterPreferencesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    championIds?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterPreferences"]>
+
+  export type BoosterPreferencesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    championIds?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boosterPreferences"]>
+
+  export type BoosterPreferencesSelectScalar = {
+    userId?: boolean
+    firstRole?: boolean
+    secondRole?: boolean
+    championIds?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BoosterPreferencesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "firstRole" | "secondRole" | "championIds" | "updatedAt", ExtArgs["result"]["boosterPreferences"]>
+  export type BoosterPreferencesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterPreferencesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoosterPreferencesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BoosterPreferencesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BoosterPreferences"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      firstRole: string | null
+      secondRole: string | null
+      championIds: string[]
+      updatedAt: Date
+    }, ExtArgs["result"]["boosterPreferences"]>
+    composites: {}
+  }
+
+  type BoosterPreferencesGetPayload<S extends boolean | null | undefined | BoosterPreferencesDefaultArgs> = $Result.GetResult<Prisma.$BoosterPreferencesPayload, S>
+
+  type BoosterPreferencesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BoosterPreferencesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BoosterPreferencesCountAggregateInputType | true
+    }
+
+  export interface BoosterPreferencesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BoosterPreferences'], meta: { name: 'BoosterPreferences' } }
+    /**
+     * Find zero or one BoosterPreferences that matches the filter.
+     * @param {BoosterPreferencesFindUniqueArgs} args - Arguments to find a BoosterPreferences
+     * @example
+     * // Get one BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BoosterPreferencesFindUniqueArgs>(args: SelectSubset<T, BoosterPreferencesFindUniqueArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BoosterPreferences that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BoosterPreferencesFindUniqueOrThrowArgs} args - Arguments to find a BoosterPreferences
+     * @example
+     * // Get one BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BoosterPreferencesFindUniqueOrThrowArgs>(args: SelectSubset<T, BoosterPreferencesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesFindFirstArgs} args - Arguments to find a BoosterPreferences
+     * @example
+     * // Get one BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BoosterPreferencesFindFirstArgs>(args?: SelectSubset<T, BoosterPreferencesFindFirstArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoosterPreferences that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesFindFirstOrThrowArgs} args - Arguments to find a BoosterPreferences
+     * @example
+     * // Get one BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BoosterPreferencesFindFirstOrThrowArgs>(args?: SelectSubset<T, BoosterPreferencesFindFirstOrThrowArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BoosterPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findMany()
+     *
+     * // Get first 10 BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.findMany({ take: 10 })
+     *
+     * // Only select the `userId`
+     * const boosterPreferencesWithUserIdOnly = await prisma.boosterPreferences.findMany({ select: { userId: true } })
+     *
+     */
+    findMany<T extends BoosterPreferencesFindManyArgs>(args?: SelectSubset<T, BoosterPreferencesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BoosterPreferences.
+     * @param {BoosterPreferencesCreateArgs} args - Arguments to create a BoosterPreferences.
+     * @example
+     * // Create one BoosterPreferences
+     * const BoosterPreferences = await prisma.boosterPreferences.create({
+     *   data: {
+     *     // ... data to create a BoosterPreferences
+     *   }
+     * })
+     *
+     */
+    create<T extends BoosterPreferencesCreateArgs>(args: SelectSubset<T, BoosterPreferencesCreateArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BoosterPreferences.
+     * @param {BoosterPreferencesCreateManyArgs} args - Arguments to create many BoosterPreferences.
+     * @example
+     * // Create many BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends BoosterPreferencesCreateManyArgs>(args?: SelectSubset<T, BoosterPreferencesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BoosterPreferences and returns the data saved in the database.
+     * @param {BoosterPreferencesCreateManyAndReturnArgs} args - Arguments to create many BoosterPreferences.
+     * @example
+     * // Create many BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many BoosterPreferences and only return the `userId`
+     * const boosterPreferencesWithUserIdOnly = await prisma.boosterPreferences.createManyAndReturn({
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends BoosterPreferencesCreateManyAndReturnArgs>(args?: SelectSubset<T, BoosterPreferencesCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BoosterPreferences.
+     * @param {BoosterPreferencesDeleteArgs} args - Arguments to delete one BoosterPreferences.
+     * @example
+     * // Delete one BoosterPreferences
+     * const BoosterPreferences = await prisma.boosterPreferences.delete({
+     *   where: {
+     *     // ... filter to delete one BoosterPreferences
+     *   }
+     * })
+     *
+     */
+    delete<T extends BoosterPreferencesDeleteArgs>(args: SelectSubset<T, BoosterPreferencesDeleteArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BoosterPreferences.
+     * @param {BoosterPreferencesUpdateArgs} args - Arguments to update one BoosterPreferences.
+     * @example
+     * // Update one BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends BoosterPreferencesUpdateArgs>(args: SelectSubset<T, BoosterPreferencesUpdateArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BoosterPreferences.
+     * @param {BoosterPreferencesDeleteManyArgs} args - Arguments to filter BoosterPreferences to delete.
+     * @example
+     * // Delete a few BoosterPreferences
+     * const { count } = await prisma.boosterPreferences.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends BoosterPreferencesDeleteManyArgs>(args?: SelectSubset<T, BoosterPreferencesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends BoosterPreferencesUpdateManyArgs>(args: SelectSubset<T, BoosterPreferencesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoosterPreferences and returns the data updated in the database.
+     * @param {BoosterPreferencesUpdateManyAndReturnArgs} args - Arguments to update many BoosterPreferences.
+     * @example
+     * // Update many BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more BoosterPreferences and only return the `userId`
+     * const boosterPreferencesWithUserIdOnly = await prisma.boosterPreferences.updateManyAndReturn({
+     *   select: { userId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends BoosterPreferencesUpdateManyAndReturnArgs>(args: SelectSubset<T, BoosterPreferencesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BoosterPreferences.
+     * @param {BoosterPreferencesUpsertArgs} args - Arguments to update or create a BoosterPreferences.
+     * @example
+     * // Update or create a BoosterPreferences
+     * const boosterPreferences = await prisma.boosterPreferences.upsert({
+     *   create: {
+     *     // ... data to create a BoosterPreferences
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BoosterPreferences we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BoosterPreferencesUpsertArgs>(args: SelectSubset<T, BoosterPreferencesUpsertArgs<ExtArgs>>): Prisma__BoosterPreferencesClient<$Result.GetResult<Prisma.$BoosterPreferencesPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BoosterPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesCountArgs} args - Arguments to filter BoosterPreferences to count.
+     * @example
+     * // Count the number of BoosterPreferences
+     * const count = await prisma.boosterPreferences.count({
+     *   where: {
+     *     // ... the filter for the BoosterPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends BoosterPreferencesCountArgs>(
+      args?: Subset<T, BoosterPreferencesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BoosterPreferencesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BoosterPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BoosterPreferencesAggregateArgs>(args: Subset<T, BoosterPreferencesAggregateArgs>): Prisma.PrismaPromise<GetBoosterPreferencesAggregateType<T>>
+
+    /**
+     * Group by BoosterPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoosterPreferencesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends BoosterPreferencesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BoosterPreferencesGroupByArgs['orderBy'] }
+        : { orderBy?: BoosterPreferencesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BoosterPreferencesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoosterPreferencesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BoosterPreferences model
+   */
+  readonly fields: BoosterPreferencesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BoosterPreferences.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BoosterPreferencesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BoosterPreferences model
+   */
+  interface BoosterPreferencesFieldRefs {
+    readonly userId: FieldRef<"BoosterPreferences", 'String'>
+    readonly firstRole: FieldRef<"BoosterPreferences", 'String'>
+    readonly secondRole: FieldRef<"BoosterPreferences", 'String'>
+    readonly championIds: FieldRef<"BoosterPreferences", 'String[]'>
+    readonly updatedAt: FieldRef<"BoosterPreferences", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * BoosterPreferences findUnique
+   */
+  export type BoosterPreferencesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterPreferences to fetch.
+     */
+    where: BoosterPreferencesWhereUniqueInput
+  }
+
+  /**
+   * BoosterPreferences findUniqueOrThrow
+   */
+  export type BoosterPreferencesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterPreferences to fetch.
+     */
+    where: BoosterPreferencesWhereUniqueInput
+  }
+
+  /**
+   * BoosterPreferences findFirst
+   */
+  export type BoosterPreferencesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterPreferences to fetch.
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterPreferences to fetch.
+     */
+    orderBy?: BoosterPreferencesOrderByWithRelationInput | BoosterPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterPreferences.
+     */
+    cursor?: BoosterPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterPreferences.
+     */
+    distinct?: BoosterPreferencesScalarFieldEnum | BoosterPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterPreferences findFirstOrThrow
+   */
+  export type BoosterPreferencesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterPreferences to fetch.
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterPreferences to fetch.
+     */
+    orderBy?: BoosterPreferencesOrderByWithRelationInput | BoosterPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for BoosterPreferences.
+     */
+    cursor?: BoosterPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterPreferences.
+     */
+    distinct?: BoosterPreferencesScalarFieldEnum | BoosterPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterPreferences findMany
+   */
+  export type BoosterPreferencesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which BoosterPreferences to fetch.
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of BoosterPreferences to fetch.
+     */
+    orderBy?: BoosterPreferencesOrderByWithRelationInput | BoosterPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing BoosterPreferences.
+     */
+    cursor?: BoosterPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` BoosterPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` BoosterPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of BoosterPreferences.
+     */
+    distinct?: BoosterPreferencesScalarFieldEnum | BoosterPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterPreferences create
+   */
+  export type BoosterPreferencesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BoosterPreferences.
+     */
+    data: XOR<BoosterPreferencesCreateInput, BoosterPreferencesUncheckedCreateInput>
+  }
+
+  /**
+   * BoosterPreferences createMany
+   */
+  export type BoosterPreferencesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BoosterPreferences.
+     */
+    data: BoosterPreferencesCreateManyInput | BoosterPreferencesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BoosterPreferences createManyAndReturn
+   */
+  export type BoosterPreferencesCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * The data used to create many BoosterPreferences.
+     */
+    data: BoosterPreferencesCreateManyInput | BoosterPreferencesCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterPreferences update
+   */
+  export type BoosterPreferencesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BoosterPreferences.
+     */
+    data: XOR<BoosterPreferencesUpdateInput, BoosterPreferencesUncheckedUpdateInput>
+    /**
+     * Choose, which BoosterPreferences to update.
+     */
+    where: BoosterPreferencesWhereUniqueInput
+  }
+
+  /**
+   * BoosterPreferences updateMany
+   */
+  export type BoosterPreferencesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BoosterPreferences.
+     */
+    data: XOR<BoosterPreferencesUpdateManyMutationInput, BoosterPreferencesUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterPreferences to update
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * Limit how many BoosterPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterPreferences updateManyAndReturn
+   */
+  export type BoosterPreferencesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * The data used to update BoosterPreferences.
+     */
+    data: XOR<BoosterPreferencesUpdateManyMutationInput, BoosterPreferencesUncheckedUpdateManyInput>
+    /**
+     * Filter which BoosterPreferences to update
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * Limit how many BoosterPreferences to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoosterPreferences upsert
+   */
+  export type BoosterPreferencesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BoosterPreferences to update in case it exists.
+     */
+    where: BoosterPreferencesWhereUniqueInput
+    /**
+     * In case the BoosterPreferences found by the `where` argument doesn't exist, create a new BoosterPreferences with this data.
+     */
+    create: XOR<BoosterPreferencesCreateInput, BoosterPreferencesUncheckedCreateInput>
+    /**
+     * In case the BoosterPreferences was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BoosterPreferencesUpdateInput, BoosterPreferencesUncheckedUpdateInput>
+  }
+
+  /**
+   * BoosterPreferences delete
+   */
+  export type BoosterPreferencesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter which BoosterPreferences to delete.
+     */
+    where: BoosterPreferencesWhereUniqueInput
+  }
+
+  /**
+   * BoosterPreferences deleteMany
+   */
+  export type BoosterPreferencesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoosterPreferences to delete
+     */
+    where?: BoosterPreferencesWhereInput
+    /**
+     * Limit how many BoosterPreferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoosterPreferences without action
+   */
+  export type BoosterPreferencesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterPreferences
+     */
+    select?: BoosterPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoosterPreferences
+     */
+    omit?: BoosterPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoosterPreferencesInclude<ExtArgs> | null
   }
 
 
@@ -21676,6 +23136,7 @@ export namespace Prisma {
     matches?: boolean | Order$matchesArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
+    rating?: boolean | Order$ratingArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -21898,6 +23359,7 @@ export namespace Prisma {
     matches?: boolean | Order$matchesArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
+    rating?: boolean | Order$ratingArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21924,6 +23386,7 @@ export namespace Prisma {
       matches: Prisma.$OrderMatchPayload<ExtArgs>[]
       assignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       conversation: Prisma.$ConversationPayload<ExtArgs> | null
+      rating: Prisma.$OrderRatingPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       couponSaleId: string | null
@@ -22394,6 +23857,7 @@ export namespace Prisma {
     matches<T extends Order$matchesArgs<ExtArgs> = {}>(args?: Subset<T, Order$matchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderMatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignmentRequests<T extends Order$assignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation<T extends Order$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Order$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    rating<T extends Order$ratingArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23060,6 +24524,25 @@ export namespace Prisma {
   }
 
   /**
+   * Order.rating
+   */
+  export type Order$ratingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    where?: OrderRatingWhereInput
+  }
+
+  /**
    * Order without action
    */
   export type OrderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23075,6 +24558,2160 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrderRating
+   */
+
+  export type AggregateOrderRating = {
+    _count: OrderRatingCountAggregateOutputType | null
+    _avg: OrderRatingAvgAggregateOutputType | null
+    _sum: OrderRatingSumAggregateOutputType | null
+    _min: OrderRatingMinAggregateOutputType | null
+    _max: OrderRatingMaxAggregateOutputType | null
+  }
+
+  export type OrderRatingAvgAggregateOutputType = {
+    stars: number | null
+  }
+
+  export type OrderRatingSumAggregateOutputType = {
+    stars: number | null
+  }
+
+  export type OrderRatingMinAggregateOutputType = {
+    orderId: string | null
+    customerId: string | null
+    stars: number | null
+    createdAt: Date | null
+  }
+
+  export type OrderRatingMaxAggregateOutputType = {
+    orderId: string | null
+    customerId: string | null
+    stars: number | null
+    createdAt: Date | null
+  }
+
+  export type OrderRatingCountAggregateOutputType = {
+    orderId: number
+    customerId: number
+    stars: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type OrderRatingAvgAggregateInputType = {
+    stars?: true
+  }
+
+  export type OrderRatingSumAggregateInputType = {
+    stars?: true
+  }
+
+  export type OrderRatingMinAggregateInputType = {
+    orderId?: true
+    customerId?: true
+    stars?: true
+    createdAt?: true
+  }
+
+  export type OrderRatingMaxAggregateInputType = {
+    orderId?: true
+    customerId?: true
+    stars?: true
+    createdAt?: true
+  }
+
+  export type OrderRatingCountAggregateInputType = {
+    orderId?: true
+    customerId?: true
+    stars?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type OrderRatingAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderRating to aggregate.
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatings to fetch.
+     */
+    orderBy?: OrderRatingOrderByWithRelationInput | OrderRatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: OrderRatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned OrderRatings
+    **/
+    _count?: true | OrderRatingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: OrderRatingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: OrderRatingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderRatingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderRatingMaxAggregateInputType
+  }
+
+  export type GetOrderRatingAggregateType<T extends OrderRatingAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderRating]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderRating[P]>
+      : GetScalarType<T[P], AggregateOrderRating[P]>
+  }
+
+
+
+
+  export type OrderRatingGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderRatingWhereInput
+    orderBy?: OrderRatingOrderByWithAggregationInput | OrderRatingOrderByWithAggregationInput[]
+    by: OrderRatingScalarFieldEnum[] | OrderRatingScalarFieldEnum
+    having?: OrderRatingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderRatingCountAggregateInputType | true
+    _avg?: OrderRatingAvgAggregateInputType
+    _sum?: OrderRatingSumAggregateInputType
+    _min?: OrderRatingMinAggregateInputType
+    _max?: OrderRatingMaxAggregateInputType
+  }
+
+  export type OrderRatingGroupByOutputType = {
+    orderId: string
+    customerId: string
+    stars: number
+    createdAt: Date
+    _count: OrderRatingCountAggregateOutputType | null
+    _avg: OrderRatingAvgAggregateOutputType | null
+    _sum: OrderRatingSumAggregateOutputType | null
+    _min: OrderRatingMinAggregateOutputType | null
+    _max: OrderRatingMaxAggregateOutputType | null
+  }
+
+  type GetOrderRatingGroupByPayload<T extends OrderRatingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderRatingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderRatingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderRatingGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderRatingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderRatingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    customerId?: boolean
+    stars?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+    recipients?: boolean | OrderRating$recipientsArgs<ExtArgs>
+    _count?: boolean | OrderRatingCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRating"]>
+
+  export type OrderRatingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    customerId?: boolean
+    stars?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRating"]>
+
+  export type OrderRatingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    customerId?: boolean
+    stars?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRating"]>
+
+  export type OrderRatingSelectScalar = {
+    orderId?: boolean
+    customerId?: boolean
+    stars?: boolean
+    createdAt?: boolean
+  }
+
+  export type OrderRatingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"orderId" | "customerId" | "stars" | "createdAt", ExtArgs["result"]["orderRating"]>
+  export type OrderRatingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+    recipients?: boolean | OrderRating$recipientsArgs<ExtArgs>
+    _count?: boolean | OrderRatingCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type OrderRatingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrderRatingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    customer?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $OrderRatingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderRating"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      customer: Prisma.$UserPayload<ExtArgs>
+      recipients: Prisma.$OrderRatingRecipientPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      orderId: string
+      customerId: string
+      stars: number
+      createdAt: Date
+    }, ExtArgs["result"]["orderRating"]>
+    composites: {}
+  }
+
+  type OrderRatingGetPayload<S extends boolean | null | undefined | OrderRatingDefaultArgs> = $Result.GetResult<Prisma.$OrderRatingPayload, S>
+
+  type OrderRatingCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderRatingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderRatingCountAggregateInputType | true
+    }
+
+  export interface OrderRatingDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderRating'], meta: { name: 'OrderRating' } }
+    /**
+     * Find zero or one OrderRating that matches the filter.
+     * @param {OrderRatingFindUniqueArgs} args - Arguments to find a OrderRating
+     * @example
+     * // Get one OrderRating
+     * const orderRating = await prisma.orderRating.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderRatingFindUniqueArgs>(args: SelectSubset<T, OrderRatingFindUniqueArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderRating that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderRatingFindUniqueOrThrowArgs} args - Arguments to find a OrderRating
+     * @example
+     * // Get one OrderRating
+     * const orderRating = await prisma.orderRating.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderRatingFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderRatingFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderRating that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingFindFirstArgs} args - Arguments to find a OrderRating
+     * @example
+     * // Get one OrderRating
+     * const orderRating = await prisma.orderRating.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderRatingFindFirstArgs>(args?: SelectSubset<T, OrderRatingFindFirstArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderRating that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingFindFirstOrThrowArgs} args - Arguments to find a OrderRating
+     * @example
+     * // Get one OrderRating
+     * const orderRating = await prisma.orderRating.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderRatingFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderRatingFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderRatings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderRatings
+     * const orderRatings = await prisma.orderRating.findMany()
+     *
+     * // Get first 10 OrderRatings
+     * const orderRatings = await prisma.orderRating.findMany({ take: 10 })
+     *
+     * // Only select the `orderId`
+     * const orderRatingWithOrderIdOnly = await prisma.orderRating.findMany({ select: { orderId: true } })
+     *
+     */
+    findMany<T extends OrderRatingFindManyArgs>(args?: SelectSubset<T, OrderRatingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderRating.
+     * @param {OrderRatingCreateArgs} args - Arguments to create a OrderRating.
+     * @example
+     * // Create one OrderRating
+     * const OrderRating = await prisma.orderRating.create({
+     *   data: {
+     *     // ... data to create a OrderRating
+     *   }
+     * })
+     *
+     */
+    create<T extends OrderRatingCreateArgs>(args: SelectSubset<T, OrderRatingCreateArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderRatings.
+     * @param {OrderRatingCreateManyArgs} args - Arguments to create many OrderRatings.
+     * @example
+     * // Create many OrderRatings
+     * const orderRating = await prisma.orderRating.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends OrderRatingCreateManyArgs>(args?: SelectSubset<T, OrderRatingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderRatings and returns the data saved in the database.
+     * @param {OrderRatingCreateManyAndReturnArgs} args - Arguments to create many OrderRatings.
+     * @example
+     * // Create many OrderRatings
+     * const orderRating = await prisma.orderRating.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many OrderRatings and only return the `orderId`
+     * const orderRatingWithOrderIdOnly = await prisma.orderRating.createManyAndReturn({
+     *   select: { orderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends OrderRatingCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderRatingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderRating.
+     * @param {OrderRatingDeleteArgs} args - Arguments to delete one OrderRating.
+     * @example
+     * // Delete one OrderRating
+     * const OrderRating = await prisma.orderRating.delete({
+     *   where: {
+     *     // ... filter to delete one OrderRating
+     *   }
+     * })
+     *
+     */
+    delete<T extends OrderRatingDeleteArgs>(args: SelectSubset<T, OrderRatingDeleteArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderRating.
+     * @param {OrderRatingUpdateArgs} args - Arguments to update one OrderRating.
+     * @example
+     * // Update one OrderRating
+     * const orderRating = await prisma.orderRating.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends OrderRatingUpdateArgs>(args: SelectSubset<T, OrderRatingUpdateArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderRatings.
+     * @param {OrderRatingDeleteManyArgs} args - Arguments to filter OrderRatings to delete.
+     * @example
+     * // Delete a few OrderRatings
+     * const { count } = await prisma.orderRating.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends OrderRatingDeleteManyArgs>(args?: SelectSubset<T, OrderRatingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderRatings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderRatings
+     * const orderRating = await prisma.orderRating.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends OrderRatingUpdateManyArgs>(args: SelectSubset<T, OrderRatingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderRatings and returns the data updated in the database.
+     * @param {OrderRatingUpdateManyAndReturnArgs} args - Arguments to update many OrderRatings.
+     * @example
+     * // Update many OrderRatings
+     * const orderRating = await prisma.orderRating.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more OrderRatings and only return the `orderId`
+     * const orderRatingWithOrderIdOnly = await prisma.orderRating.updateManyAndReturn({
+     *   select: { orderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends OrderRatingUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderRatingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderRating.
+     * @param {OrderRatingUpsertArgs} args - Arguments to update or create a OrderRating.
+     * @example
+     * // Update or create a OrderRating
+     * const orderRating = await prisma.orderRating.upsert({
+     *   create: {
+     *     // ... data to create a OrderRating
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderRating we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderRatingUpsertArgs>(args: SelectSubset<T, OrderRatingUpsertArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderRatings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingCountArgs} args - Arguments to filter OrderRatings to count.
+     * @example
+     * // Count the number of OrderRatings
+     * const count = await prisma.orderRating.count({
+     *   where: {
+     *     // ... the filter for the OrderRatings we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderRatingCountArgs>(
+      args?: Subset<T, OrderRatingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderRatingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderRating.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderRatingAggregateArgs>(args: Subset<T, OrderRatingAggregateArgs>): Prisma.PrismaPromise<GetOrderRatingAggregateType<T>>
+
+    /**
+     * Group by OrderRating.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends OrderRatingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderRatingGroupByArgs['orderBy'] }
+        : { orderBy?: OrderRatingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderRatingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderRatingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderRating model
+   */
+  readonly fields: OrderRatingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderRating.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderRatingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    customer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    recipients<T extends OrderRating$recipientsArgs<ExtArgs> = {}>(args?: Subset<T, OrderRating$recipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderRating model
+   */
+  interface OrderRatingFieldRefs {
+    readonly orderId: FieldRef<"OrderRating", 'String'>
+    readonly customerId: FieldRef<"OrderRating", 'String'>
+    readonly stars: FieldRef<"OrderRating", 'Int'>
+    readonly createdAt: FieldRef<"OrderRating", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * OrderRating findUnique
+   */
+  export type OrderRatingFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRating to fetch.
+     */
+    where: OrderRatingWhereUniqueInput
+  }
+
+  /**
+   * OrderRating findUniqueOrThrow
+   */
+  export type OrderRatingFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRating to fetch.
+     */
+    where: OrderRatingWhereUniqueInput
+  }
+
+  /**
+   * OrderRating findFirst
+   */
+  export type OrderRatingFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRating to fetch.
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatings to fetch.
+     */
+    orderBy?: OrderRatingOrderByWithRelationInput | OrderRatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderRatings.
+     */
+    cursor?: OrderRatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatings.
+     */
+    distinct?: OrderRatingScalarFieldEnum | OrderRatingScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRating findFirstOrThrow
+   */
+  export type OrderRatingFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRating to fetch.
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatings to fetch.
+     */
+    orderBy?: OrderRatingOrderByWithRelationInput | OrderRatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderRatings.
+     */
+    cursor?: OrderRatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatings.
+     */
+    distinct?: OrderRatingScalarFieldEnum | OrderRatingScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRating findMany
+   */
+  export type OrderRatingFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatings to fetch.
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatings to fetch.
+     */
+    orderBy?: OrderRatingOrderByWithRelationInput | OrderRatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing OrderRatings.
+     */
+    cursor?: OrderRatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatings.
+     */
+    distinct?: OrderRatingScalarFieldEnum | OrderRatingScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRating create
+   */
+  export type OrderRatingCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrderRating.
+     */
+    data: XOR<OrderRatingCreateInput, OrderRatingUncheckedCreateInput>
+  }
+
+  /**
+   * OrderRating createMany
+   */
+  export type OrderRatingCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderRatings.
+     */
+    data: OrderRatingCreateManyInput | OrderRatingCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderRating createManyAndReturn
+   */
+  export type OrderRatingCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderRatings.
+     */
+    data: OrderRatingCreateManyInput | OrderRatingCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderRating update
+   */
+  export type OrderRatingUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrderRating.
+     */
+    data: XOR<OrderRatingUpdateInput, OrderRatingUncheckedUpdateInput>
+    /**
+     * Choose, which OrderRating to update.
+     */
+    where: OrderRatingWhereUniqueInput
+  }
+
+  /**
+   * OrderRating updateMany
+   */
+  export type OrderRatingUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderRatings.
+     */
+    data: XOR<OrderRatingUpdateManyMutationInput, OrderRatingUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderRatings to update
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * Limit how many OrderRatings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderRating updateManyAndReturn
+   */
+  export type OrderRatingUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderRatings.
+     */
+    data: XOR<OrderRatingUpdateManyMutationInput, OrderRatingUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderRatings to update
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * Limit how many OrderRatings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderRating upsert
+   */
+  export type OrderRatingUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrderRating to update in case it exists.
+     */
+    where: OrderRatingWhereUniqueInput
+    /**
+     * In case the OrderRating found by the `where` argument doesn't exist, create a new OrderRating with this data.
+     */
+    create: XOR<OrderRatingCreateInput, OrderRatingUncheckedCreateInput>
+    /**
+     * In case the OrderRating was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderRatingUpdateInput, OrderRatingUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderRating delete
+   */
+  export type OrderRatingDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+    /**
+     * Filter which OrderRating to delete.
+     */
+    where: OrderRatingWhereUniqueInput
+  }
+
+  /**
+   * OrderRating deleteMany
+   */
+  export type OrderRatingDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderRatings to delete
+     */
+    where?: OrderRatingWhereInput
+    /**
+     * Limit how many OrderRatings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderRating.recipients
+   */
+  export type OrderRating$recipientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    where?: OrderRatingRecipientWhereInput
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderRatingRecipientScalarFieldEnum | OrderRatingRecipientScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRating without action
+   */
+  export type OrderRatingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRating
+     */
+    select?: OrderRatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRating
+     */
+    omit?: OrderRatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrderRatingRecipient
+   */
+
+  export type AggregateOrderRatingRecipient = {
+    _count: OrderRatingRecipientCountAggregateOutputType | null
+    _min: OrderRatingRecipientMinAggregateOutputType | null
+    _max: OrderRatingRecipientMaxAggregateOutputType | null
+  }
+
+  export type OrderRatingRecipientMinAggregateOutputType = {
+    orderId: string | null
+    boosterId: string | null
+  }
+
+  export type OrderRatingRecipientMaxAggregateOutputType = {
+    orderId: string | null
+    boosterId: string | null
+  }
+
+  export type OrderRatingRecipientCountAggregateOutputType = {
+    orderId: number
+    boosterId: number
+    _all: number
+  }
+
+
+  export type OrderRatingRecipientMinAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+  }
+
+  export type OrderRatingRecipientMaxAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+  }
+
+  export type OrderRatingRecipientCountAggregateInputType = {
+    orderId?: true
+    boosterId?: true
+    _all?: true
+  }
+
+  export type OrderRatingRecipientAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderRatingRecipient to aggregate.
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatingRecipients to fetch.
+     */
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatingRecipients from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatingRecipients.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned OrderRatingRecipients
+    **/
+    _count?: true | OrderRatingRecipientCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderRatingRecipientMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderRatingRecipientMaxAggregateInputType
+  }
+
+  export type GetOrderRatingRecipientAggregateType<T extends OrderRatingRecipientAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderRatingRecipient]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderRatingRecipient[P]>
+      : GetScalarType<T[P], AggregateOrderRatingRecipient[P]>
+  }
+
+
+
+
+  export type OrderRatingRecipientGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderRatingRecipientWhereInput
+    orderBy?: OrderRatingRecipientOrderByWithAggregationInput | OrderRatingRecipientOrderByWithAggregationInput[]
+    by: OrderRatingRecipientScalarFieldEnum[] | OrderRatingRecipientScalarFieldEnum
+    having?: OrderRatingRecipientScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderRatingRecipientCountAggregateInputType | true
+    _min?: OrderRatingRecipientMinAggregateInputType
+    _max?: OrderRatingRecipientMaxAggregateInputType
+  }
+
+  export type OrderRatingRecipientGroupByOutputType = {
+    orderId: string
+    boosterId: string
+    _count: OrderRatingRecipientCountAggregateOutputType | null
+    _min: OrderRatingRecipientMinAggregateOutputType | null
+    _max: OrderRatingRecipientMaxAggregateOutputType | null
+  }
+
+  type GetOrderRatingRecipientGroupByPayload<T extends OrderRatingRecipientGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderRatingRecipientGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderRatingRecipientGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderRatingRecipientGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderRatingRecipientGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderRatingRecipientSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRatingRecipient"]>
+
+  export type OrderRatingRecipientSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRatingRecipient"]>
+
+  export type OrderRatingRecipientSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    boosterId?: boolean
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orderRatingRecipient"]>
+
+  export type OrderRatingRecipientSelectScalar = {
+    orderId?: boolean
+    boosterId?: boolean
+  }
+
+  export type OrderRatingRecipientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"orderId" | "boosterId", ExtArgs["result"]["orderRatingRecipient"]>
+  export type OrderRatingRecipientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrderRatingRecipientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrderRatingRecipientIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rating?: boolean | OrderRatingDefaultArgs<ExtArgs>
+    booster?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $OrderRatingRecipientPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderRatingRecipient"
+    objects: {
+      rating: Prisma.$OrderRatingPayload<ExtArgs>
+      booster: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      orderId: string
+      boosterId: string
+    }, ExtArgs["result"]["orderRatingRecipient"]>
+    composites: {}
+  }
+
+  type OrderRatingRecipientGetPayload<S extends boolean | null | undefined | OrderRatingRecipientDefaultArgs> = $Result.GetResult<Prisma.$OrderRatingRecipientPayload, S>
+
+  type OrderRatingRecipientCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderRatingRecipientFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderRatingRecipientCountAggregateInputType | true
+    }
+
+  export interface OrderRatingRecipientDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderRatingRecipient'], meta: { name: 'OrderRatingRecipient' } }
+    /**
+     * Find zero or one OrderRatingRecipient that matches the filter.
+     * @param {OrderRatingRecipientFindUniqueArgs} args - Arguments to find a OrderRatingRecipient
+     * @example
+     * // Get one OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderRatingRecipientFindUniqueArgs>(args: SelectSubset<T, OrderRatingRecipientFindUniqueArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderRatingRecipient that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderRatingRecipientFindUniqueOrThrowArgs} args - Arguments to find a OrderRatingRecipient
+     * @example
+     * // Get one OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderRatingRecipientFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderRatingRecipientFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderRatingRecipient that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientFindFirstArgs} args - Arguments to find a OrderRatingRecipient
+     * @example
+     * // Get one OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderRatingRecipientFindFirstArgs>(args?: SelectSubset<T, OrderRatingRecipientFindFirstArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderRatingRecipient that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientFindFirstOrThrowArgs} args - Arguments to find a OrderRatingRecipient
+     * @example
+     * // Get one OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderRatingRecipientFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderRatingRecipientFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderRatingRecipients that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderRatingRecipients
+     * const orderRatingRecipients = await prisma.orderRatingRecipient.findMany()
+     *
+     * // Get first 10 OrderRatingRecipients
+     * const orderRatingRecipients = await prisma.orderRatingRecipient.findMany({ take: 10 })
+     *
+     * // Only select the `orderId`
+     * const orderRatingRecipientWithOrderIdOnly = await prisma.orderRatingRecipient.findMany({ select: { orderId: true } })
+     *
+     */
+    findMany<T extends OrderRatingRecipientFindManyArgs>(args?: SelectSubset<T, OrderRatingRecipientFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderRatingRecipient.
+     * @param {OrderRatingRecipientCreateArgs} args - Arguments to create a OrderRatingRecipient.
+     * @example
+     * // Create one OrderRatingRecipient
+     * const OrderRatingRecipient = await prisma.orderRatingRecipient.create({
+     *   data: {
+     *     // ... data to create a OrderRatingRecipient
+     *   }
+     * })
+     *
+     */
+    create<T extends OrderRatingRecipientCreateArgs>(args: SelectSubset<T, OrderRatingRecipientCreateArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderRatingRecipients.
+     * @param {OrderRatingRecipientCreateManyArgs} args - Arguments to create many OrderRatingRecipients.
+     * @example
+     * // Create many OrderRatingRecipients
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends OrderRatingRecipientCreateManyArgs>(args?: SelectSubset<T, OrderRatingRecipientCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderRatingRecipients and returns the data saved in the database.
+     * @param {OrderRatingRecipientCreateManyAndReturnArgs} args - Arguments to create many OrderRatingRecipients.
+     * @example
+     * // Create many OrderRatingRecipients
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many OrderRatingRecipients and only return the `orderId`
+     * const orderRatingRecipientWithOrderIdOnly = await prisma.orderRatingRecipient.createManyAndReturn({
+     *   select: { orderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends OrderRatingRecipientCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderRatingRecipientCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderRatingRecipient.
+     * @param {OrderRatingRecipientDeleteArgs} args - Arguments to delete one OrderRatingRecipient.
+     * @example
+     * // Delete one OrderRatingRecipient
+     * const OrderRatingRecipient = await prisma.orderRatingRecipient.delete({
+     *   where: {
+     *     // ... filter to delete one OrderRatingRecipient
+     *   }
+     * })
+     *
+     */
+    delete<T extends OrderRatingRecipientDeleteArgs>(args: SelectSubset<T, OrderRatingRecipientDeleteArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderRatingRecipient.
+     * @param {OrderRatingRecipientUpdateArgs} args - Arguments to update one OrderRatingRecipient.
+     * @example
+     * // Update one OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends OrderRatingRecipientUpdateArgs>(args: SelectSubset<T, OrderRatingRecipientUpdateArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderRatingRecipients.
+     * @param {OrderRatingRecipientDeleteManyArgs} args - Arguments to filter OrderRatingRecipients to delete.
+     * @example
+     * // Delete a few OrderRatingRecipients
+     * const { count } = await prisma.orderRatingRecipient.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends OrderRatingRecipientDeleteManyArgs>(args?: SelectSubset<T, OrderRatingRecipientDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderRatingRecipients.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderRatingRecipients
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends OrderRatingRecipientUpdateManyArgs>(args: SelectSubset<T, OrderRatingRecipientUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderRatingRecipients and returns the data updated in the database.
+     * @param {OrderRatingRecipientUpdateManyAndReturnArgs} args - Arguments to update many OrderRatingRecipients.
+     * @example
+     * // Update many OrderRatingRecipients
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more OrderRatingRecipients and only return the `orderId`
+     * const orderRatingRecipientWithOrderIdOnly = await prisma.orderRatingRecipient.updateManyAndReturn({
+     *   select: { orderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends OrderRatingRecipientUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderRatingRecipientUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderRatingRecipient.
+     * @param {OrderRatingRecipientUpsertArgs} args - Arguments to update or create a OrderRatingRecipient.
+     * @example
+     * // Update or create a OrderRatingRecipient
+     * const orderRatingRecipient = await prisma.orderRatingRecipient.upsert({
+     *   create: {
+     *     // ... data to create a OrderRatingRecipient
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderRatingRecipient we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderRatingRecipientUpsertArgs>(args: SelectSubset<T, OrderRatingRecipientUpsertArgs<ExtArgs>>): Prisma__OrderRatingRecipientClient<$Result.GetResult<Prisma.$OrderRatingRecipientPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderRatingRecipients.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientCountArgs} args - Arguments to filter OrderRatingRecipients to count.
+     * @example
+     * // Count the number of OrderRatingRecipients
+     * const count = await prisma.orderRatingRecipient.count({
+     *   where: {
+     *     // ... the filter for the OrderRatingRecipients we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderRatingRecipientCountArgs>(
+      args?: Subset<T, OrderRatingRecipientCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderRatingRecipientCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderRatingRecipient.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderRatingRecipientAggregateArgs>(args: Subset<T, OrderRatingRecipientAggregateArgs>): Prisma.PrismaPromise<GetOrderRatingRecipientAggregateType<T>>
+
+    /**
+     * Group by OrderRatingRecipient.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderRatingRecipientGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends OrderRatingRecipientGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderRatingRecipientGroupByArgs['orderBy'] }
+        : { orderBy?: OrderRatingRecipientGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderRatingRecipientGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderRatingRecipientGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderRatingRecipient model
+   */
+  readonly fields: OrderRatingRecipientFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderRatingRecipient.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderRatingRecipientClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    rating<T extends OrderRatingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderRatingDefaultArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderRatingRecipient model
+   */
+  interface OrderRatingRecipientFieldRefs {
+    readonly orderId: FieldRef<"OrderRatingRecipient", 'String'>
+    readonly boosterId: FieldRef<"OrderRatingRecipient", 'String'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * OrderRatingRecipient findUnique
+   */
+  export type OrderRatingRecipientFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatingRecipient to fetch.
+     */
+    where: OrderRatingRecipientWhereUniqueInput
+  }
+
+  /**
+   * OrderRatingRecipient findUniqueOrThrow
+   */
+  export type OrderRatingRecipientFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatingRecipient to fetch.
+     */
+    where: OrderRatingRecipientWhereUniqueInput
+  }
+
+  /**
+   * OrderRatingRecipient findFirst
+   */
+  export type OrderRatingRecipientFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatingRecipient to fetch.
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatingRecipients to fetch.
+     */
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderRatingRecipients.
+     */
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatingRecipients from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatingRecipients.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatingRecipients.
+     */
+    distinct?: OrderRatingRecipientScalarFieldEnum | OrderRatingRecipientScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRatingRecipient findFirstOrThrow
+   */
+  export type OrderRatingRecipientFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatingRecipient to fetch.
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatingRecipients to fetch.
+     */
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderRatingRecipients.
+     */
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatingRecipients from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatingRecipients.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatingRecipients.
+     */
+    distinct?: OrderRatingRecipientScalarFieldEnum | OrderRatingRecipientScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRatingRecipient findMany
+   */
+  export type OrderRatingRecipientFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderRatingRecipients to fetch.
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderRatingRecipients to fetch.
+     */
+    orderBy?: OrderRatingRecipientOrderByWithRelationInput | OrderRatingRecipientOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing OrderRatingRecipients.
+     */
+    cursor?: OrderRatingRecipientWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderRatingRecipients from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderRatingRecipients.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderRatingRecipients.
+     */
+    distinct?: OrderRatingRecipientScalarFieldEnum | OrderRatingRecipientScalarFieldEnum[]
+  }
+
+  /**
+   * OrderRatingRecipient create
+   */
+  export type OrderRatingRecipientCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrderRatingRecipient.
+     */
+    data: XOR<OrderRatingRecipientCreateInput, OrderRatingRecipientUncheckedCreateInput>
+  }
+
+  /**
+   * OrderRatingRecipient createMany
+   */
+  export type OrderRatingRecipientCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderRatingRecipients.
+     */
+    data: OrderRatingRecipientCreateManyInput | OrderRatingRecipientCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderRatingRecipient createManyAndReturn
+   */
+  export type OrderRatingRecipientCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderRatingRecipients.
+     */
+    data: OrderRatingRecipientCreateManyInput | OrderRatingRecipientCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderRatingRecipient update
+   */
+  export type OrderRatingRecipientUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrderRatingRecipient.
+     */
+    data: XOR<OrderRatingRecipientUpdateInput, OrderRatingRecipientUncheckedUpdateInput>
+    /**
+     * Choose, which OrderRatingRecipient to update.
+     */
+    where: OrderRatingRecipientWhereUniqueInput
+  }
+
+  /**
+   * OrderRatingRecipient updateMany
+   */
+  export type OrderRatingRecipientUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderRatingRecipients.
+     */
+    data: XOR<OrderRatingRecipientUpdateManyMutationInput, OrderRatingRecipientUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderRatingRecipients to update
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * Limit how many OrderRatingRecipients to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderRatingRecipient updateManyAndReturn
+   */
+  export type OrderRatingRecipientUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderRatingRecipients.
+     */
+    data: XOR<OrderRatingRecipientUpdateManyMutationInput, OrderRatingRecipientUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderRatingRecipients to update
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * Limit how many OrderRatingRecipients to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderRatingRecipient upsert
+   */
+  export type OrderRatingRecipientUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrderRatingRecipient to update in case it exists.
+     */
+    where: OrderRatingRecipientWhereUniqueInput
+    /**
+     * In case the OrderRatingRecipient found by the `where` argument doesn't exist, create a new OrderRatingRecipient with this data.
+     */
+    create: XOR<OrderRatingRecipientCreateInput, OrderRatingRecipientUncheckedCreateInput>
+    /**
+     * In case the OrderRatingRecipient was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderRatingRecipientUpdateInput, OrderRatingRecipientUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderRatingRecipient delete
+   */
+  export type OrderRatingRecipientDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
+    /**
+     * Filter which OrderRatingRecipient to delete.
+     */
+    where: OrderRatingRecipientWhereUniqueInput
+  }
+
+  /**
+   * OrderRatingRecipient deleteMany
+   */
+  export type OrderRatingRecipientDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderRatingRecipients to delete
+     */
+    where?: OrderRatingRecipientWhereInput
+    /**
+     * Limit how many OrderRatingRecipients to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderRatingRecipient without action
+   */
+  export type OrderRatingRecipientDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderRatingRecipient
+     */
+    select?: OrderRatingRecipientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderRatingRecipient
+     */
+    omit?: OrderRatingRecipientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderRatingRecipientInclude<ExtArgs> | null
   }
 
 
@@ -39845,6 +43482,17 @@ export namespace Prisma {
   export type BoosterProfileScalarFieldEnum = (typeof BoosterProfileScalarFieldEnum)[keyof typeof BoosterProfileScalarFieldEnum]
 
 
+  export const BoosterPreferencesScalarFieldEnum: {
+    userId: 'userId',
+    firstRole: 'firstRole',
+    secondRole: 'secondRole',
+    championIds: 'championIds',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BoosterPreferencesScalarFieldEnum = (typeof BoosterPreferencesScalarFieldEnum)[keyof typeof BoosterPreferencesScalarFieldEnum]
+
+
   export const BoosterContractScalarFieldEnum: {
     id: 'id',
     boosterId: 'boosterId',
@@ -40071,6 +43719,24 @@ export namespace Prisma {
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+  export const OrderRatingScalarFieldEnum: {
+    orderId: 'orderId',
+    customerId: 'customerId',
+    stars: 'stars',
+    createdAt: 'createdAt'
+  };
+
+  export type OrderRatingScalarFieldEnum = (typeof OrderRatingScalarFieldEnum)[keyof typeof OrderRatingScalarFieldEnum]
+
+
+  export const OrderRatingRecipientScalarFieldEnum: {
+    orderId: 'orderId',
+    boosterId: 'boosterId'
+  };
+
+  export type OrderRatingRecipientScalarFieldEnum = (typeof OrderRatingRecipientScalarFieldEnum)[keyof typeof OrderRatingRecipientScalarFieldEnum]
 
 
   export const OrderConfirmationEmailScalarFieldEnum: {
@@ -40547,6 +44213,7 @@ export namespace Prisma {
     referralCode?: StringNullableFilter<"User"> | string | null
     referredById?: StringNullableFilter<"User"> | string | null
     boosterProfile?: XOR<BoosterProfileNullableScalarRelationFilter, BoosterProfileWhereInput> | null
+    boosterPreferences?: XOR<BoosterPreferencesNullableScalarRelationFilter, BoosterPreferencesWhereInput> | null
     contributions?: BoosterContributionListRelationFilter
     playedMatches?: OrderMatchListRelationFilter
     matchReviews?: OrderMatchReviewListRelationFilter
@@ -40560,6 +44227,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityListRelationFilter
     personalCoupons?: ServiceSaleListRelationFilter
     couponUses?: CouponUseListRelationFilter
+    submittedOrderRatings?: OrderRatingListRelationFilter
+    receivedOrderRatings?: OrderRatingRecipientListRelationFilter
     orders?: OrderListRelationFilter
     verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
@@ -40591,6 +44260,7 @@ export namespace Prisma {
     referralCode?: SortOrderInput | SortOrder
     referredById?: SortOrderInput | SortOrder
     boosterProfile?: BoosterProfileOrderByWithRelationInput
+    boosterPreferences?: BoosterPreferencesOrderByWithRelationInput
     contributions?: BoosterContributionOrderByRelationAggregateInput
     playedMatches?: OrderMatchOrderByRelationAggregateInput
     matchReviews?: OrderMatchReviewOrderByRelationAggregateInput
@@ -40604,6 +44274,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityOrderByRelationAggregateInput
     personalCoupons?: ServiceSaleOrderByRelationAggregateInput
     couponUses?: CouponUseOrderByRelationAggregateInput
+    submittedOrderRatings?: OrderRatingOrderByRelationAggregateInput
+    receivedOrderRatings?: OrderRatingRecipientOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     verificationCodes?: VerificationCodeOrderByRelationAggregateInput
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
@@ -40638,6 +44310,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referredById?: StringNullableFilter<"User"> | string | null
     boosterProfile?: XOR<BoosterProfileNullableScalarRelationFilter, BoosterProfileWhereInput> | null
+    boosterPreferences?: XOR<BoosterPreferencesNullableScalarRelationFilter, BoosterPreferencesWhereInput> | null
     contributions?: BoosterContributionListRelationFilter
     playedMatches?: OrderMatchListRelationFilter
     matchReviews?: OrderMatchReviewListRelationFilter
@@ -40651,6 +44324,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityListRelationFilter
     personalCoupons?: ServiceSaleListRelationFilter
     couponUses?: CouponUseListRelationFilter
+    submittedOrderRatings?: OrderRatingListRelationFilter
+    receivedOrderRatings?: OrderRatingRecipientListRelationFilter
     orders?: OrderListRelationFilter
     verificationCodes?: VerificationCodeListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
@@ -40913,6 +44588,61 @@ export namespace Prisma {
     NOT?: BoosterProfileScalarWhereWithAggregatesInput | BoosterProfileScalarWhereWithAggregatesInput[]
     userId?: StringWithAggregatesFilter<"BoosterProfile"> | string
     startedAt?: DateTimeNullableWithAggregatesFilter<"BoosterProfile"> | Date | string | null
+  }
+
+  export type BoosterPreferencesWhereInput = {
+    AND?: BoosterPreferencesWhereInput | BoosterPreferencesWhereInput[]
+    OR?: BoosterPreferencesWhereInput[]
+    NOT?: BoosterPreferencesWhereInput | BoosterPreferencesWhereInput[]
+    userId?: StringFilter<"BoosterPreferences"> | string
+    firstRole?: StringNullableFilter<"BoosterPreferences"> | string | null
+    secondRole?: StringNullableFilter<"BoosterPreferences"> | string | null
+    championIds?: StringNullableListFilter<"BoosterPreferences">
+    updatedAt?: DateTimeFilter<"BoosterPreferences"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type BoosterPreferencesOrderByWithRelationInput = {
+    userId?: SortOrder
+    firstRole?: SortOrderInput | SortOrder
+    secondRole?: SortOrderInput | SortOrder
+    championIds?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type BoosterPreferencesWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: BoosterPreferencesWhereInput | BoosterPreferencesWhereInput[]
+    OR?: BoosterPreferencesWhereInput[]
+    NOT?: BoosterPreferencesWhereInput | BoosterPreferencesWhereInput[]
+    firstRole?: StringNullableFilter<"BoosterPreferences"> | string | null
+    secondRole?: StringNullableFilter<"BoosterPreferences"> | string | null
+    championIds?: StringNullableListFilter<"BoosterPreferences">
+    updatedAt?: DateTimeFilter<"BoosterPreferences"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "userId">
+
+  export type BoosterPreferencesOrderByWithAggregationInput = {
+    userId?: SortOrder
+    firstRole?: SortOrderInput | SortOrder
+    secondRole?: SortOrderInput | SortOrder
+    championIds?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BoosterPreferencesCountOrderByAggregateInput
+    _max?: BoosterPreferencesMaxOrderByAggregateInput
+    _min?: BoosterPreferencesMinOrderByAggregateInput
+  }
+
+  export type BoosterPreferencesScalarWhereWithAggregatesInput = {
+    AND?: BoosterPreferencesScalarWhereWithAggregatesInput | BoosterPreferencesScalarWhereWithAggregatesInput[]
+    OR?: BoosterPreferencesScalarWhereWithAggregatesInput[]
+    NOT?: BoosterPreferencesScalarWhereWithAggregatesInput | BoosterPreferencesScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"BoosterPreferences"> | string
+    firstRole?: StringNullableWithAggregatesFilter<"BoosterPreferences"> | string | null
+    secondRole?: StringNullableWithAggregatesFilter<"BoosterPreferences"> | string | null
+    championIds?: StringNullableListFilter<"BoosterPreferences">
+    updatedAt?: DateTimeWithAggregatesFilter<"BoosterPreferences"> | Date | string
   }
 
   export type BoosterContractWhereInput = {
@@ -41825,6 +45555,7 @@ export namespace Prisma {
     matches?: OrderMatchListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
+    rating?: XOR<OrderRatingNullableScalarRelationFilter, OrderRatingWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -41902,6 +45633,7 @@ export namespace Prisma {
     matches?: OrderMatchOrderByRelationAggregateInput
     assignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     conversation?: ConversationOrderByWithRelationInput
+    rating?: OrderRatingOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -41982,6 +45714,7 @@ export namespace Prisma {
     matches?: OrderMatchListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
+    rating?: XOR<OrderRatingNullableScalarRelationFilter, OrderRatingWhereInput> | null
   }, "id" | "orderNumber" | "stripeCheckoutSessionId">
 
   export type OrderOrderByWithAggregationInput = {
@@ -42124,6 +45857,108 @@ export namespace Prisma {
     matchHistoryConfirmedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     matchHistoryConfirmedBy?: StringNullableWithAggregatesFilter<"Order"> | string | null
     matchHistorySyncedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  }
+
+  export type OrderRatingWhereInput = {
+    AND?: OrderRatingWhereInput | OrderRatingWhereInput[]
+    OR?: OrderRatingWhereInput[]
+    NOT?: OrderRatingWhereInput | OrderRatingWhereInput[]
+    orderId?: StringFilter<"OrderRating"> | string
+    customerId?: StringFilter<"OrderRating"> | string
+    stars?: IntFilter<"OrderRating"> | number
+    createdAt?: DateTimeFilter<"OrderRating"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    customer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    recipients?: OrderRatingRecipientListRelationFilter
+  }
+
+  export type OrderRatingOrderByWithRelationInput = {
+    orderId?: SortOrder
+    customerId?: SortOrder
+    stars?: SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+    customer?: UserOrderByWithRelationInput
+    recipients?: OrderRatingRecipientOrderByRelationAggregateInput
+  }
+
+  export type OrderRatingWhereUniqueInput = Prisma.AtLeast<{
+    orderId?: string
+    AND?: OrderRatingWhereInput | OrderRatingWhereInput[]
+    OR?: OrderRatingWhereInput[]
+    NOT?: OrderRatingWhereInput | OrderRatingWhereInput[]
+    customerId?: StringFilter<"OrderRating"> | string
+    stars?: IntFilter<"OrderRating"> | number
+    createdAt?: DateTimeFilter<"OrderRating"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    customer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    recipients?: OrderRatingRecipientListRelationFilter
+  }, "orderId">
+
+  export type OrderRatingOrderByWithAggregationInput = {
+    orderId?: SortOrder
+    customerId?: SortOrder
+    stars?: SortOrder
+    createdAt?: SortOrder
+    _count?: OrderRatingCountOrderByAggregateInput
+    _avg?: OrderRatingAvgOrderByAggregateInput
+    _max?: OrderRatingMaxOrderByAggregateInput
+    _min?: OrderRatingMinOrderByAggregateInput
+    _sum?: OrderRatingSumOrderByAggregateInput
+  }
+
+  export type OrderRatingScalarWhereWithAggregatesInput = {
+    AND?: OrderRatingScalarWhereWithAggregatesInput | OrderRatingScalarWhereWithAggregatesInput[]
+    OR?: OrderRatingScalarWhereWithAggregatesInput[]
+    NOT?: OrderRatingScalarWhereWithAggregatesInput | OrderRatingScalarWhereWithAggregatesInput[]
+    orderId?: StringWithAggregatesFilter<"OrderRating"> | string
+    customerId?: StringWithAggregatesFilter<"OrderRating"> | string
+    stars?: IntWithAggregatesFilter<"OrderRating"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"OrderRating"> | Date | string
+  }
+
+  export type OrderRatingRecipientWhereInput = {
+    AND?: OrderRatingRecipientWhereInput | OrderRatingRecipientWhereInput[]
+    OR?: OrderRatingRecipientWhereInput[]
+    NOT?: OrderRatingRecipientWhereInput | OrderRatingRecipientWhereInput[]
+    orderId?: StringFilter<"OrderRatingRecipient"> | string
+    boosterId?: StringFilter<"OrderRatingRecipient"> | string
+    rating?: XOR<OrderRatingScalarRelationFilter, OrderRatingWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type OrderRatingRecipientOrderByWithRelationInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    rating?: OrderRatingOrderByWithRelationInput
+    booster?: UserOrderByWithRelationInput
+  }
+
+  export type OrderRatingRecipientWhereUniqueInput = Prisma.AtLeast<{
+    orderId_boosterId?: OrderRatingRecipientOrderIdBoosterIdCompoundUniqueInput
+    AND?: OrderRatingRecipientWhereInput | OrderRatingRecipientWhereInput[]
+    OR?: OrderRatingRecipientWhereInput[]
+    NOT?: OrderRatingRecipientWhereInput | OrderRatingRecipientWhereInput[]
+    orderId?: StringFilter<"OrderRatingRecipient"> | string
+    boosterId?: StringFilter<"OrderRatingRecipient"> | string
+    rating?: XOR<OrderRatingScalarRelationFilter, OrderRatingWhereInput>
+    booster?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "orderId_boosterId">
+
+  export type OrderRatingRecipientOrderByWithAggregationInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+    _count?: OrderRatingRecipientCountOrderByAggregateInput
+    _max?: OrderRatingRecipientMaxOrderByAggregateInput
+    _min?: OrderRatingRecipientMinOrderByAggregateInput
+  }
+
+  export type OrderRatingRecipientScalarWhereWithAggregatesInput = {
+    AND?: OrderRatingRecipientScalarWhereWithAggregatesInput | OrderRatingRecipientScalarWhereWithAggregatesInput[]
+    OR?: OrderRatingRecipientScalarWhereWithAggregatesInput[]
+    NOT?: OrderRatingRecipientScalarWhereWithAggregatesInput | OrderRatingRecipientScalarWhereWithAggregatesInput[]
+    orderId?: StringWithAggregatesFilter<"OrderRatingRecipient"> | string
+    boosterId?: StringWithAggregatesFilter<"OrderRatingRecipient"> | string
   }
 
   export type OrderConfirmationEmailWhereInput = {
@@ -43175,6 +47010,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -43188,6 +47024,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -43219,6 +47057,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -43232,6 +47071,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -43261,6 +47102,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -43274,6 +47116,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -43305,6 +47149,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -43318,6 +47163,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -43609,6 +47456,61 @@ export namespace Prisma {
   export type BoosterProfileUncheckedUpdateManyInput = {
     userId?: StringFieldUpdateOperationsInput | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterPreferencesCreateInput = {
+    firstRole?: string | null
+    secondRole?: string | null
+    championIds?: BoosterPreferencesCreatechampionIdsInput | string[]
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBoosterPreferencesInput
+  }
+
+  export type BoosterPreferencesUncheckedCreateInput = {
+    userId: string
+    firstRole?: string | null
+    secondRole?: string | null
+    championIds?: BoosterPreferencesCreatechampionIdsInput | string[]
+    updatedAt?: Date | string
+  }
+
+  export type BoosterPreferencesUpdateInput = {
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBoosterPreferencesNestedInput
+  }
+
+  export type BoosterPreferencesUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoosterPreferencesCreateManyInput = {
+    userId: string
+    firstRole?: string | null
+    secondRole?: string | null
+    championIds?: BoosterPreferencesCreatechampionIdsInput | string[]
+    updatedAt?: Date | string
+  }
+
+  export type BoosterPreferencesUpdateManyMutationInput = {
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoosterPreferencesUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BoosterContractCreateInput = {
@@ -44594,6 +48496,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -44668,6 +48571,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -44742,6 +48646,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -44816,6 +48721,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -45014,6 +48920,91 @@ export namespace Prisma {
     matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
     matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrderRatingCreateInput = {
+    stars: number
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutRatingInput
+    customer: UserCreateNestedOneWithoutSubmittedOrderRatingsInput
+    recipients?: OrderRatingRecipientCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingUncheckedCreateInput = {
+    orderId: string
+    customerId: string
+    stars: number
+    createdAt?: Date | string
+    recipients?: OrderRatingRecipientUncheckedCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingUpdateInput = {
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutRatingNestedInput
+    customer?: UserUpdateOneRequiredWithoutSubmittedOrderRatingsNestedInput
+    recipients?: OrderRatingRecipientUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderRatingUncheckedUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: OrderRatingRecipientUncheckedUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderRatingCreateManyInput = {
+    orderId: string
+    customerId: string
+    stars: number
+    createdAt?: Date | string
+  }
+
+  export type OrderRatingUpdateManyMutationInput = {
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderRatingUncheckedUpdateManyInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderRatingRecipientCreateInput = {
+    rating: OrderRatingCreateNestedOneWithoutRecipientsInput
+    booster: UserCreateNestedOneWithoutReceivedOrderRatingsInput
+  }
+
+  export type OrderRatingRecipientUncheckedCreateInput = {
+    orderId: string
+    boosterId: string
+  }
+
+  export type OrderRatingRecipientUpdateInput = {
+    rating?: OrderRatingUpdateOneRequiredWithoutRecipientsNestedInput
+    booster?: UserUpdateOneRequiredWithoutReceivedOrderRatingsNestedInput
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderRatingRecipientCreateManyInput = {
+    orderId: string
+    boosterId: string
+  }
+
+  export type OrderRatingRecipientUpdateManyMutationInput = {
+
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateManyInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrderConfirmationEmailCreateInput = {
@@ -46130,6 +50121,11 @@ export namespace Prisma {
     isNot?: BoosterProfileWhereInput | null
   }
 
+  export type BoosterPreferencesNullableScalarRelationFilter = {
+    is?: BoosterPreferencesWhereInput | null
+    isNot?: BoosterPreferencesWhereInput | null
+  }
+
   export type BoosterContributionListRelationFilter = {
     every?: BoosterContributionWhereInput
     some?: BoosterContributionWhereInput
@@ -46198,6 +50194,18 @@ export namespace Prisma {
     every?: CouponUseWhereInput
     some?: CouponUseWhereInput
     none?: CouponUseWhereInput
+  }
+
+  export type OrderRatingListRelationFilter = {
+    every?: OrderRatingWhereInput
+    some?: OrderRatingWhereInput
+    none?: OrderRatingWhereInput
+  }
+
+  export type OrderRatingRecipientListRelationFilter = {
+    every?: OrderRatingRecipientWhereInput
+    some?: OrderRatingRecipientWhereInput
+    none?: OrderRatingRecipientWhereInput
   }
 
   export type OrderListRelationFilter = {
@@ -46312,6 +50320,14 @@ export namespace Prisma {
   }
 
   export type CouponUseOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrderRatingOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrderRatingRecipientOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -46668,6 +50684,36 @@ export namespace Prisma {
   export type BoosterProfileMinOrderByAggregateInput = {
     userId?: SortOrder
     startedAt?: SortOrder
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type BoosterPreferencesCountOrderByAggregateInput = {
+    userId?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
+    championIds?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoosterPreferencesMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoosterPreferencesMinOrderByAggregateInput = {
+    userId?: SortOrder
+    firstRole?: SortOrder
+    secondRole?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type BoosterContractCountOrderByAggregateInput = {
@@ -47112,14 +51158,6 @@ export namespace Prisma {
     _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
-  export type StringNullableListFilter<$PrismaModel = never> = {
-    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    has?: string | StringFieldRefInput<$PrismaModel> | null
-    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
-    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
   export type EnumSaleScopeFilter<$PrismaModel = never> = {
     equals?: $Enums.SaleScope | EnumSaleScopeFieldRefInput<$PrismaModel>
     in?: $Enums.SaleScope[] | ListEnumSaleScopeFieldRefInput<$PrismaModel>
@@ -47290,6 +51328,11 @@ export namespace Prisma {
   export type ConversationNullableScalarRelationFilter = {
     is?: ConversationWhereInput | null
     isNot?: ConversationWhereInput | null
+  }
+
+  export type OrderRatingNullableScalarRelationFilter = {
+    is?: OrderRatingWhereInput | null
+    isNot?: OrderRatingWhereInput | null
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -47582,6 +51625,65 @@ export namespace Prisma {
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
   }
+
+  export type OrderScalarRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
+  }
+
+  export type OrderRatingCountOrderByAggregateInput = {
+    orderId?: SortOrder
+    customerId?: SortOrder
+    stars?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderRatingAvgOrderByAggregateInput = {
+    stars?: SortOrder
+  }
+
+  export type OrderRatingMaxOrderByAggregateInput = {
+    orderId?: SortOrder
+    customerId?: SortOrder
+    stars?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderRatingMinOrderByAggregateInput = {
+    orderId?: SortOrder
+    customerId?: SortOrder
+    stars?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderRatingSumOrderByAggregateInput = {
+    stars?: SortOrder
+  }
+
+  export type OrderRatingScalarRelationFilter = {
+    is?: OrderRatingWhereInput
+    isNot?: OrderRatingWhereInput
+  }
+
+  export type OrderRatingRecipientOrderIdBoosterIdCompoundUniqueInput = {
+    orderId: string
+    boosterId: string
+  }
+
+  export type OrderRatingRecipientCountOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+  }
+
+  export type OrderRatingRecipientMaxOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+  }
+
+  export type OrderRatingRecipientMinOrderByAggregateInput = {
+    orderId?: SortOrder
+    boosterId?: SortOrder
+  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -47604,11 +51706,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type OrderScalarRelationFilter = {
-    is?: OrderWhereInput
-    isNot?: OrderWhereInput
   }
 
   export type OrderConfirmationEmailCountOrderByAggregateInput = {
@@ -48263,6 +52360,12 @@ export namespace Prisma {
     connect?: BoosterProfileWhereUniqueInput
   }
 
+  export type BoosterPreferencesCreateNestedOneWithoutUserInput = {
+    create?: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterPreferencesCreateOrConnectWithoutUserInput
+    connect?: BoosterPreferencesWhereUniqueInput
+  }
+
   export type BoosterContributionCreateNestedManyWithoutBoosterInput = {
     create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
     connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
@@ -48350,6 +52453,20 @@ export namespace Prisma {
     connectOrCreate?: CouponUseCreateOrConnectWithoutAccountInput | CouponUseCreateOrConnectWithoutAccountInput[]
     createMany?: CouponUseCreateManyAccountInputEnvelope
     connect?: CouponUseWhereUniqueInput | CouponUseWhereUniqueInput[]
+  }
+
+  export type OrderRatingCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput> | OrderRatingCreateWithoutCustomerInput[] | OrderRatingUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutCustomerInput | OrderRatingCreateOrConnectWithoutCustomerInput[]
+    createMany?: OrderRatingCreateManyCustomerInputEnvelope
+    connect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+  }
+
+  export type OrderRatingRecipientCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput> | OrderRatingRecipientCreateWithoutBoosterInput[] | OrderRatingRecipientUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutBoosterInput | OrderRatingRecipientCreateOrConnectWithoutBoosterInput[]
+    createMany?: OrderRatingRecipientCreateManyBoosterInputEnvelope
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
   }
 
   export type OrderCreateNestedManyWithoutCustomerInput = {
@@ -48447,6 +52564,12 @@ export namespace Prisma {
     connect?: BoosterProfileWhereUniqueInput
   }
 
+  export type BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterPreferencesCreateOrConnectWithoutUserInput
+    connect?: BoosterPreferencesWhereUniqueInput
+  }
+
   export type BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput = {
     create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
     connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
@@ -48534,6 +52657,20 @@ export namespace Prisma {
     connectOrCreate?: CouponUseCreateOrConnectWithoutAccountInput | CouponUseCreateOrConnectWithoutAccountInput[]
     createMany?: CouponUseCreateManyAccountInputEnvelope
     connect?: CouponUseWhereUniqueInput | CouponUseWhereUniqueInput[]
+  }
+
+  export type OrderRatingUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput> | OrderRatingCreateWithoutCustomerInput[] | OrderRatingUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutCustomerInput | OrderRatingCreateOrConnectWithoutCustomerInput[]
+    createMany?: OrderRatingCreateManyCustomerInputEnvelope
+    connect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+  }
+
+  export type OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput> | OrderRatingRecipientCreateWithoutBoosterInput[] | OrderRatingRecipientUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutBoosterInput | OrderRatingRecipientCreateOrConnectWithoutBoosterInput[]
+    createMany?: OrderRatingRecipientCreateManyBoosterInputEnvelope
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
   }
 
   export type OrderUncheckedCreateNestedManyWithoutCustomerInput = {
@@ -48651,6 +52788,16 @@ export namespace Prisma {
     delete?: BoosterProfileWhereInput | boolean
     connect?: BoosterProfileWhereUniqueInput
     update?: XOR<XOR<BoosterProfileUpdateToOneWithWhereWithoutUserInput, BoosterProfileUpdateWithoutUserInput>, BoosterProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BoosterPreferencesUpdateOneWithoutUserNestedInput = {
+    create?: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterPreferencesCreateOrConnectWithoutUserInput
+    upsert?: BoosterPreferencesUpsertWithoutUserInput
+    disconnect?: BoosterPreferencesWhereInput | boolean
+    delete?: BoosterPreferencesWhereInput | boolean
+    connect?: BoosterPreferencesWhereUniqueInput
+    update?: XOR<XOR<BoosterPreferencesUpdateToOneWithWhereWithoutUserInput, BoosterPreferencesUpdateWithoutUserInput>, BoosterPreferencesUncheckedUpdateWithoutUserInput>
   }
 
   export type BoosterContributionUpdateManyWithoutBoosterNestedInput = {
@@ -48825,6 +52972,34 @@ export namespace Prisma {
     update?: CouponUseUpdateWithWhereUniqueWithoutAccountInput | CouponUseUpdateWithWhereUniqueWithoutAccountInput[]
     updateMany?: CouponUseUpdateManyWithWhereWithoutAccountInput | CouponUseUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: CouponUseScalarWhereInput | CouponUseScalarWhereInput[]
+  }
+
+  export type OrderRatingUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput> | OrderRatingCreateWithoutCustomerInput[] | OrderRatingUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutCustomerInput | OrderRatingCreateOrConnectWithoutCustomerInput[]
+    upsert?: OrderRatingUpsertWithWhereUniqueWithoutCustomerInput | OrderRatingUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: OrderRatingCreateManyCustomerInputEnvelope
+    set?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    disconnect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    delete?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    connect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    update?: OrderRatingUpdateWithWhereUniqueWithoutCustomerInput | OrderRatingUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: OrderRatingUpdateManyWithWhereWithoutCustomerInput | OrderRatingUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: OrderRatingScalarWhereInput | OrderRatingScalarWhereInput[]
+  }
+
+  export type OrderRatingRecipientUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput> | OrderRatingRecipientCreateWithoutBoosterInput[] | OrderRatingRecipientUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutBoosterInput | OrderRatingRecipientCreateOrConnectWithoutBoosterInput[]
+    upsert?: OrderRatingRecipientUpsertWithWhereUniqueWithoutBoosterInput | OrderRatingRecipientUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: OrderRatingRecipientCreateManyBoosterInputEnvelope
+    set?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    disconnect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    delete?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    update?: OrderRatingRecipientUpdateWithWhereUniqueWithoutBoosterInput | OrderRatingRecipientUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: OrderRatingRecipientUpdateManyWithWhereWithoutBoosterInput | OrderRatingRecipientUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
   }
 
   export type OrderUpdateManyWithoutCustomerNestedInput = {
@@ -49011,6 +53186,16 @@ export namespace Prisma {
     update?: XOR<XOR<BoosterProfileUpdateToOneWithWhereWithoutUserInput, BoosterProfileUpdateWithoutUserInput>, BoosterProfileUncheckedUpdateWithoutUserInput>
   }
 
+  export type BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: BoosterPreferencesCreateOrConnectWithoutUserInput
+    upsert?: BoosterPreferencesUpsertWithoutUserInput
+    disconnect?: BoosterPreferencesWhereInput | boolean
+    delete?: BoosterPreferencesWhereInput | boolean
+    connect?: BoosterPreferencesWhereUniqueInput
+    update?: XOR<XOR<BoosterPreferencesUpdateToOneWithWhereWithoutUserInput, BoosterPreferencesUpdateWithoutUserInput>, BoosterPreferencesUncheckedUpdateWithoutUserInput>
+  }
+
   export type BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput = {
     create?: XOR<BoosterContributionCreateWithoutBoosterInput, BoosterContributionUncheckedCreateWithoutBoosterInput> | BoosterContributionCreateWithoutBoosterInput[] | BoosterContributionUncheckedCreateWithoutBoosterInput[]
     connectOrCreate?: BoosterContributionCreateOrConnectWithoutBoosterInput | BoosterContributionCreateOrConnectWithoutBoosterInput[]
@@ -49183,6 +53368,34 @@ export namespace Prisma {
     update?: CouponUseUpdateWithWhereUniqueWithoutAccountInput | CouponUseUpdateWithWhereUniqueWithoutAccountInput[]
     updateMany?: CouponUseUpdateManyWithWhereWithoutAccountInput | CouponUseUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: CouponUseScalarWhereInput | CouponUseScalarWhereInput[]
+  }
+
+  export type OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput> | OrderRatingCreateWithoutCustomerInput[] | OrderRatingUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutCustomerInput | OrderRatingCreateOrConnectWithoutCustomerInput[]
+    upsert?: OrderRatingUpsertWithWhereUniqueWithoutCustomerInput | OrderRatingUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: OrderRatingCreateManyCustomerInputEnvelope
+    set?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    disconnect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    delete?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    connect?: OrderRatingWhereUniqueInput | OrderRatingWhereUniqueInput[]
+    update?: OrderRatingUpdateWithWhereUniqueWithoutCustomerInput | OrderRatingUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: OrderRatingUpdateManyWithWhereWithoutCustomerInput | OrderRatingUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: OrderRatingScalarWhereInput | OrderRatingScalarWhereInput[]
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput> | OrderRatingRecipientCreateWithoutBoosterInput[] | OrderRatingRecipientUncheckedCreateWithoutBoosterInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutBoosterInput | OrderRatingRecipientCreateOrConnectWithoutBoosterInput[]
+    upsert?: OrderRatingRecipientUpsertWithWhereUniqueWithoutBoosterInput | OrderRatingRecipientUpsertWithWhereUniqueWithoutBoosterInput[]
+    createMany?: OrderRatingRecipientCreateManyBoosterInputEnvelope
+    set?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    disconnect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    delete?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    update?: OrderRatingRecipientUpdateWithWhereUniqueWithoutBoosterInput | OrderRatingRecipientUpdateWithWhereUniqueWithoutBoosterInput[]
+    updateMany?: OrderRatingRecipientUpdateManyWithWhereWithoutBoosterInput | OrderRatingRecipientUpdateManyWithWhereWithoutBoosterInput[]
+    deleteMany?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerNestedInput = {
@@ -49383,6 +53596,29 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutBoosterProfileInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBoosterProfileInput, UserUpdateWithoutBoosterProfileInput>, UserUncheckedUpdateWithoutBoosterProfileInput>
+  }
+
+  export type BoosterPreferencesCreatechampionIdsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutBoosterPreferencesInput = {
+    create?: XOR<UserCreateWithoutBoosterPreferencesInput, UserUncheckedCreateWithoutBoosterPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterPreferencesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BoosterPreferencesUpdatechampionIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutBoosterPreferencesNestedInput = {
+    create?: XOR<UserCreateWithoutBoosterPreferencesInput, UserUncheckedCreateWithoutBoosterPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBoosterPreferencesInput
+    upsert?: UserUpsertWithoutBoosterPreferencesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBoosterPreferencesInput, UserUpdateWithoutBoosterPreferencesInput>, UserUncheckedUpdateWithoutBoosterPreferencesInput>
   }
 
   export type UserCreateNestedOneWithoutBoosterContractsInput = {
@@ -49975,6 +54211,12 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput
   }
 
+  export type OrderRatingCreateNestedOneWithoutOrderInput = {
+    create?: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutOrderInput
+    connect?: OrderRatingWhereUniqueInput
+  }
+
   export type CouponUseUncheckedCreateNestedOneWithoutOrderInput = {
     create?: XOR<CouponUseCreateWithoutOrderInput, CouponUseUncheckedCreateWithoutOrderInput>
     connectOrCreate?: CouponUseCreateOrConnectWithoutOrderInput
@@ -50019,6 +54261,12 @@ export namespace Prisma {
     create?: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
     connectOrCreate?: ConversationCreateOrConnectWithoutOrderInput
     connect?: ConversationWhereUniqueInput
+  }
+
+  export type OrderRatingUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutOrderInput
+    connect?: OrderRatingWhereUniqueInput
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -50157,6 +54405,16 @@ export namespace Prisma {
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutOrderInput, ConversationUpdateWithoutOrderInput>, ConversationUncheckedUpdateWithoutOrderInput>
   }
 
+  export type OrderRatingUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutOrderInput
+    upsert?: OrderRatingUpsertWithoutOrderInput
+    disconnect?: OrderRatingWhereInput | boolean
+    delete?: OrderRatingWhereInput | boolean
+    connect?: OrderRatingWhereUniqueInput
+    update?: XOR<XOR<OrderRatingUpdateToOneWithWhereWithoutOrderInput, OrderRatingUpdateWithoutOrderInput>, OrderRatingUncheckedUpdateWithoutOrderInput>
+  }
+
   export type CouponUseUncheckedUpdateOneWithoutOrderNestedInput = {
     create?: XOR<CouponUseCreateWithoutOrderInput, CouponUseUncheckedCreateWithoutOrderInput>
     connectOrCreate?: CouponUseCreateOrConnectWithoutOrderInput
@@ -50241,6 +54499,114 @@ export namespace Prisma {
     delete?: ConversationWhereInput | boolean
     connect?: ConversationWhereUniqueInput
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutOrderInput, ConversationUpdateWithoutOrderInput>, ConversationUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderRatingUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutOrderInput
+    upsert?: OrderRatingUpsertWithoutOrderInput
+    disconnect?: OrderRatingWhereInput | boolean
+    delete?: OrderRatingWhereInput | boolean
+    connect?: OrderRatingWhereUniqueInput
+    update?: XOR<XOR<OrderRatingUpdateToOneWithWhereWithoutOrderInput, OrderRatingUpdateWithoutOrderInput>, OrderRatingUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderCreateNestedOneWithoutRatingInput = {
+    create?: XOR<OrderCreateWithoutRatingInput, OrderUncheckedCreateWithoutRatingInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutRatingInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutSubmittedOrderRatingsInput = {
+    create?: XOR<UserCreateWithoutSubmittedOrderRatingsInput, UserUncheckedCreateWithoutSubmittedOrderRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubmittedOrderRatingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderRatingRecipientCreateNestedManyWithoutRatingInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput> | OrderRatingRecipientCreateWithoutRatingInput[] | OrderRatingRecipientUncheckedCreateWithoutRatingInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutRatingInput | OrderRatingRecipientCreateOrConnectWithoutRatingInput[]
+    createMany?: OrderRatingRecipientCreateManyRatingInputEnvelope
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+  }
+
+  export type OrderRatingRecipientUncheckedCreateNestedManyWithoutRatingInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput> | OrderRatingRecipientCreateWithoutRatingInput[] | OrderRatingRecipientUncheckedCreateWithoutRatingInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutRatingInput | OrderRatingRecipientCreateOrConnectWithoutRatingInput[]
+    createMany?: OrderRatingRecipientCreateManyRatingInputEnvelope
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+  }
+
+  export type OrderUpdateOneRequiredWithoutRatingNestedInput = {
+    create?: XOR<OrderCreateWithoutRatingInput, OrderUncheckedCreateWithoutRatingInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutRatingInput
+    upsert?: OrderUpsertWithoutRatingInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutRatingInput, OrderUpdateWithoutRatingInput>, OrderUncheckedUpdateWithoutRatingInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutSubmittedOrderRatingsNestedInput = {
+    create?: XOR<UserCreateWithoutSubmittedOrderRatingsInput, UserUncheckedCreateWithoutSubmittedOrderRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubmittedOrderRatingsInput
+    upsert?: UserUpsertWithoutSubmittedOrderRatingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSubmittedOrderRatingsInput, UserUpdateWithoutSubmittedOrderRatingsInput>, UserUncheckedUpdateWithoutSubmittedOrderRatingsInput>
+  }
+
+  export type OrderRatingRecipientUpdateManyWithoutRatingNestedInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput> | OrderRatingRecipientCreateWithoutRatingInput[] | OrderRatingRecipientUncheckedCreateWithoutRatingInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutRatingInput | OrderRatingRecipientCreateOrConnectWithoutRatingInput[]
+    upsert?: OrderRatingRecipientUpsertWithWhereUniqueWithoutRatingInput | OrderRatingRecipientUpsertWithWhereUniqueWithoutRatingInput[]
+    createMany?: OrderRatingRecipientCreateManyRatingInputEnvelope
+    set?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    disconnect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    delete?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    update?: OrderRatingRecipientUpdateWithWhereUniqueWithoutRatingInput | OrderRatingRecipientUpdateWithWhereUniqueWithoutRatingInput[]
+    updateMany?: OrderRatingRecipientUpdateManyWithWhereWithoutRatingInput | OrderRatingRecipientUpdateManyWithWhereWithoutRatingInput[]
+    deleteMany?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateManyWithoutRatingNestedInput = {
+    create?: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput> | OrderRatingRecipientCreateWithoutRatingInput[] | OrderRatingRecipientUncheckedCreateWithoutRatingInput[]
+    connectOrCreate?: OrderRatingRecipientCreateOrConnectWithoutRatingInput | OrderRatingRecipientCreateOrConnectWithoutRatingInput[]
+    upsert?: OrderRatingRecipientUpsertWithWhereUniqueWithoutRatingInput | OrderRatingRecipientUpsertWithWhereUniqueWithoutRatingInput[]
+    createMany?: OrderRatingRecipientCreateManyRatingInputEnvelope
+    set?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    disconnect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    delete?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    connect?: OrderRatingRecipientWhereUniqueInput | OrderRatingRecipientWhereUniqueInput[]
+    update?: OrderRatingRecipientUpdateWithWhereUniqueWithoutRatingInput | OrderRatingRecipientUpdateWithWhereUniqueWithoutRatingInput[]
+    updateMany?: OrderRatingRecipientUpdateManyWithWhereWithoutRatingInput | OrderRatingRecipientUpdateManyWithWhereWithoutRatingInput[]
+    deleteMany?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
+  }
+
+  export type OrderRatingCreateNestedOneWithoutRecipientsInput = {
+    create?: XOR<OrderRatingCreateWithoutRecipientsInput, OrderRatingUncheckedCreateWithoutRecipientsInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutRecipientsInput
+    connect?: OrderRatingWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReceivedOrderRatingsInput = {
+    create?: XOR<UserCreateWithoutReceivedOrderRatingsInput, UserUncheckedCreateWithoutReceivedOrderRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedOrderRatingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderRatingUpdateOneRequiredWithoutRecipientsNestedInput = {
+    create?: XOR<OrderRatingCreateWithoutRecipientsInput, OrderRatingUncheckedCreateWithoutRecipientsInput>
+    connectOrCreate?: OrderRatingCreateOrConnectWithoutRecipientsInput
+    upsert?: OrderRatingUpsertWithoutRecipientsInput
+    connect?: OrderRatingWhereUniqueInput
+    update?: XOR<XOR<OrderRatingUpdateToOneWithWhereWithoutRecipientsInput, OrderRatingUpdateWithoutRecipientsInput>, OrderRatingUncheckedUpdateWithoutRecipientsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReceivedOrderRatingsNestedInput = {
+    create?: XOR<UserCreateWithoutReceivedOrderRatingsInput, UserUncheckedCreateWithoutReceivedOrderRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedOrderRatingsInput
+    upsert?: UserUpsertWithoutReceivedOrderRatingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedOrderRatingsInput, UserUpdateWithoutReceivedOrderRatingsInput>, UserUncheckedUpdateWithoutReceivedOrderRatingsInput>
   }
 
   export type OrderCreateNestedOneWithoutConfirmationEmailInput = {
@@ -51207,6 +55573,25 @@ export namespace Prisma {
     create: XOR<BoosterProfileCreateWithoutUserInput, BoosterProfileUncheckedCreateWithoutUserInput>
   }
 
+  export type BoosterPreferencesCreateWithoutUserInput = {
+    firstRole?: string | null
+    secondRole?: string | null
+    championIds?: BoosterPreferencesCreatechampionIdsInput | string[]
+    updatedAt?: Date | string
+  }
+
+  export type BoosterPreferencesUncheckedCreateWithoutUserInput = {
+    firstRole?: string | null
+    secondRole?: string | null
+    championIds?: BoosterPreferencesCreatechampionIdsInput | string[]
+    updatedAt?: Date | string
+  }
+
+  export type BoosterPreferencesCreateOrConnectWithoutUserInput = {
+    where: BoosterPreferencesWhereUniqueInput
+    create: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+  }
+
   export type BoosterContributionCreateWithoutBoosterInput = {
     submittedMatches: number
     approvedMatches?: number | null
@@ -51663,6 +56048,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrderRatingCreateWithoutCustomerInput = {
+    stars: number
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutRatingInput
+    recipients?: OrderRatingRecipientCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingUncheckedCreateWithoutCustomerInput = {
+    orderId: string
+    stars: number
+    createdAt?: Date | string
+    recipients?: OrderRatingRecipientUncheckedCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingCreateOrConnectWithoutCustomerInput = {
+    where: OrderRatingWhereUniqueInput
+    create: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type OrderRatingCreateManyCustomerInputEnvelope = {
+    data: OrderRatingCreateManyCustomerInput | OrderRatingCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderRatingRecipientCreateWithoutBoosterInput = {
+    rating: OrderRatingCreateNestedOneWithoutRecipientsInput
+  }
+
+  export type OrderRatingRecipientUncheckedCreateWithoutBoosterInput = {
+    orderId: string
+  }
+
+  export type OrderRatingRecipientCreateOrConnectWithoutBoosterInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    create: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type OrderRatingRecipientCreateManyBoosterInputEnvelope = {
+    data: OrderRatingRecipientCreateManyBoosterInput | OrderRatingRecipientCreateManyBoosterInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrderCreateWithoutCustomerInput = {
     couponCode?: string | null
     couponTitle?: string | null
@@ -51734,6 +56161,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -51807,6 +56235,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -51949,6 +56378,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -51962,6 +56392,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -51992,6 +56424,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -52005,6 +56438,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -52038,6 +56473,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -52051,6 +56487,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -52080,6 +56518,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -52093,6 +56532,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -52304,6 +56745,31 @@ export namespace Prisma {
 
   export type BoosterProfileUncheckedUpdateWithoutUserInput = {
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BoosterPreferencesUpsertWithoutUserInput = {
+    update: XOR<BoosterPreferencesUpdateWithoutUserInput, BoosterPreferencesUncheckedUpdateWithoutUserInput>
+    create: XOR<BoosterPreferencesCreateWithoutUserInput, BoosterPreferencesUncheckedCreateWithoutUserInput>
+    where?: BoosterPreferencesWhereInput
+  }
+
+  export type BoosterPreferencesUpdateToOneWithWhereWithoutUserInput = {
+    where?: BoosterPreferencesWhereInput
+    data: XOR<BoosterPreferencesUpdateWithoutUserInput, BoosterPreferencesUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BoosterPreferencesUpdateWithoutUserInput = {
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoosterPreferencesUncheckedUpdateWithoutUserInput = {
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    championIds?: BoosterPreferencesUpdatechampionIdsInput | string[]
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BoosterContributionUpsertWithWhereUniqueWithoutBoosterInput = {
@@ -52698,6 +57164,56 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CouponUse"> | Date | string
   }
 
+  export type OrderRatingUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: OrderRatingWhereUniqueInput
+    update: XOR<OrderRatingUpdateWithoutCustomerInput, OrderRatingUncheckedUpdateWithoutCustomerInput>
+    create: XOR<OrderRatingCreateWithoutCustomerInput, OrderRatingUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type OrderRatingUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: OrderRatingWhereUniqueInput
+    data: XOR<OrderRatingUpdateWithoutCustomerInput, OrderRatingUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type OrderRatingUpdateManyWithWhereWithoutCustomerInput = {
+    where: OrderRatingScalarWhereInput
+    data: XOR<OrderRatingUpdateManyMutationInput, OrderRatingUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type OrderRatingScalarWhereInput = {
+    AND?: OrderRatingScalarWhereInput | OrderRatingScalarWhereInput[]
+    OR?: OrderRatingScalarWhereInput[]
+    NOT?: OrderRatingScalarWhereInput | OrderRatingScalarWhereInput[]
+    orderId?: StringFilter<"OrderRating"> | string
+    customerId?: StringFilter<"OrderRating"> | string
+    stars?: IntFilter<"OrderRating"> | number
+    createdAt?: DateTimeFilter<"OrderRating"> | Date | string
+  }
+
+  export type OrderRatingRecipientUpsertWithWhereUniqueWithoutBoosterInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    update: XOR<OrderRatingRecipientUpdateWithoutBoosterInput, OrderRatingRecipientUncheckedUpdateWithoutBoosterInput>
+    create: XOR<OrderRatingRecipientCreateWithoutBoosterInput, OrderRatingRecipientUncheckedCreateWithoutBoosterInput>
+  }
+
+  export type OrderRatingRecipientUpdateWithWhereUniqueWithoutBoosterInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    data: XOR<OrderRatingRecipientUpdateWithoutBoosterInput, OrderRatingRecipientUncheckedUpdateWithoutBoosterInput>
+  }
+
+  export type OrderRatingRecipientUpdateManyWithWhereWithoutBoosterInput = {
+    where: OrderRatingRecipientScalarWhereInput
+    data: XOR<OrderRatingRecipientUpdateManyMutationInput, OrderRatingRecipientUncheckedUpdateManyWithoutBoosterInput>
+  }
+
+  export type OrderRatingRecipientScalarWhereInput = {
+    AND?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
+    OR?: OrderRatingRecipientScalarWhereInput[]
+    NOT?: OrderRatingRecipientScalarWhereInput | OrderRatingRecipientScalarWhereInput[]
+    orderId?: StringFilter<"OrderRatingRecipient"> | string
+    boosterId?: StringFilter<"OrderRatingRecipient"> | string
+  }
+
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
     where: OrderWhereUniqueInput
     update: XOR<OrderUpdateWithoutCustomerInput, OrderUncheckedUpdateWithoutCustomerInput>
@@ -52933,6 +57449,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -52946,6 +57463,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -52976,6 +57495,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -52989,6 +57509,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -53215,6 +57737,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -53227,6 +57750,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -53258,6 +57783,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -53270,6 +57796,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -53315,6 +57843,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -53327,6 +57856,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -53358,6 +57889,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -53370,6 +57902,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -53398,6 +57932,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     referralCode?: string | null
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -53411,6 +57946,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -53441,6 +57978,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     referredById?: string | null
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -53454,6 +57992,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -53498,6 +58038,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -53511,6 +58052,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -53541,6 +58084,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -53554,6 +58098,204 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutBoosterPreferencesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBoosterPreferencesInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBoosterPreferencesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBoosterPreferencesInput, UserUncheckedCreateWithoutBoosterPreferencesInput>
+  }
+
+  export type UserUpsertWithoutBoosterPreferencesInput = {
+    update: XOR<UserUpdateWithoutBoosterPreferencesInput, UserUncheckedUpdateWithoutBoosterPreferencesInput>
+    create: XOR<UserCreateWithoutBoosterPreferencesInput, UserUncheckedCreateWithoutBoosterPreferencesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBoosterPreferencesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBoosterPreferencesInput, UserUncheckedUpdateWithoutBoosterPreferencesInput>
+  }
+
+  export type UserUpdateWithoutBoosterPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBoosterPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -53583,6 +58325,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -53595,6 +58338,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -53626,6 +58371,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -53638,6 +58384,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -53672,6 +58420,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -53684,6 +58433,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -53715,6 +58466,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -53727,6 +58479,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -53772,6 +58526,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -53784,6 +58539,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -53815,6 +58572,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -53827,6 +58585,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -53867,6 +58627,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -53879,6 +58640,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -53910,6 +58673,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -53922,6 +58686,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -53951,6 +58717,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -53963,6 +58730,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -53994,6 +58763,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -54006,6 +58776,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -54087,6 +58859,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -54099,6 +58872,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -54130,6 +58905,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -54142,6 +58918,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -54210,6 +58988,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -54222,6 +59001,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -54253,6 +59034,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -54265,6 +59047,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -54369,6 +59153,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -54381,6 +59166,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -54412,6 +59199,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -54424,6 +59212,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -54469,6 +59259,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -54481,6 +59272,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -54512,6 +59305,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -54524,6 +59318,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -54569,6 +59365,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -54581,6 +59378,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -54612,6 +59411,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -54624,6 +59424,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -54684,6 +59486,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -54696,6 +59499,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -54727,6 +59532,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -54739,6 +59545,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -54821,6 +59629,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -54833,6 +59642,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -54864,6 +59675,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -54876,6 +59688,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -54905,6 +59719,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -54917,6 +59732,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -54948,6 +59765,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -54960,6 +59778,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -55005,6 +59825,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -55017,6 +59838,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -55048,6 +59871,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -55060,6 +59884,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -55089,6 +59915,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -55102,6 +59929,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -55132,6 +59961,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -55145,6 +59975,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -55189,6 +60021,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -55202,6 +60035,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -55232,6 +60067,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -55245,6 +60081,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -55329,6 +60167,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutServiceInput = {
@@ -55402,6 +60241,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutServiceInput = {
@@ -55634,6 +60474,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -55646,6 +60487,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -55677,6 +60520,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -55689,6 +60533,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -55779,6 +60625,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCouponSaleInput = {
@@ -55852,6 +60699,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCouponSaleInput = {
@@ -55941,6 +60789,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -55953,6 +60802,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -55984,6 +60835,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -55996,6 +60848,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -56183,6 +61037,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -56196,6 +61051,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -56226,6 +61083,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -56239,6 +61097,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -56425,6 +61285,25 @@ export namespace Prisma {
     create: XOR<ConversationCreateWithoutOrderInput, ConversationUncheckedCreateWithoutOrderInput>
   }
 
+  export type OrderRatingCreateWithoutOrderInput = {
+    stars: number
+    createdAt?: Date | string
+    customer: UserCreateNestedOneWithoutSubmittedOrderRatingsInput
+    recipients?: OrderRatingRecipientCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingUncheckedCreateWithoutOrderInput = {
+    customerId: string
+    stars: number
+    createdAt?: Date | string
+    recipients?: OrderRatingRecipientUncheckedCreateNestedManyWithoutRatingInput
+  }
+
+  export type OrderRatingCreateOrConnectWithoutOrderInput = {
+    where: OrderRatingWhereUniqueInput
+    create: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+  }
+
   export type ServiceSaleUpsertWithoutCouponOrdersInput = {
     update: XOR<ServiceSaleUpdateWithoutCouponOrdersInput, ServiceSaleUncheckedUpdateWithoutCouponOrdersInput>
     create: XOR<ServiceSaleCreateWithoutCouponOrdersInput, ServiceSaleUncheckedCreateWithoutCouponOrdersInput>
@@ -56564,6 +61443,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -56577,6 +61457,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -56607,6 +61489,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -56620,6 +61503,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -56757,6 +61642,813 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
+  export type OrderRatingUpsertWithoutOrderInput = {
+    update: XOR<OrderRatingUpdateWithoutOrderInput, OrderRatingUncheckedUpdateWithoutOrderInput>
+    create: XOR<OrderRatingCreateWithoutOrderInput, OrderRatingUncheckedCreateWithoutOrderInput>
+    where?: OrderRatingWhereInput
+  }
+
+  export type OrderRatingUpdateToOneWithWhereWithoutOrderInput = {
+    where?: OrderRatingWhereInput
+    data: XOR<OrderRatingUpdateWithoutOrderInput, OrderRatingUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderRatingUpdateWithoutOrderInput = {
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: UserUpdateOneRequiredWithoutSubmittedOrderRatingsNestedInput
+    recipients?: OrderRatingRecipientUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderRatingUncheckedUpdateWithoutOrderInput = {
+    customerId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: OrderRatingRecipientUncheckedUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderCreateWithoutRatingInput = {
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    matchHistoryEnabled?: boolean
+    matchHistoryRevision?: number
+    matchHistoryConfirmedAt?: Date | string | null
+    matchHistoryConfirmedBy?: string | null
+    matchHistorySyncedAt?: Date | string | null
+    couponSale?: ServiceSaleCreateNestedOneWithoutCouponOrdersInput
+    couponUse?: CouponUseCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
+    customer: UserCreateNestedOneWithoutOrdersInput
+    service: ServiceCreateNestedOneWithoutOrdersInput
+    assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
+    matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
+    conversation?: ConversationCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutRatingInput = {
+    couponSaleId?: string | null
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    customerId: string
+    serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    totalPrice?: number
+    matchHistoryEnabled?: boolean
+    matchHistoryRevision?: number
+    matchHistoryConfirmedAt?: Date | string | null
+    matchHistoryConfirmedBy?: string | null
+    matchHistorySyncedAt?: Date | string | null
+    couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
+    assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
+    matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
+    conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutRatingInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutRatingInput, OrderUncheckedCreateWithoutRatingInput>
+  }
+
+  export type UserCreateWithoutSubmittedOrderRatingsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSubmittedOrderRatingsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSubmittedOrderRatingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSubmittedOrderRatingsInput, UserUncheckedCreateWithoutSubmittedOrderRatingsInput>
+  }
+
+  export type OrderRatingRecipientCreateWithoutRatingInput = {
+    booster: UserCreateNestedOneWithoutReceivedOrderRatingsInput
+  }
+
+  export type OrderRatingRecipientUncheckedCreateWithoutRatingInput = {
+    boosterId: string
+  }
+
+  export type OrderRatingRecipientCreateOrConnectWithoutRatingInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    create: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput>
+  }
+
+  export type OrderRatingRecipientCreateManyRatingInputEnvelope = {
+    data: OrderRatingRecipientCreateManyRatingInput | OrderRatingRecipientCreateManyRatingInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderUpsertWithoutRatingInput = {
+    update: XOR<OrderUpdateWithoutRatingInput, OrderUncheckedUpdateWithoutRatingInput>
+    create: XOR<OrderCreateWithoutRatingInput, OrderUncheckedCreateWithoutRatingInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutRatingInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutRatingInput, OrderUncheckedUpdateWithoutRatingInput>
+  }
+
+  export type OrderUpdateWithoutRatingInput = {
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    matchHistoryRevision?: IntFieldUpdateOperationsInput | number
+    matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    couponSale?: ServiceSaleUpdateOneWithoutCouponOrdersNestedInput
+    couponUse?: CouponUseUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
+    matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutRatingInput = {
+    couponSaleId?: NullableStringFieldUpdateOperationsInput | string | null
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    matchHistoryRevision?: IntFieldUpdateOperationsInput | number
+    matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
+    assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
+    matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutSubmittedOrderRatingsInput = {
+    update: XOR<UserUpdateWithoutSubmittedOrderRatingsInput, UserUncheckedUpdateWithoutSubmittedOrderRatingsInput>
+    create: XOR<UserCreateWithoutSubmittedOrderRatingsInput, UserUncheckedCreateWithoutSubmittedOrderRatingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSubmittedOrderRatingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSubmittedOrderRatingsInput, UserUncheckedUpdateWithoutSubmittedOrderRatingsInput>
+  }
+
+  export type UserUpdateWithoutSubmittedOrderRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSubmittedOrderRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderRatingRecipientUpsertWithWhereUniqueWithoutRatingInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    update: XOR<OrderRatingRecipientUpdateWithoutRatingInput, OrderRatingRecipientUncheckedUpdateWithoutRatingInput>
+    create: XOR<OrderRatingRecipientCreateWithoutRatingInput, OrderRatingRecipientUncheckedCreateWithoutRatingInput>
+  }
+
+  export type OrderRatingRecipientUpdateWithWhereUniqueWithoutRatingInput = {
+    where: OrderRatingRecipientWhereUniqueInput
+    data: XOR<OrderRatingRecipientUpdateWithoutRatingInput, OrderRatingRecipientUncheckedUpdateWithoutRatingInput>
+  }
+
+  export type OrderRatingRecipientUpdateManyWithWhereWithoutRatingInput = {
+    where: OrderRatingRecipientScalarWhereInput
+    data: XOR<OrderRatingRecipientUpdateManyMutationInput, OrderRatingRecipientUncheckedUpdateManyWithoutRatingInput>
+  }
+
+  export type OrderRatingCreateWithoutRecipientsInput = {
+    stars: number
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutRatingInput
+    customer: UserCreateNestedOneWithoutSubmittedOrderRatingsInput
+  }
+
+  export type OrderRatingUncheckedCreateWithoutRecipientsInput = {
+    orderId: string
+    customerId: string
+    stars: number
+    createdAt?: Date | string
+  }
+
+  export type OrderRatingCreateOrConnectWithoutRecipientsInput = {
+    where: OrderRatingWhereUniqueInput
+    create: XOR<OrderRatingCreateWithoutRecipientsInput, OrderRatingUncheckedCreateWithoutRecipientsInput>
+  }
+
+  export type UserCreateWithoutReceivedOrderRatingsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReceivedOrderRatingsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReceivedOrderRatingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReceivedOrderRatingsInput, UserUncheckedCreateWithoutReceivedOrderRatingsInput>
+  }
+
+  export type OrderRatingUpsertWithoutRecipientsInput = {
+    update: XOR<OrderRatingUpdateWithoutRecipientsInput, OrderRatingUncheckedUpdateWithoutRecipientsInput>
+    create: XOR<OrderRatingCreateWithoutRecipientsInput, OrderRatingUncheckedCreateWithoutRecipientsInput>
+    where?: OrderRatingWhereInput
+  }
+
+  export type OrderRatingUpdateToOneWithWhereWithoutRecipientsInput = {
+    where?: OrderRatingWhereInput
+    data: XOR<OrderRatingUpdateWithoutRecipientsInput, OrderRatingUncheckedUpdateWithoutRecipientsInput>
+  }
+
+  export type OrderRatingUpdateWithoutRecipientsInput = {
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutRatingNestedInput
+    customer?: UserUpdateOneRequiredWithoutSubmittedOrderRatingsNestedInput
+  }
+
+  export type OrderRatingUncheckedUpdateWithoutRecipientsInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutReceivedOrderRatingsInput = {
+    update: XOR<UserUpdateWithoutReceivedOrderRatingsInput, UserUncheckedUpdateWithoutReceivedOrderRatingsInput>
+    create: XOR<UserCreateWithoutReceivedOrderRatingsInput, UserUncheckedCreateWithoutReceivedOrderRatingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReceivedOrderRatingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReceivedOrderRatingsInput, UserUncheckedUpdateWithoutReceivedOrderRatingsInput>
+  }
+
+  export type UserUpdateWithoutReceivedOrderRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReceivedOrderRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type OrderCreateWithoutConfirmationEmailInput = {
     couponCode?: string | null
     couponTitle?: string | null
@@ -56828,6 +62520,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutConfirmationEmailInput = {
@@ -56901,6 +62594,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutConfirmationEmailInput = {
@@ -56990,6 +62684,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutConfirmationEmailInput = {
@@ -57063,6 +62758,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserCreateWithoutCouponUsesInput = {
@@ -57080,6 +62776,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -57092,6 +62789,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -57123,6 +62822,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -57135,6 +62835,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -57274,6 +62976,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCouponUseInput = {
@@ -57347,6 +63050,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCouponUseInput = {
@@ -57380,6 +63084,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -57392,6 +63097,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -57423,6 +63130,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -57435,6 +63143,8 @@ export namespace Prisma {
     registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -57586,6 +63296,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCouponUseInput = {
@@ -57659,6 +63370,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateWithoutAssignmentsInput = {
@@ -57732,6 +63444,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutAssignmentsInput = {
@@ -57805,6 +63518,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutAssignmentsInput = {
@@ -57827,6 +63541,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -57840,6 +63555,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -57870,6 +63587,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -57883,6 +63601,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -57983,6 +63703,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutAssignmentsInput = {
@@ -58056,6 +63777,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutProvidedAssignmentsInput = {
@@ -58084,6 +63806,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -58097,6 +63820,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -58127,6 +63852,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -58140,6 +63866,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -58224,6 +63952,7 @@ export namespace Prisma {
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutContributionsInput = {
@@ -58297,6 +64026,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutContributionsInput = {
@@ -58319,6 +64049,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
     boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
@@ -58331,6 +64062,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -58362,6 +64095,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
     boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
@@ -58374,6 +64108,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -58475,6 +64211,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutContributionsInput = {
@@ -58548,6 +64285,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutContributionsInput = {
@@ -58576,6 +64314,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
     boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
@@ -58588,6 +64327,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -58619,6 +64360,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
     boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
@@ -58631,6 +64373,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -58716,6 +64460,7 @@ export namespace Prisma {
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutMatchesInput = {
@@ -58789,6 +64534,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutMatchesInput = {
@@ -58811,6 +64557,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
     boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
@@ -58823,6 +64570,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -58854,6 +64603,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
     boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
@@ -58866,6 +64616,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -58997,6 +64749,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutMatchesInput = {
@@ -59070,6 +64823,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutPlayedMatchesInput = {
@@ -59098,6 +64852,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
     boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
@@ -59110,6 +64865,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -59141,6 +64898,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
     boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
@@ -59153,6 +64911,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -59231,6 +64991,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
@@ -59243,6 +65004,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -59274,6 +65037,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
@@ -59286,6 +65050,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -59370,6 +65136,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
@@ -59382,6 +65149,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -59413,6 +65182,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
@@ -59425,6 +65195,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -59454,6 +65226,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -59467,6 +65240,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -59497,6 +65272,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -59510,6 +65286,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -59554,6 +65332,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -59567,6 +65346,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -59597,6 +65378,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -59610,6 +65392,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -59694,6 +65478,7 @@ export namespace Prisma {
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutAssignmentRequestsInput = {
@@ -59767,6 +65552,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutAssignmentRequestsInput = {
@@ -59789,6 +65575,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -59802,6 +65589,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -59832,6 +65621,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -59845,6 +65635,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -59878,6 +65670,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -59891,6 +65684,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -59921,6 +65716,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -59934,6 +65730,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -60034,6 +65832,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutAssignmentRequestsInput = {
@@ -60107,6 +65906,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutBoosterAssignmentRequestsInput = {
@@ -60135,6 +65935,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -60148,6 +65949,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -60178,6 +65981,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -60191,6 +65995,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -60230,6 +66036,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -60243,6 +66050,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -60273,6 +66082,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -60286,6 +66096,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -60370,6 +66182,7 @@ export namespace Prisma {
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutConversationInput = {
@@ -60443,6 +66256,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutConversationInput = {
@@ -60592,6 +66406,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutConversationInput = {
@@ -60665,6 +66480,7 @@ export namespace Prisma {
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type ConversationParticipantUpsertWithWhereUniqueWithoutConversationInput = {
@@ -60737,6 +66553,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -60750,6 +66567,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -60780,6 +66599,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -60793,6 +66613,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -60866,6 +66688,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -60879,6 +66702,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -60909,6 +66734,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -60922,6 +66748,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -60973,6 +66801,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -60986,6 +66815,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -61016,6 +66847,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -61029,6 +66861,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -61102,6 +66936,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -61115,6 +66950,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -61145,6 +66982,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -61158,6 +66996,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -61186,6 +67026,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -61199,6 +67040,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -61229,6 +67072,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -61242,6 +67086,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -61286,6 +67132,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -61299,6 +67146,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -61329,6 +67178,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -61342,6 +67192,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -61370,6 +67222,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -61383,6 +67236,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
@@ -61413,6 +67268,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -61426,6 +67282,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
@@ -61470,6 +67328,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -61483,6 +67342,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
@@ -61513,6 +67374,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -61526,6 +67388,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -61554,6 +67418,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     referralCode?: string | null
     boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
@@ -61567,6 +67432,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
@@ -61597,6 +67464,7 @@ export namespace Prisma {
     referralCode?: string | null
     referredById?: string | null
     boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
     playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
     matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -61610,6 +67478,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
     personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
     couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
@@ -61654,6 +67524,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -61667,6 +67538,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -61697,6 +67570,7 @@ export namespace Prisma {
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -61710,6 +67584,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -61869,6 +67745,16 @@ export namespace Prisma {
     orderId: string
     usedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type OrderRatingCreateManyCustomerInput = {
+    orderId: string
+    stars: number
+    createdAt?: Date | string
+  }
+
+  export type OrderRatingRecipientCreateManyBoosterInput = {
+    orderId: string
   }
 
   export type OrderCreateManyCustomerInput = {
@@ -62488,6 +68374,38 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OrderRatingUpdateWithoutCustomerInput = {
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutRatingNestedInput
+    recipients?: OrderRatingRecipientUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderRatingUncheckedUpdateWithoutCustomerInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: OrderRatingRecipientUncheckedUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderRatingUncheckedUpdateManyWithoutCustomerInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    stars?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderRatingRecipientUpdateWithoutBoosterInput = {
+    rating?: OrderRatingUpdateOneRequiredWithoutRecipientsNestedInput
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateWithoutBoosterInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateManyWithoutBoosterInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type OrderUpdateWithoutCustomerInput = {
     couponCode?: NullableStringFieldUpdateOperationsInput | string | null
     couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62559,6 +68477,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -62632,6 +68551,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -62799,6 +68719,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
@@ -62812,6 +68733,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
@@ -62841,6 +68764,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
     playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
     matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -62854,6 +68778,8 @@ export namespace Prisma {
     socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
     personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
     couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -63307,6 +69233,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutServiceInput = {
@@ -63380,6 +69307,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutServiceInput = {
@@ -63690,6 +69618,7 @@ export namespace Prisma {
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCouponSaleInput = {
@@ -63763,6 +69692,7 @@ export namespace Prisma {
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCouponSaleInput = {
@@ -64011,6 +69941,22 @@ export namespace Prisma {
     status?: EnumAssignmentRequestStatusFieldUpdateOperationsInput | $Enums.AssignmentRequestStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrderRatingRecipientCreateManyRatingInput = {
+    boosterId: string
+  }
+
+  export type OrderRatingRecipientUpdateWithoutRatingInput = {
+    booster?: UserUpdateOneRequiredWithoutReceivedOrderRatingsNestedInput
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateWithoutRatingInput = {
+    boosterId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderRatingRecipientUncheckedUpdateManyWithoutRatingInput = {
+    boosterId?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrderMatchReviewCreateManyMatchInput = {

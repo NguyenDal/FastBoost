@@ -1296,11 +1296,16 @@
   width: min(980px, 92vw);
   max-height: 88vh;
   overflow-y: auto;
+  scrollbar-width: none;
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(180deg, rgba(3, 9, 28, 0.98), rgba(2, 6, 18, 0.98));
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
   animation: championModalIn 0.24s ease;
+}
+
+.champion-modal::-webkit-scrollbar {
+  display: none;
 }
 
 .champion-modal-header,
@@ -1406,6 +1411,30 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(4, 8, 20, 0.98);
   z-index: 5;
+}
+
+.champion-modal .champion-search-results {
+  scrollbar-width: thin;
+  scrollbar-color: #725697 #101422;
+}
+
+.champion-modal .champion-search-results::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.champion-modal .champion-search-results::-webkit-scrollbar-track {
+  background: #101422;
+  border-radius: 8px;
+}
+
+.champion-modal .champion-search-results::-webkit-scrollbar-thumb {
+  background: #725697;
+  border-radius: 8px;
+}
+
+.champion-modal .champion-search-results::-webkit-scrollbar-thumb:hover {
+  background: #a084c4;
 }
 
 .champion-search-result {

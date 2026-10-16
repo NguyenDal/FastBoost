@@ -1,7 +1,7 @@
 import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import BoosterPortalLayout from "../layouts/BoosterPortalLayout";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPagination from "../components/OrderPagination";
 import { formatOrderTotal } from '../utils/orderPricing';
@@ -104,13 +104,10 @@ export default function ProviderOrdersPage() {
     if (!isProvider) return null;
 
     return (
-        <div className="page-shell">
-            <Navbar />
-
-            <div className="page-container provider-orders-page">
+        <BoosterPortalLayout>
+            <div className="provider-orders-page">
                 <div className="provider-orders-header">
-                    <h1 className="admin-order-title">Assigned Orders</h1>
-                    <Link to="/provider/workspace">My earnings, contributions & contracts →</Link>
+                    <h2 className="admin-order-title">Assigned Orders</h2>
                     <div className="admin-stat-card provider-assigned-count">
                         <span>Assigned Orders</span>
                         <strong>{data.total}</strong>
@@ -223,7 +220,7 @@ export default function ProviderOrdersPage() {
                     />
                 )}
             </div>
-        </div>
+        </BoosterPortalLayout>
     );
 }
 

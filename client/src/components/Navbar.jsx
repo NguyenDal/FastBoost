@@ -733,11 +733,11 @@ function Navbar({
                                         role="menuitem"
                                         onClick={() => {
                                             effectiveSetShowProfileMenu(false);
-                                            navigate("/provider/orders");
+                                            navigate("/provider/portal");
                                         }}
                                     >
-                                        <ProfileMenuIcon type="orders" />
-                                        <span>Assigned Orders</span>
+                                        <ProfileMenuIcon type="management" />
+                                        <span>Booster Portal</span>
                                     </button>
                                 )}
 

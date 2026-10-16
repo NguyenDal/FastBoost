@@ -3,6 +3,8 @@ const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
 const { buildEarningsReport } = require('../utils/earningsReport');
 const { boosterEarnings } = require('../utils/boosterEarnings');
+const { boosterRating } = require('../utils/orderRatings');
+const { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences } = require('../utils/boosterPreferences');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -89,11 +91,27 @@ router.post('/contributions/:orderId/:boosterId/review', admin, handle(async (re
 }));
 router.get('/me', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
-    const [profile, contracts, income] = await Promise.all([
+    const [profile, contracts, income, rating, preferences] = await Promise.all([
         db.boosterProfile.findUnique({ where: { userId: req.actor.id } }),
         db.boosterContract.findMany({ where: { boosterId: req.actor.id }, select: { id: true, title: true, startsAt: true, signedAt: true, revokedAt: true }, orderBy: { createdAt: 'desc' } }), boosterEarnings(db, req.actor.id),
+        boosterRating(db, req.actor.id),
+        loadPreferences(db, req.actor.id),
     ]);
-    res.json({ ok: true, profile, contracts, earnings: income[req.actor.id] || {} });
+    res.json({ ok: true, profile, contracts, earnings: income[req.actor.id] || {}, rating, ...preferences,
+        account: { username: req.actor.username, email: req.actor.email, profile: req.actor.profile } });
+}));
+router.patch('/me/preferences', handle(async (req, res) => {
+    if (!eligible(req.actor)) fail(403, 'Boosters only.');
+    const data = validatePreferences(req.body);
+    try {
+        const preferences = await db.boosterPreferences.upsert({
+            where: { userId: req.actor.id }, create: { userId: req.actor.id, ...data }, update: data, select: preferenceSelect,
+        });
+        res.json({ ok: true, preferences, preferencesAvailable: true });
+    } catch (error) {
+        if (missingPreferencesTable(error)) fail(503, 'Champion preferences are not available yet. Please try again later.');
+        throw error;
+    }
 }));
 router.get('/boosters', admin, handle(async (req, res) => {
     const [users, income] = await Promise.all([

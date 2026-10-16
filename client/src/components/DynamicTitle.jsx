@@ -49,6 +49,14 @@ export default function DynamicTitle() {
       title = "Activity Logs | FastBoost";
     } else if (path === "/admin/prices") {
       title = "Price Management | FastBoost";
+    } else if (["/provider/portal", "/provider/workspace"].includes(path)) {
+      title = "Booster Portal | FastBoost";
+    } else if (path === "/provider/earnings") {
+      title = "My Earnings | FastBoost";
+    } else if (path === "/provider/documents") {
+      title = "My Documents | FastBoost";
+    } else if (path === "/provider/profile") {
+      title = "Booster Profile | FastBoost";
     } else if (path === "/provider/orders") {
       title = "Assigned Orders | FastBoost";
     } else if (path.startsWith("/provider/orders/")) {

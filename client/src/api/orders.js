@@ -10,6 +10,22 @@ function authHeaders() {
     };
 }
 
+export async function getOrderRating(orderId) {
+    const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}/rating`, { headers: authHeaders() });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Could not load your review.');
+    return result;
+}
+
+export async function submitOrderRating(orderId, stars) {
+    const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}/rating`, {
+        method: 'POST', headers: authHeaders(), body: JSON.stringify({ stars }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw Object.assign(new Error(result.message || 'Could not submit your review.'), { status: response.status });
+    return result;
+}
+
 export async function updateOrderLoginInfo(orderId, payload) {
     const res = await fetch(`${API_BASE_URL}/orders/${orderId}/login-info`, {
         method: "PATCH",

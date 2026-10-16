@@ -19,6 +19,7 @@ const {
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
+router.use(require('./orderRatingRoutes').createOrderRatingRouter());
 
 // Admin order management endpoints
 router.get("/admin", protect, adminOnly, listAllOrders);

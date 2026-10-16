@@ -1,0 +1,105 @@
+.booster-portal { padding-bottom: 48px; }
+.booster-portal-layout { grid-template-columns: 250px minmax(0, 1fr); }
+.booster-portal-sidebar { display: flex; }
+.booster-portal-shell.admin-with-sidebar .topbar { background: linear-gradient(to right, #181236f5 0, #181236f5 250px, #0a0f18db 250px, #0a0f18db 100%); }
+.booster-portal-heading { padding: 24px; }
+.booster-portal-eyebrow { color: #b39ce9; font-size: 11px; font-weight: 700; letter-spacing: 1.6px; }
+.booster-portal-heading h1 { margin: 10px 0 0; }
+.booster-portal-shell :is(a, button):focus-visible { outline: 2px solid #c6aeff; outline-offset: 3px; }
+.booster-portal .booster-portal-content { padding: 0; width: 100%; gap: 22px; }
+.booster-portal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.booster-portal-content a.booster-portal-card { display: block; position: relative; padding: 26px; border-radius: 20px; border: 1px solid #ffffff18; color: #ece7f8; text-decoration: none; background: linear-gradient(135deg, #1b1c2c, #10151f); transition: border-color .15s, background .15s; }
+.booster-portal-content a.booster-portal-card:hover { border-color: #ae8aec77; background: linear-gradient(135deg, #252039, #141a28); }
+.booster-portal-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #aa88ee30; border-radius: 13px; background: #9563dc15; color: #c4a8fb; }
+.booster-portal-icon svg { width: 24px; height: 24px; }
+.booster-portal-card h3 { font-size: 21px; margin: 24px 0 10px; }
+.booster-portal-card p { max-width: 390px; color: #aab5c9; font-size: 14px; line-height: 1.7; margin: 0; padding-right: 12px; }
+.booster-portal-arrow { position: absolute; top: 29px; right: 26px; color: #bca4ed; font-size: 22px; }
+.booster-profile-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; }
+.booster-profile-identity { display: flex; align-items: center; gap: 18px; }
+.booster-profile-identity img, .booster-profile-avatar { flex-shrink: 0; width: 64px; height: 64px; border-radius: 18px; object-fit: cover; }
+.booster-profile-avatar { display: grid; place-items: center; background: #9563dc25; color: #d5c0ff; font-size: 26px; }
+.booster-profile-identity h2 { margin: 0; overflow-wrap: anywhere; }
+.booster-profile-details { margin: 26px 0; }
+.booster-profile-details > div { padding: 14px 0; border-top: 1px solid #ffffff12; }
+.booster-profile-details dt { color: #aab5c9; font-size: 12px; margin-bottom: 7px; }
+.booster-profile-details dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.booster-profile-edit { font-size: 14px; text-decoration: none; }
+.booster-preferences { margin: 0 0 26px; padding: 22px 0; border-top: 1px solid #ffffff12; border-bottom: 1px solid #ffffff12; }
+.booster-preferences-heading, .booster-champion-picker-heading { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.booster-preferences-heading h3 { font-size: 16px; margin: 0; }
+.booster-preferences-heading button { flex-shrink: 0; padding: 8px 12px; font-size: 12px; color: #d5c0ff; }
+.booster-preferences > p { color: #aab5c9; font-size: 13px; line-height: 1.6; margin: 16px 0 0; }
+.booster-profile-champions { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0 0; padding: 0; list-style: none; }
+.booster-profile-champions li { display: grid; justify-items: center; gap: 8px; font-size: 12px; max-width: 78px; overflow-wrap: anywhere; text-align: center; }
+.booster-profile-champions img, .booster-profile-champions .booster-champion-fallback { width: 48px; height: 48px; border: 1px solid #b991ff50; border-radius: 13px; object-fit: cover; }
+.booster-champion-fallback { display: grid; place-items: center; flex-shrink: 0; background: #32254c; color: #d5c0ff; font-size: 13px; }
+.booster-preferred-roles { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 20px; font-size: 12px; color: #aab5c9; }
+.booster-preferred-roles span { display: grid; gap: 6px; }
+.booster-preferred-roles strong { font-size: 13px; font-weight: 500; color: #eeeafa; }
+.booster-preferences > .booster-preferences-saved { color: #72d9b9; }
+.booster-preferences-dialog { box-sizing: border-box; width: min(860px, calc(100% - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid #ffffff20; border-radius: 24px; color: #eeeafa; background: linear-gradient(145deg, #151725, #0a0f1c); box-shadow: 0 28px 90px #0009; overflow: auto; }
+.booster-preferences-dialog::backdrop { background: #030612b8; backdrop-filter: blur(7px); }
+.booster-preferences-dialog, .booster-champion-results { scrollbar-width: thin; scrollbar-color: #725697 #101422; }
+:is(.booster-preferences-dialog, .booster-champion-results)::-webkit-scrollbar { width: 6px; height: 6px; }
+:is(.booster-preferences-dialog, .booster-champion-results)::-webkit-scrollbar-track { background: #101422; border-radius: 8px; }
+:is(.booster-preferences-dialog, .booster-champion-results)::-webkit-scrollbar-thumb { background: #725697; border-radius: 8px; }
+:is(.booster-preferences-dialog, .booster-champion-results)::-webkit-scrollbar-thumb:hover { background: #a084c4; }
+.booster-preferences-dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 26px 28px; border-bottom: 1px solid #ffffff12; }
+.booster-preferences-dialog header h2 { margin: 0 0 8px; font-size: 22px; }
+.booster-preferences-dialog header p { margin: 0; color: #aab5c9; font-size: 13px; line-height: 1.6; }
+.booster-preferences-dialog header button { padding: 5px 12px; font-size: 24px; line-height: 1.2; background: transparent; border-color: transparent; }
+.booster-preferences-body { display: grid; gap: 28px; padding: 28px; }
+.booster-role-choices { min-width: 0; border: 0; margin: 0; padding: 0; }
+.booster-role-choices legend { font-size: 14px; margin-bottom: 14px; padding: 0; }
+.booster-role-choices > div { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.booster-preferences-dialog .booster-role-choices label { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 82px; border: 1px solid #ffffff20; border-radius: 15px; background: #070e1e; color: #e5dff2; text-align: center; cursor: pointer; }
+.booster-role-choices label.selected { border-color: #b18aee80; background: #9e6ae51a; }
+.booster-role-choices label:has(:focus-visible) { outline: 2px solid #c6aeff; outline-offset: 3px; }
+.booster-role-choices input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.booster-role-choices img { width: 24px; height: 24px; object-fit: contain; }
+.booster-role-choices:disabled label { cursor: wait; opacity: .6; }
+.booster-champion-picker-heading { margin-bottom: 12px; font-size: 13px; color: #aab5c9; }
+.booster-champion-picker-heading label { font-size: 14px; color: #eeeafa; }
+.booster-champion-picker input[type=search] { width: 100%; min-height: 46px; border-color: #b18aee50; border-radius: 13px; }
+.booster-champion-picker > p { margin: 14px 0 0; color: #aab5c9; font-size: 13px; line-height: 1.6; }
+.booster-champion-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 220px; overflow-y: auto; scrollbar-gutter: stable; margin-top: 10px; padding: 4px; }
+.booster-champion-results button, .booster-selected-champions button { display: flex; align-items: center; gap: 9px; text-align: left; padding: 8px; background: #ffffff05; font-size: 13px; min-width: 0; }
+.booster-champion-results button > span:nth-child(2), .booster-selected-champions button > span:nth-child(2) { flex: 1; overflow-wrap: anywhere; }
+.booster-champion-results button > span:last-child, .booster-selected-champions button > span:last-child { color: #b6a1d9; font-size: 18px; }
+.booster-champion-results img, .booster-selected-champions img, .booster-champion-results .booster-champion-fallback, .booster-selected-champions .booster-champion-fallback { width: 32px; height: 32px; flex-shrink: 0; border-radius: 8px; object-fit: cover; }
+.booster-selected-champions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.booster-selected-champions:empty { display: none; }
+.booster-selected-champions button { border-color: #b18aee50; background: #9e6ae515; }
+.booster-preferences-dialog footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 28px; border-top: 1px solid #ffffff12; }
+.booster-preferences-dialog footer button { min-height: 44px; }
+.booster-preferences-dialog .ops-error { font-size: 13px; line-height: 1.6; }
+.booster-rating { align-self: start; }
+.booster-rating-value { display: flex; gap: 12px; align-items: center; margin-top: 25px; }
+.booster-rating-value > span { color: #f5c16d; font-size: 30px; }
+.booster-rating-value strong { font-size: clamp(21px, 3vw, 30px); }
+@media (max-width: 850px) { .booster-profile-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+    .booster-portal-layout { grid-template-columns: 1fr; }
+    .booster-portal-sidebar { min-height: auto; padding: 18px; border-bottom: 1px solid #ffffff12; }
+    .booster-portal-sidebar .admin-sidebar-header { padding: 0 10px 16px; }
+    .booster-portal-sidebar .admin-side-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .booster-portal-sidebar .admin-side-link { font-size: 13px; padding: 0 10px; gap: 8px; }
+    .booster-portal-shell.admin-with-sidebar .topbar { background: #0a0f18; }
+    .booster-portal-grid { grid-template-columns: 1fr; }
+    .booster-portal-card h3 { margin-top: 20px; }
+}
+@media (max-width: 520px) {
+    .booster-preferences-heading { align-items: flex-start; }
+    .booster-preferences-heading h3 { padding-top: 6px; }
+    .booster-preferences-dialog { width: calc(100% - 20px); max-height: calc(100dvh - 20px); border-radius: 18px; }
+    .booster-preferences-dialog header, .booster-preferences-body { padding: 20px 16px; }
+    .booster-preferences-dialog header h2 { font-size: 20px; }
+    .booster-role-choices > div { gap: 6px; }
+    .booster-preferences-dialog .booster-role-choices label { min-height: 74px; font-size: 10px; border-radius: 10px; }
+    .booster-role-choices img { width: 21px; height: 21px; }
+    .booster-champion-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .booster-preferences-dialog footer { padding: 16px; }
+    .booster-preferences-dialog footer button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .booster-portal-content a.booster-portal-card { transition: none; } }

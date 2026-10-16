@@ -19,6 +19,7 @@ import {
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
+import OrderRating from '../components/OrderRating';
 import { formatOrderTotal } from '../utils/orderPricing';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
@@ -809,6 +810,8 @@ function MatchPage() {
                         </span>
                     </div>
                 </section>
+
+                {order.status === 'COMPLETED' && order.paymentStatus === 'PAID' && order.customerId === currentUser?.id && <OrderRating key={orderId} orderId={orderId} />}
 
                 <div className="match-tabs">
                     <button className={`match-tab ${!showHistory ? 'active' : ''}`} aria-pressed={!showHistory} onClick={() => setHistoryTab(false)}>Details</button>

@@ -5,14 +5,14 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
 import { Skeleton } from "../components/Skeleton";
 import { API_BASE_URL } from "../api/config";
+import { loadChampions } from "../api/champions";
+import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRoles";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
 
 const SERVICES_CACHE_KEY = "fastboost:services:v1";
 const SERVICES_CACHE_TTL = 6 * 60 * 60 * 1000;
-const CHAMPIONS_CACHE_KEY = "fastboost:champions:v1";
-const CHAMPIONS_CACHE_TTL = 24 * 60 * 60 * 1000;
 const PRICE_QUOTE_CACHE_TTL = 15 * 1000;
 
 function getCachedService(serviceId) {
@@ -539,59 +539,11 @@ function OrderPage() {
     if (!isChampionPanelOpen) return;
     if (allChampions.length > 0) return;
 
-    const loadChampions = async () => {
-      try {
-        const cachedRaw = localStorage.getItem(CHAMPIONS_CACHE_KEY);
-
-        if (cachedRaw) {
-          const cached = JSON.parse(cachedRaw);
-
-          const isFresh =
-            Array.isArray(cached?.champions) &&
-            typeof cached?.savedAt === "number" &&
-            Date.now() - cached.savedAt < CHAMPIONS_CACHE_TTL;
-
-          if (isFresh) {
-            setAllChampions(cached.champions);
-            return;
-          }
-        }
-
-        const versionResponse = await fetch(
-          "https://ddragon.leagueoflegends.com/api/versions.json"
-        );
-        const versions = await versionResponse.json();
-        const latestVersion = versions[0];
-
-        const championResponse = await fetch(
-          `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
-        );
-        const championData = await championResponse.json();
-
-        const champions = Object.values(championData.data).map((champion) => ({
-          id: champion.id,
-          name: champion.name,
-          icon:
-            `https://ddragon.leagueoflegends.com/cdn/` +
-            `${latestVersion}/img/champion/` +
-            `${champion.image.full}`,
-        }));
-
-        setAllChampions(champions);
-
-        localStorage.setItem(
-          CHAMPIONS_CACHE_KEY,
-          JSON.stringify({
-            champions,
-            savedAt: Date.now(),
-          })
-        );
-      } catch (error) {
-        console.error("Failed to load champions:", error);
-      }
-    };
-
-    loadChampions();
+    let cancelled = false;
+    loadChampions()
+      .then((champions) => { if (!cancelled) setAllChampions(champions); })
+      .catch((error) => { console.error("Failed to load champions:", error); });
+    return () => { cancelled = true; };
   }, [isChampionPanelOpen, allChampions.length]);
 
   const isInvalidRankPath = useMemo(() => {
@@ -658,18 +610,6 @@ function OrderPage() {
   const filteredChampions = allChampions.filter((champion) =>
     champion.name.toLowerCase().includes(championSearch.toLowerCase())
   );
-
-  const getSecondRoleOptions = (firstRole) => {
-    const roleMap = {
-      Top: ["Fill", "Jungle", "Middle", "Bottom", "Support"],
-      Jungle: ["Fill", "Top", "Middle", "Bottom", "Support"],
-      Middle: ["Fill", "Top", "Jungle", "Bottom", "Support"],
-      Bottom: ["Fill", "Top", "Jungle", "Middle", "Support"],
-      Support: ["Fill", "Top", "Jungle", "Middle", "Bottom"],
-    };
-
-    return roleMap[firstRole] || ["Fill", "Jungle", "Middle", "Bottom", "Support"];
-  };
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -2485,22 +2425,16 @@ function OrderPage() {
                   </div>
 
                   <div className="champion-role-tabs champion-role-tabs-5">
-                    {[
-                      { key: "Top", label: "Top", icon: roleIconMap.Top },
-                      { key: "Jungle", label: "Jungle", icon: roleIconMap.Jungle },
-                      { key: "Middle", label: "Middle", icon: roleIconMap.Middle },
-                      { key: "Bottom", label: "Bottom", icon: roleIconMap.Bottom },
-                      { key: "Support", label: "Support", icon: roleIconMap.Support },
-                    ].map((role) => (
+                    {roleNames.map((role) => (
                       <button
-                        key={role.key}
+                        key={role}
                         type="button"
-                        className={`champion-role-tab ${championPrefs.firstRole === role.key ? "active" : ""
+                        className={`champion-role-tab ${championPrefs.firstRole === role ? "active" : ""
                           }`}
-                        onClick={() => handleFirstRoleChange(role.key)}
+                        onClick={() => handleFirstRoleChange(role)}
                       >
-                        <img src={role.icon} alt={role.label} className="champion-role-icon" />
-                        <span>{role.label}</span>
+                        <img src={roleIconMap[role]} alt={role} className="champion-role-icon" />
+                        <span>{role}</span>
                       </button>
                     ))}
                   </div>
@@ -2640,15 +2574,6 @@ function OrderPage() {
     </div>
   );
 }
-
-const roleIconMap = {
-  Top: "https://fastboost-assets.s3.amazonaws.com/roles/top.png",
-  Jungle: "https://fastboost-assets.s3.amazonaws.com/roles/jungle.png",
-  Middle: "https://fastboost-assets.s3.amazonaws.com/roles/mid.png",
-  Bottom: "https://fastboost-assets.s3.amazonaws.com/roles/bot.png",
-  Support: "https://fastboost-assets.s3.amazonaws.com/roles/support.png",
-  Fill: "https://fastboost-assets.s3.amazonaws.com/roles/fill.png",
-};
 
 const rankImageMap = {
   Unranked: "https://fastboost-assets.s3.amazonaws.com/services/ranks/unranked.webp",
