@@ -384,6 +384,8 @@ model Order {
   conversation            Conversation?
 
   @@index([customerId, paymentStatus, paidAt])
+  @@index([customerId, status, paymentStatus, updatedAt, id], map: "Order_customer_reward_page_idx")
+  @@index([paymentStatus, status, id], map: "Order_completed_earnings_page_idx")
 }
 
 model OrderConfirmationEmail {
@@ -502,6 +504,7 @@ model RewardHistory {
   @@unique([userId, type, sourceUserId])
   @@index([userId])
   @@index([type])
+  @@index([userId, createdAt, id], map: "RewardHistory_user_page_idx")
 }
 
 enum RewardType {

@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
+const { unreadSupportThreads } = require('../utils/supportInbox');
 const { uploadChatAttachmentToS3, createChatAttachmentSignedUrl } = require('../utils/s3Upload');
 const { identitySelect, messageSelect, fail, onlineAdmins, authorizeThread, validateMessage, saveSupportMessage, markSupportRead } = require('../utils/supportChat');
 const router = express.Router();
@@ -47,14 +48,9 @@ router.get('/threads', handle(async (req, res) => {
         include: { customer: { select: identitySelect }, messages: { orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 1, select: messageSelect } } });
     const page = threads.slice(0, 30);
     // A later admin reply must not conceal an earlier unread customer message.
-    const incoming = page.length ? await db.supportMessage.findMany({
-        where: { OR: page.map(thread => ({ threadId: thread.id, senderId: thread.customerId })) },
-        distinct: ['threadId'], orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-        select: { threadId: true, createdAt: true },
-    }) : [];
-    const latestIncoming = new Map(incoming.map(message => [message.threadId, message.createdAt]));
+    const unread = await unreadSupportThreads(db, page);
     res.json({ ok: true, threads: page.map(thread => ({ ...thread,
-        unread: (latestIncoming.get(thread.id)?.getTime() || 0) > thread.adminReadAt.getTime(),
+        unread: unread.has(thread.id),
     })), hasMore: threads.length > 30 });
 }));
 

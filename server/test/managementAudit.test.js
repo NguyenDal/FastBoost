@@ -57,6 +57,13 @@ function fixture() {
             },
         },
         $transaction: async fn => fn(db),
+        $queryRaw: async () => {
+            const seen = new Set();
+            return entries.slice().reverse().filter(row => {
+                if (!row.actorId || row.action === 'logging.enabled' || seen.has(row.actorId)) return false;
+                seen.add(row.actorId); return true;
+            }).map(({ actorId, actorName }) => ({ actorId, actorName }));
+        },
     };
     return { db, state };
 }

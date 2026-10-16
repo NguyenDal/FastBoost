@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
 const { actions, categories } = require('../utils/managementAudit');
+const { auditActors } = require('../utils/auditActors');
 const PAGE_SIZE = 10;
 const fail = message => { throw Object.assign(new Error(message), { status: 400 }); };
 function filters(query) {
@@ -54,7 +55,7 @@ function createActivityLogRouter(client = db) {
                 const items = await tx.managementAuditLog.findMany({ where, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: PAGE_SIZE, skip: (page - 1) * PAGE_SIZE });
                 return { items, total, page, pageSize: PAGE_SIZE };
             }, { isolationLevel: 'RepeatableRead' });
-            const actors = await client.managementAuditLog.findMany({ where: { actorId: { not: null }, action: { not: 'logging.enabled' } }, distinct: ['actorId'], select: { actorId: true, actorName: true }, orderBy: { createdAt: 'desc' } });
+            const actors = await auditActors(client);
             res.json({ ...result, actors, categories,
                 items: result.items.map(item => ({ ...item, actionLabel: actions[item.action] || 'Management action' })) });
         } catch (error) { next(error); }

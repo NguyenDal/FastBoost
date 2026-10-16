@@ -210,9 +210,9 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     f.db.supportThread.findMany = async () => [{ id: 'private-thread', customerId: 'customer', adminReadAt: readAt,
         messages: [{ senderId: 'admin', createdAt: new Date('2026-09-29T10:02:00Z') }] }];
     let incomingAt = new Date('2026-09-29T10:01:00Z');
-    f.db.supportMessage.findMany = async args => {
-        assert.deepEqual(args.where.OR, [{ threadId: 'private-thread', senderId: 'customer' }]);
-        return [{ threadId: 'private-thread', createdAt: incomingAt }];
+    f.db.$queryRaw = async query => {
+        assert.deepEqual(query.values, ['private-thread', 'customer', readAt]);
+        return incomingAt > readAt ? [{ id: 'private-thread' }] : [];
     };
     assert.equal((await (await fetch(`${base}/threads`, { headers })).json()).threads[0].unread, true, 'Admin reply must not hide unread customer messages');
     incomingAt = readAt;

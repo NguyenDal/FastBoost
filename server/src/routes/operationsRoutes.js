@@ -2,6 +2,7 @@ const router = require('express').Router();
 const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
 const { buildEarningsReport } = require('../utils/earningsReport');
+const { boosterEarnings } = require('../utils/boosterEarnings');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -90,18 +91,18 @@ router.get('/me', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
     const [profile, contracts, income] = await Promise.all([
         db.boosterProfile.findUnique({ where: { userId: req.actor.id } }),
-        db.boosterContract.findMany({ where: { boosterId: req.actor.id }, select: { id: true, title: true, startsAt: true, signedAt: true, revokedAt: true }, orderBy: { createdAt: 'desc' } }), earnings(),
+        db.boosterContract.findMany({ where: { boosterId: req.actor.id }, select: { id: true, title: true, startsAt: true, signedAt: true, revokedAt: true }, orderBy: { createdAt: 'desc' } }), boosterEarnings(db, req.actor.id),
     ]);
-    res.json({ ok: true, profile, contracts, earnings: income.boosters[req.actor.id] || {} });
+    res.json({ ok: true, profile, contracts, earnings: income[req.actor.id] || {} });
 }));
 router.get('/boosters', admin, handle(async (req, res) => {
     const [users, income] = await Promise.all([
         db.user.findMany({ where: { OR: [{ role: 'PROVIDER' }, { hasBoosterAccess: true }] }, select: { ...identity,
             boosterProfile: true, boosterContracts: { orderBy: { createdAt: 'desc' }, select: { id: true, title: true, startsAt: true, createdAt: true, signedAt: true, signedName: true, revokedAt: true } },
             providedAssignments: { where: { order: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS'] } } }, select: { id: true } },
-        }, orderBy: { username: 'asc' } }), earnings(),
+        }, orderBy: { username: 'asc' } }), boosterEarnings(db),
     ]);
-    res.json({ ok: true, boosters: users.map(user => ({ ...user, earnings: income.boosters[user.id] || {} })) });
+    res.json({ ok: true, boosters: users.map(user => ({ ...user, earnings: income[user.id] || {} })) });
 }));
 router.patch('/boosters/:id', admin, handle(async (req, res) => {
     const user = await db.user.findUnique({ where: { id: req.params.id } });

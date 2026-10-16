@@ -5,12 +5,14 @@ import {
   verifyCheckoutSession,
   deleteUnpaidCheckoutOrder,
 } from "../api/orders";
+import { pollPaymentVerification } from "../utils/paymentVerification";
 import "../styles/PaymentResultPage.css";
 
 function PaymentResultPage({ type, overlayOnly = false, verification, onVerified, onComplete }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
+  const [verificationAttempt, setVerificationAttempt] = useState(0);
 
   const [state, setState] = useState({
     loading: type === "success",
@@ -78,34 +80,24 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
         return;
       }
 
+      setState({ loading: true, error: "", orderId: orderId || "", paid: false });
       try {
-        let lastData = null;
-
-        for (let attempt = 1; attempt <= 8; attempt += 1) {
-          const data = await verifyCheckoutSession({ sessionId, orderId });
-          lastData = data;
-
-          if (cancelled) return;
-
-          if (data.paid) {
-            onVerified?.();
-            setState({
-              loading: false,
-              error: "",
-              orderId: data.orderId,
-              paid: true,
-            });
-            return;
-          }
-
-          await new Promise((resolve) => window.setTimeout(resolve, 1200));
+        const data = await pollPaymentVerification({
+          verify: verifyCheckoutSession, sessionId, orderId,
+          isCancelled: () => cancelled,
+        });
+        if (!data || cancelled) return;
+        if (data.paid) {
+          onVerified?.();
+          setState({ loading: false, error: "", orderId: data.orderId, paid: true });
+          return;
         }
 
         setState({
           loading: false,
           error:
-            "The payment was not confirmed. Review your order and try again.",
-          orderId: lastData?.orderId || "",
+            "Your payment is still awaiting confirmation. Check again before starting another payment.",
+          orderId: data.orderId || "",
           paid: false,
         });
       } catch {
@@ -114,7 +106,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
         setState({
           loading: false,
           error: "We couldn’t confirm your payment yet. Check your order status before trying another payment, or contact support.",
-          orderId: "",
+          orderId: orderId || "",
           paid: false,
         });
       }
@@ -125,7 +117,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
     return () => {
       cancelled = true;
     };
-  }, [type, params, onVerified]);
+  }, [type, params, onVerified, verificationAttempt]);
 
   useEffect(() => {
     if (type !== "success") return;
@@ -146,6 +138,10 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
   const showNeedsReview = isSuccess && !state.loading && !state.paid;
 
   function handleContinueOrder() {
+    if (isSuccess) {
+      setVerificationAttempt(attempt => attempt + 1);
+      return;
+    }
     navigate(`/order/${getServiceIdFromPath(location.pathname)}`, {
       replace: true,
     });
@@ -235,7 +231,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
                 className="payment-result-primary"
                 onClick={handleContinueOrder}
               >
-                {isSuccess ? "Review Order & Try Again" : "Continue Editing Order"}
+                {isSuccess ? "Check Payment Again" : "Continue Editing Order"}
               </button>
             </div>
           )}

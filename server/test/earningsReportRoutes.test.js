@@ -15,10 +15,18 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
         user: { findUnique: async ({ where }) => where.id === 'admin' ? { id: 'admin', role: 'ADMIN' } : booster, findMany: async () => [booster] },
         order: { findMany: async query => {
             earningsReads++;
-            assert.deepEqual(query.where, { paymentStatus: 'PAID', status: 'COMPLETED' });
-            assert.deepEqual(query.orderBy, [{ paidAt: 'desc' }, { id: 'desc' }]);
-            for (const relation of [query.select.assignments.select.booster, query.select.matches.select.booster, query.select.contributions.include.booster]) {
-                assert.deepEqual(relation.select, { id: true, username: true, profile: { select: { displayName: true } } });
+            assert.equal(query.where.paymentStatus, 'PAID');
+            assert.equal(query.where.status, 'COMPLETED');
+            if (earningsReads === 1) {
+                assert.deepEqual(query.orderBy, [{ paidAt: 'desc' }, { id: 'desc' }]);
+                for (const relation of [query.select.assignments.select.booster, query.select.matches.select.booster, query.select.contributions.include.booster]) {
+                    assert.deepEqual(relation.select, { id: true, username: true, profile: { select: { displayName: true } } });
+                }
+            } else {
+                assert.equal(query.take, 100);
+                assert.deepEqual(query.orderBy, { id: 'asc' });
+                assert.equal(query.select.assignments.select.booster, undefined);
+                assert.equal(Boolean(query.where.OR), earningsReads === 2, 'only individual profiles scope the orders');
             }
             return source;
         } },

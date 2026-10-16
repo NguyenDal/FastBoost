@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutPaymentForm, { CheckoutIcon } from "../components/CheckoutPaymentForm";
@@ -24,6 +24,17 @@ const money = (cents, currency) => new Intl.NumberFormat("en-US", { style: "curr
 
 export default function CheckoutPage() {
     const { orderId } = useParams();
+    // A different order needs a fresh payment form, receipt and pending state.
+    // Keep this boundary stable for same-order Gold/coupon quote updates.
+    return <OrderCheckout key={orderId} orderId={orderId} />;
+}
+
+function OrderCheckout({ orderId }) {
+    const active = useRef(true);
+    useLayoutEffect(() => {
+        active.current = true;
+        return () => { active.current = false; };
+    }, []);
     const [params, setParams] = useSearchParams();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
@@ -32,13 +43,15 @@ export default function CheckoutPage() {
     const [verification, setVerification] = useState(null);
     const [celebratePaid, setCelebratePaid] = useState(false);
     const markPaid = useCallback(() => {
+        if (!active.current) return;
         setPaid(true);
         // Reload the saved receipt after verification, including the final Gold/cash split.
         createCheckoutSession(orderId).then(result => {
-            if (result.paid && result.summary) setData(result);
+            if (active.current && result.paid && result.summary) setData(result);
         }).catch(() => { /* Keep the confirmed checkout quote if the receipt read fails. */ });
     }, [orderId]);
     const completeConfirmation = useCallback(() => {
+        if (!active.current) return;
         setVerification(null);
         setCelebratePaid(true);
         window.scrollTo({ top: 0, behavior: "instant" });
@@ -56,6 +69,7 @@ export default function CheckoutPage() {
     const request = useRef(null);
     const gold = Math.max(0, Math.floor(Number(params.get("gold")) || 0));
     const confirmGoldPayment = useCallback(result => {
+        if (!active.current) return;
         // Older servers omit the receipt on Gold success. Keep the order visible
         // while verification reloads it, without displaying the previous cash total.
         setData(previous => ({ ...result, summary: result.summary || (previous?.summary
@@ -72,7 +86,7 @@ export default function CheckoutPage() {
         // not send another request or replay the checkout loading state.
         if (request.current.handled) return;
         request.current.promise.then(async (result) => {
-            if (cancelled) return;
+            if (cancelled || !active.current) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paid) {
                 setData(result);
@@ -85,7 +99,7 @@ export default function CheckoutPage() {
                 setVerification({ session_id: result.sessionId });
             } else if (result.goldOnlyReady) {
                 const cardCheckout = await createCheckoutSession(orderId, 0);
-                if (cancelled) return;
+                if (cancelled || !active.current) return;
                 if (!cardCheckout.clientSecret) throw new Error("Unable to load card payment.");
                 if (!stripePromise) throw new Error("Payment form is unavailable.");
                 setData(cardCheckout);
@@ -95,13 +109,13 @@ export default function CheckoutPage() {
                 setData(result);
             } else setError("Unable to start payment. Please try again.");
         }).catch(async (failure) => {
-            if (cancelled) return;
+            if (cancelled || !active.current) return;
             // Older running servers return an error for an already-paid order.
             // Verify ownership/payment status before presenting the paid screen.
             if (/already (?:been )?paid/i.test(failure.message || "")) {
                 try {
                     const order = await verifyCheckoutSession({ orderId });
-                    if (cancelled) return;
+                    if (cancelled || !active.current) return;
                     if (order.paid) {
                         setError("");
                         setPaid(true);
@@ -111,22 +125,24 @@ export default function CheckoutPage() {
                     // Keep the original failure if verification is unavailable.
                 }
             }
-            if (!cancelled) setError(failure.message || "Unable to load checkout.");
+            if (!cancelled && active.current) setError(failure.message || "Unable to load checkout.");
         });
         return () => { cancelled = true; };
     }, [orderId, gold, attempt, params, confirmGoldPayment]);
 
     const updatePrice = async (goldToUse, couponCode) => {
-        if (paymentBusy || priceRequest.current) return;
+        if (!active.current || paymentBusy || priceRequest.current) return;
         priceRequest.current = true;
         setUpdatingPrice(true);
         try {
             let result = await createCheckoutSession(orderId, goldToUse, true, undefined, couponCode);
+            if (!active.current) return;
             const notice = result.couponNotice;
             let confirmGold = null;
             if (result.goldOnlyReady) {
                 confirmGold = result.summary.goldRedeemed;
                 result = await createCheckoutSession(orderId, 0);
+                if (!active.current) return;
             }
             if (!result.summary || !(result.clientSecret || result.paid || result.paidWithGoldOnly || result.completed)) throw new Error("Unable to update checkout.");
             const appliedGold = result.summary.goldRedeemed || 0;
@@ -144,6 +160,7 @@ export default function CheckoutPage() {
             if (confirmGold !== null) setGoldConfirmation(confirmGold);
             if (notice) setCouponNotice(notice);
         } catch (failure) {
+            if (!active.current) return;
             if (failure.code === "COUPON_UNAVAILABLE") {
                 setCouponNotice({ title: "Coupon not applied", message: failure.message });
             } else {
@@ -151,7 +168,10 @@ export default function CheckoutPage() {
                 // failure. Preserve the form, but require a fresh quote to pay.
                 setPriceUpdateError({ goldToUse, couponCode });
             }
-        } finally { priceRequest.current = false; setUpdatingPrice(false); }
+        } finally {
+            priceRequest.current = false;
+            if (active.current) setUpdatingPrice(false);
+        }
     };
     const applyGold = value => {
         if (paymentBusy || priceRequest.current) return;
@@ -164,20 +184,27 @@ export default function CheckoutPage() {
     };
     const applyCoupon = code => updatePrice(data?.summary.goldRedeemed || 0, code);
     const payWithGold = async () => {
-        if (paymentBusy || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
+        if (!active.current || paymentBusy || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
         setGoldError("");
         setPaymentBusy(true);
         try {
             const email = (contactEmail ?? data?.summary.email ?? "").trim();
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
+            if (!active.current) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paidWithGoldOnly || result.paid) {
                 confirmGoldPayment(result);
             } else if (result.clientSecret) { setData(result); setGoldConfirmation(null); }
             else throw new Error("Your balance changed. Please review your payment again.");
-        } catch (failure) { setGoldConfirmation(null); setGoldError(paymentErrorMessage(failure)); }
-        finally { setPaymentBusy(false); }
+        } catch (failure) {
+            if (active.current) { setGoldConfirmation(null); setGoldError(paymentErrorMessage(failure)); }
+        } finally { if (active.current) setPaymentBusy(false); }
+    };
+    const beforeConfirm = async () => {
+        if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
+        await checkServiceAvailability(data.summary.serviceId);
+        if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
     };
 
     return <div className={"checkout-shell checkout-" + (data?.summary?.game || "lol")}>
@@ -193,7 +220,7 @@ export default function CheckoutPage() {
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError)} onBusyChange={setPaymentBusy} onSuccess={setVerification} onBeforeConfirm={() => checkServiceAvailability(data.summary.serviceId)} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError)} onBusyChange={setPaymentBusy} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
                     </section>
                     <OrderSummary summary={data?.summary || { orderId }} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification)} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}

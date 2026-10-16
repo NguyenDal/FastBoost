@@ -1,9 +1,11 @@
 const { normalizeGoldToUse } = require("../utils/goldRedemption");
+const { createHash } = require("node:crypto");
 const prisma = require("../prisma");
 const { queueOrderConfirmation, validEmail } = require("../utils/orderConfirmationEmail");
 const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
 const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
+const { releaseOtherGoldCheckouts } = require("../utils/checkoutGold");
 const {
     grantReferralCompletionRewards,
 } = require("../utils/referralProgram");
@@ -173,6 +175,36 @@ async function completeCheckoutSessionPayment(order, session) {
     return paymentApplied;
 }
 
+async function createRecoverableCheckoutSession(parameters, originalKey, createdSessions, previousSessionId) {
+    let idempotencyKey = originalKey;
+    let expiredReplays = 0;
+    let lastExpiredSessionId;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        const created = await stripe.checkout.sessions.create(parameters, { ...stripeOptions, idempotencyKey });
+        createdSessions.push(created.id);
+        // Stripe replays the original create response for an idempotency key.
+        // A rollback may have expired that session since the response was cached.
+        const current = await stripe.checkout.sessions.retrieve(created.id, {}, stripeOptions);
+        if (current.status === "expired") {
+            createdSessions.pop();
+            expiredReplays++;
+            lastExpiredSessionId = current.id;
+            idempotencyKey = `checkout-retry-v1-${createHash("sha256").update(originalKey).update(":" + current.id).digest("hex")}`;
+            continue;
+        }
+        if (current.status === "complete") {
+            createdSessions.pop();
+            return current;
+        }
+        if (current.status === "open" && current.client_secret) return current;
+        break;
+    }
+    throw Object.assign(new Error("Checkout could not be prepared. Please try again shortly."), {
+        status: 503, code: "CHECKOUT_SESSION_UNAVAILABLE",
+        ...(expiredReplays === 3 ? { checkoutRecovery: { previousSessionId: previousSessionId || null, expiredSessionId: lastExpiredSessionId } } : {}),
+    });
+}
+
 const buildCheckoutSession = async (req, res, db, createdSessions) => {
     try {
         const userId = getUserId(req);
@@ -263,6 +295,10 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             });
         }
 
+        if (goldRedeemed > 0 && cashAmountCents > 0) {
+            await releaseOtherGoldCheckouts(db, order, stripe);
+        }
+
         const clientUrl = getClientUrl(req);
         const summary = checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents);
         summary.availableGold = availableGold;
@@ -289,6 +325,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             if (!validEmail(contactEmail)) {
                 return res.status(400).json({ ok: false, message: "Please enter a valid email address before paying with gold." });
             }
+            if (goldRedeemed > 0) await releaseOtherGoldCheckouts(db, order, stripe);
             const applied = await (async transaction => {
                 const result = await transaction.order.updateMany({
                     where: { id: order.id, paymentStatus: { not: "PAID" } },
@@ -329,7 +366,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             });
         }
 
-        const session = await stripe.checkout.sessions.create({
+        const session = await createRecoverableCheckoutSession({
             mode: "payment",
             ui_mode: "elements",
             // Collect contact email in the editable checkout form. Setting
@@ -364,8 +401,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
             payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber, couponCode: order.couponCode || "" } },
-        }, { ...stripeOptions, idempotencyKey: `checkout-coupon-v1-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}` });
-        createdSessions.push(session.id);
+        }, `checkout-coupon-v1-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}`, createdSessions, order.stripeCheckoutSessionId);
 
         await db.order.update({
             where: { id: order.id },
@@ -380,6 +416,8 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             },
         });
 
+        if (session.status === "complete") return res.json({ ok: true, completed: true, sessionId: session.id, summary });
+
         return res.json({
             ok: true,
             clientSecret: session.client_secret,
@@ -387,7 +425,10 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             summary,
         });
     } catch (error) {
-        if (error.code === "COUPON_UNAVAILABLE") return res.status(error.status).json({ ok: false, code: error.code, message: error.message });
+        if (error.checkoutRecovery) res.checkoutRecovery = error.checkoutRecovery;
+        if (["COUPON_UNAVAILABLE", "GOLD_CHECKOUT_IN_PROGRESS", "GOLD_CHECKOUT_UNAVAILABLE", "CHECKOUT_SESSION_UNAVAILABLE"].includes(error.code)) {
+            return res.status(error.status).json({ ok: false, code: error.code, message: error.message });
+        }
         console.error("createCheckoutSession error:", error);
 
         return res.status(500).json({
@@ -595,6 +636,21 @@ const createCheckoutSession = async (req, res) => {
         for (const id of createdSessions) {
             try { await stripe.checkout.sessions.expire(id, {}, stripeOptions); }
             catch { console.error("Could not expire rolled-back checkout session", id); }
+        }
+        if (error.checkoutResponse && response.checkoutRecovery) {
+            // Keep bounded replay recovery moving after repeated rollbacks. Only
+            // record a session already confirmed expired, and never overwrite a
+            // newer checkout that acquired the lock after our rollback.
+            try {
+                await prisma.$transaction(async db => {
+                    await lockCheckout(db, userId, orderId);
+                    await db.order.updateMany({
+                        where: { id: orderId, customerId: userId, paymentStatus: { not: "PAID" }, status: { not: "CANCELLED" },
+                            stripeCheckoutSessionId: response.checkoutRecovery.previousSessionId },
+                        data: { stripeCheckoutSessionId: response.checkoutRecovery.expiredSessionId },
+                    });
+                }, { maxWait: 15000, timeout: 15000 });
+            } catch { console.error("Checkout recovery checkpoint deferred", orderId); }
         }
         if (!error.checkoutResponse) {
             console.error("Checkout transaction failed:", error.code || error.name);

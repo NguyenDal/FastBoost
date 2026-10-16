@@ -1,6 +1,6 @@
 const { syncLoyaltyTierBonuses } = require("../utils/loyaltyTierBonuses");
 const prisma = require("../prisma");
-const { mergeRewardPage } = require("../utils/loyaltyRewards");
+const { rewardPage, rewardPagination } = require("../utils/loyaltyRewards");
 const { generateReferralCode } = require("../utils/referralCode");
 const {
     getReferralFirstPurchaseOffer,
@@ -132,10 +132,6 @@ const LOYALTY_TIERS = [
     },
 ];
 
-function getGoldFromOrder(order) {
-    return Math.floor(Number(order.totalPrice || 0));
-}
-
 function getTierInfo(totalCompletedSpend) {
     const currentTier =
         [...LOYALTY_TIERS]
@@ -181,17 +177,14 @@ exports.getMyLoyalty = async (req, res) => {
     try {
         const userId = getUserId(req);
 
-        const rewardPage = Math.max(1, Number(req.query.rewardPage || 1));
-        const rewardLimit = Math.min(10, Math.max(1, Number(req.query.rewardLimit || 5)));
-        const rewardTake = rewardPage * rewardLimit;
-        const rewardStartIndex = (rewardPage - 1) * rewardLimit;
-
         if (!userId) {
             return res.status(401).json({
                 ok: false,
                 message: "Invalid user token: missing user id",
             });
         }
+
+        const { page, limit: rewardLimit, offset } = rewardPagination(req.query);
 
         await syncLoyaltyTierBonuses(prisma, userId);
         const user = await ensureReferralCode(userId);
@@ -205,8 +198,7 @@ exports.getMyLoyalty = async (req, res) => {
 
         const [
             completedOrdersStats,
-            recentCompletedOrders,
-            rewardRecords,
+            rewardHistory,
             rewardRecordCount,
             rewardGoldStats,
             completedOrderGoldRows,
@@ -221,31 +213,7 @@ exports.getMyLoyalty = async (req, res) => {
                 },
             }),
 
-            prisma.order.findMany({
-                where: completedOrderWhere,
-                take: rewardTake,
-                include: {
-                    service: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                    },
-                },
-                orderBy: {
-                    updatedAt: "desc",
-                },
-            }),
-
-            prisma.rewardHistory.findMany({
-                where: {
-                    userId,
-                },
-                take: rewardTake,
-                orderBy: {
-                    createdAt: "desc",
-                },
-            }),
+            rewardPage(prisma, userId, offset, rewardLimit),
 
             prisma.rewardHistory.count({
                 where: {
@@ -289,33 +257,8 @@ exports.getMyLoyalty = async (req, res) => {
             tierInfo
         );
 
-        const completedOrderRewards = recentCompletedOrders.map((order) => ({
-            id: `order-${order.id}`,
-            type: "COMPLETED_ORDER",
-            title: order.service?.title || order.boostType || "Completed Order",
-            description: `#${order.orderNumber} • Completed match reward`,
-            goldEarned: getGoldFromOrder(order),
-            createdAt: order.updatedAt || order.createdAt,
-        }));
-
-        const bonusRewards = rewardRecords.map((reward) => ({
-            id: `reward-${reward.id}`,
-            type: reward.type,
-            title: reward.title,
-            description: reward.description || "Reward added to your account.",
-            goldEarned: reward.goldAmount,
-            createdAt: reward.createdAt,
-        }));
-
         const totalRewardItems = completedMatches + rewardRecordCount;
         const totalRewardPages = Math.max(1, Math.ceil(totalRewardItems / rewardLimit));
-
-        const rewardHistory = mergeRewardPage(
-            completedOrderRewards,
-            bonusRewards,
-            rewardStartIndex,
-            rewardLimit
-        );
 
         return res.json({
             ok: true,
@@ -341,7 +284,7 @@ exports.getMyLoyalty = async (req, res) => {
                 rewardHistory,
                 completedOrders: rewardHistory,
                 rewardPagination: {
-                    page: rewardPage,
+                    page,
                     limit: rewardLimit,
                     totalItems: totalRewardItems,
                     totalPages: totalRewardPages,
@@ -372,6 +315,7 @@ exports.getMyLoyalty = async (req, res) => {
             },
         });
     } catch (error) {
+        if (error.status === 400) return res.status(400).json({ ok: false, message: error.message });
         console.error("getMyLoyalty error:", error);
 
         return res.status(500).json({
