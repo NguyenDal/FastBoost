@@ -4,8 +4,9 @@ const { protect } = require('../middleware/authMiddleware');
 const { buildEarningsReport } = require('../utils/earningsReport');
 const { boosterEarnings } = require('../utils/boosterEarnings');
 const { boosterRating } = require('../utils/orderRatings');
-const { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences } = require('../utils/boosterPreferences');
+const { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences, loadPreferencesForUsers } = require('../utils/boosterPreferences');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
+const { withEarningsLedgerMutation } = require('../utils/boosterEarningsLedger');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const eligible = user => user.role === 'PROVIDER' || user.hasBoosterAccess;
@@ -53,40 +54,60 @@ router.post('/earnings/export', admin, handle(async (req, res) => {
     res.json({ ok: true });
 }));
 router.get('/contributions', handle(async (req, res) => {
-    if (req.actor.role !== 'ADMIN' && !eligible(req.actor)) fail(403, 'Boosters only.');
-    const isAdmin = req.actor.role === 'ADMIN';
-    const rows = await db.order.findMany({ where: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
-        ...(isAdmin ? {} : { OR: [{ assignments: { some: { boosterId: req.actor.id } } }, { contributions: { some: { boosterId: req.actor.id } } }] }) },
+    const scope = req.query.scope ?? 'mine';
+    if (!['mine', 'all'].includes(scope)) fail(400, 'Choose a valid contribution view.');
+    const reviewAll = scope === 'all';
+    if (reviewAll ? req.actor.role !== 'ADMIN' : !eligible(req.actor)) fail(403, reviewAll ? 'Admins only.' : 'Boosters only.');
+    const query = req.query.q ?? '';
+    if (typeof query !== 'string' || query.length > 100) fail(400, 'Enter an order number up to 100 characters.');
+    const requestedPage = req.query.page === undefined ? 1 : Number(req.query.page);
+    if ((req.query.page !== undefined && (typeof req.query.page !== 'string' || !/^\d+$/.test(req.query.page))) || !Number.isSafeInteger(requestedPage) || requestedPage < 1) fail(400, 'Choose a valid page.');
+    const where = { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS', 'COMPLETED'] },
+        ...(query.trim() ? { orderNumber: { contains: query.trim(), mode: 'insensitive' } } : {}),
+        ...(reviewAll ? {} : { OR: [{ assignments: { some: { boosterId: req.actor.id } } }, { contributions: { some: { boosterId: req.actor.id } } }] }) };
+    const pageSize = 10;
+    const total = await db.order.count({ where });
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.min(requestedPage, totalPages);
+    const rows = await db.order.findMany({ where,
         select: { id: true, orderNumber: true, boostType: true, status: true, matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
-            assignments: { select: { boosterId: true, booster: { select: { username: true } } } },
-            contributions: { include: { booster: { select: { username: true } } } } }, orderBy: { updatedAt: 'desc' } });
-    res.json({ ok: true, orders: rows.map(order => ({ ...order, matchHistoryEnabled: usesMatchHistory(order), assignments: isAdmin ? order.assignments : order.assignments.filter(a => a.boosterId === req.actor.id),
-        contributions: isAdmin ? order.contributions : order.contributions.filter(c => c.boosterId === req.actor.id) })) });
+            // Keep other boosters' submissions out of personal response reads.
+            // The count preserves TFT workflow detection after this filtering.
+            _count: { select: { contributions: true } },
+            assignments: { ...(reviewAll ? {} : { where: { boosterId: req.actor.id } }), select: { boosterId: true, booster: { select: { username: true } } } },
+            contributions: { ...(reviewAll ? {} : { where: { boosterId: req.actor.id } }), include: { booster: { select: { username: true } } } } },
+        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], skip: (page - 1) * pageSize, take: pageSize });
+    res.json({ ok: true, page, pageSize, total, totalPages, orders: rows.map(({ _count, ...order }) => ({ ...order,
+        matchHistoryEnabled: usesMatchHistory({ ...order, contributions: _count.contributions ? [true] : [] }) })) });
 }));
 router.post('/contributions/:orderId', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
     const matches = req.body.matches;
     if (!Number.isInteger(matches) || matches < 0 || matches > 10000) fail(400, 'Enter a whole match count from 0 to 10,000.');
-    const assigned = await db.orderAssignment.findUnique({ where: { orderId_boosterId: { orderId: req.params.orderId, boosterId: req.actor.id } }, include: { order: { include: { contributions: { select: { boosterId: true } } } } } });
-    if (!assigned || assigned.order.paymentStatus !== 'PAID' || assigned.order.status === 'CANCELLED') fail(403, 'Only your assigned paid orders accept submissions.');
-    if (usesMatchHistory(assigned.order)) fail(409, 'Review individual matches in Match History for this order.');
-    // Revisions invalidate approval; the admin must review the exact submitted version.
-    await db.boosterContribution.upsert({ where: { orderId_boosterId: { orderId: assigned.orderId, boosterId: req.actor.id } },
-        create: { orderId: assigned.orderId, boosterId: req.actor.id, submittedMatches: matches },
-        update: { submittedMatches: matches, approvedMatches: null, submittedAt: new Date(), reviewedAt: null, reviewedBy: null, reviewNote: null, revision: { increment: 1 } } });
+    await db.$transaction(tx => withEarningsLedgerMutation(tx, req.params.orderId, async () => {
+        const assigned = await tx.orderAssignment.findUnique({ where: { orderId_boosterId: { orderId: req.params.orderId, boosterId: req.actor.id } }, include: { order: { include: { contributions: { select: { boosterId: true } } } } } });
+        if (!assigned || assigned.order.paymentStatus !== 'PAID' || assigned.order.status === 'CANCELLED') fail(403, 'Only your assigned paid orders accept submissions.');
+        if (usesMatchHistory(assigned.order)) fail(409, 'Review individual matches in Match History for this order.');
+        // Revisions invalidate approval; the admin must review the exact submitted version.
+        await tx.boosterContribution.upsert({ where: { orderId_boosterId: { orderId: assigned.orderId, boosterId: req.actor.id } },
+            create: { orderId: assigned.orderId, boosterId: req.actor.id, submittedMatches: matches },
+            update: { submittedMatches: matches, approvedMatches: null, submittedAt: new Date(), reviewedAt: null, reviewedBy: null, reviewNote: null, revision: { increment: 1 } } });
+    }));
     res.json({ ok: true });
 }));
 router.post('/contributions/:orderId/:boosterId/review', admin, handle(async (req, res) => {
     if (!Number.isInteger(req.body.revision) || !['approve', 'return'].includes(req.body.decision)) fail(400, 'Choose an approval decision.');
     const key = { orderId: req.params.orderId, boosterId: req.params.boosterId };
-    const contribution = await db.boosterContribution.findUnique({ where: { orderId_boosterId: key }, include: { order: { select: { matchHistoryEnabled: true } } } });
-    if (!contribution) fail(404, 'Submission not found.');
-    if (contribution.order?.matchHistoryEnabled) fail(409, 'Review individual matches in Match History for this order.');
     const note = String(req.body.note || '').trim().slice(0, 500);
     if (req.body.decision === 'return' && !note) fail(400, 'Explain what needs correcting.');
-    const result = await db.boosterContribution.updateMany({ where: { ...key, revision: req.body.revision, reviewedAt: null },
-        data: { approvedMatches: req.body.decision === 'approve' ? contribution.submittedMatches : null, reviewedAt: new Date(), reviewedBy: req.actor.id, reviewNote: note || null } });
-    if (!result.count) fail(409, 'This submission changed. Refresh and review it again.');
+    await db.$transaction(tx => withEarningsLedgerMutation(tx, req.params.orderId, async () => {
+        const contribution = await tx.boosterContribution.findUnique({ where: { orderId_boosterId: key }, include: { order: { select: { matchHistoryEnabled: true } } } });
+        if (!contribution) fail(404, 'Submission not found.');
+        if (contribution.order?.matchHistoryEnabled) fail(409, 'Review individual matches in Match History for this order.');
+        const result = await tx.boosterContribution.updateMany({ where: { ...key, revision: req.body.revision, reviewedAt: null },
+            data: { approvedMatches: req.body.decision === 'approve' ? contribution.submittedMatches : null, reviewedAt: new Date(), reviewedBy: req.actor.id, reviewNote: note || null } });
+        if (!result.count) fail(409, 'This submission changed. Refresh and review it again.');
+    }));
     res.json({ ok: true });
 }));
 router.get('/me', handle(async (req, res) => {
@@ -120,7 +141,9 @@ router.get('/boosters', admin, handle(async (req, res) => {
             providedAssignments: { where: { order: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS'] } } }, select: { id: true } },
         }, orderBy: { username: 'asc' } }), boosterEarnings(db),
     ]);
-    res.json({ ok: true, boosters: users.map(user => ({ ...user, earnings: income[user.id] || {} })) });
+    const { preferencesByUser, preferencesAvailable } = await loadPreferencesForUsers(db, users.map(user => user.id));
+    res.json({ ok: true, preferencesAvailable, boosters: users.map(user => ({ ...user,
+        preferences: preferencesByUser.get(user.id), earnings: income[user.id] || {} })) });
 }));
 router.patch('/boosters/:id', admin, handle(async (req, res) => {
     const user = await db.user.findUnique({ where: { id: req.params.id } });

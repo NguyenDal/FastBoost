@@ -811,7 +811,7 @@ function MatchPage() {
                     </div>
                 </section>
 
-                {order.status === 'COMPLETED' && order.paymentStatus === 'PAID' && order.customerId === currentUser?.id && <OrderRating key={orderId} orderId={orderId} />}
+                {order.status === 'COMPLETED' && order.paymentStatus === 'PAID' && order.customerId === currentUser?.id && <OrderRating key={orderId} orderId={orderId} focusRequested={location.hash === '#order-rating'} />}
 
                 <div className="match-tabs">
                     <button className={`match-tab ${!showHistory ? 'active' : ''}`} aria-pressed={!showHistory} onClick={() => setHistoryTab(false)}>Details</button>

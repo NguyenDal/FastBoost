@@ -1,5 +1,7 @@
 const { canBoost } = require("../utils/boosterAccess");
 const prisma = require("../prisma");
+const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
+const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 
 function getOrderTitle(order) {
   if (!order) return "order";
@@ -311,34 +313,40 @@ exports.acceptAssignmentRequest = async (req, res) => {
       });
     }
 
-    const updated = await prisma.assignmentRequest.update({
-      where: { id: requestId },
-      data: {
-        status: "ACCEPTED",
-        respondedAt: new Date(),
-      },
-    });
+    const { updated, assignment } = await prisma.$transaction(tx => withEarningsLedgerMutation(tx, request.orderId, async () => {
+        await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${request.orderId} FOR UPDATE`;
+        return withBoosterOrderEmails(tx, request.orderId, async () => {
+            const updated = await tx.assignmentRequest.update({
+              where: { id: requestId },
+              data: {
+                status: "ACCEPTED",
+                respondedAt: new Date(),
+              },
+            });
 
-    const assignment = await prisma.orderAssignment.upsert({
-      where: {
-        orderId_boosterId: {
-          orderId: request.orderId,
-          boosterId: request.boosterId,
-        },
-      },
-      update: {},
-      create: {
-        orderId: request.orderId,
-        boosterId: request.boosterId,
-      },
-    });
+            const assignment = await tx.orderAssignment.upsert({
+              where: {
+                orderId_boosterId: {
+                  orderId: request.orderId,
+                  boosterId: request.boosterId,
+                },
+              },
+              update: {},
+              create: {
+                orderId: request.orderId,
+                boosterId: request.boosterId,
+              },
+            });
 
-    await prisma.order.update({
-      where: { id: request.orderId },
-      data: {
-        status: "IN_PROGRESS",
-      },
-    });
+            await tx.order.update({
+              where: { id: request.orderId },
+              data: {
+                status: "IN_PROGRESS",
+              },
+            });
+            return { updated, assignment };
+        });
+    }));
 
     const conversation = await getOrCreateConversation(request.orderId);
 

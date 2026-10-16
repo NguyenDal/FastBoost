@@ -1,4 +1,6 @@
 const stripeOptions = { timeout: 8000, maxNetworkRetries: 0 };
+const { withEarningsLedgerMutation } = require('./boosterEarningsLedger');
+const { withBoosterOrderEmails } = require('./boosterOrderEmail');
 const cents = value => Math.round(Number(value || 0) * 100);
 const couponError = message => Object.assign(new Error(message), { status: 400, code: "COUPON_UNAVAILABLE" });
 
@@ -10,13 +12,13 @@ async function lockCheckout(db, accountId, orderId) {
 }
 
 async function mutateCheckoutOrder(prisma, order, stripe, mutation, expire = true) {
-    return prisma.$transaction(async db => {
+    return prisma.$transaction(async db => withEarningsLedgerMutation(db, order.id, async () => {
         await lockCheckout(db, order.customerId, order.id);
         const current = await db.order.findUnique({ where: { id: order.id } });
         if (!current) return null;
         if (expire) await expireUnpaidSession(current, stripe);
-        return mutation(db, current);
-    }, { maxWait: 15000, timeout: 30000 });
+        return withBoosterOrderEmails(db, order.id, () => mutation(db, current));
+    }), { maxWait: 15000, timeout: 30000 });
 }
 
 async function expireUnpaidSession(order, stripe) {

@@ -178,6 +178,32 @@ exports.Prisma.BoosterPreferencesScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BoosterEarningsLedgerStateScalarFieldEnum = {
+  id: 'id',
+  activatedAt: 'activatedAt'
+};
+
+exports.Prisma.BoosterEarningsBalanceScalarFieldEnum = {
+  orderId: 'orderId',
+  boosterId: 'boosterId',
+  currency: 'currency',
+  amountCents: 'amountCents',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BoosterEarningsEntryScalarFieldEnum = {
+  id: 'id',
+  boosterId: 'boosterId',
+  orderId: 'orderId',
+  orderNumber: 'orderNumber',
+  serviceTitle: 'serviceTitle',
+  currency: 'currency',
+  amountCents: 'amountCents',
+  recognizedAt: 'recognizedAt',
+  period: 'period',
+  kind: 'kind'
+};
+
 exports.Prisma.BoosterContractScalarFieldEnum = {
   id: 'id',
   boosterId: 'boosterId',
@@ -394,6 +420,32 @@ exports.Prisma.OrderConfirmationEmailScalarFieldEnum = {
   claim: 'claim',
   lastError: 'lastError',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.OrderCompletionEmailScalarFieldEnum = {
+  orderId: 'orderId',
+  payload: 'payload',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  sentAt: 'sentAt',
+  claim: 'claim',
+  lastError: 'lastError',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.BoosterOrderEmailScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  boosterId: 'boosterId',
+  event: 'event',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  claim: 'claim',
+  sentAt: 'sentAt',
+  skippedAt: 'skippedAt',
+  lastError: 'lastError'
 };
 
 exports.Prisma.CouponUseScalarFieldEnum = {
@@ -634,6 +686,9 @@ exports.Prisma.ModelName = {
   RegistrationConsent: 'RegistrationConsent',
   BoosterProfile: 'BoosterProfile',
   BoosterPreferences: 'BoosterPreferences',
+  BoosterEarningsLedgerState: 'BoosterEarningsLedgerState',
+  BoosterEarningsBalance: 'BoosterEarningsBalance',
+  BoosterEarningsEntry: 'BoosterEarningsEntry',
   BoosterContract: 'BoosterContract',
   SupportThread: 'SupportThread',
   SupportMessage: 'SupportMessage',
@@ -648,6 +703,8 @@ exports.Prisma.ModelName = {
   OrderRating: 'OrderRating',
   OrderRatingRecipient: 'OrderRatingRecipient',
   OrderConfirmationEmail: 'OrderConfirmationEmail',
+  OrderCompletionEmail: 'OrderCompletionEmail',
+  BoosterOrderEmail: 'BoosterOrderEmail',
   CouponUse: 'CouponUse',
   OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',

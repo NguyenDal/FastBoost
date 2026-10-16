@@ -585,7 +585,7 @@ function Navbar({
                                 setShowAuthModal(true);
                             } else {
                                 navigate("/login", {
-                                    state: { from: location.pathname + location.search },
+                                    state: { from: location.pathname + location.search + location.hash },
                                 });
                             }
                         }}

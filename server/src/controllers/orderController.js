@@ -5,6 +5,9 @@ const stripe = require("../utils/stripeClient");
 const { mutateCheckoutOrder } = require("../utils/checkoutCoupon");
 const { notifyOrderStatus } = require("../utils/orderNotifications");
 const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
+const { queueOrderCompletion } = require("../utils/orderCompletionEmail");
+const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
+const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
 const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
 const {
@@ -919,44 +922,48 @@ module.exports.updateOrderStatus = async (req, res) => {
             });
         }
 
-        const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, db => db.order.update({
-            where: { id },
-            data: { status },
-            include: {
-                service: true,
-                customer: {
-                    select: {
-                        id: true,
-                        email: true,
-                        username: true,
-                        role: true,
-                        profile: {
-                            select: {
-                                displayName: true,
+        const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, async (db, current) => {
+            const result = await db.order.update({
+                where: { id },
+                data: { status },
+                include: {
+                    service: true,
+                    customer: {
+                        select: {
+                            id: true,
+                            email: true,
+                            username: true,
+                            role: true,
+                            profile: {
+                                select: {
+                                    displayName: true,
+                                },
                             },
                         },
                     },
-                },
-                assignments: {
-                    include: {
-                        booster: {
-                            select: {
-                                id: true,
-                                email: true,
-                                username: true,
-                                role: true,
-                                profile: {
-                                    select: {
-                                        displayName: true,
+                    assignments: {
+                        include: {
+                            booster: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    username: true,
+                                    role: true,
+                                    profile: {
+                                        select: {
+                                            displayName: true,
+                                        },
                                     },
                                 },
                             },
                         },
                     },
+                    conversation: true,
                 },
-                conversation: true,
-            },
-        }), status === "CANCELLED");
+            });
+            if (current.status !== "COMPLETED") await queueOrderCompletion(db, result);
+            return result;
+        }, status === "CANCELLED");
 
         if (!updated) return res.status(404).json({ ok: false, message: "Order not found" });
 
@@ -1037,14 +1044,12 @@ module.exports.assignBooster = async (req, res) => {
             return res.status(400).json({ ok: false, message: "User is not a provider" });
         }
 
-        try {
-            await prisma.orderAssignment.create({ data: { orderId, boosterId } });
-        } catch (e) {
-            // ignore unique violation if already assigned
-            if (!String(e?.code || "").includes("P2002")) {
-                throw e;
-            }
-        }
+        await prisma.$transaction(tx => withEarningsLedgerMutation(tx, orderId, async () => {
+            await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+            return withBoosterOrderEmails(tx, orderId, () => tx.orderAssignment.upsert({
+                where: { orderId_boosterId: { orderId, boosterId } }, create: { orderId, boosterId }, update: {},
+            }));
+        }));
 
         // Ensure conversation exists and booster is a participant
         const convo = await prisma.conversation.upsert({
@@ -1096,58 +1101,46 @@ module.exports.unassignBooster = async (req, res) => {
             },
         });
 
-        await prisma.orderAssignment.deleteMany({
-            where: {
-                orderId,
-                boosterId,
-            },
-        });
-
-        const convo = await prisma.conversation.findUnique({
-            where: { orderId },
-        });
-
-        if (convo) {
-            await prisma.conversationParticipant.deleteMany({
-                where: {
-                    conversationId: convo.id,
-                    userId: boosterId,
-                },
-            });
-        }
-
-        const remainingAssignments = await prisma.orderAssignment.count({
-            where: {
-                orderId,
-            },
-        });
-
-        let updatedOrder = null;
-
-        if (remainingAssignments === 0) {
-            updatedOrder = await prisma.order.update({
-                where: { id: orderId },
-                data: {
-                    status: "PENDING",
-                },
-                include: {
-                    service: true,
-                    customer: {
-                        select: {
-                            id: true,
-                            email: true,
-                            username: true,
-                            role: true,
-                            profile: {
-                                select: {
-                                    displayName: true,
-                                },
-                            },
-                        },
+        const { remainingAssignments, updatedOrder } = await prisma.$transaction(tx => withEarningsLedgerMutation(tx, orderId, async () => {
+            await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+            return withBoosterOrderEmails(tx, orderId, async () => {
+                await tx.orderAssignment.deleteMany({
+                    where: {
+                        orderId,
+                        boosterId,
                     },
-                    assignments: {
+                });
+
+                const convo = await tx.conversation.findUnique({
+                    where: { orderId },
+                });
+
+                if (convo) {
+                    await tx.conversationParticipant.deleteMany({
+                        where: {
+                            conversationId: convo.id,
+                            userId: boosterId,
+                        },
+                    });
+                }
+
+                const remainingAssignments = await tx.orderAssignment.count({
+                    where: {
+                        orderId,
+                    },
+                });
+
+                let updatedOrder = null;
+
+                if (remainingAssignments === 0) {
+                    updatedOrder = await tx.order.update({
+                        where: { id: orderId },
+                        data: {
+                            status: "PENDING",
+                        },
                         include: {
-                            booster: {
+                            service: true,
+                            customer: {
                                 select: {
                                     id: true,
                                     email: true,
@@ -1160,12 +1153,30 @@ module.exports.unassignBooster = async (req, res) => {
                                     },
                                 },
                             },
+                            assignments: {
+                                include: {
+                                    booster: {
+                                        select: {
+                                            id: true,
+                                            email: true,
+                                            username: true,
+                                            role: true,
+                                            profile: {
+                                                select: {
+                                                    displayName: true,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                            conversation: true,
                         },
-                    },
-                    conversation: true,
-                },
+                    });
+                }
+                return { remainingAssignments, updatedOrder };
             });
-        }
+        }));
 
         if (assignment) {
             const shortOrderId = assignment.order.orderNumber;
@@ -1393,46 +1404,52 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             });
         }
 
-        const updated = await prisma.order.update({
-            where: { id: orderId },
-            data: {
-                status: "COMPLETED",
-            },
-            include: {
-                service: true,
-                customer: {
-                    select: {
-                        id: true,
-                        email: true,
-                        username: true,
-                        role: true,
-                        profile: {
-                            select: {
-                                displayName: true,
+        const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, async (db, current) => {
+            const result = await db.order.update({
+                where: { id: orderId },
+                data: {
+                    status: "COMPLETED",
+                },
+                include: {
+                    service: true,
+                    customer: {
+                        select: {
+                            id: true,
+                            email: true,
+                            username: true,
+                            role: true,
+                            profile: {
+                                select: {
+                                    displayName: true,
+                                },
                             },
                         },
                     },
-                },
-                assignments: {
-                    include: {
-                        booster: {
-                            select: {
-                                id: true,
-                                email: true,
-                                username: true,
-                                role: true,
-                                profile: {
-                                    select: {
-                                        displayName: true,
+                    assignments: {
+                        include: {
+                            booster: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    username: true,
+                                    role: true,
+                                    profile: {
+                                        select: {
+                                            displayName: true,
+                                        },
                                     },
                                 },
                             },
                         },
                     },
+                    conversation: true,
                 },
-                conversation: true,
-            },
-        });
+            });
+            if (current.status !== "COMPLETED") await queueOrderCompletion(db, result);
+            return result;
+        }, false);
+
+        if (!updated) return res.status(404).json({ ok: false, message: "Order not found" });
 
         await notifyOrderStatus(prisma, updated);
 
@@ -1532,42 +1549,48 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
             });
         }
 
-        await prisma.orderAssignment.delete({
-            where: {
-                orderId_boosterId: {
-                    orderId,
-                    boosterId: providerId,
-                },
-            },
-        });
+        const remainingAssignments = await prisma.$transaction(tx => withEarningsLedgerMutation(tx, orderId, async () => {
+            await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+            return withBoosterOrderEmails(tx, orderId, async () => {
+                await tx.orderAssignment.delete({
+                    where: {
+                        orderId_boosterId: {
+                            orderId,
+                            boosterId: providerId,
+                        },
+                    },
+                });
 
-        const convo = await prisma.conversation.findUnique({
-            where: { orderId },
-        });
+                const convo = await tx.conversation.findUnique({
+                    where: { orderId },
+                });
 
-        if (convo) {
-            await prisma.conversationParticipant.deleteMany({
-                where: {
-                    conversationId: convo.id,
-                    userId: providerId,
-                },
+                if (convo) {
+                    await tx.conversationParticipant.deleteMany({
+                        where: {
+                            conversationId: convo.id,
+                            userId: providerId,
+                        },
+                    });
+                }
+
+                const remainingAssignments = await tx.orderAssignment.count({
+                    where: {
+                        orderId,
+                    },
+                });
+
+                if (remainingAssignments === 0) {
+                    await tx.order.update({
+                        where: { id: orderId },
+                        data: {
+                            status: "PENDING",
+                        },
+                    });
+                }
+                return remainingAssignments;
             });
-        }
-
-        const remainingAssignments = await prisma.orderAssignment.count({
-            where: {
-                orderId,
-            },
-        });
-
-        if (remainingAssignments === 0) {
-            await prisma.order.update({
-                where: { id: orderId },
-                data: {
-                    status: "PENDING",
-                },
-            });
-        }
+        }));
 
         const admins = await prisma.user.findMany({
             where: {

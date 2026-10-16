@@ -51,7 +51,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   const user = getStoredUser();
 
   if (!isValid) {
-    return <Navigate to="/" replace state={{ from: location.pathname, openAuthModal: true, authMode: 'login' }} />;
+    return <Navigate to="/" replace state={{ from: location.pathname + location.search + location.hash, openAuthModal: true, authMode: 'login' }} />;
   }
 
   if (allowedRoles?.length && !allowedRoles.includes(user?.role) && !(allowedRoles.includes("PROVIDER") && user?.hasBoosterAccess)) {

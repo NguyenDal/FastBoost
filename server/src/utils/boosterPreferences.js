@@ -44,4 +44,21 @@ async function loadPreferences(db, userId) {
     }
 }
 
-module.exports = { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences };
+async function loadPreferencesForUsers(db, userIds) {
+    const preferencesByUser = new Map(userIds.map(userId => [userId, emptyPreferences()]));
+    if (!preferencesByUser.size) return { preferencesByUser, preferencesAvailable: true };
+    try {
+        const rows = await db.boosterPreferences.findMany({
+            where: { userId: { in: [...preferencesByUser.keys()] } }, select: { userId: true, ...preferenceSelect },
+        });
+        for (const { userId, firstRole, secondRole, championIds } of rows) {
+            preferencesByUser.set(userId, { firstRole, secondRole, championIds });
+        }
+        return { preferencesByUser, preferencesAvailable: true };
+    } catch (error) {
+        if (!missingPreferencesTable(error)) throw error;
+        return { preferencesByUser, preferencesAvailable: false };
+    }
+}
+
+module.exports = { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences, loadPreferencesForUsers };

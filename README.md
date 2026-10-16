@@ -626,6 +626,9 @@ SMTP_USER="your_email_here"
 SMTP_PASS="your_google_app_password"
 SMTP_FROM="FastBoost <your_email_here>"
 ORDER_CONFIRMATION_EMAILS_ENABLED="false"
+ORDER_COMPLETION_EMAILS_ENABLED="false"
+BOOSTER_ORDER_EMAILS_ENABLED="false"
+BOOSTER_MONTHLY_EARNINGS_ENABLED="false"
 
 TRUSTPILOT_AFS_EMAIL="fastboost.gg+your_code@invite.trustpilot.com"
 
@@ -685,8 +688,65 @@ FastBoost order confirmation emails:
   the unique queue row and stable Message-ID prevent ordinary webhook/revisit duplicates.
 - Keep Stripe's successful-payment receipts enabled for cash charges. FastBoost confirmations
   include both gold redeemed and cash paid; gold-only orders do not create a Stripe receipt.
+- The Payment methods block below Total shows Gold redeemed and the cash method, for example
+  `Gold (100): −$10.00` and `VISA (•••• 4242): $10.00`. Total retains the checkout's cash total.
+  Card brand/last four and Link or wallet labels come from the verified Stripe charge; no full
+  card number, CVC, billing details or raw payment object enters the email snapshot. A failed
+  optional lookup uses `Online payment` without blocking successful payment settlement.
 - SMTP failure does not reverse payment. The database queue must be available whenever the
   feature is enabled. Turning the flag off disables both new queue entries and the worker.
+
+### Completion and booster order emails
+
+These features reuse the SMTP settings and trusted `CLIENT_URL` above. Apply the named
+additive migrations and regenerate Prisma before enabling their flags; review unrelated
+pending migrations separately. Flag values in a local `.env` do not configure or deploy production.
+
+| Feature | Migration directory under `server/prisma/migrations` | Enable flag |
+| --- | --- | --- |
+| Customer completion email | `20261016030000_order_completion_email` | `ORDER_COMPLETION_EMAILS_ENABLED` |
+| Customer rating form linked from the email | `20261016010000_customer_booster_ratings` | No email flag of its own |
+| Booster order updates | `20261016050000_booster_order_email` | `BOOSTER_ORDER_EMAILS_ENABLED` |
+| Monthly earnings ledger and statements | `20261016040000_booster_monthly_earnings` | `BOOSTER_MONTHLY_EARNINGS_ENABLED` |
+
+- Completion queues one immutable `OrderCompletionEmail` per paid, completed order, with a
+  **Rate your booster** link to `/match/:orderId#order-rating`. Sign-in preserves that target.
+  Delivery uses the customer's current account email and rechecks paid/completed status.
+  Repeated completion requests do not queue another email; existing completed orders are not backfilled.
+- Booster updates queue `BoosterOrderEmail` events for assignment, unassignment, completion,
+  cancellation and payment confirmation. Only affected eligible boosters receive them; payment
+  updates go to boosters already assigned to the order, never the whole team. Unassignment links
+  to the portal instead of the removed order. Emails exclude customer identity and game credentials.
+- Both workers check every 30 seconds, claim deliveries and retry at most eight times. Booster
+  delivery rechecks current email, access and event relevance; obsolete alerts record `skippedAt`.
+  Inspect `attempts`, `lastError`, `nextAttemptAt` and `sentAt` on the corresponding outbox.
+  SMTP acceptance is not guaranteed inbox delivery, and ambiguous SMTP failure can still cause
+  duplicate delivery despite stable Message-IDs. Neither migration sends historical emails.
+
+### Monthly booster earnings and PDF statements
+
+After applying the ledger migration, enable `BOOSTER_MONTHLY_EARNINGS_ENABLED=true` on every
+earnings-changing backend instance and restart them. Then explicitly call
+`initializeEarningsLedger(prisma)` from `server/src/utils/boosterEarningsLedger.js` once against
+the intended database. This activation is idempotent and uses the same transaction lock as
+earnings mutations. It records existing confirmed earnings as a separate opening balance;
+it does not invent historical monthly totals. Reads and timers never initialize the ledger.
+The flag controls accounting writes, not just display: keep it enabled after activation while
+accepting earnings-changing operations.
+
+- Calendar periods use `America/Winnipeg`. New recognized earnings and later positive or negative
+  adjustments post to the current month. At the next month boundary the visible total starts a
+  new period; prior entries are retained without a reset job or destructive balance update.
+- Personal endpoints are `GET /api/operations/me/monthly-earnings`,
+  `GET /api/operations/me/monthly-earnings/:YYYY-MM`, and
+  `GET /api/operations/me/monthly-earnings/:YYYY-MM/pdf`. They use the signed-in user's identity,
+  including for admins; clients cannot request another booster's statement. PDFs are available
+  only after a month closes. Portal totals, month details and PDFs show USD entries only; the
+  internal ledger preserves all original currencies without conversion. Statements report earnings, not payouts.
+- Your match contributions uses server search and 10 orders per page. The default
+  `/api/operations/contributions?scope=mine` stays personal even for admins with booster access;
+  `scope=all` is reserved for admin reviews. Submission/review changes and ledger adjustments
+  commit together.
 
 Chat attachment S3 permission note:
 - The backend IAM user/role needs `s3:PutObject` and `s3:GetObject` on:

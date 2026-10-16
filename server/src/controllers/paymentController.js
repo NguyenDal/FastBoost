@@ -2,6 +2,9 @@ const { normalizeGoldToUse } = require("../utils/goldRedemption");
 const { createHash } = require("node:crypto");
 const prisma = require("../prisma");
 const { queueOrderConfirmation, validEmail } = require("../utils/orderConfirmationEmail");
+const { retrieveReceiptPaymentMethod } = require("../utils/receiptPaymentMethod");
+const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
+const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
 const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
@@ -121,51 +124,58 @@ async function completeCheckoutSessionPayment(order, session) {
             ? session.payment_intent
             : session.payment_intent?.id || null;
 
-    const paymentApplied = await prisma.$transaction(async (transaction) => {
+    // Best-effort enrichment before taking checkout locks: Stripe being slow
+    // or unavailable for this optional lookup cannot roll back a paid order.
+    const paymentMethod = process.env.ORDER_CONFIRMATION_EMAILS_ENABLED === "true"
+        ? await retrieveReceiptPaymentMethod(stripe, session) : null;
+
+    const paymentApplied = await prisma.$transaction(async (transaction) => withEarningsLedgerMutation(transaction, order.id, async () => {
         await lockCheckout(transaction, order.customerId, order.id);
-        const updateResult = await transaction.order.updateMany({
-            where: {
-                id: order.id,
-                stripeCheckoutSessionId: session.id,
-                paymentStatus: { not: "PAID" },
-                status: { not: "CANCELLED" },
-            },
-            data: {
-                paymentStatus: "PAID",
-                stripePaymentIntentId: paymentIntentId,
-                paidAt: new Date(),
-                amountCents: session.amount_subtotal
-                    ? Number(session.amount_subtotal) +
-                    Number(order.goldDiscountCents || 0)
-                    : undefined,
-                cashAmountCents: session.amount_total || 0,
-                currency: session.currency || "usd",
-            },
-        });
-
-        if (updateResult.count === 0) {
-            return false;
-        }
-
-        if (Number(order.goldRedeemed || 0) > 0) {
-            await transaction.rewardHistory.createMany({
-                data: [
-                    {
-                        userId: order.customerId,
-                        type: "ORDER_REDEMPTION",
-                        goldAmount: -Number(order.goldRedeemed),
-                        title: "Gold redeemed for order",
-                        description: `Used ${order.goldRedeemed} gold for order #${order.orderNumber}.`,
-                        sourceUserId: order.id,
-                    },
-                ],
-                skipDuplicates: true,
+        return withBoosterOrderEmails(transaction, order.id, async () => {
+            const updateResult = await transaction.order.updateMany({
+                where: {
+                    id: order.id,
+                    stripeCheckoutSessionId: session.id,
+                    paymentStatus: { not: "PAID" },
+                    status: { not: "CANCELLED" },
+                },
+                data: {
+                    paymentStatus: "PAID",
+                    stripePaymentIntentId: paymentIntentId,
+                    paidAt: new Date(),
+                    amountCents: session.amount_subtotal
+                        ? Number(session.amount_subtotal) +
+                        Number(order.goldDiscountCents || 0)
+                        : undefined,
+                    cashAmountCents: session.amount_total || 0,
+                    currency: session.currency || "usd",
+                },
             });
-        }
 
-        await queueOrderConfirmation(transaction, order.id, session.customer_details?.email || session.customer_email);
-        return true;
-    });
+            if (updateResult.count === 0) {
+                return false;
+            }
+
+            if (Number(order.goldRedeemed || 0) > 0) {
+                await transaction.rewardHistory.createMany({
+                    data: [
+                        {
+                            userId: order.customerId,
+                            type: "ORDER_REDEMPTION",
+                            goldAmount: -Number(order.goldRedeemed),
+                            title: "Gold redeemed for order",
+                            description: `Used ${order.goldRedeemed} gold for order #${order.orderNumber}.`,
+                            sourceUserId: order.id,
+                        },
+                    ],
+                    skipDuplicates: true,
+                });
+            }
+
+            await queueOrderConfirmation(transaction, order.id, session.customer_details?.email || session.customer_email, paymentMethod);
+            return true;
+        });
+    }));
 
     if (paymentApplied) {
         await grantReferralCompletionRewards(order.id);
@@ -626,12 +636,14 @@ const createCheckoutSession = async (req, res) => {
     const response = { code: 200, body: null, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
     const createdSessions = [];
     try {
-        await prisma.$transaction(async db => {
+        await prisma.$transaction(async db => withEarningsLedgerMutation(db, orderId, async () => {
             await lockCheckout(db, userId, orderId);
-            await buildCheckoutSession(req, response, db, createdSessions);
-            // Expected validation failures must roll back coupon and price changes too.
-            if (response.code >= 400) throw Object.assign(new Error("Checkout rejected"), { checkoutResponse: true });
-        }, { maxWait: 15000, timeout: 60000 });
+            return withBoosterOrderEmails(db, orderId, async () => {
+                await buildCheckoutSession(req, response, db, createdSessions);
+                // Expected validation failures must roll back coupon and price changes too.
+                if (response.code >= 400) throw Object.assign(new Error("Checkout rejected"), { checkoutResponse: true });
+            });
+        }), { maxWait: 15000, timeout: 60000 });
     } catch (error) {
         for (const id of createdSessions) {
             try { await stripe.checkout.sessions.expire(id, {}, stripeOptions); }

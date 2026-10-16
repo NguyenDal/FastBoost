@@ -28,6 +28,8 @@ function orderFixture(t, overrides = {}) {
         },
         conversation: { findUnique: async () => null },
     };
+    db.$transaction = callback => callback(db);
+    db.$queryRaw = async () => [];
     const replacements = new Map([
         [require.resolve('../src/prisma'), db],
         [require.resolve('../src/utils/stripeClient'), {}],
@@ -39,6 +41,7 @@ function orderFixture(t, overrides = {}) {
             notifyOrderStatus: async (_db, record) => calls.statuses.push(record.status),
         }],
         [require.resolve('../src/utils/trustpilotEmail'), { sendTrustpilotReviewInvite: async () => false }],
+        [require.resolve('../src/utils/orderCompletionEmail'), { queueOrderCompletion: async () => {} }],
         [require.resolve('../src/utils/orderPasswordCrypto'), {
             stripEncryptedPasswordFields: value => {
                 const copy = { ...value }; delete copy.accountPasswordCiphertext; return copy;

@@ -1,4 +1,5 @@
-.order-rating { margin: 0 0 24px; padding: 24px 28px; background: linear-gradient(120deg, #201b30, #121824); border: 1px solid #aa88ee30; border-radius: 20px; color: #ede9f8; }
+.order-rating { margin: 0 0 24px; padding: 24px 28px; background: linear-gradient(120deg, #201b30, #121824); border: 1px solid #aa88ee30; border-radius: 20px; color: #ede9f8; scroll-margin-top: 100px; }
+.order-rating:focus-visible { outline: 2px solid #c6aeff; outline-offset: 3px; }
 .order-rating-eyebrow { color: #bda4ef; font-size: 11px; letter-spacing: 1.5px; font-weight: 700; }
 .order-rating h2 { font-size: 23px; margin: 8px 0; }
 .order-rating p { line-height: 1.6; }

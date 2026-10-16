@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getOrderRating, submitOrderRating } from '../api/orders';
 import '../styles/OrderRating.css';
 
-export default function OrderRating({ orderId }) {
+export default function OrderRating({ orderId, focusRequested = false }) {
+    const sectionRef = useRef(null);
+    const focusedOrder = useRef(null);
     const [data, setData] = useState(null);
     const [stars, setStars] = useState(0);
     const [busy, setBusy] = useState(false);
@@ -14,6 +16,14 @@ export default function OrderRating({ orderId }) {
             .catch(error => { if (active) setError(error.message); });
         return () => { active = false; };
     }, [orderId, attempt]);
+    useEffect(() => {
+        if (!focusRequested || !data || (!data.rating && !data.eligible) || focusedOrder.current === orderId) return;
+        const section = sectionRef.current;
+        if (!section) return;
+        section.focus({ preventScroll: true });
+        section.scrollIntoView({ block: 'start' });
+        focusedOrder.current = orderId;
+    }, [data, focusRequested, orderId]);
     async function submit(event) {
         event.preventDefault();
         if (!stars || busy) return;
@@ -28,7 +38,7 @@ export default function OrderRating({ orderId }) {
         } finally { setBusy(false); }
     }
     if (data && !data.rating && !data.eligible) return null;
-    return <section className="order-rating" aria-labelledby="order-rating-heading">
+    return <section ref={sectionRef} id="order-rating" className="order-rating" tabIndex={-1} aria-labelledby="order-rating-heading">
         <div><p className="order-rating-eyebrow">ORDER COMPLETE</p><h2 id="order-rating-heading">{data?.rating ? 'Thanks for your review' : 'How was your boost?'}</h2><p>{data?.rating ? 'Your feedback contributes to your booster team’s customer rating.' : 'Rate the booster team that completed your order.'}</p></div>
         {error && <div className="order-rating-error" role="alert">{error}{!data && <button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button>}</div>}
         {!data && !error && <p role="status">Loading your review…</p>}

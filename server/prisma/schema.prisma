@@ -25,6 +25,7 @@ model User {
   couponUses          CouponUse[]
   submittedOrderRatings OrderRating[]
   receivedOrderRatings OrderRatingRecipient[]
+  boosterOrderEmails BoosterOrderEmail[]
   id                  String               @id @default(cuid())
   email               String               @unique
   username            String?              @unique
@@ -109,6 +110,40 @@ model BoosterPreferences {
   secondRole String?
   championIds String[] @default([])
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Snapshot IDs deliberately have no cascading relation: historical recognition
+// must survive later changes or deletion of account/order records.
+model BoosterEarningsLedgerState {
+  id String @id
+  activatedAt DateTime
+}
+
+model BoosterEarningsBalance {
+  orderId String
+  boosterId String
+  currency String
+  amountCents Int
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@id([orderId, boosterId, currency])
+  @@index([boosterId, currency])
+}
+
+model BoosterEarningsEntry {
+  id String @id @default(cuid())
+  boosterId String
+  orderId String
+  orderNumber String
+  serviceTitle String
+  currency String
+  amountCents Int
+  recognizedAt DateTime
+  period String?
+  kind String
+
+  @@index([boosterId, period, recognizedAt, id])
+  @@index([orderId, recognizedAt])
 }
 
 model BoosterContract {
@@ -313,6 +348,8 @@ model Order {
   couponOriginalReferralDiscount Float?
   couponUse         CouponUse?
   confirmationEmail OrderConfirmationEmail?
+  completionEmail   OrderCompletionEmail?
+  boosterEmails     BoosterOrderEmail[]
   id                String      @id @default(cuid())
   orderNumber       String      @unique @default(dbgenerated())
   customerId        String
@@ -431,6 +468,40 @@ model OrderConfirmationEmail {
   createdAt     DateTime @default(now())
 
   @@index([sentAt, nextAttemptAt])
+}
+
+model OrderCompletionEmail {
+  orderId       String   @id
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  payload       Json
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now())
+  sentAt        DateTime?
+  claim         String?
+  lastError     String?
+  createdAt     DateTime @default(now())
+
+  @@index([sentAt, nextAttemptAt])
+}
+
+model BoosterOrderEmail {
+  id            String   @id @default(uuid())
+  orderId       String
+  boosterId     String
+  event         String
+  payload       Json
+  createdAt     DateTime @default(now())
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now())
+  claim         String?
+  sentAt        DateTime?
+  skippedAt     DateTime?
+  lastError     String?
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  booster       User     @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+
+  @@index([sentAt, skippedAt, nextAttemptAt])
+  @@index([orderId, boosterId])
 }
 
 model CouponUse {

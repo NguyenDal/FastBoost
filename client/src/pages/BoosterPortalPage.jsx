@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BoosterPortalLayout from '../layouts/BoosterPortalLayout';
 import BoosterPreferences from '../components/BoosterPreferences';
+import BoosterMonthlyEarnings from '../components/BoosterMonthlyEarnings';
 import { OrdersIcon, UsersIcon, PriceIcon } from '../components/AdminIcons';
-import { operations, money, date, tenure } from '../api/operations';
+import { operations, date } from '../api/operations';
 import { Contributions } from './OperationsPages';
 import '../styles/Operations.css';
 
@@ -11,13 +12,13 @@ const cards = [
     { path: 'orders', title: 'Assigned Orders', text: 'Open your orders, track progress, and connect with customers.', icon: <OrdersIcon /> },
     { path: 'earnings', title: 'Earnings', text: 'Check confirmed earnings and submit your match contributions.', icon: <PriceIcon /> },
     { path: 'documents', title: 'Documents', text: 'Review agreements, sign contracts, and download your copies.', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M14 3H5v18h14V8zM14 3v5h5M9 12h6M9 16h6" /></svg> },
-    { path: 'profile', title: 'Booster Profile', text: 'View your team profile, start date, and customer rating.', icon: <UsersIcon /> },
+    { path: 'profile', title: 'Booster Profile', text: 'View your team profile, preferred champions, and customer rating.', icon: <UsersIcon /> },
 ];
 
 function Rating({ rating }) {
     return <section className="ops-card booster-rating">
         <span className="booster-portal-eyebrow">CUSTOMER RATING</span>
-        <div className="booster-rating-value"><span aria-hidden="true">★</span><strong>{rating?.count ? `${rating.average.toFixed(1)} / 5` : '0.0/0/0'}</strong></div>
+        <div className="booster-rating-value"><span aria-hidden="true">★</span><strong>{rating?.count ? `${rating.average.toFixed(1)} / 5` : '0.0 / 5'}</strong></div>
         <p>{rating?.count || 0} {rating?.count === 1 ? 'review' : 'reviews'} from completed orders.</p>
     </section>;
 }
@@ -45,9 +46,7 @@ export default function BoosterPortalPage({ section = 'overview' }) {
                 </section>
             </>}
             {section === 'earnings' && <>
-                <section className="ops-card"><h2>Confirmed earnings</h2><p>Your share from completed orders with approved contributions.</p>
-                    {data && <div className="ops-amounts">{Object.keys(data.earnings).length ? Object.entries(data.earnings).map(([currency, cents]) => <strong key={currency}>{money(cents, currency)} <small>{currency}</small></strong>) : <span>No confirmed earnings yet</span>}</div>}
-                </section>
+                <BoosterMonthlyEarnings version={version} />
                 <Contributions onChange={() => setVersion(value => value + 1)} />
             </>}
             {section === 'documents' && <>
@@ -56,13 +55,12 @@ export default function BoosterPortalPage({ section = 'overview' }) {
                         <span>{contract.title}<small>Starts {date(contract.startsAt)}</small></span><span className={`ops-badge ${contract.signedAt && !contract.revokedAt ? 'approved' : ''}`}>{contract.revokedAt ? 'Revoked' : contract.signedAt ? 'Signed' : 'Review & sign'} →</span>
                     </Link>) : <p>No contracts have been issued to you yet.</p>)}
                 </section>
-                <section className="ops-card"><h2>Team resources</h2><Link className="ops-contract-link" to="/provider-agreement"><span>Provider agreement<small>Review your service terms and acceptance status.</small></span><span aria-hidden="true">→</span></Link></section>
             </>}
             {section === 'profile' && data && <div className="booster-profile-grid">
                 <section className="ops-card"><div className="booster-profile-identity">
                     {data.account?.profile?.profileImageUrl ? <img src={data.account.profile.profileImageUrl} alt="" /> : <span className="booster-profile-avatar" aria-hidden="true">{name[0]}</span>}
                     <h2>{name}</h2>
-                </div><dl className="booster-profile-details"><div><dt>Email</dt><dd>{data.account?.email || 'Not set'}</dd></div><div><dt>Team tenure</dt><dd>{tenure(data.profile?.startedAt)}</dd></div></dl>
+                </div>
                     <BoosterPreferences preferences={data.preferences} available={data.preferencesAvailable} onSave={preferences => setState(current => ({ ...current, data: { ...current.data, preferences, preferencesAvailable: true } }))} />
                     <Link className="booster-profile-edit" to="/account/settings">Edit account profile <span aria-hidden="true">↗</span></Link></section>
                 <Rating rating={data.rating} />

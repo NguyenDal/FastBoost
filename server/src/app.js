@@ -52,6 +52,7 @@ app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referrals", referralRoutes);
 app.use('/api/admin/activity-logs', require('./routes/activityLogRoutes').createActivityLogRouter());
 app.use("/api/admin", adminUserRoutes);
+app.use('/api/operations/me/monthly-earnings', require('./routes/monthlyEarningsRoutes').createMonthlyEarningsRouter());
 app.use('/api/operations', require('./routes/operationsRoutes'));
 app.use("/api/payments", paymentRoutes);
 app.use("/api/contact", contactRoutes);

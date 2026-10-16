@@ -9,6 +9,7 @@
 }
 
 .order-pagination button,
+.ops-page .order-pagination button,
 .order-pagination-gap {
   display: grid;
   place-items: center;
@@ -22,7 +23,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.order-pagination button {
+.order-pagination button,
+.ops-page .order-pagination button {
   border: 1px solid transparent;
   border-radius: 50%;
   background: transparent;
@@ -30,24 +32,28 @@
   transition: background .15s ease, color .15s ease, box-shadow .15s ease;
 }
 
-.order-pagination button:hover:not(:disabled):not([aria-current="page"]) {
+.order-pagination button:hover:not(:disabled):not([aria-current="page"]),
+.ops-page .order-pagination button:hover:not(:disabled):not([aria-current="page"]) {
   color: #ede9fe;
   background: rgba(167, 139, 250, .10);
 }
 
-.order-pagination button[aria-current="page"] {
+.order-pagination button[aria-current="page"],
+.ops-page .order-pagination button[aria-current="page"] {
   color: #fff;
   font-weight: 700;
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
   box-shadow: 0 0 0 3px rgba(167, 139, 250, .14);
 }
 
-.order-pagination button:disabled {
+.order-pagination button:disabled,
+.ops-page .order-pagination button:disabled {
   opacity: .3;
   cursor: default;
 }
 
-.order-pagination button:focus-visible {
+.order-pagination button:focus-visible,
+.ops-page .order-pagination button:focus-visible {
   outline: 2px solid #a78bfa;
   outline-offset: 3px;
 }

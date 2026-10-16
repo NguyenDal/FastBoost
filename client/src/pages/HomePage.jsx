@@ -1,5 +1,6 @@
 import { authStorage } from "../utils/authStorage";
 import { storeAuthSession } from "../utils/authStorage";
+import { authReturnPath } from "../utils/authReturnPath";
 import {
   getStoredUser,
   hasValidSession,
@@ -59,7 +60,7 @@ function saveCachedServices(services) {
 function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const contractReturn = useRef(/^\/(provider-agreement|provider\/(contracts\/[a-zA-Z0-9-]+|workspace))$/.test(location.state?.from || '') ? location.state.from : null);
+  const loginReturn = useRef(null);
   const { referralCode } = useParams();
 
   const cachedServices = getCachedServices();
@@ -201,6 +202,9 @@ function HomePage() {
   useEffect(() => {
     if (!location.state?.openAuthModal && !(location.pathname === '/support' && !hasValidSession())) return;
 
+    // Refresh the target on each login request, even if HomePage is already
+    // mounted, and capture it before clearing the transient navigation state.
+    loginReturn.current = authReturnPath(location.state?.from);
     setAuthMode(location.state?.authMode || "login");
     setShowAuthModal(true);
     setAuthMessage(
@@ -223,11 +227,11 @@ function HomePage() {
     setForgotError(false);
     setForgotEmail("");
 
-    if (location.state) navigate(location.pathname + location.search, {
+    if (location.state) navigate(location.pathname + location.search + location.hash, {
       replace: true,
       state: null,
     });
-  }, [location.state, location.pathname, location.search, navigate]);
+  }, [location.state, location.pathname, location.search, location.hash, navigate]);
 
   useEffect(() => {
     if (!referralCode) return;
@@ -458,6 +462,7 @@ function HomePage() {
   };
 
   const closeAuthModal = () => {
+    loginReturn.current = null;
     setShowAuthModal(false);
     setAuthMode("login");
     setAuthLoading(false);
@@ -532,8 +537,9 @@ function HomePage() {
     setAuthSuccessText("Welcome to FastBoost.");
 
     setTimeout(() => {
+      const returnPath = loginReturn.current;
       closeAuthModal();
-      if (contractReturn.current) navigate(contractReturn.current, { replace: true });
+      if (returnPath) navigate(returnPath, { replace: true });
     }, 350);
   };
 

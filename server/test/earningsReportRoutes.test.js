@@ -31,7 +31,7 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
             return source;
         } },
         boosterProfile: { findUnique: async () => null }, boosterContract: { findMany: async () => [] },
-        boosterPreferences: { findUnique: async () => null },
+        boosterPreferences: { findUnique: async () => null, findMany: async () => [] },
         orderRating: { aggregate: async query => {
             assert.deepEqual(query, { where: { recipients: { some: { boosterId: booster.id } } }, _avg: { stars: true }, _count: { _all: true } });
             return { _avg: { stars: 4.5 }, _count: { _all: 2 } };
@@ -77,7 +77,10 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
         assert.deepEqual(portal.preferences, { firstRole: null, secondRole: null, championIds: [] });
         assert.equal(portal.preferencesAvailable, true);
         assert.deepEqual(portal.account, { username: booster.username, email: booster.email, profile: booster.profile });
-        assert.deepEqual((await (await request('/boosters', 'admin')).json()).boosters[0].earnings, { CAD: 700 });
+        const directory = await (await request('/boosters', 'admin')).json();
+        assert.deepEqual(directory.boosters[0].earnings, { CAD: 700 });
+        assert.deepEqual(directory.boosters[0].preferences, { firstRole: null, secondRole: null, championIds: [] });
+        assert.equal(directory.preferencesAvailable, true);
         assert.equal(earningsReads, 3);
         const exportRequest = { exportType: 'orders', rowCount: 2, from: '2026-10-01', to: '2026-10-12' };
         assert.equal((await request('/earnings/export', undefined, exportRequest)).status, 401);

@@ -2,11 +2,12 @@ const nodemailer = require("nodemailer");
 const { randomUUID } = require("node:crypto");
 const { checkoutSummary } = require("./checkoutSummary");
 const { renderConfirmation } = require("./orderConfirmationTemplate");
+const { paymentMethodLabel } = require("./receiptPaymentMethod");
 
 const enabled = () => process.env.ORDER_CONFIRMATION_EMAILS_ENABLED === "true";
 const validEmail = value => typeof value === "string" && value.trim().length <= 254 && /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(value.trim());
 
-function buildConfirmation(order, email) {
+function buildConfirmation(order, email, paymentMethod = null) {
     if (order.paymentStatus !== "PAID") throw new Error("Confirmation requires a paid order");
     if (!validEmail(email)) throw new Error("Confirmation email is invalid");
     const origin = new URL(process.env.CLIENT_URL);
@@ -25,21 +26,26 @@ function buildConfirmation(order, email) {
             .filter(([, amount]) => amount > 0).map(([label, amount]) => [label, `−${money(amount)}`]),
         ["Total", money(pricing.totalCents)],
     ];
+    const paymentRows = [
+        ...(pricing.goldDiscountCents > 0 ? [[`Gold (${Number(pricing.goldRedeemed).toLocaleString("en-US")})`, `−${money(pricing.goldDiscountCents)}`]] : []),
+        ...(pricing.totalCents > 0 ? [[paymentMethodLabel(paymentMethod), money(pricing.totalCents)]] : []),
+    ];
+    if (!paymentRows.length) paymentRows.push(["Payment", "No charge"]);
     const url = new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;
     const subject = `FastBoost order #${order.orderNumber} confirmed`;
     const intro = "Your payment is confirmed. Open your order to view progress and chat with our team.";
     return {
         to: email.trim(), subject,
-        text: [subject, "", intro, "", ...rows.map(([label, value]) => `${label}: ${value}`), "", `Go to Order: ${url}`].join("\n"),
-        html: renderConfirmation({ orderNumber: order.orderNumber, summary, rows, url }),
+        text: [subject, "", intro, "", ...rows.map(([label, value]) => `${label}: ${value}`), "", "Payment methods", ...paymentRows.map(([label, value]) => `${label}: ${value}`), "", `Go to Order: ${url}`].join("\n"),
+        html: renderConfirmation({ orderNumber: order.orderNumber, summary, rows, paymentRows, url }),
     };
 }
 
 // Called inside the payment transaction: one immutable snapshot per order.
-async function queueOrderConfirmation(transaction, orderId, email) {
+async function queueOrderConfirmation(transaction, orderId, email, paymentMethod = null) {
     if (!enabled()) return;
     const order = await transaction.order.findUnique({ where: { id: orderId }, include: { service: true } });
-    const payload = buildConfirmation(order, email);
+    const payload = buildConfirmation(order, email, paymentMethod);
     await transaction.orderConfirmationEmail.upsert({ where: { orderId }, create: { orderId, payload }, update: {} });
 }
 

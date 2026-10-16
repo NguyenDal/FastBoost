@@ -8,7 +8,7 @@ function rankImage(rank) {
     return `<img src="https://fastboost-assets.s3.amazonaws.com/services/ranks/${tier}.${tier === "unranked" ? "webp" : "png"}" width="86" height="86" alt="" style="display:block;margin:0 auto 8px;object-fit:contain;border:0">`;
 }
 
-function renderConfirmation({ orderNumber, summary, rows, url }) {
+function renderConfirmation({ orderNumber, summary, rows, paymentRows = [], url }) {
     const rankBoost = summary.serviceType === "Rank Boost";
     const leftLabel = summary.serviceType === "Placement Boost" ? "Peak rank" : "Current rank";
     const rightLabel = rankBoost ? "Target rank" : summary.quantity?.label || "Service";
@@ -21,6 +21,7 @@ function renderConfirmation({ orderNumber, summary, rows, url }) {
     // Rank/quantity belong in the visual overview, not duplicated in the details table.
     const detailRows = rows.filter(([label]) => !["Peak Rank", "Current Rank", "Target Rank", "Placement Matches", "Ranked Wins", "Games"].includes(label));
     const details = detailRows.map(([label, value], index) => `<tr style="background:${index % 2 ? "#f8f9fd" : "#ffffff"}"><td style="padding:11px 8px;border-bottom:1px solid #eeeefa;font-size:13px;line-height:20px;color:#69658b">${escape(label)}</td><td align="right" style="padding:11px 8px;border-bottom:1px solid #eeeefa;font-size:13px;line-height:20px;font-weight:bold;color:#17123b">${escape(value)}</td></tr>`).join("");
+    const paymentDetails = paymentRows.length ? `<tr><td colspan="2" style="padding:20px 8px 8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;color:#7431ef">Payment methods</td></tr>${paymentRows.map(([label, value]) => `<tr><td style="padding:8px;font-size:13px;line-height:20px;color:#69658b">${escape(label)}</td><td align="right" style="padding:8px;font-size:13px;line-height:20px;font-weight:bold;white-space:nowrap;color:#17123b">${escape(value)}</td></tr>`).join("")}` : "";
     const next = ["We’ll review your order and assign a booster.", "Open your order to chat with our team.", "Track updates as your order progresses."].map((text, index) => `<tr><td width="36" valign="top" style="padding:0 0 14px"><span style="display:inline-block;width:26px;line-height:26px;text-align:center;border-radius:50%;background:#ede4ff;color:#7435db;font-weight:bold">${index + 1}</span></td><td style="padding:2px 0 14px;font-size:13px;line-height:21px;color:#69658b">${text}</td></tr>`).join("");
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FastBoost order confirmed</title><style>@media only screen and (max-width:620px){.email-pad{padding:20px!important}.email-column{display:block!important;width:100%!important;padding:0 0 16px!important}.email-title{font-size:23px!important}.email-brand{font-size:26px!important}.email-shell{width:100%!important}.email-outer{padding:12px 6px!important}}</style></head>
     <body style="margin:0;padding:0;background:#f2f5fb;font-family:Arial,Helvetica,sans-serif;color:#17123b">
@@ -34,7 +35,7 @@ function renderConfirmation({ orderNumber, summary, rows, url }) {
     <p style="margin:0 0 22px;font-size:15px;line-height:24px;color:#69658b">Your payment is confirmed. Open your order to view details, track progress, and chat with our team.</p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#7929f4" style="border-radius:9px;background:#7929f4;background-image:linear-gradient(110deg,#992cf5,#6232ff)"><a href="${escape(url)}" style="display:inline-block;padding:17px 48px;font-size:17px;font-weight:bold;color:#ffffff;text-decoration:none;border:1px solid #7929f4;border-radius:9px">Go to Order &nbsp; &#8594;</a></td></tr></table>
     </td></tr><tr><td class="email-pad" style="padding:0 22px 28px">
-    <table ${table}><tr><td class="email-column" width="50%" valign="top" style="padding:0 8px"><table ${table} style="border:1px solid #e1dcfa;border-radius:10px"><tr><td style="padding:20px 14px">${heading('Order Details')}<table ${table}>${details}</table></td></tr></table></td>
+    <table ${table}><tr><td class="email-column" width="50%" valign="top" style="padding:0 8px"><table ${table} style="border:1px solid #e1dcfa;border-radius:10px"><tr><td style="padding:20px 14px">${heading('Order Details')}<table ${table}>${details}${paymentDetails}</table></td></tr></table></td>
     <td class="email-column" width="50%" valign="top" style="padding:0 8px"><table ${table} style="border:1px solid #e1dcfa;border-radius:10px"><tr><td style="padding:20px 14px">${heading('Order Overview')}${overview}</td></tr></table><table ${table}><tr><td height="14" style="font-size:0">&nbsp;</td></tr></table><table ${table} style="border:1px solid #e1dcfa;border-radius:10px"><tr><td style="padding:20px 14px 6px">${heading('What happens next?')}<table ${table}>${next}</table></td></tr></table></td></tr></table>
     </td></tr>
     </table></td></tr></table></body></html>`;

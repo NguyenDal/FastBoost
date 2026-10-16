@@ -39,13 +39,13 @@ test('only a missing preference table is treated as staged unavailability', asyn
     await assert.rejects(loadPreferences({ boosterPreferences: { findUnique: async () => { throw unrelated; } } }, 'booster'), unrelated);
 });
 
-test('booster preferences save and reload only for the current active eligible account', async () => {
+test('preferences remain self-scoped, while the admin directory batches saved roles and champions', async () => {
     const paths = ['../src/prisma', '../src/middleware/authMiddleware', '../src/routes/operationsRoutes',
         '../src/routes/contractRoutes', '../src/routes/matchHistoryRoutes', '../src/routes/providerAgreementRoutes',
         '../src/utils/boosterEarnings', '../src/utils/orderRatings'].map(path => require.resolve(path));
     const saved = paths.map(path => [path, require.cache[path]]);
     const rows = new Map();
-    const state = { writes: 0, error: null };
+    const state = { writes: 0, error: null, batchReads: 0, singleReads: 0, listReads: 0, emptyDirectory: false };
     const users = {
         booster: { id: 'booster', role: 'PROVIDER' }, other: { id: 'other', role: 'PROVIDER' },
         access: { id: 'access', role: 'CUSTOMER', hasBoosterAccess: true },
@@ -53,13 +53,30 @@ test('booster preferences save and reload only for the current active eligible a
         suspended: { id: 'suspended', role: 'PROVIDER', suspendedAt: new Date() },
     };
     const db = {
-        user: { findUnique: async ({ where }) => users[where.id] || null },
+        user: {
+            findUnique: async ({ where }) => users[where.id] || null,
+            findMany: async ({ where }) => {
+                state.listReads++;
+                assert.deepEqual(where, { OR: [{ role: 'PROVIDER' }, { hasBoosterAccess: true }] });
+                return state.emptyDirectory ? [] : [users.booster, users.other, users.access];
+            },
+        },
         boosterProfile: { findUnique: async () => null }, boosterContract: { findMany: async () => [] },
         boosterPreferences: {
             findUnique: async ({ where, select }) => {
+                state.singleReads++;
                 assert.deepEqual(select, { firstRole: true, secondRole: true, championIds: true });
                 if (state.error) throw state.error;
                 return rows.get(where.userId) || null;
+            },
+            findMany: async ({ where, select }) => {
+                state.batchReads++;
+                assert.deepEqual(where, { userId: { in: ['booster', 'other', 'access'] } });
+                assert.deepEqual(select, { userId: true, firstRole: true, secondRole: true, championIds: true });
+                if (state.error) throw state.error;
+                // Deliberately change row order to prove directory preferences
+                // are associated by user ID rather than response position.
+                return [...rows].reverse().map(([userId, preferences]) => ({ userId, ...preferences }));
             },
             upsert: async ({ where, create, update, select }) => {
                 if (state.error) throw state.error;
@@ -92,11 +109,17 @@ test('booster preferences save and reload only for the current active eligible a
             ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         });
         assert.equal((await request(null, chosen)).status, 401);
+        assert.equal((await request(null, undefined, '/boosters')).status, 401);
         for (const actor of ['customer', 'admin', 'suspended', 'deleted']) {
             assert.equal((await request(actor, chosen)).status, 403);
             assert.equal((await request(actor, undefined, '/me')).status, 403);
         }
         assert.equal(state.writes, 0);
+        for (const actor of ['booster', 'access', 'customer', 'suspended', 'deleted']) {
+            assert.equal((await request(actor, undefined, '/boosters')).status, 403);
+        }
+        assert.equal(state.listReads, 0, 'unauthorized callers cannot read the directory');
+        assert.equal(state.batchReads, 0, 'unauthorized callers cannot read anyone\'s preferences');
         const initial = await (await request('booster', undefined, '/me')).json();
         assert.deepEqual(initial.preferences, empty);
         assert.equal(initial.preferencesAvailable, true);
@@ -111,7 +134,20 @@ test('booster preferences save and reload only for the current active eligible a
         assert.equal((await request('booster', { ...chosen, userId: 'other' })).status, 400);
         assert.equal((await request('booster', { ...chosen, startedAt: '2000-01-01' })).status, 400);
         assert.equal(state.writes, 1, 'unrecognized writable fields cannot mutate accounts or tenure');
-        assert.equal((await request('access', chosen)).status, 200);
+        const accessPreferences = { firstRole: 'Support', secondRole: 'Bottom', championIds: ['Bard', 'Thresh'] };
+        assert.equal((await request('access', accessPreferences)).status, 200);
+        const singleReadsBeforeDirectory = state.singleReads;
+        const directoryResponse = await request('admin', undefined, '/boosters');
+        assert.equal(directoryResponse.status, 200);
+        assert.equal(directoryResponse.headers.get('cache-control'), 'no-store');
+        const directory = await directoryResponse.json();
+        assert.equal(directory.preferencesAvailable, true);
+        assert.deepEqual(directory.boosters.map(user => [user.id, user.preferences]), [
+            ['booster', chosen], ['other', empty], ['access', accessPreferences],
+        ]);
+        assert.equal(state.batchReads, 1, 'one batch fetch serves every booster');
+        assert.equal(state.singleReads, singleReadsBeforeDirectory, 'the directory has no per-booster preference lookups');
+        assert.equal(state.writes, 2, 'reading the directory never creates missing preferences');
         assert.equal((await request('booster', empty)).status, 200);
         assert.deepEqual((await (await request('booster', undefined, '/me')).json()).preferences, empty);
 
@@ -122,9 +158,21 @@ test('booster preferences save and reload only for the current active eligible a
         const failedSave = await request('booster', chosen);
         assert.equal(failedSave.status, 503);
         assert.match((await failedSave.json()).message, /not available yet/);
+        const unavailableDirectoryResponse = await request('admin', undefined, '/boosters');
+        assert.equal(unavailableDirectoryResponse.status, 200);
+        const unavailableDirectory = await unavailableDirectoryResponse.json();
+        assert.equal(unavailableDirectory.preferencesAvailable, false);
+        assert.deepEqual(unavailableDirectory.boosters.map(user => user.preferences), [empty, empty, empty]);
         state.error = Object.assign(new Error('unrelated missing table'), { code: 'P2021', meta: { table: 'User' } });
         assert.equal((await request('booster', undefined, '/me')).status, 500);
         assert.equal((await request('booster', chosen)).status, 500);
+        assert.equal((await request('admin', undefined, '/boosters')).status, 500, 'unrelated failures cannot masquerade as empty preferences');
+        const batchReadsBeforeEmpty = state.batchReads;
+        state.emptyDirectory = true;
+        const emptyDirectory = await request('admin', undefined, '/boosters');
+        assert.equal(emptyDirectory.status, 200);
+        assert.deepEqual((await emptyDirectory.json()).boosters, []);
+        assert.equal(state.batchReads, batchReadsBeforeEmpty, 'empty directories do not issue preference queries');
         assert.equal(state.writes, 3);
     } finally {
         if (server) await new Promise(resolve => server.close(resolve));

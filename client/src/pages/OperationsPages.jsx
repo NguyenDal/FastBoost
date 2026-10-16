@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { operations, downloadContract, date, tenure } from '../api/operations';
+import { loadChampions } from '../api/champions';
+import BoosterPreferenceSummary from '../components/BoosterPreferenceSummary';
+import OrderPagination from '../components/OrderPagination';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
 import { CONTRACT_SIGNING_CHANNEL, openContractSigning } from '../utils/contractSigning';
@@ -11,12 +14,12 @@ function useData(path) {
     const [version, setVersion] = useState(0);
     useEffect(() => {
         let cancelled = false;
-        operations(path).then(data => { if (!cancelled) setState({ data, error: '' }); })
-            .catch(error => { if (!cancelled) setState(previous => ({ ...previous, error: error.message })); });
+        operations(path).then(data => { if (!cancelled) setState({ path, data, error: '' }); })
+            .catch(error => { if (!cancelled) setState(previous => ({ path, data: previous.path === path ? previous.data : null, error: error.message })); });
         return () => { cancelled = true; };
     }, [path, version]);
     const reload = useCallback(() => setVersion(v => v + 1), []);
-    return { ...state, reload };
+    return { data: state.path === path ? state.data : null, error: state.path === path ? state.error : '', reload };
 }
 function Heading({ title, children }) { return <header className="ops-heading"><h1>{title}</h1><div>{children}</div></header>; }
 function Feedback({ error, loading }) { return error ? <p className="ops-error" role="alert">{error}</p> : loading ? <p role="status">Loading…</p> : null; }
@@ -42,19 +45,24 @@ export function ContributionRow({ order, record, admin, readOnly = false, reload
         <Feedback error={error} /></div>;
 }
 export function Contributions({ admin = false, onChange }) {
-    const { data, error, reload } = useData('/contributions');
     const [filter, setFilter] = useState('');
-    return <section className="ops-card"><h2>{admin ? 'Match reviews' : 'Your match contributions'}</h2><p>Admin-approved matches determine each booster’s share of the 70% pool.</p><input className="ops-search" aria-label="Find order" placeholder="Find order number…" value={filter} onChange={e => setFilter(e.target.value)} /><Feedback error={error} loading={!data} />
-        {data?.orders.filter(o => (o.orderNumber || '').toLowerCase().includes(filter.toLowerCase())).map(order => {
+    const [page, setPage] = useState(1);
+    const { data, error, reload } = useData(`/contributions?scope=${admin ? 'all' : 'mine'}&page=${page}&q=${encodeURIComponent(filter.trim())}`);
+    return <section className="ops-card ops-contributions"><h2>{admin ? 'Match reviews' : 'Your match contributions'}</h2><p>Admin-approved matches determine each booster’s share of the 70% pool.</p><input className="ops-search" aria-label="Find order" placeholder="Find order number…" maxLength={100} value={filter} onChange={e => { setFilter(e.target.value); setPage(1); }} /><Feedback error={error} loading={!data} />
+        <div id={admin ? 'team-contributions-list' : 'personal-contributions-list'} aria-busy={!data && !error}>
+        {data?.orders.map(order => {
             if (order.matchHistoryEnabled) return <Link className="ops-contract-link" key={order.id} to={`/match/${order.id}?tab=history`}><span>#{order.orderNumber}<small>{order.boostType}</small></span><span className={`ops-badge ${order.matchHistoryConfirmedAt ? 'approved' : ''}`}>{order.matchHistoryConfirmedAt ? 'Confirmed' : 'Review matches'} →</span></Link>;
             const records = new Map(order.assignments.map(a => [a.boosterId, a]));
             for (const record of order.contributions) records.set(record.boosterId, record);
             return [...records.values()].map(record => <ContributionRow key={`${order.id}-${record.boosterId}-${record.revision || 0}-${record.reviewedAt || ''}`} order={order} record={record} admin={admin} reload={() => { reload(); onChange?.(); }} />);
         })}
-        {data?.orders.length === 0 && <div className="ops-empty">No assigned orders to review yet.</div>}</section>;
+        {data?.orders.length === 0 && <div className="ops-empty">{filter.trim() ? 'No orders match your search.' : admin ? 'No orders to review yet.' : 'No assigned orders to review yet.'}</div>}
+        </div>
+        {data?.total > 0 && <div className="ops-contributions-pagination"><p role="status">Showing {(data.page - 1) * data.pageSize + 1}–{Math.min(data.page * data.pageSize, data.total)} of {data.total} orders · {data.pageSize} per page</p><OrderPagination currentPage={data.page} totalPages={data.totalPages} onPageChange={setPage} tableId={admin ? 'team-contributions-list' : 'personal-contributions-list'} label={admin ? 'Match review pages' : 'Your match contribution pages'} /></div>}
+        </section>;
 }
 
-function BoosterDetails({ booster, reload, configured, onError }) {
+function BoosterDetails({ booster, champions, preferencesAvailable, reload, configured, onError }) {
     const [busy, setBusy] = useState(false);
     const [requestId, setRequestId] = useState(() => crypto.randomUUID());
     async function submit(event) {
@@ -67,7 +75,7 @@ function BoosterDetails({ booster, reload, configured, onError }) {
             reload();
         } catch (e) { onError(e.message); reload(); } finally { setBusy(false); }
     }
-    return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span><strong>{booster.profile?.displayName || booster.username}</strong><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
+    return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><strong>{booster.profile?.displayName || booster.username}</strong><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
             <h3>Send a DocuSign contract</h3><form className="ops-form" onSubmit={submit}><label>Contract title<input name="title" placeholder="Booster service agreement" required maxLength={100} /></label><label>Start date<input type="date" name="startsAt" required /></label><label>Signer’s full legal name<input name="signerName" required minLength={2} maxLength={100} /></label><button className="ops-primary" disabled={!configured || busy || booster.suspendedAt}>{busy ? 'Sending…' : 'Send with DocuSign'}</button></form>
             <h3>Contracts</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No contracts sent yet.</p>}</div>
@@ -78,9 +86,20 @@ export function BoosterManagementPage() {
     const { data: signing } = useData('/docusign/configuration');
     const [query, setQuery] = useState('');
     const [actionError, setActionError] = useState('');
+    const [champions, setChampions] = useState([]);
+    const needsChampions = data?.boosters.some(booster => booster.preferences?.championIds?.length > 0) || false;
+    useEffect(() => {
+        if (!needsChampions) return;
+        let active = true;
+        loadChampions().then(catalog => { if (active) setChampions(catalog); }).catch(() => {
+            // Keep saved champion names visible as initials if the catalog is unavailable.
+        });
+        return () => { active = false; };
+    }, [needsChampions]);
+    const championsById = new Map(champions.map(champion => [champion.id, champion]));
     return <div className="ops-page"><Heading title="Booster Management">Your team and agreements in one place.</Heading><Feedback error={error || actionError} loading={!data} />
         <div className="ops-toolbar"><h2 className="ops-team-heading">Your team {data && <span className="ops-team-count" aria-label={`${data.boosters.length} ${data.boosters.length === 1 ? 'booster' : 'boosters'}`}>{data.boosters.length}</span>}</h2><input aria-label="Search boosters" placeholder="Search boosters…" value={query} onChange={e => setQuery(e.target.value)} /></div>
-        {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} reload={reload} configured={signing?.configured} onError={setActionError} />)}
+        {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} champions={championsById} preferencesAvailable={data.preferencesAvailable} reload={reload} configured={signing?.configured} onError={setActionError} />)}
         {data?.boosters.length === 0 && <section className="ops-card ops-empty">Add booster access in <Link to="/admin/accounts">Account Management</Link> to grow your team.</section>}</div>;
 }
 export function BoosterContractPage() {

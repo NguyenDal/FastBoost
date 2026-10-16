@@ -12,6 +12,20 @@ function ChampionPortrait({ champion, id }) {
         : <span className="booster-champion-fallback" aria-hidden="true">{(champion?.name || id).slice(0, 2)}</span>;
 }
 
+function SavedRole({ label, value }) {
+    const [failedSource, setFailedSource] = useState('');
+    const source = roleIconMap[value];
+    const description = `${label}: ${value}`;
+    return <span className="booster-preferred-role">
+        <span aria-hidden="true">{label}</span>
+        <span className="booster-preferred-role-icon" role="img" aria-label={description} title={description}>
+            {source && failedSource !== source
+                ? <img src={source} alt="" onError={() => setFailedSource(source)} />
+                : <span aria-hidden="true">{value}</span>}
+        </span>
+    </span>;
+}
+
 function RoleChoices({ label, roles, value, onChange, disabled }) {
     return <fieldset className="booster-role-choices" disabled={disabled}>
         <legend>{label}</legend>
@@ -114,7 +128,7 @@ export default function BoosterPreferences({ preferences = emptyPreferences, ava
         {!available ? <p>Champion preferences are temporarily unavailable.</p> : hasChampions ? <ul className="booster-profile-champions">
             {preferences.championIds.map(id => <li key={id}><ChampionPortrait champion={byId.get(id)} id={id} /><span>{byId.get(id)?.name || id}</span></li>)}
         </ul> : <p>No preferred champions selected yet.</p>}
-        {preferences.firstRole && <div className="booster-preferred-roles"><span>First role <strong>{preferences.firstRole}</strong></span>{preferences.secondRole && <span>Second role <strong>{preferences.secondRole}</strong></span>}</div>}
+        {preferences.firstRole && <div className="booster-preferred-roles"><SavedRole label="First role" value={preferences.firstRole} />{preferences.secondRole && <SavedRole label="Second role" value={preferences.secondRole} />}</div>}
         {saved && <p className="booster-preferences-saved" role="status">Preferences saved.</p>}
         {editing && <PreferencesEditor preferences={preferences} champions={catalog.champions} catalogError={catalog.error} loading={!catalog.loaded}
             onRetry={() => { setCatalog({ champions: [], error: '', loaded: false }); setAttempt(value => value + 1); }}

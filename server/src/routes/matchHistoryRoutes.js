@@ -3,6 +3,7 @@ const db = require('../prisma');
 const riot = require('../utils/riotMatches');
 const { orderEarnings, estimateMatchEarnings } = require('../utils/earnings');
 const { matchScope, matchesOrder, usesMatchHistory } = require('../utils/orderMatchScope');
+const { withEarningsLedgerMutation } = require('../utils/boosterEarningsLedger');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const orderSelect = { id: true, orderNumber: true, customerId: true, boostType: true, queueType: true, inGameName: true, region: true,
@@ -23,11 +24,11 @@ function writable(order) {
     if (order.matchHistoryConfirmedAt) fail(409, 'Reopen the history before changing confirmed matches.');
 }
 async function locked(id, actor, fn) {
-    return db.$transaction(async tx => {
+    return db.$transaction(async tx => withEarningsLedgerMutation(tx, id, async () => {
         await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${id} FOR UPDATE`;
         const order = await loadOrder(tx, id, actor);
         return fn(tx, order);
-    });
+    }));
 }
 async function invalidate(tx, id) {
     await tx.order.update({ where: { id }, data: { matchHistoryRevision: { increment: 1 }, matchHistoryConfirmedAt: null, matchHistoryConfirmedBy: null } });
