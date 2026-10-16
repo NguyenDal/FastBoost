@@ -73,23 +73,20 @@
 .booster-preferences-dialog footer button { min-height: 44px; }
 .booster-preferences-dialog .ops-error { font-size: 13px; line-height: 1.6; }
 .booster-rating { align-self: start; }
-.booster-cycle-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.booster-cycle-heading h2 { margin-top: 0; }
-.booster-cycle-heading > .ops-badge { margin-top: 4px; white-space: nowrap; }
-.booster-cycle-totals { margin: 22px 0 12px; }
-.booster-cycle-totals strong { font-size: 32px; color: #e6d9ff; }
-.booster-monthly-earnings .booster-cycle-dates { font-size: 13px; line-height: 1.7; }
+.booster-selected-summary { margin-top: 8px; }
+.booster-selected-summary strong { display: block; font-size: 32px; line-height: 1.2; color: #e6d9ff; }
+.booster-monthly-earnings .booster-selected-summary p { margin: 0 0 4px; font-size: 16px; font-weight: 500; line-height: 1.4; color: #b9c3d6; }
 .booster-opening-balance { padding: 18px; background: #a578da0a; border-radius: 12px; margin: 24px 0; }
 .booster-opening-balance p { margin: 8px 0; }
 .booster-opening-balance small { color: #aab5c9; }
-.booster-monthly-reports { margin-top: 26px; padding-top: 22px; border-top: 1px solid #ffffff12; }
-.booster-monthly-reports h3 { margin: 0 0 8px; font-size: 16px; }
 .booster-monthly-reports > p { font-size: 13px; }
-.booster-chart-heading, .booster-chart-toolbar, .booster-month-detail-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-.booster-chart-heading p { font-size: 13px; margin: 6px 0 0; color: #aab5c9; }
-.booster-chart-toolbar { color: #aab5c9; font-size: 12px; margin: 22px 0 12px; min-height: 32px; }
-.booster-chart-pages { flex-shrink: 0; }
-.booster-chart-pages .order-pagination { margin: 0; padding: 0; }
+.booster-chart-heading { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+.booster-monthly-earnings .booster-chart-heading h2 { margin: 0; }
+.booster-chart-heading button { flex-shrink: 0; font-size: 13px; }
+.booster-chart-actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; align-self: stretch; gap: 12px; max-width: 100%; }
+.booster-payout-countdown { padding: 11px 16px; border: 1px solid #b798f033; border-radius: 10px; background: #a67ae712; color: #d5c0ff; font-size: 14px; font-weight: 600; line-height: 1.6; }
+.booster-chart-pages { flex-shrink: 0; max-width: 100%; }
+.booster-chart-pages .order-pagination { margin: 0; padding: 0; flex-wrap: wrap; row-gap: 8px; }
 .booster-earnings-chart { display: flex; gap: 8px; padding: 12px 4px 0; border-radius: 14px; background: linear-gradient(180deg, #9876da08, #9876da00); }
 .booster-monthly-earnings button.booster-month-bar { display: flex; flex: 1; flex-direction: column; align-items: stretch; min-width: 0; max-width: 140px; border: 1px solid transparent; border-radius: 10px; padding: 10px 8px; background: transparent; color: #aab5c9; box-shadow: none; }
 .booster-monthly-earnings button.booster-month-bar:hover { background: #a67ae710; }
@@ -103,22 +100,16 @@
 .booster-bar-month { font-size: 13px; font-weight: 600; }
 .booster-bar-month small { display: block; margin-top: 3px; font-size: 10px; font-weight: 400; color: #aab5c9; }
 .booster-month-detail { margin-top: 24px; padding: 22px; border: 1px solid #b493e329; border-radius: 16px; background: #080d181f; }
-.booster-month-detail-heading h3 { margin-bottom: 5px; }
-.booster-month-status { color: #b9a0e2; font-size: 12px; }
-.booster-month-detail-heading button { flex-shrink: 0; font-size: 13px; }
-.booster-month-detail-totals { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-.booster-month-detail-totals > strong { font-size: 24px; }
-.booster-month-detail-totals small { font-size: 11px; color: #aab5c9; }
-.booster-month-pdf-note, .booster-month-detail .booster-statement-empty { font-size: 13px; line-height: 1.6; margin-bottom: 0; }
-.booster-month-entries { padding: 0; list-style: none; margin: 20px 0 0; }
+.booster-month-detail .booster-statement-empty { font-size: 13px; line-height: 1.6; margin: 0; }
+.booster-month-entries { padding: 0; list-style: none; margin: 0; }
 .booster-month-entries li { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-top: 1px solid #ffffff12; font-size: 13px; }
+.booster-month-entries li:first-child { padding-top: 0; border-top: 0; }
 .booster-month-entries li > div { min-width: 0; overflow-wrap: anywhere; }
 .booster-month-order-link { font-weight: 600; text-decoration: none; }
 .booster-month-order-link:hover { text-decoration: underline; }
 .booster-month-entries li .booster-month-order-link span { display: inline; color: inherit; margin: 0; }
 .booster-month-entries li > div span, .booster-month-entries li > div small { display: block; color: #aab5c9; margin-top: 5px; font-weight: 400; }
 .booster-month-entries li > strong { flex-shrink: 0; text-align: right; }
-.booster-month-entries li > strong small { display: block; color: #aab5c9; font-size: 10px; margin-top: 4px; }
 .booster-month-detail .order-pagination { flex-wrap: wrap; row-gap: 8px; }
 .booster-amount-negative { color: #e4a3af; }
 .booster-monthly-reports .booster-statement-empty { color: #aab5c9; }
@@ -134,8 +125,8 @@
     .booster-portal-card h3 { margin-top: 20px; }
 }
 @media (max-width: 520px) {
-    .booster-cycle-heading, .booster-month-detail-heading { align-items: stretch; flex-direction: column; }
-    .booster-chart-toolbar { align-items: flex-start; flex-direction: column; gap: 10px; }
+    .booster-chart-heading { flex-direction: column; }
+    .booster-chart-actions { flex-direction: row; align-items: center; flex-wrap: wrap; }
     .booster-earnings-chart { gap: 2px; padding-left: 0; padding-right: 0; }
     .booster-monthly-earnings button.booster-month-bar { padding: 8px 2px; }
     .booster-bar-value { font-size: 9px; }
@@ -144,7 +135,6 @@
     .booster-bar-fill { left: 12%; right: 12%; }
     .booster-bar-month { font-size: 11px; }
     .booster-month-detail { padding: 16px; }
-    .booster-cycle-heading > .ops-badge { align-self: flex-start; margin-top: 0; }
     .booster-preferences-heading { align-items: flex-start; }
     .booster-preferences-heading h3 { padding-top: 6px; }
     .booster-preferences-dialog { width: calc(100% - 20px); max-height: calc(100dvh - 20px); border-radius: 18px; }

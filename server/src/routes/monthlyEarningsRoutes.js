@@ -26,6 +26,7 @@ function createMonthlyEarningsRouter({ db = prisma, authenticate = protect,
         return { ...report, booster: { displayName: req.earningsActor.profile?.displayName || req.earningsActor.username || 'Booster' } };
     }
     router.get('/:month/pdf', handle(async (req, res) => {
+        // Exports require a completed calendar month; JSON details may stay live.
         const report = await reportFor(req);
         const pdf = await renderStatement(report);
         res.type('application/pdf');

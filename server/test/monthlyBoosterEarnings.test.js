@@ -36,13 +36,17 @@ test('closed reports keep all bounded pages and never include another booster or
         kind: 'EARNED', period: '2026-10', currency: index % 2 ? 'USD' : 'CAD', amountCents: 1, recognizedAt: new Date('2026-10-16T12:00:00Z') });
     f.state.entries.push({ ...f.state.entries[0], id: 'other', boosterId: 'b', amountCents: 99999 });
     const options = { now: new Date('2026-11-01T05:00:00Z') };
+    await assert.rejects(loadMonthlyEarningsReport(f.db, 'a', '2026-10', { now: new Date('2026-11-01T04:59:59.999Z') }), error => error.status === 400);
+    assert.equal(f.state.reads.length, 0, 'October remains open until midnight in Winnipeg');
     const report = await loadMonthlyEarningsReport(f.db, 'a', '2026-10', options);
     assert.equal(report.entries.length, 503); assert.equal(f.state.reads.length, 3);
     assert.deepEqual(report.totals, [{ currency: 'CAD', amountCents: 252 }, { currency: 'USD', amountCents: 251 }]);
     await assert.rejects(loadMonthlyEarningsReport(f.db, 'a', '2026-11', options), error => error.status === 400);
     const current = await loadMonthlyEarningsReport(f.db, 'a', '2026-11', { ...options, allowOpen: true });
     assert.equal(current.period.closed, false);
+    assert.equal(current.asOf, options.now.toISOString());
     assert.deepEqual(current.entries, []);
+    assert.equal(report.asOf, undefined, 'closed periods retain their fixed report content');
     await assert.rejects(loadMonthlyEarningsReport(f.db, 'a', '2026-12', { ...options, allowOpen: true }), error => error.status === 400);
     await assert.rejects(loadMonthlyEarningsReport(f.db, 'a', '2026-08', options), error => error.status === 404);
 });

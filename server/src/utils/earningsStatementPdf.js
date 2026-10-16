@@ -2,9 +2,20 @@ const path = require('node:path');
 const { PDFDocument } = require('pdfkit');
 
 function renderEarningsStatement(report) {
-    if (!report?.period?.closed) throw new Error('Monthly statements require a closed period');
+    if (typeof report?.period?.closed !== 'boolean') throw new Error('Monthly statements require a valid period');
+    const inProgress = !report.period.closed;
+    const asOf = new Date(report.asOf);
+    if (inProgress && !(asOf >= new Date(report.period.startsAt) && asOf < new Date(report.period.endsAt))) {
+        throw new Error('Current-period statements require a valid snapshot time within the period');
+    }
     const timeZone = report.timeZone || 'America/Winnipeg';
+    const payoutMethods = { PAYPAL: 'PayPal', CHEQUING: 'Chequing', SAVINGS: 'Savings' };
+    const payoutAccount = report.booster?.payoutAccount;
+    const payoutMethod = typeof payoutAccount?.method === 'string' && Object.hasOwn(payoutMethods, payoutAccount.method) ? payoutMethods[payoutAccount.method] : null;
+    const payoutReference = payoutMethod && typeof payoutAccount?.last4 === 'string' && /^[A-Za-z0-9]{4}$/.test(payoutAccount.last4)
+        ? `${payoutMethod} - •••• ${payoutAccount.last4}` : 'Payout account not set';
     const date = value => new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value));
+    const snapshotLabel = inProgress ? `As of ${new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit' }).format(asOf)}` : '';
     const amount = (cents, currency) => {
         if (!Number.isSafeInteger(cents)) throw new Error('Invalid statement amount');
         return new Intl.NumberFormat('en-CA', { style: 'currency', currency, currencyDisplay: 'code' }).format(cents / 100);
@@ -22,16 +33,18 @@ function renderEarningsStatement(report) {
     const left = 38, right = 574, width = right - left, bottom = 720;
     let y;
     const text = (value, x, top, options = {}) => document.text(String(value ?? ''), x, top, options);
-    function header(continued = false) {
+    function header() {
         document.rect(0, 0, 612, 94).fill('#17132c');
         document.rect(0, 94, 612, 4).fill('#8750dd');
-        document.font('Bold').fontSize(22).fillColor('#ffffff'); text('FastBoost', left, 23);
-        document.font('Body').fontSize(9).fillColor('#d6c9ef'); text('MONTHLY EARNINGS STATEMENT', left, 57);
+        document.image(path.resolve(__dirname, '../../assets/branding/fastboost-logo.png'), left, 25, { fit: [60, 44], align: 'center', valign: 'center' });
+        document.font('Bold').fontSize(22).fillColor('#ffffff'); text('FastBoost', left + 72, 23);
+        document.font('Body').fontSize(9).fillColor('#d6c9ef'); text('MONTHLY EARNINGS STATEMENT', left + 72, 57);
         document.font('Bold').fontSize(11); text(report.period.label, 350, 35, { width: 224, align: 'right' });
-        y = 120;
-        if (continued) {
-            document.font('Body').fontSize(9).fillColor('#686177'); text('Order activity continued', left, y); y += 27;
+        if (inProgress) {
+            document.font('Bold').fontSize(8).fillColor('#f5d39c'); text('IN PROGRESS', 350, 54, { width: 224, align: 'right' });
+            document.font('Body').fontSize(7.5).fillColor('#d6c9ef'); text(snapshotLabel, 320, 70, { width: 254, align: 'right' });
         }
+        y = 120;
     }
     function tableHeader() {
         document.roundedRect(left, y, width, 28, 4).fill('#eee9f7');
@@ -47,27 +60,28 @@ function renderEarningsStatement(report) {
     text(displayName, left, y, { width }); y += nameHeight + 10;
     document.font('Body').fontSize(9).fillColor('#686177');
     text(`${date(report.period.startsAt)} - ${date(new Date(report.period.endsAt).getTime() - 1)}`, left, y, { width }); y += 24;
+    if (inProgress) {
+        text('Current period - in progress. Amounts may change as more earnings are approved or adjusted.', left, y, { width, lineGap: 3 });
+        y = document.y + 18;
+    }
     if (new Date(report.activatedAt) > new Date(report.period.startsAt)) {
         text(`Tracking began ${date(report.activatedAt)}. Earlier earnings are held separately as an opening balance.`, left, y, { width, lineGap: 3 });
         y = document.y + 18;
     }
-    document.font('Bold').fontSize(11).fillColor('#241a3c'); text('Confirmed earnings', left, y); y += 23;
+    document.font('Bold').fontSize(11).fillColor('#241a3c'); text(inProgress ? 'Confirmed earnings to date' : 'Confirmed earnings', left, y); y += 23;
     const totals = report.totals || [];
     if (!totals.length) {
         document.font('Body').fontSize(11).fillColor('#686177'); text('No earnings recorded in this period.', left, y); y += 32;
     }
     for (const total of totals) {
-        if (y + 46 > bottom) { document.addPage(); header(true); }
+        if (y + 46 > bottom) { document.addPage(); header(); }
         document.roundedRect(left, y, width, 38, 5).fill('#f6f3fb');
-        document.font('Body').fontSize(10).fillColor('#686177'); text(total.currency, left + 13, y + 11);
-        document.font('Bold').fontSize(15).fillColor('#47246f'); text(amount(total.amountCents, total.currency), left + 130, y + 8, { width: width - 143, align: 'right' });
+        document.font('Bold').fontSize(10.5).fillColor('#686177'); text(payoutReference, left + 13, y + 11, { width: 260, lineBreak: false, ellipsis: true });
+        document.font('Bold').fontSize(15).fillColor('#47246f'); text(amount(total.amountCents, total.currency), right - 233, y + 8, { width: 220, align: 'right' });
         y += 46;
     }
-    y += 9;
-    document.font('Body').fontSize(8.5).fillColor('#686177');
-    text('Earnings include approved shares and corrections recorded during this period. This statement records earnings, not payment or payout status.', left, y, { width, lineGap: 3 });
-    y = document.y + 25;
-    if (y + 90 > bottom) { document.addPage(); header(true); }
+    y += 16;
+    if (y + 90 > bottom) { document.addPage(); header(); }
     tableHeader();
     const entries = report.entries || [];
     if (!entries.length) {
@@ -79,7 +93,7 @@ function renderEarningsStatement(report) {
         document.font('Body').fontSize(8);
         const detailHeight = document.heightOfString(service, { width: 215, lineGap: 2 });
         const rowHeight = Math.max(47, 29 + detailHeight);
-        if (y + rowHeight > bottom) { document.addPage(); header(true); tableHeader(); }
+        if (y + rowHeight > bottom) { document.addPage(); header(); tableHeader(); }
         document.font('Body').fontSize(7.5).fillColor('#686177'); text(date(entry.recognizedAt), left + 9, y + 9, { width: 65 });
         document.font('Bold').fontSize(8.5).fillColor('#241a3c'); text(orderLabel, left + 81, y + 7, { width: 215, lineBreak: false, ellipsis: true });
         document.font('Body').fontSize(8).fillColor('#686177'); text(service, left + 81, y + 22, { width: 215, lineGap: 2 });

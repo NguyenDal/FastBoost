@@ -1,6 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chronologicalMonths, monthAmount, chartCurrencies, monthWindow, chartScale } from '../src/utils/monthlyEarningsChart.js';
+import { daysUntilPayout, chronologicalMonths, monthAmount, chartCurrencies, monthWindow, chartScale } from '../src/utils/monthlyEarningsChart.js';
+
+test('payout countdown uses the supplied local date and clamps payout day or past dates to zero', () => {
+    const payout = '2026-11-01T05:00:00Z';
+    const zone = 'America/Winnipeg';
+    assert.equal(daysUntilPayout(payout, zone, new Date('2026-11-01T04:59:59Z')), 1, 'still October 31 in Winnipeg');
+    assert.equal(daysUntilPayout(payout, 'UTC', new Date('2026-11-01T04:59:59Z')), 0, 'already November 1 in UTC');
+    assert.equal(daysUntilPayout(payout, zone, new Date(payout)), 0);
+    assert.equal(daysUntilPayout(payout, zone, new Date('2026-11-01T18:00:00Z')), 0);
+    assert.equal(daysUntilPayout(payout, zone, new Date('2026-11-03T18:00:00Z')), 0);
+});
+
+test('payout calendar-day count remains correct across short and long DST days', () => {
+    const zone = 'America/Winnipeg';
+    assert.equal(daysUntilPayout('2026-04-01T05:00:00Z', zone, new Date('2026-03-01T06:00:00Z')), 31);
+    assert.equal(daysUntilPayout('2026-12-01T06:00:00Z', zone, new Date('2026-11-01T05:00:00Z')), 30);
+    assert.equal(daysUntilPayout('2026-03-09T05:00:00Z', zone, new Date('2026-03-08T06:00:00Z')), 1, '23-hour day');
+    assert.equal(daysUntilPayout('2026-11-02T06:00:00Z', zone, new Date('2026-11-01T05:00:00Z')), 1, '25-hour day');
+});
 
 test('months are chronological across years without mutating API data or duplicating the current month', () => {
     const summary = { current: { month: '2027-01', closed: false }, reports: [

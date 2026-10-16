@@ -1,6 +1,16 @@
 const currencyCode = value => typeof value === 'string' ? value.trim().toUpperCase() : '';
 const amount = value => Number.isFinite(value) ? value : 0;
 
+export function daysUntilPayout(endsAt, timeZone, now = new Date()) {
+    const formatter = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' });
+    const calendarDay = value => {
+        const parts = Object.fromEntries(formatter.formatToParts(new Date(value)).map(part => [part.type, part.value]));
+        return Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) / 86400000;
+    };
+    // Compare local calendar dates, not elapsed hours: a DST day may have 23 or 25 hours.
+    return Math.max(0, calendarDay(endsAt) - calendarDay(now));
+}
+
 export function chronologicalMonths(summary) {
     const months = new Map();
     for (const period of [...(summary?.reports || []), summary?.current]) {

@@ -66,6 +66,7 @@ async function readMonthlyEarningsReport(db, boosterId, month, now, allowOpen = 
             after = page[page.length - 1];
         }
         return { ok: true, available: true, timeZone: TIME_ZONE, activatedAt: new Date(state.activatedAt).toISOString(), period,
+            ...(!period.closed ? { asOf: now.toISOString() } : {}),
             totals: totalsFrom(entries), entries: entries.map(entry => ({ ...entry, recognizedAt: new Date(entry.recognizedAt).toISOString() })) };
     } catch (error) {
         if (missingLedgerTable(error)) throw unavailable();

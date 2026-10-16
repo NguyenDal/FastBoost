@@ -78,13 +78,32 @@ test('closed reports and PDFs preserve personal snapshots, attachment headers, a
     assert.equal((await f.request('/invalid/pdf')).statusCode, 400);
     assert.equal((await f.request('/2019-12/pdf')).statusCode, 404);
     assert.equal(f.rendered.length, 1);
+});
+
+test('current month charts and details stay available while current and future PDF exports are rejected', async t => {
+    const f = setup(t);
     const currentMonth = earningsMonth();
+    f.state.entries.push(...['USD', 'CAD'].map(currency => ({ ...f.state.entries[0], id: `current-${currency}`, currency, amountCents: 1900,
+        period: currentMonth, recognizedAt: new Date() })));
+    const beforeRead = new Date();
     const current = await f.request(`/${currentMonth}`);
     assert.equal(current.statusCode, 200);
     assert.equal(current.body.period.closed, false);
-    assert.equal((await f.request(`/${currentMonth}/pdf`)).statusCode, 400);
+    assert.ok(new Date(current.body.asOf) >= beforeRead && new Date(current.body.asOf) <= new Date());
+    assert.deepEqual(current.body.totals, [{ currency: 'USD', amountCents: 1900 }]);
+    assert.deepEqual(current.body.entries.map(entry => entry.currency), ['USD']);
+    const summary = await f.request('/');
+    assert.equal(summary.statusCode, 200);
+    assert.deepEqual(summary.body.current.totals, [{ currency: 'USD', amountCents: 1900 }]);
+    const reads = f.state.reads.length;
+    const denied = await f.request(`/${currentMonth}/pdf?allowOpen=true&currency=CAD&boosterId=other`);
+    assert.equal(denied.statusCode, 400);
+    assert.match(denied.body.message, /after the calendar month ends/);
+    assert.equal(denied.headers['content-disposition'], undefined);
+    assert.equal((await f.request('/9998-01/pdf?allowOpen=true')).statusCode, 400);
     assert.equal((await f.request('/9998-01')).statusCode, 400);
-    assert.equal(f.rendered.length, 1, 'an open month never renders a PDF');
+    assert.equal(f.state.reads.length, reads, 'rejected periods never query ledger entries');
+    assert.equal(f.rendered.length, 0, 'current and future months never reach the PDF renderer');
 });
 
 test('inactive monthly reporting returns an explicit unavailable response without opening balances on reads', async t => {

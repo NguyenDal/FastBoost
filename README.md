@@ -741,7 +741,9 @@ accepting earnings-changing operations.
   `GET /api/operations/me/monthly-earnings/:YYYY-MM`, and
   `GET /api/operations/me/monthly-earnings/:YYYY-MM/pdf`. They use the signed-in user's identity,
   including for admins; clients cannot request another booster's statement. PDFs are available
-  only after a month closes. Portal totals, month details and PDFs show USD entries only; the
+  only after a calendar month closes. Current-month charts and JSON details remain available;
+  the JSON details include their actual read time. Closed-period history remains fixed.
+  Portal totals, month details and PDFs show USD entries only; the
   internal ledger preserves all original currencies without conversion. Statements report earnings, not payouts.
 - Your match contributions uses server search and 10 orders per page. The default
   `/api/operations/contributions?scope=mine` stays personal even for admins with booster access;
