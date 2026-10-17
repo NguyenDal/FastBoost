@@ -99,7 +99,10 @@ test('preferences remain self-scoped, while the admin directory batches saved ro
         } } };
         for (const path of paths.slice(3, 6)) require.cache[path] = { exports: express.Router() };
         require.cache[paths[6]] = { exports: { boosterEarnings: async () => ({}) } };
-        require.cache[paths[7]] = { exports: { boosterRating: async () => ({ average: null, count: 0, available: true }) } };
+        require.cache[paths[7]] = { exports: {
+            boosterRating: async () => ({ average: null, count: 0, available: true }),
+            boosterRatings: async (db, ids) => new Map(ids.map(id => [id, { average: null, count: 0, available: true }])),
+        } };
         delete require.cache[paths[2]];
         const app = express(); app.use(express.json()); app.use(require(paths[2]));
         server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });

@@ -5,6 +5,10 @@ const { buildBoosterOrderEmail, boosterOrderEvents, withBoosterOrderEmails, queu
 const booster = id => ({ boosterId: id, booster: { id, role: 'PROVIDER', hasBoosterAccess: false, suspendedAt: null } });
 const order = { id: 'synthetic/order', orderNumber: 'LOL-RNK-PREVIEW', status: 'IN_PROGRESS', paymentStatus: 'PAID', boostType: 'Rank Boost',
     currentRank: 'Silver I', desiredRank: 'Gold IV', queueType: 'Solo/Duo', region: 'North America', assignments: [booster('a'), booster('b')] };
+const allEvents = ['ASSIGNED', 'UNASSIGNED', 'COMPLETED', 'CANCELLED', 'PAYMENT_CONFIRMED', 'ASSIGNMENT_REQUEST', 'ASSIGNMENT_REQUEST_CANCELLED'];
+const subtotalLabel = 'Subtotal (before tax)';
+const totalLabel = 'Total (after tax)';
+const earningsLabel = 'Potential earnings (70% of subtotal)';
 
 function configure(t) {
     const keys = ['CLIENT_URL', 'BOOSTER_ORDER_EMAILS_ENABLED', 'NODE_ENV'];
@@ -68,7 +72,7 @@ test('email order snapshots select only fields and relations present in the gene
 
 test('all booster templates provide safe relevant links without customer, credential or payment secrets', t => {
     configure(t);
-    for (const event of ['ASSIGNED', 'UNASSIGNED', 'COMPLETED', 'CANCELLED', 'PAYMENT_CONFIRMED', 'ASSIGNMENT_REQUEST', 'ASSIGNMENT_REQUEST_CANCELLED']) {
+    for (const event of allEvents) {
         const mail = buildBoosterOrderEmail({ ...order, region: '<script>bad</script>', customer: { email: 'private@example.test' }, accountPassword: 'SECRET-PASSWORD', stripePaymentIntentId: 'pi_SECRET', accountUsername: 'SECRET-ACCOUNT' }, event);
         assert.match(mail.subject, /FastBoost.*LOL-RNK-PREVIEW/);
         assert.match(mail.text, /League of Legends/);
@@ -80,14 +84,14 @@ test('all booster templates provide safe relevant links without customer, creden
         assert.doesNotMatch(mail.text, /^Booster Portal:/m);
         assert.equal((mail.html.match(/<a\b/gi) || []).length, 1, `${event} has one HTML action link`);
         assert.equal((mail.text.match(/https:\/\//g) || []).length, 1, `${event} has one text action URL`);
+        assert.match(mail.html, /&lt;script&gt;/);
+        assert.match(mail.text, /Current Rank: Silver I/);
+        assert.match(mail.text, /Target Rank: Gold IV/);
         if (['UNASSIGNED', 'ASSIGNMENT_REQUEST', 'ASSIGNMENT_REQUEST_CANCELLED'].includes(event)) {
             assert.match(mail.text, /: https:\/\/fastboost.example\/provider\/portal/);
             assert.doesNotMatch(mail.text + mail.html, /\/match\//);
         } else {
             assert.match(mail.html, /href="https:\/\/fastboost.example\/match\/synthetic%2Forder"/);
-            assert.match(mail.html, /&lt;script&gt;/);
-            assert.match(mail.text, /Current Rank: Silver I/);
-            assert.match(mail.text, /Target Rank: Gold IV/);
         }
     }
     assert.match(buildBoosterOrderEmail(order, 'ASSIGNMENT_REQUEST').text, /review and respond/);
@@ -116,40 +120,43 @@ function moneyRow(mail, label, expected, potential = false) {
     assert.equal(value.replace(/^Up to /, '').replace(/USD|\$|\s/g, ''), expected.toFixed(2), `${label} matches its monetary basis`);
 }
 
-test('assignment emails separate pre-tax subtotal from total and base potential earnings only on subtotal', t => {
+test('all events show pre-tax subtotal, saved total and potential earnings on the same discounted basis', t => {
     configure(t);
-    for (const event of ['ASSIGNED', 'ASSIGNMENT_REQUEST']) {
+    for (const event of allEvents) {
         const mail = buildBoosterOrderEmail({ ...order, amountCents: 10000, goldDiscountCents: 0, cashAmountCents: 11300,
             totalPrice: 100, currency: 'usd', couponDiscountCents: 2000, referralDiscount: 10 }, event);
-        moneyRow(mail, 'Subtotal', 100);
-        moneyRow(mail, 'Total', 113);
-        moneyRow(mail, 'Potential earnings', 70, true);
+        moneyRow(mail, subtotalLabel, 100);
+        moneyRow(mail, totalLabel, 113);
+        moneyRow(mail, earningsLabel, 70, true);
+        assert.equal((mail.text.match(/^(Subtotal|Total|Potential earnings) \([^)]+\):/gm) || []).length, 3);
         assert.match(mail.text, /Potential earnings are shared by approved matches\./);
         assert.match(mail.html, /Potential earnings are shared by approved matches\./);
         assert.doesNotMatch(mail.text + mail.html, /79\.10/, 'tax is excluded from the earnings pool');
+        assert.doesNotMatch(mail.text, /^Tax:|tax rate|guaranteed|payable now/im, 'no inferred tax or promised payout');
     }
 });
 
-test('assignment financial rows account for Gold redemption, real zero totals and cent rounding', t => {
+test('all event financial rows account for Gold redemption, actual cash totals, zero and cent rounding', t => {
     configure(t);
-    for (const event of ['ASSIGNED', 'ASSIGNMENT_REQUEST']) {
+    for (const event of allEvents) {
         for (const [amountCents, goldDiscountCents, cashAmountCents, subtotal, total, potential] of [
             [10000, 2000, 9040, 80, 90.40, 56],
+            [10000, 2000, 8000, 80, 80, 56],
             [10000, 10000, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [10001, 0, 11301, 100.01, 113.01, 70.01],
         ]) {
             const mail = buildBoosterOrderEmail({ ...order, amountCents, goldDiscountCents, cashAmountCents, totalPrice: amountCents / 100, currency: 'usd' }, event);
-            moneyRow(mail, 'Subtotal', subtotal);
-            moneyRow(mail, 'Total', total);
-            moneyRow(mail, 'Potential earnings', potential, true);
+            moneyRow(mail, subtotalLabel, subtotal);
+            moneyRow(mail, totalLabel, total);
+            moneyRow(mail, earningsLabel, potential, true);
         }
     }
 });
 
-test('missing service amounts remain unavailable while independently known totals can still display', t => {
+test('missing canonical service amounts stay unavailable while independently saved totals remain visible', t => {
     configure(t);
-    for (const event of ['ASSIGNED', 'ASSIGNMENT_REQUEST']) {
+    for (const event of allEvents) {
         for (const [fields, total] of [
             [{ amountCents: null, cashAmountCents: 11300, totalPrice: 100 }, 113],
             [{ amountCents: null, cashAmountCents: null, totalPrice: 100, goldDiscountCents: 2000 }, 80],
@@ -158,23 +165,39 @@ test('missing service amounts remain unavailable while independently known total
             [{ amountCents: null, cashAmountCents: null, totalPrice: null }, null],
         ]) {
             const mail = buildBoosterOrderEmail({ ...order, ...fields, currency: 'usd' }, event);
-            assert.equal(financialRow(mail, 'Subtotal'), 'Not available');
-            assert.equal(financialRow(mail, 'Potential earnings'), 'Not available');
+            assert.equal(financialRow(mail, subtotalLabel), 'Not available');
+            assert.equal(financialRow(mail, earningsLabel), 'Not available');
             if (total === null) {
-                assert.equal(financialRow(mail, 'Total'), 'Not available');
+                assert.equal(financialRow(mail, totalLabel), 'Not available');
                 assert.doesNotMatch(mail.text + mail.html, /\$0\.00|USD\s*0\.00/, 'unknown money must not become zero');
-            } else moneyRow(mail, 'Total', total);
+            } else moneyRow(mail, totalLabel, total);
         }
     }
 });
 
-test('cancellation and other event-only emails do not contain assignment financial rows', t => {
+test('all notification events retain identical detailed order and pricing rows for every service', t => {
     configure(t);
-    for (const event of ['UNASSIGNED', 'COMPLETED', 'CANCELLED', 'PAYMENT_CONFIRMED', 'ASSIGNMENT_REQUEST_CANCELLED']) {
-        const mail = buildBoosterOrderEmail({ ...order, amountCents: 10000, goldDiscountCents: 0, cashAmountCents: 11300, totalPrice: 100, currency: 'usd' }, event);
-        assert.doesNotMatch(mail.text, /^(Subtotal|Total|Potential earnings):/m, event);
-        assert.doesNotMatch(mail.html, />(Subtotal|Total|Potential earnings)<\/td>/, event);
-        assert.doesNotMatch(mail.text + mail.html, /Potential earnings are shared by approved matches/, event);
+    for (const gamePrefix of ['', 'TFT ']) for (const [service, fields, specificRows] of [
+        ['Rank Boost', {}, [['Current Rank', 'Silver I'], ['Target Rank', 'Gold IV']]],
+        ['Placement Boost', { peakRank: 'Emerald II', placementGames: 5 }, [['Peak Rank', 'Emerald II'], ['Placement Matches', '5']]],
+        ['Win Boost', { desiredWins: 7 }, [['Current Rank', 'Silver I'], ['Ranked Wins', '7']]],
+        ['Pro Duo', { numberOfGames: 3 }, [['Current Rank', 'Silver I'], ['Games', '3']]],
+    ]) {
+        const fixture = { ...order, ...fields, boostType: `${gamePrefix}${service}`, amountCents: 10000,
+            goldDiscountCents: 0, cashAmountCents: 11300, totalPrice: 100, currency: 'usd' };
+        const mails = allEvents.map(event => buildBoosterOrderEmail(fixture, event));
+        // Compare the actual rendered table, not only common matching snippets.
+        const detailTables = mails.map(mail => mail.html.match(/<table role="presentation"[^>]+style="border:1px solid #e1dcfa;border-radius:10px">[\s\S]+?<\/table><\/td><\/tr><\/table>/)?.[0]);
+        assert.ok(detailTables[0]);
+        for (const [index, mail] of mails.entries()) {
+            assert.equal(detailTables[index], detailTables[0], `${fixture.boostType}: ${allEvents[index]} matches the assignment table`);
+            for (const [label, value] of [...specificRows, ['Queue Type', 'Solo/Duo'], ['Server / Region', 'North America']]) {
+                assert.equal(financialRow(mail, label), value, `${allEvents[index]} keeps ${label}`);
+            }
+            assert.equal(financialRow(mail, 'Game'), gamePrefix ? 'Teamfight Tactics' : 'League of Legends');
+            assert.equal(financialRow(mail, 'Service'), service);
+            assert.match(mail.text, /Potential earnings are shared by approved matches\./);
+        }
     }
 });
 

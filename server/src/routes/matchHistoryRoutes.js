@@ -23,6 +23,11 @@ function writable(order) {
     if (order.paymentStatus !== 'PAID' || order.status === 'CANCELLED') fail(409, 'Only paid, active or completed orders accept match reviews.');
     if (order.matchHistoryConfirmedAt) fail(409, 'Reopen the history before changing confirmed matches.');
 }
+const ongoing = order => ['PENDING', 'IN_PROGRESS'].includes(order.status);
+function importable(order) {
+    if (!ongoing(order)) fail(409, 'New matches can only be imported while an order is ongoing.');
+    writable(order);
+}
 async function locked(id, actor, fn) {
     return db.$transaction(async tx => withEarningsLedgerMutation(tx, id, async () => {
         await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${id} FOR UPDATE`;
@@ -60,7 +65,7 @@ router.get('/match-history/:orderId', handle(async (req, res) => {
         canSubmit: provider && mutable, customerView: customer,
         submission: provider ? { boosterId: req.actor.id, matches: ownShare?.matches || 0, estimatedCents: ownShare?.cents ?? 0,
             confirmedCents: paidShare?.cents ?? null, currency: order.currency } : undefined,
-        canImport: (admin || assigned(order, req.actor)) && mutable && !importIssue && riot.configured(matchScope(order)?.game),
+        canImport: (admin || assigned(order, req.actor)) && ongoing(order) && mutable && !importIssue && riot.configured(matchScope(order)?.game),
         importIssue: admin || assigned(order, req.actor) ? importIssue || (!riot.configured(matchScope(order)?.game) ? 'Riot imports are not configured on the server.' : '') : '',
         order: { id: order.id, orderNumber: order.orderNumber, revision: order.matchHistoryRevision, confirmedAt: order.matchHistoryConfirmedAt,
             syncedAt: order.matchHistorySyncedAt, enabled: usesMatchHistory(order), status: order.status },
@@ -178,7 +183,7 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
     if (!Number.isInteger(start) || start < 0 || start > 10000) fail(400, 'Invalid match page.');
     const order = await locked(req.params.orderId, req.actor, async (tx, order) => {
         if (!isAdmin(req.actor) && !assigned(order, req.actor)) fail(403, 'Only admins and the assigned booster can import matches.');
-        writable(order); riot.importSettings(order);
+        importable(order); riot.importSettings(order);
         if (!riot.configured(matchScope(order)?.game)) fail(503, 'Riot imports are not configured on the server.');
         if (order.matchHistorySyncedAt && Date.now() - order.matchHistorySyncedAt.getTime() < 60000) fail(429, 'Please wait one minute between imports.');
         await tx.order.update({ where: { id: order.id }, data: { matchHistorySyncedAt: new Date() } });
@@ -187,7 +192,7 @@ router.post('/match-history/:orderId/import', handle(async (req, res) => {
     const result = await riot.importMatches(order, start);
     const count = await locked(order.id, req.actor, async (tx, current) => {
         if (!isAdmin(req.actor) && !assigned(current, req.actor)) fail(403, 'Your assignment changed. Ask an admin to import these matches.');
-        writable(current);
+        importable(current);
         if (current.inGameName !== order.inGameName || current.region !== order.region || current.boostType !== order.boostType || current.queueType !== order.queueType) fail(409, 'The saved account, service or queue changed. Import again.');
         // One order tracks one game account. App-scoped Riot identifiers can change
         // with the API key, but that must not turn the same game into new evidence.

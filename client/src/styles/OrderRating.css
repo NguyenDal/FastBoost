@@ -20,3 +20,40 @@
 .order-rating-error { color: #ffb2b2; line-height: 1.6; }
 .order-rating-error button { margin-left: 12px; }
 @media (max-width: 600px) { .order-rating { padding: 20px; } .order-rating-submit { align-items: stretch; flex-direction: column; } }
+
+.order-rating.order-rating--chat {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 12px auto 0;
+    padding: 20px 22px;
+    background: linear-gradient(135deg, #11182f, #090f24);
+    border-color: rgba(139, 123, 224, 0.28);
+    color: #f2f5ff;
+    border-radius: 16px;
+    scroll-margin-top: 100px;
+}
+.order-rating--chat .order-rating-eyebrow { margin: 0; color: #bba5ff; font-size: 10px; line-height: 1.5; letter-spacing: 1.2px; }
+.order-rating--chat h2 { margin: 6px 0; color: #f5f7ff; font-size: 19px; line-height: 1.3; }
+.order-rating--chat p { margin: 0; line-height: 1.5; }
+.order-rating--chat > div > p:last-child { color: #bac7ed; font-size: 13px; }
+.order-rating--chat fieldset { min-width: 0; margin: 14px 0 12px; }
+.order-rating--chat legend { margin-bottom: 6px; color: #bac7ed; font-size: 12px; line-height: 1.5; }
+.order-rating--chat .order-rating-stars { flex-wrap: wrap; gap: 5px; }
+.order-rating--chat .order-rating-stars label { box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 44px; color: #8c9cc8; background: #121a34; border-color: #8b7be440; font-size: 28px; }
+.order-rating--chat .order-rating-stars label.selected { color: #ffd17a; background: #ffd17a12; border-color: #ffd17a70; }
+.order-rating--chat .order-rating-submit { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.order-rating--chat .order-rating-submit > span { flex: 1 1 160px; min-width: 0; color: #bac7ed; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.order-rating--chat button { min-height: 44px; max-width: 100%; padding: 10px 14px; background: linear-gradient(110deg, #9228ee, #6538ff); border-color: #b28cff50; color: #fff; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.order-rating--chat button:disabled { opacity: 1; background: #252440; border-color: #8b7be42b; color: #a4adcc; }
+.order-rating--chat .order-rating-saved { flex-wrap: wrap; gap: 8px 12px; margin-top: 12px; font-size: 13px; }
+.order-rating--chat .order-rating-saved span { font-size: 25px; letter-spacing: 2px; }
+.order-rating--chat .order-rating-error { margin-top: 12px; font-size: 13px; overflow-wrap: anywhere; }
+.order-rating--chat .order-rating-error button { display: block; margin: 8px 0 0; }
+.order-rating--chat > p[role="status"] { margin-top: 12px; font-size: 13px; }
+@media (max-width: 420px) {
+    .order-rating.order-rating--chat { padding: 16px; }
+    .order-rating--chat .order-rating-submit button { flex: 1 1 100%; }
+}

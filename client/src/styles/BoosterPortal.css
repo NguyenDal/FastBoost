@@ -115,7 +115,8 @@
 .booster-monthly-reports .booster-statement-empty { color: #aab5c9; }
 .booster-rating-value { display: flex; gap: 12px; align-items: center; margin-top: 25px; }
 .booster-rating-value > span { color: #f5c16d; font-size: 30px; }
-.booster-rating-value strong { font-size: clamp(21px, 3vw, 30px); }
+.booster-rating-value strong { font-size: clamp(21px, 3vw, 30px); white-space: nowrap; }
+.booster-rating .booster-rating-value small { display: inline; color: #aab5c9; font-size: 14px; font-weight: 400; }
 @media (max-width: 850px) { .booster-profile-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) {
     .booster-portal-layout { grid-template-columns: 1fr; }

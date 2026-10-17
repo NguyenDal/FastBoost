@@ -6,6 +6,7 @@ import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
 import { Skeleton } from "../components/Skeleton";
 import { API_BASE_URL } from "../api/config";
 import { loadChampions } from "../api/champions";
+import { orderEstimateBreakdown } from "../utils/orderEstimateBreakdown";
 import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRoles";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -451,8 +452,9 @@ function OrderPage() {
       cachedQuote &&
       Date.now() - cachedQuote.savedAt < PRICE_QUOTE_CACHE_TTL
     ) {
-      setServerQuote(cachedQuote.quote);
-      serverQuoteRef.current = cachedQuote.quote;
+      const quote = { ...cachedQuote.quote, _pricingRequestKey: pricingRequestKey };
+      setServerQuote(quote);
+      serverQuoteRef.current = quote;
       setLastQuoteAt(cachedQuote.savedAt);
       setPriceQuoteLoading(false);
       setPriceQuoteError("");
@@ -485,7 +487,8 @@ function OrderPage() {
           throw new Error(data.message || "Failed to load current price.");
         }
 
-        const quote = data.quote || null;
+        if (controller.signal.aborted) return;
+        const quote = data.quote ? { ...data.quote, _pricingRequestKey: pricingRequestKey } : null;
         const receivedAt = Date.now();
 
         setServerQuote(quote);
@@ -503,7 +506,7 @@ function OrderPage() {
 
         console.error("Failed to load live price:", error);
 
-        if (!serverQuoteRef.current) {
+        if (!serverQuoteRef.current || serverQuoteRef.current._pricingRequestKey !== pricingRequestKey) {
           setPriceQuoteError(
             error.message || "Could not load current pricing."
           );
@@ -604,6 +607,14 @@ function OrderPage() {
   const totalPrice = priceReady
     ? referralAdjustedTotal.toFixed(2)
     : "";
+  const priceBreakdown = orderEstimateBreakdown(serverQuote, {
+    selections: formData,
+    championPreferenceEnabled,
+    referralDiscount,
+  });
+  const priceBreakdownReady = Boolean(priceBreakdown)
+    && serverQuote?._pricingRequestKey === pricingRequestKey
+    && !priceQuoteLoading;
   const coinCount = Math.floor(referralAdjustedTotal);
   const coinValue = (coinCount * 0.1).toFixed(2);
 
@@ -975,9 +986,9 @@ function OrderPage() {
     try {
       setSubmitError("");
 
-      if (!serverQuote || priceQuoteLoading) {
+      if (!priceBreakdownReady || priceQuoteError) {
         setSubmitError(
-          "Current pricing is still loading. Please wait a moment."
+          priceQuoteError || "Current pricing is still loading. Please wait a moment."
         );
         return;
       }
@@ -2343,16 +2354,9 @@ function OrderPage() {
             </p>
 
             {referralDiscount > 0 && (
-              <>
-                <div className="summary-gold-redemption-row">
-                  <span>Referral first-purchase discount ({referralDiscountPercent}%)</span>
-                  <strong>-${referralDiscount.toFixed(2)}</strong>
-                </div>
-
                 <p className="summary-coins-footnote">
                   Complete a first purchase of ${Number(referralOffer?.qualifyingPurchaseMinimum || 50).toFixed(2)} or more to earn {referralOffer?.rewardGold || 50} gold ($5) for a future purchase.
                 </p>
-              </>
             )}
 
             {isInvalidRankPath ? (
@@ -2363,10 +2367,31 @@ function OrderPage() {
               </div>
             ) : (
               <>
+                <div className="order-estimate-breakdown" aria-busy={!priceBreakdownReady && !priceQuoteError}>
+                  {priceBreakdownReady ? (
+                    <dl aria-label="Price breakdown">
+                      {priceBreakdown.rows.map(row => (
+                        <div className={`order-estimate-line order-estimate-line--${row.kind}`} key={row.key}>
+                          <dt>{row.label}</dt>
+                          <dd>{row.kind === 'addon' && row.amountCents === 0
+                            ? 'Free'
+                            : `${row.amountCents < 0 ? '−' : ''}$${(Math.abs(row.amountCents) / 100).toFixed(2)}`}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : !priceQuoteError ? (
+                    <div className="order-estimate-loading" role="status" aria-label="Updating price breakdown">
+                      <Skeleton width="100%" height={16} radius={5} />
+                      <Skeleton width="70%" height={16} radius={5} />
+                    </div>
+                  ) : null}
+                </div>
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
                     <span>Subtotal</span>
-                    {!priceReady ? (
+                    {!priceBreakdownReady && priceQuoteError ? (
+                      <strong>—</strong>
+                    ) : !priceBreakdownReady ? (
                       <Skeleton width={96} height={25} radius={6} />
                     ) : (
                       <strong>${totalPrice}</strong>
@@ -2385,14 +2410,17 @@ function OrderPage() {
                   disabled={
                     paymentLoading ||
                     priceQuoteLoading ||
-                    !priceReady
+                    !priceBreakdownReady ||
+                    Boolean(priceQuoteError)
                   }
                 >
                   {paymentLoading
                     ? "Preparing secure payment..."
-                    : priceQuoteLoading || !priceReady
-                      ? "Updating price..."
-                      : "Buy Boost"}
+                    : priceQuoteError
+                      ? "Price unavailable"
+                      : !priceBreakdownReady
+                        ? "Updating price..."
+                        : "Buy Boost"}
                 </button>
               </>
             )}

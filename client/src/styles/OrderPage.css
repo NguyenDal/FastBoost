@@ -1040,6 +1040,57 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.order-estimate-breakdown {
+  margin: 18px 0 4px;
+  color: #c3c7dc;
+  font-size: 13px;
+}
+
+.order-estimate-breakdown dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.order-estimate-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  line-height: 1.5;
+}
+
+.order-estimate-line dt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.order-estimate-line dd {
+  flex-shrink: 0;
+  margin: 0;
+  color: #eeeafa;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.order-estimate-line--discount,
+.order-estimate-line--discount dd {
+  color: #85d9b7;
+}
+
+.order-estimate-line--rounding,
+.order-estimate-line--rounding dd {
+  color: #a7afc6;
+  font-size: 12px;
+}
+
+.order-estimate-loading {
+  display: grid;
+  gap: 12px;
+  padding: 2px 0;
+}
+
 .order-summary-total-inline-main {
   margin-top: 0;
   display: flex;

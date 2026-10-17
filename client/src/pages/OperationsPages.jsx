@@ -62,6 +62,15 @@ export function Contributions({ admin = false, onChange }) {
         </section>;
 }
 
+function BoosterRating({ rating }) {
+    const available = rating?.available === true && Number.isInteger(rating.count) && rating.count >= 0
+        && (rating.count === 0 || (Number.isFinite(rating.average) && rating.average >= 0 && rating.average <= 5));
+    const average = available && rating.count > 0 ? rating.average : 0;
+    return <span className="ops-booster-rating"><span className="ops-booster-rating-divider" aria-hidden="true">|</span>{available ? <>
+        <span className="ops-booster-rating-stars" aria-hidden="true">★★★★★<span style={{ width: `${average / 5 * 100}%` }}>★★★★★</span></span>
+        <span>{average.toFixed(1)}/5</span><span className="ops-booster-rating-count">({rating.count} {rating.count === 1 ? 'review' : 'reviews'})</span>
+    </> : <span className="ops-booster-rating-count">Rating unavailable</span>}</span>;
+}
 function BoosterDetails({ booster, champions, preferencesAvailable, reload, configured, onError }) {
     const [busy, setBusy] = useState(false);
     const [requestId, setRequestId] = useState(() => crypto.randomUUID());
@@ -75,7 +84,7 @@ function BoosterDetails({ booster, champions, preferencesAvailable, reload, conf
             reload();
         } catch (e) { onError(e.message); reload(); } finally { setBusy(false); }
     }
-    return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><strong>{booster.profile?.displayName || booster.username}</strong><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
+    return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><span className="ops-booster-title"><strong>{booster.profile?.displayName || booster.username}</strong><BoosterRating rating={booster.rating} /></span><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
             <h3>Send a DocuSign contract</h3><form className="ops-form" onSubmit={submit}><label>Contract title<input name="title" placeholder="Booster service agreement" required maxLength={100} /></label><label>Start date<input type="date" name="startsAt" required /></label><label>Signer’s full legal name<input name="signerName" required minLength={2} maxLength={100} /></label><button className="ops-primary" disabled={!configured || busy || booster.suspendedAt}>{busy ? 'Sending…' : 'Send with DocuSign'}</button></form>
             <h3>Contracts</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No contracts sent yet.</p>}</div>

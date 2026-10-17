@@ -272,6 +272,7 @@ function calculateAddonPrice({
     options,
     basePrice,
     referenceRules = [],
+    breakdown = [],
 }) {
     const addons = rule.config?.addons || {};
 
@@ -301,51 +302,55 @@ function calculateAddonPrice({
         : basePrice;
 
     let addonPrice = 0;
+    const add = (key, amount) => {
+        addonPrice += amount;
+        breakdown.push({ key, amount });
+    };
 
     if (isDuo) {
-        addonPrice += basePrice * duoExtraPercent;
+        add('duoMode', basePrice * duoExtraPercent);
     }
 
     if (options.priorityOrder) {
-        addonPrice +=
+        add('priorityOrder',
             adjustedBaseForAddons *
-            toNumber(addons.expressPercent);
+            toNumber(addons.expressPercent));
     }
 
     if (
         options.playMode === "Duo" &&
         options.premiumCoaching
     ) {
-        addonPrice +=
+        add('premiumCoaching',
             adjustedBaseForAddons *
-            toNumber(addons.premiumCoachingPercent);
+            toNumber(addons.premiumCoachingPercent));
     }
 
     if (
         options.playMode === "Solo" &&
         options.soloOnly
     ) {
-        addonPrice +=
+        add('soloOnly',
             adjustedBaseForAddons *
-            toNumber(addons.soloOnlyPercent);
+            toNumber(addons.soloOnlyPercent));
     }
 
     if (
         options.playMode === "Duo" &&
         options.highMMRDuo
     ) {
-        addonPrice +=
+        add('highMMRDuo',
             adjustedBaseForAddons *
-            toNumber(addons.highMmrDuoPercent);
+            toNumber(addons.highMmrDuoPercent));
     }
 
     if (
         options.playMode === "Duo" &&
         options.untrackableDuo
     ) {
-        addonPrice +=
+        add('untrackableDuo',
             adjustedBaseForAddons *
-            toNumber(addons.untrackableDuoPercent);
+            toNumber(addons.untrackableDuoPercent));
     }
 
     if (options.bonusWin) {
@@ -371,10 +376,10 @@ function calculateAddonPrice({
             duoMultiplier
         );
 
-        addonPrice +=
+        add('bonusWin',
             options.playMode === "Duo"
                 ? winPrice * bonusDuoMultiplier
-                : winPrice;
+                : winPrice);
     }
 
     const championPercent = toNumber(
@@ -383,11 +388,27 @@ function calculateAddonPrice({
         ]
     );
 
-    addonPrice +=
-        adjustedBaseForAddons *
-        championPercent;
+    const championAmount = adjustedBaseForAddons * championPercent;
+    addonPrice += championAmount;
+    if (championPercent || (options.championPreferenceTier && options.championPreferenceTier !== '4+')) {
+        breakdown.push({ key: 'championPreference', amount: championAmount });
+    }
 
     return addonPrice;
+}
+
+// Item rounding is for display only. Keep the existing aggregate calculation,
+// distributing its final cents by largest remainder so item rows add up exactly.
+function roundedAddonBreakdown(breakdown, totalCents) {
+    const rows = breakdown.map(({ key, amount }, index) => {
+        const rawCents = amount * 100;
+        const amountCents = Math.floor(rawCents);
+        return { key, amountCents, remainder: rawCents - amountCents, index };
+    });
+    const remainder = totalCents - rows.reduce((sum, row) => sum + row.amountCents, 0);
+    const ranked = [...rows].sort((a, b) => b.remainder - a.remainder || a.index - b.index);
+    for (let index = 0; index < remainder && ranked.length; index++) ranked[index % ranked.length].amountCents++;
+    return rows.map(({ key, amountCents }) => ({ key, amountCents }));
 }
 
 function isSaleActive(sale, now = new Date()) {
@@ -464,11 +485,13 @@ function calculateOrderPrice({
         options
     );
 
+    const addonBreakdown = [];
     const addonPrice = calculateAddonPrice({
         rule,
         options,
         basePrice,
         referenceRules,
+        breakdown: addonBreakdown,
     });
 
     const subtotal = basePrice + addonPrice;
@@ -484,12 +507,29 @@ function calculateOrderPrice({
         subtotal - saleDiscount
     );
 
-    return {
+    const quote = {
         basePrice: roundMoney(basePrice),
         addonPrice: roundMoney(addonPrice),
         subtotal: roundMoney(subtotal),
         saleDiscount: roundMoney(saleDiscount),
         totalPrice: roundMoney(totalPrice),
+    };
+    const baseCents = Math.round(quote.basePrice * 100);
+    const addonCents = Math.round(quote.addonPrice * 100);
+    const totalCents = Math.round(quote.totalPrice * 100);
+    // Promotions reconcile the independently rounded display amounts without
+    // changing the quote's existing price fields or the amount paid at checkout.
+    const promotion = saleDiscount > 0 ? {
+        title: sale.title || 'Promotion',
+        discountPercent: Math.max(0, Math.min(90, toNumber(sale.discountPercent))),
+        amountCents: Math.max(0, baseCents + addonCents - totalCents),
+    } : null;
+    return { ...quote,
+        addons: roundedAddonBreakdown(addonBreakdown, addonCents),
+        promotion,
+        // Without a promotion, fractional base prices can leave a one-cent
+        // difference between rounded parts and the unchanged rounded total.
+        roundingAdjustmentCents: totalCents - baseCents - addonCents + (promotion?.amountCents || 0),
     };
 }
 

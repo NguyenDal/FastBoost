@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getOrderRating, submitOrderRating } from '../api/orders';
 import '../styles/OrderRating.css';
 
-export default function OrderRating({ orderId, focusRequested = false }) {
+export default function OrderRating({ orderId, focusRequested = false, variant = 'default', onLayoutChange, onSubmitted }) {
     const sectionRef = useRef(null);
     const focusedOrder = useRef(null);
     const [data, setData] = useState(null);
@@ -10,6 +10,7 @@ export default function OrderRating({ orderId, focusRequested = false }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [attempt, setAttempt] = useState(0);
+    const hidden = Boolean(data && !data.rating && !data.eligible);
     useEffect(() => {
         let active = true;
         getOrderRating(orderId).then(result => { if (active) { setData(result); setError(''); } })
@@ -17,13 +18,22 @@ export default function OrderRating({ orderId, focusRequested = false }) {
         return () => { active = false; };
     }, [orderId, attempt]);
     useEffect(() => {
-        if (!focusRequested || !data || (!data.rating && !data.eligible) || focusedOrder.current === orderId) return;
+        const section = sectionRef.current;
+        const update = () => onLayoutChange?.(section?.offsetHeight || 0);
+        update();
+        if (!section || !onLayoutChange) return;
+        const observer = new ResizeObserver(update);
+        observer.observe(section);
+        return () => observer.disconnect();
+    }, [hidden, onLayoutChange]);
+    useEffect(() => {
+        if (!focusRequested || (!data && !error) || hidden || focusedOrder.current === orderId) return;
         const section = sectionRef.current;
         if (!section) return;
         section.focus({ preventScroll: true });
         section.scrollIntoView({ block: 'start' });
         focusedOrder.current = orderId;
-    }, [data, focusRequested, orderId]);
+    }, [data, error, hidden, focusRequested, orderId]);
     async function submit(event) {
         event.preventDefault();
         if (!stars || busy) return;
@@ -31,14 +41,15 @@ export default function OrderRating({ orderId, focusRequested = false }) {
         try {
             const result = await submitOrderRating(orderId, stars);
             setData({ rating: result.rating, eligible: false });
+            onSubmitted?.();
         } catch (error) {
             setError(error.message);
             // A concurrent tab may already have submitted this order's review.
             if (error.status === 409) setAttempt(value => value + 1);
         } finally { setBusy(false); }
     }
-    if (data && !data.rating && !data.eligible) return null;
-    return <section ref={sectionRef} id="order-rating" className="order-rating" tabIndex={-1} aria-labelledby="order-rating-heading">
+    if (hidden) return null;
+    return <section ref={sectionRef} id="order-rating" className={`order-rating${variant === 'chat' ? ' order-rating--chat' : ''}`} tabIndex={-1} aria-labelledby="order-rating-heading">
         <div><p className="order-rating-eyebrow">ORDER COMPLETE</p><h2 id="order-rating-heading">{data?.rating ? 'Thanks for your review' : 'How was your boost?'}</h2><p>{data?.rating ? 'Your feedback contributes to your booster team’s customer rating.' : 'Rate the booster team that completed your order.'}</p></div>
         {error && <div className="order-rating-error" role="alert">{error}{!data && <button type="button" onClick={() => setAttempt(value => value + 1)}>Try again</button>}</div>}
         {!data && !error && <p role="status">Loading your review…</p>}

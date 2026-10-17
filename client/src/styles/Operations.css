@@ -6,6 +6,12 @@
 .ops-team-count{display:inline-grid;place-items:center;min-width:32px;height:28px;padding:0 8px;box-sizing:border-box;border:1px solid #ad8aee30;border-radius:9px;background:#8760d822;color:#d5c4ff;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
 .ops-booster .ops-avatar{flex-shrink:0}
 .ops-booster-identity{min-width:0;flex:1;overflow-wrap:anywhere}
+.ops-booster-title{display:flex;align-items:center;flex-wrap:wrap;column-gap:10px;row-gap:5px}
+.ops-booster-rating{display:inline-flex;align-items:center;flex-wrap:wrap;gap:5px;color:#e9e6f4;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.ops-booster-rating-divider{color:#74698c;margin-right:5px}
+.ops-booster-rating-stars{position:relative;display:inline-block;color:#645d75;font-size:15px;line-height:1;white-space:nowrap}
+.ops-booster-rating-stars>span{position:absolute;inset:0 auto 0 0;overflow:hidden;color:#f7c55c;white-space:nowrap}
+.ops-booster-rating-count{color:#aab5c9;white-space:nowrap}
 .ops-booster-preferences{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-left:auto;color:#d7c9ef;font-size:13px}
 .ops-booster-roles{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .ops-booster-role{display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px;flex-shrink:0;color:#d4ba72;font-size:12px}

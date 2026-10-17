@@ -1,4 +1,5 @@
 const { matchScope } = require('./orderMatchScope');
+const { Prisma } = require('../generated/prisma/client');
 
 const ratingSelect = { stars: true, createdAt: true };
 const orderSelect = {
@@ -47,6 +48,31 @@ async function boosterRating(db, boosterId) {
     }
 }
 
+async function boosterRatings(db, boosterIds) {
+    const ratings = new Map(boosterIds.map(id => [id, { average: null, count: 0, available: true }]));
+    if (!ratings.size) return ratings;
+    try {
+        // Eligibility is checked when a review is created. Use the same immutable
+        // recipient snapshots as boosterRating, not current assignments/status.
+        // Aggregate in one query so neither per-booster queries nor individual
+        // reviews and customer identities cross the database connection.
+        const rows = await db.$queryRaw(Prisma.sql`
+            SELECT recipient."boosterId", AVG(rating.stars)::double precision AS average,
+                COUNT(*)::integer AS count
+            FROM "OrderRatingRecipient" AS recipient
+            JOIN "OrderRating" AS rating ON rating."orderId" = recipient."orderId"
+            WHERE recipient."boosterId" IN (${Prisma.join([...ratings.keys()])})
+            GROUP BY recipient."boosterId"
+        `);
+        for (const row of rows) ratings.set(row.boosterId, { average: Number(row.average), count: Number(row.count), available: true });
+        return ratings;
+    } catch (error) {
+        if (!missingRatingTable(error)) throw error;
+        for (const id of ratings.keys()) ratings.set(id, { average: null, count: 0, available: false });
+        return ratings;
+    }
+}
+
 function missingRatingTable(error) {
     const cause = error?.meta?.driverAdapterError?.cause || error?.cause;
     if (![error?.code, error?.meta?.code, cause?.originalCode, cause?.code].some(code => code === 'P2021' || code === '42P01')) return false;
@@ -57,4 +83,4 @@ function missingRatingTable(error) {
         /relation ["`](?:[\w]+\.)?OrderRating(?:Recipient)?["`] does not exist/i.test(message));
 }
 
-module.exports = { ratingSelect, orderSelect, ratingRecipientIds, boosterRating, missingRatingTable };
+module.exports = { ratingSelect, orderSelect, ratingRecipientIds, boosterRating, boosterRatings, missingRatingTable };

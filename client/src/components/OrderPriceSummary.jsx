@@ -5,6 +5,27 @@ import '../styles/Skeleton.css';
 export default function OrderPriceSummary({ summary, variant = 'default', onRemoveCoupon, busy = false }) {
     if (!summary) return <div role="status" aria-label="Loading price summary"><Skeleton height={120} radius={8} /></div>;
     const price = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency || 'USD' }).format(cents / 100);
+    if (variant === 'admin') {
+        const breakdown = summary.adminBreakdown;
+        const amount = cents => Number.isSafeInteger(cents) ? price(cents) : 'Not recorded';
+        const discounts = [
+            { label: 'Promotion', cents: breakdown?.promotionCents },
+            { label: `Coupon${breakdown?.coupon?.code ? ` (${breakdown.coupon.code})` : ''}`, title: breakdown?.coupon?.title, cents: breakdown?.coupon?.amountCents },
+            { label: 'Referral discount', cents: breakdown?.referralCents },
+            { label: `Gold used${breakdown?.goldRedeemed ? ` (${breakdown.goldRedeemed.toLocaleString()} Gold)` : ''}`, cents: breakdown?.goldDiscountCents },
+        ].filter(row => row.cents > 0);
+        return <div className="admin-price-summary">
+            <dl className="price-summary price-summary--admin">
+                <div className="price-row"><dt>Base price</dt><dd>{amount(breakdown?.basePriceCents)}</dd></div>
+                {breakdown?.addonPriceCents > 0 && <div className="price-row"><dt>Add-ons</dt><dd>{price(breakdown.addonPriceCents)}</dd></div>}
+                {discounts.map(row => <div className="price-row price-discount" key={row.label}><dt title={row.title}>{row.label}</dt><dd>−{price(row.cents)}</dd></div>)}
+                <div className="price-row price-subtotal"><dt>Subtotal</dt><dd>{amount(breakdown?.subtotalCents)}</dd></div>
+                {breakdown?.taxCents > 0 && <div className="price-row"><dt>Tax</dt><dd>{price(breakdown.taxCents)}</dd></div>}
+                <div className="price-row total"><dt>Total</dt><dd>{amount(breakdown ? breakdown.totalCents : summary.totalCents)}</dd></div>
+            </dl>
+            {breakdown?.hasUnitemizedAdjustment && <p className="admin-price-summary-note">Some price adjustments were not itemized in the saved order.</p>}
+        </div>;
+    }
     const discounts = [
         { label: 'Promotion', cents: summary.promotionCents },
         { label: `Coupon${summary.coupon?.code ? ` (${summary.coupon.code})` : ''}`, title: summary.coupon?.title, cents: summary.coupon?.amountCents, coupon: true },

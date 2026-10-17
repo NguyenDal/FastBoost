@@ -3,7 +3,7 @@ const db = require('../prisma');
 const { protect } = require('../middleware/authMiddleware');
 const { buildEarningsReport } = require('../utils/earningsReport');
 const { boosterEarnings } = require('../utils/boosterEarnings');
-const { boosterRating } = require('../utils/orderRatings');
+const { boosterRating, boosterRatings } = require('../utils/orderRatings');
 const { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences, loadPreferencesForUsers } = require('../utils/boosterPreferences');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
 const { withEarningsLedgerMutation } = require('../utils/boosterEarningsLedger');
@@ -141,9 +141,12 @@ router.get('/boosters', admin, handle(async (req, res) => {
             providedAssignments: { where: { order: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS'] } } }, select: { id: true } },
         }, orderBy: { username: 'asc' } }), boosterEarnings(db),
     ]);
-    const { preferencesByUser, preferencesAvailable } = await loadPreferencesForUsers(db, users.map(user => user.id));
+    const userIds = users.map(user => user.id);
+    const [{ preferencesByUser, preferencesAvailable }, ratings] = await Promise.all([
+        loadPreferencesForUsers(db, userIds), boosterRatings(db, userIds),
+    ]);
     res.json({ ok: true, preferencesAvailable, boosters: users.map(user => ({ ...user,
-        preferences: preferencesByUser.get(user.id), earnings: income[user.id] || {} })) });
+        preferences: preferencesByUser.get(user.id), rating: ratings.get(user.id), earnings: income[user.id] || {} })) });
 }));
 router.patch('/boosters/:id', admin, handle(async (req, res) => {
     const user = await db.user.findUnique({ where: { id: req.params.id } });

@@ -50,7 +50,11 @@ test('customer, booster and admin order responses share the saved receipt and pr
     const admin = { id: 'admin', role: 'ADMIN' };
     const expected = { currency: 'cad', subtotalCents: 12000, promotionCents: 0,
         coupon: { title: 'Welcome', code: 'WELCOME10', amountCents: 1200 },
-        referralCents: 0, goldRedeemed: 1080, goldDiscountCents: 10800, totalCents: 0 };
+        referralCents: 0, goldRedeemed: 1080, goldDiscountCents: 10800, totalCents: 0,
+        adminBreakdown: { basePriceCents: 10000, addonPriceCents: 2000, promotionCents: 0,
+            coupon: { title: 'Welcome', code: 'WELCOME10', amountCents: 1200 },
+            referralCents: 0, goldRedeemed: 1080, goldDiscountCents: 10800, subtotalCents: 0,
+            taxCents: null, totalCents: 0, hasUnitemizedAdjustment: false } };
     for (const [name, user, key] of [
         ['getOrderById', customer, 'order'], ['getOrderById', booster, 'order'],
         ['getOrderAdminById', admin, 'order'], ['getMyOrders', customer, 'orders'],

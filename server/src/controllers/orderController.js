@@ -10,6 +10,7 @@ const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger")
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
 const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
+const { boosterRating } = require("../utils/orderRatings");
 const {
     applyReferralFirstPurchaseDiscount,
     getReferralFirstPurchaseOffer,
@@ -626,6 +627,7 @@ const getOrderById = async (req, res) => {
                                 profile: {
                                     select: {
                                         displayName: true,
+                                        profileImageUrl: true,
                                     },
                                 },
                             },
@@ -664,6 +666,22 @@ const getOrderById = async (req, res) => {
         const safeOrder = await formatOrderForDetailResponse(order, req, {
             includeDecryptedLoginPassword: true,
         });
+
+        // Only summarize currently assigned boosters after order access succeeds.
+        // Use the same saved-review aggregate as each booster's own profile.
+        const boosterIds = [...new Set(safeOrder.assignments.map(assignment => assignment.booster?.id).filter(Boolean))];
+        const ratings = new Map(await Promise.all(boosterIds.map(async boosterId => {
+            try {
+                return [boosterId, await boosterRating(prisma, boosterId)];
+            } catch (error) {
+                console.error("getOrderById booster rating error:", error);
+                return [boosterId, { average: null, count: 0, available: false }];
+            }
+        })));
+        safeOrder.assignments = safeOrder.assignments.map(assignment => assignment.booster ? {
+            ...assignment,
+            booster: { ...assignment.booster, rating: ratings.get(assignment.booster.id) },
+        } : assignment);
 
         return res.json({
             ok: true,

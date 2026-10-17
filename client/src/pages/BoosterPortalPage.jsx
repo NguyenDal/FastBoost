@@ -18,8 +18,7 @@ const cards = [
 function Rating({ rating }) {
     return <section className="ops-card booster-rating">
         <span className="booster-portal-eyebrow">CUSTOMER RATING</span>
-        <div className="booster-rating-value"><span aria-hidden="true">★</span><strong>{rating?.count ? `${rating.average.toFixed(1)} / 5` : '0.0 / 5'}</strong></div>
-        <p>{rating?.count || 0} {rating?.count === 1 ? 'review' : 'reviews'} from completed orders.</p>
+        <div className="booster-rating-value"><span aria-hidden="true">★</span><strong>{rating?.available === false ? 'Unavailable' : <>{rating?.count ? `${rating.average.toFixed(1)}/5` : '0.0/5'} <small>({rating?.count || 0} {rating?.count === 1 ? 'review' : 'reviews'})</small></>}</strong></div>
     </section>;
 }
 

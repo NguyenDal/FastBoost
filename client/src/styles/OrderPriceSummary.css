@@ -6,3 +6,13 @@
 .price-summary .price-row.total { font-size: 18px; font-weight: 800; color: #fff; border-bottom: none; padding-top: 14px; }
 .checkout-totals dd { flex-shrink: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .checkout-totals .checkout-coupon-label { flex-wrap: wrap; }
+
+.price-summary--admin { margin: 0; gap: 4px; }
+.price-summary--admin .price-row { align-items: baseline; padding: 11px 0; }
+.price-summary--admin dt { min-width: 0; overflow-wrap: anywhere; font-size: 13px; line-height: 1.5; }
+.price-summary--admin dd { flex-shrink: 0; margin: 0; font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.price-summary--admin .price-subtotal { margin-top: 4px; padding-top: 16px; border-top: 1px solid #ffffff1a; font-weight: 700; }
+.price-summary--admin .price-row.total { padding-top: 12px; }
+.price-summary--admin .total dt,
+.price-summary--admin .total dd { font-size: 18px; font-weight: 800; }
+.admin-price-summary-note { margin: 14px 0 0; color: #aeb7cb; font-size: 12px; line-height: 1.6; }

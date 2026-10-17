@@ -722,10 +722,11 @@ pending migrations separately. Flag values in a local `.env` do not configure or
   in-app notification. They reuse the assignment/unassignment outbox categories with immutable
   `payload.assignmentRequest` metadata; no additional migration is needed. Repeated requests
   do not duplicate emails, and a newer invitation or acceptance makes an older invitation obsolete.
-- Assignment and invitation emails show Subtotal, Total and potential earnings. Subtotal uses
-  service revenue after discounts and Gold, before tax; the potential amount is the existing 70%
-  pool, labelled "up to" because approved matches determine each booster's share. Total uses the
-  saved customer cash total (which can include tax). Unknown earnings are not shown as zero.
+- All booster order emails include the same service details and pricing rows: Subtotal (before
+  tax), Total (after tax), and Potential earnings (70% of subtotal). Subtotal uses canonical
+  service revenue after discounts and Gold; Total uses the saved customer cash total when
+  available. Tax is never inferred from their difference. Potential earnings remain labelled
+  "up to" because approved matches determine each booster's share. Unknown amounts are not zero.
 - Both workers check every 30 seconds, claim deliveries and retry at most eight times. Booster
   delivery rechecks current email, access and event relevance; obsolete alerts record `skippedAt`.
   Inspect `attempts`, `lastError`, `nextAttemptAt` and `sentAt` on the corresponding outbox.

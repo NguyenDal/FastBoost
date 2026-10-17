@@ -21,13 +21,15 @@ import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
 import OrderRating from '../components/OrderRating';
 import { formatOrderTotal } from '../utils/orderPricing';
+import { findAssignedBooster, getBoosterAvatar, getBoosterDisplayName } from '../utils/matchBoosterProfile';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
 function MatchPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const showHistory = new URLSearchParams(location.search).get('tab') === 'history';
+    const ratingRequested = location.hash === '#order-rating';
+    const showHistory = !ratingRequested && new URLSearchParams(location.search).get('tab') === 'history';
     function setHistoryTab(history) {
         const search = new URLSearchParams(location.search);
         if (history) search.set('tab', 'history'); else search.delete('tab');
@@ -92,6 +94,7 @@ function MatchPage() {
     const previousMessagesRef = useRef([]);
     const isInitialChatPositionAppliedRef = useRef(false);
     const shouldScrollAfterSendRef = useRef(false);
+    const previousRatingHeightRef = useRef(0);
 
     const scrollChatToBottom = useCallback((behavior = "smooth") => {
         const el = chatMessagesRef.current;
@@ -166,6 +169,25 @@ function MatchPage() {
     const chatEnabled =
         Boolean(conversation) && Boolean(currentUserId);
 
+    const canRateOrder = order?.status === 'COMPLETED' &&
+        order?.paymentStatus === 'PAID' && isCustomerOwner;
+
+    async function refreshBoosterRating() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+                headers: { Authorization: `Bearer ${authStorage.getItem('token')}` },
+            });
+            if (!response.ok) return;
+            const result = await response.json();
+            const refreshedBooster = findAssignedBooster(conversation, result.order);
+            setMatchedBooster(current => current && refreshedBooster && current.id === refreshedBooster.id
+                ? { ...current, rating: refreshedBooster.rating }
+                : current);
+        } catch {
+            // The review is already saved; a summary refresh must not report it as failed.
+        }
+    }
+
     const updateChatScrollbar = useCallback(() => {
         const el = chatMessagesRef.current;
         if (!el) return;
@@ -193,6 +215,19 @@ function MatchPage() {
             visible: true,
         });
     }, []);
+
+    const handleRatingLayoutChange = useCallback((height) => {
+        const el = chatMessagesRef.current;
+        const previousHeight = previousRatingHeightRef.current;
+        previousRatingHeightRef.current = height;
+        if (!el) return;
+        const heightChange = height - previousHeight;
+        const wasNearBottom = el.scrollHeight - heightChange - el.scrollTop - el.clientHeight < 80;
+        if (previousHeight > 0 && heightChange !== 0 && wasNearBottom && !ratingRequested) {
+            el.scrollTop = el.scrollHeight;
+        }
+        updateChatScrollbar();
+    }, [ratingRequested, updateChatScrollbar]);
 
     const scrollToMessageById = useCallback((messageId, behavior = "smooth") => {
         if (!messageId) return;
@@ -236,7 +271,7 @@ function MatchPage() {
             el.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", updateChatScrollbar);
         };
-    }, [messages, updateChatScrollbar, saveChatScrollState]);
+    }, [messages, showHistory, updateChatScrollbar, saveChatScrollState]);
 
     useEffect(() => {
         if (!messages.length) return;
@@ -246,6 +281,12 @@ function MatchPage() {
 
         if (!isInitialChatPositionAppliedRef.current) {
             isInitialChatPositionAppliedRef.current = true;
+
+            if (ratingRequested && canRateOrder) {
+                previousMessagesRef.current = messages;
+                updateChatScrollbar();
+                return;
+            }
 
             const lastSeenAt = sessionStorage.getItem(getChatStorageKey("lastSeenAt"));
             const savedScrollTop = sessionStorage.getItem(getChatStorageKey("scrollTop"));
@@ -315,12 +356,15 @@ function MatchPage() {
         scrollChatToBottom,
         scrollToMessageById,
         updateChatScrollbar,
+        ratingRequested,
+        canRateOrder,
     ]);
 
     useEffect(() => {
         isInitialChatPositionAppliedRef.current = false;
         previousMessagesRef.current = [];
         shouldScrollAfterSendRef.current = false;
+        previousRatingHeightRef.current = 0;
     }, [orderId]);
 
     useEffect(() => {
@@ -811,8 +855,6 @@ function MatchPage() {
                     </div>
                 </section>
 
-                {order.status === 'COMPLETED' && order.paymentStatus === 'PAID' && order.customerId === currentUser?.id && <OrderRating key={orderId} orderId={orderId} focusRequested={location.hash === '#order-rating'} />}
-
                 <div className="match-tabs">
                     <button className={`match-tab ${!showHistory ? 'active' : ''}`} aria-pressed={!showHistory} onClick={() => setHistoryTab(false)}>Details</button>
                     <button className={`match-tab ${showHistory ? 'active' : ''}`} aria-pressed={showHistory} onClick={() => setHistoryTab(true)}>Match History</button>
@@ -923,6 +965,16 @@ function MatchPage() {
                                                         </div>
                                                     )}
                                                 </div>
+                                                {isSystem && message.id === 'system-completed' && canRateOrder && (
+                                                    <OrderRating
+                                                        key={orderId}
+                                                        orderId={orderId}
+                                                        variant="chat"
+                                                        focusRequested={ratingRequested}
+                                                        onLayoutChange={handleRatingLayoutChange}
+                                                        onSubmitted={refreshBoosterRating}
+                                                    />
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -1048,20 +1100,19 @@ function MatchPage() {
                                                 </span>
                                             </div>
 
-                                            {matchedBooster.rating ? (
+                                            {matchedBooster.rating?.available ? (
                                                 <div className="booster-rating-row">
-                                                    <span className="booster-stars">
-                                                        {renderStars(matchedBooster.rating)}
+                                                    <span className="booster-stars" aria-hidden="true">
+                                                        {renderStars(matchedBooster.rating.average)}
                                                     </span>
                                                     <span className="booster-rating-text">
-                                                        {matchedBooster.rating} / 5 ({matchedBooster.reviews || 0} reviews)
+                                                        {(matchedBooster.rating.average ?? 0).toFixed(1)} / 5 ({matchedBooster.rating.count} {matchedBooster.rating.count === 1 ? 'review' : 'reviews'})
                                                     </span>
                                                 </div>
                                             ) : (
                                                 <div className="booster-rating-row">
-                                                    <span className="booster-stars">★★★★★</span>
                                                     <span className="booster-rating-text">
-                                                        4.5 / 5 (657 reviews)
+                                                        Rating unavailable
                                                     </span>
                                                 </div>
                                             )}
@@ -1469,58 +1520,8 @@ function formatChatTime(value) {
     });
 }
 
-function getBoosterDisplayName(booster) {
-    return booster?.username || booster?.email || booster?.name || "Assigned Booster";
-}
-
-function getBoosterAvatar(booster) {
-    const name = getBoosterDisplayName(booster);
-
-    return (
-        booster?.profileImage ||
-        booster?.avatar ||
-        booster?.profile?.profileImage ||
-        booster?.profile?.avatar ||
-        booster?.profile?.photoUrl ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=fff`
-    );
-}
-
-function findAssignedBooster(conversation, order) {
-    const participants = conversation?.participants || [];
-
-    const boosterFromParticipants = participants
-        .map((p) => p.user || p.booster || p.participant || p)
-        .find((user) => {
-            const role = String(user?.role || "").toUpperCase();
-            return role === "PROVIDER" || role === "BOOSTER";
-        });
-
-    if (boosterFromParticipants) {
-        return boosterFromParticipants;
-    }
-
-    const assignments = order?.assignments || order?.orderAssignments || [];
-
-    const boosterFromAssignments = assignments
-        .map((a) => a.booster || a.user || a.provider)
-        .find(Boolean);
-
-    if (boosterFromAssignments) {
-        return boosterFromAssignments;
-    }
-
-    return (
-        order?.booster ||
-        order?.provider ||
-        order?.assignedBooster ||
-        order?.assignedProvider ||
-        null
-    );
-}
-
 function renderStars(rating) {
-    const safeRating = Number(rating || 5);
+    const safeRating = Number(rating || 0);
     const fullStars = Math.max(0, Math.min(5, Math.floor(safeRating)));
     const emptyStars = 5 - fullStars;
 
@@ -1637,6 +1638,8 @@ function getSenderAvatar(sender) {
     const name = getSenderDisplayName(sender);
 
     return (
+        sender?.profile?.profileImageUrl ||
+        sender?.profileImageUrl ||
         sender?.profileImage ||
         sender?.avatar ||
         sender?.profile?.profileImage ||

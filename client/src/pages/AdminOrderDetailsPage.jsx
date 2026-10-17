@@ -1,5 +1,5 @@
 import { authStorage } from "../utils/authStorage";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
     adminGetOrder,
@@ -17,6 +17,7 @@ import {
 
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPriceSummary from '../components/OrderPriceSummary';
+import OrderStatusConfirmation, { OrderStatusIcon } from '../components/OrderStatusConfirmation';
 import "../styles/Admin.css";
 
 function useAdminGuard() {
@@ -64,7 +65,13 @@ export default function AdminOrderDetailsPage() {
     const { id } = useParams();
 
     const [order, setOrder] = useState(null);
-    const [status, setStatus] = useState("");
+    const [pendingStatus, setPendingStatus] = useState(null);
+    const [statusUpdating, setStatusUpdating] = useState(false);
+    const [statusError, setStatusError] = useState("");
+    const [statusNotice, setStatusNotice] = useState("");
+    const statusUpdateInFlight = useRef(false);
+    const orderTitle = useRef(null);
+    const statusDialogReturnFocus = useRef(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -107,7 +114,6 @@ export default function AdminOrderDetailsPage() {
             try {
                 const o = await adminGetOrder(id);
                 setOrder(o);
-                setStatus(o.status);
                 const [prov, asg, reqs] = await Promise.all([
                     adminListProviders(""),
                     adminListAssignments(id),
@@ -145,18 +151,34 @@ export default function AdminOrderDetailsPage() {
         setAssignmentRequests(reqs);
     };
 
-    const onAdminSetStatus = async (nextStatus) => {
-        try {
-            const updated = await adminUpdateOrderStatus(id, nextStatus);
-            setOrder(updated);
-            setStatus(updated.status);
+    const requestStatusChange = (nextStatus) => {
+        statusDialogReturnFocus.current = document.activeElement;
+        setStatusError("");
+        setStatusNotice("");
+        setPendingStatus(nextStatus);
+    };
 
-            await Promise.all([
-                refreshAssignments(),
-                refreshAssignmentRequests(),
-            ]);
+    const onAdminSetStatus = async () => {
+        if (!pendingStatus || statusUpdateInFlight.current) return;
+        statusUpdateInFlight.current = true;
+        setStatusUpdating(true);
+        setStatusError("");
+        try {
+            const updated = await adminUpdateOrderStatus(id, pendingStatus);
+            setOrder(updated);
+            statusDialogReturnFocus.current = orderTitle.current;
+            setPendingStatus(null);
+            // The status change succeeded even if a subsequent refresh fails.
+            try {
+                await Promise.all([refreshAssignments(), refreshAssignmentRequests()]);
+            } catch {
+                setStatusNotice("Order status updated. Refresh the page to see the latest assignments.");
+            }
         } catch (e) {
-            alert(e?.message || "Failed to update status");
+            setStatusError(e?.message || "Failed to update status. Please try again.");
+        } finally {
+            statusUpdateInFlight.current = false;
+            setStatusUpdating(false);
         }
     };
 
@@ -222,7 +244,6 @@ export default function AdminOrderDetailsPage() {
             const fresh = await adminGetOrder(id);
 
             setOrder(fresh);
-            setStatus(fresh.status);
 
             await Promise.all([
                 refreshAssignments(),
@@ -248,7 +269,7 @@ export default function AdminOrderDetailsPage() {
                         <div className="admin-order-hero">
                             <div>
                                 <p className="admin-eyebrow">FastBoost Admin</p>
-                                <h1 className="admin-order-title">
+                                <h1 className="admin-order-title" ref={orderTitle} tabIndex={-1}>
                                     {order.service?.title || order.boostType}
                                 </h1>
 
@@ -282,39 +303,30 @@ export default function AdminOrderDetailsPage() {
                                 <div className="status-row">
                                     <label className="field-label">Admin Actions</label>
 
-                                    <div className="status-control">
+                                    <div className="status-control order-status-controls">
                                         <button
-                                            className="secondary-btn admin-btn-sm"
-                                            disabled={order.status === "COMPLETED" || order.status === "CANCELLED"}
-                                            onClick={() => onAdminSetStatus("COMPLETED")}
+                                            type="button"
+                                            className="order-status-action order-status-action--complete"
+                                            disabled={statusUpdating || assignLoading || order.status === "COMPLETED" || order.status === "CANCELLED"}
+                                            onClick={() => requestStatusChange("COMPLETED")}
                                         >
+                                            <OrderStatusIcon status="COMPLETED" />
                                             Mark Completed
                                         </button>
 
                                         <button
-                                            className="danger-btn admin-btn-sm"
-                                            disabled={order.status === "CANCELLED"}
-                                            onClick={() => onAdminSetStatus("CANCELLED")}
+                                            type="button"
+                                            className="order-status-action order-status-action--cancel"
+                                            disabled={statusUpdating || assignLoading || order.status === "CANCELLED"}
+                                            onClick={() => requestStatusChange("CANCELLED")}
                                         >
+                                            <OrderStatusIcon status="CANCELLED" />
                                             Cancel Order
                                         </button>
                                     </div>
 
-                                    <p className="muted-text status-helper">
-                                        Pending and In Progress are automatic based on booster assignment.
-                                    </p>
+                                    {statusNotice && <p className="muted-text" role="status">{statusNotice}</p>}
                                 </div>
-
-                                {order.currentRank && order.desiredRank && (
-                                    <div className="detail-section">
-                                        <h3 className="card-subtitle">Boost Path</h3>
-                                        <div className="boost-path">
-                                            <div className="boost-rank-box">{order.currentRank}</div>
-                                            <div className="boost-arrow">→</div>
-                                            <div className="boost-rank-box">{order.desiredRank}</div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <OrderTypeDetails order={order} />
                                 <AddonDetails order={order} />
@@ -324,7 +336,7 @@ export default function AdminOrderDetailsPage() {
                                 <div className="admin-card premium-card">
                                     <h3 className="card-title">Price Summary</h3>
 
-                                    <OrderPriceSummary summary={order.priceSummary} />
+                                    <OrderPriceSummary summary={order.priceSummary} variant="admin" />
                                 </div>
 
                                 {order.conversation ? (
@@ -370,7 +382,7 @@ export default function AdminOrderDetailsPage() {
                                                 </div>
                                                 <button
                                                     className="danger-btn"
-                                                    disabled={assignLoading}
+                                                    disabled={assignLoading || statusUpdating}
                                                     onClick={() => onUnassign(a.boosterId)}
                                                 >
                                                     Unassign
@@ -389,7 +401,7 @@ export default function AdminOrderDetailsPage() {
                                                     </div>
                                                     <AssignmentRequestButton
                                                         provider={u}
-                                                        disabled={assignLoading}
+                                                        disabled={assignLoading || statusUpdating}
                                                         isAssigned={assignedIds.includes(u.id)}
                                                         pendingRequest={pendingRequestByBoosterId[u.id]}
                                                         confirmCancelRequestId={confirmCancelRequestId}
@@ -407,6 +419,15 @@ export default function AdminOrderDetailsPage() {
 
                             </aside>
                         </div>
+                        {pendingStatus && <OrderStatusConfirmation
+                            orderNumber={order.orderNumber}
+                            status={pendingStatus}
+                            busy={statusUpdating}
+                            error={statusError}
+                            returnFocus={statusDialogReturnFocus}
+                            onClose={() => { if (!statusUpdateInFlight.current) setPendingStatus(null); }}
+                            onConfirm={onAdminSetStatus}
+                        />}
                     </>
                 ) : null}
             </main>

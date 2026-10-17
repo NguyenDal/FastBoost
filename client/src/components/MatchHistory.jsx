@@ -224,6 +224,8 @@ export default function MatchHistory({ orderId }) {
     const [submitError, setSubmitError] = useState('');
     const listStart = useRef(null);
     const path = `/match-history/${orderId}`;
+    const historyClosed = ['COMPLETED', 'CANCELLED'].includes(data?.order.status);
+    const canImport = Boolean(data?.canImport && !historyClosed);
     useEffect(() => {
         let active = true;
         operations(path).then(result => { if (active) { setData(result); setError(''); setSelection({}); setSelecting(false); setPage(1); setQuote(null); } }).catch(e => { if (active) setError(e.message); });
@@ -234,6 +236,7 @@ export default function MatchHistory({ orderId }) {
         return () => clearInterval(timer);
     }, []);
     async function action(route, body) {
+        if (route === '/import' && !canImport) return;
         setBusy(true); setError(''); setNotice('');
         try {
             const result = route ? await operations(`${path}${route}`, body) : null;
@@ -279,23 +282,23 @@ export default function MatchHistory({ orderId }) {
         } catch (e) { setSubmitError(e.message); } finally { setBusy(false); }
     }
     return <section className="mh-panel" aria-label="Match history">
-        <header className="mh-heading"><h2>Match history</h2><div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy || selecting || !data} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => data?.canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div></header>
+        <header className="mh-heading"><h2>Match history</h2>{data && !historyClosed && <div className="mh-actions"><button className="mh-refresh" type="button" disabled={busy || selecting} aria-label={busy ? 'Refreshing match history' : 'Refresh match history'} title="Refresh match history" aria-busy={busy} onClick={() => canImport ? action('/import', { start: 0 }) : action('')}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 7a7 7 0 0 1 11.55-1.9L20 8M4 16l2.35 2.9A7 7 0 0 0 17.9 17" /></svg></button></div>}</header>
         {error && <p className="mh-error" role="alert">{error}</p>}{notice && <p className="mh-sr-only" role="status">{notice}</p>}
         {!data && !error && <MatchHistorySkeleton contentOnly />}
         {data && <>
             {data.countReview ? <CountHistoryReview data={data} reload={() => action('')} /> : <>
             {!data.order.enabled && <p className="mh-notice">This order uses match-count contribution approvals.</p>}
-            {data.importIssue && <p className="mh-notice">{data.importIssue}</p>}
+            {!historyClosed && data.importIssue && <p className="mh-notice">{data.importIssue}</p>}
             <div className="mh-counts"><span><strong>{counts.APPROVED + counts.PENDING}</strong> submitted</span><span><strong>{counts.APPROVED}</strong> approved</span>{!data.customerView && <><span><strong>{counts.PENDING}</strong> to review</span><span><strong>{counts.unsubmitted}</strong> not submitted</span>{counts.REJECTED > 0 && <span><strong>{counts.REJECTED}</strong> excluded</span>}</>}
                 {data.canSubmit && <div className="mh-actions mh-count-actions">{selecting ? <><button className="mh-clear" disabled={busy} onClick={() => { setSelection({}); setSelecting(false); }}>Cancel</button><button className="mh-primary" disabled={busy || !changed} onClick={previewSubmission}>{editing ? 'Save changes' : 'Submit selected'}</button></> : <button className="mh-primary" disabled={busy || (!counts.unsubmitted && !editing)} aria-controls={`match-list-${orderId}`} onClick={startSelection}>{editing ? 'Edit submission' : 'Select matches'}</button>}</div>}
             </div>
             {data.canSubmit && selecting && <div className="mh-selection-bar"><strong role="status">{selected.length + ownApproved.length} {selected.length + ownApproved.length === 1 ? 'match' : 'matches'} selected</strong><p>Click a card to select or deselect it. Selections stay checked across pages.{ownApproved.length > 0 && ' Approved matches stay locked.'}</p></div>}
             <div ref={listStart} className="mh-page-start" tabIndex={-1} />
-            {data.matches.length === 0 ? <div className="mh-empty"><span aria-hidden="true">◇</span><h3>No matches yet</h3><p>{data.canImport ? 'Use refresh to check for ranked matches played after this order was paid.' : 'Submitted matches for this order will appear here.'}</p></div> : <>
+            {data.matches.length === 0 ? <div className="mh-empty"><span aria-hidden="true">◇</span><h3>{historyClosed ? 'No saved matches' : 'No matches yet'}</h3><p>{historyClosed ? 'No matches were saved for this order.' : canImport ? 'Use refresh to check for ranked matches played after this order was paid.' : 'Submitted matches for this order will appear here.'}</p></div> : <>
                 <div className="mh-list" id={`match-list-${orderId}`}>{data.matches.slice(firstMatch, firstMatch + PAGE_SIZE).map(match => <MatchCard key={`${match.id}-${match.revision}`} match={match} path={path} boosters={data.boosters} canReview={data.canReview} canSelect={selecting && data.canSubmit && canSelect(match)} checked={selecting && (selected.some(m => m.id === match.id) || ownApproved.some(m => m.id === match.id))} onSelect={() => setSelection(previous => ({ ...previous, [match.id]: previous[match.id] === match.revision ? null : match.revision }))} busy={busy} now={now} onReview={(m, decision, boosterId, note) => action(`/${m.id}/review`, { revision: m.revision, decision, boosterId, note })} />)}</div>
                 <div className="mh-pagination"><p role="status">Showing {firstMatch + 1}–{Math.min(firstMatch + PAGE_SIZE, data.matches.length)} of {data.matches.length} matches · {PAGE_SIZE} per page</p><OrderPagination currentPage={currentPage} totalPages={totalPages} tableId={`match-list-${orderId}`} label="Match history pages" onPageChange={next => { setPage(next); listStart.current?.focus({ preventScroll: true }); listStart.current?.scrollIntoView({ block: 'start' }); }} /></div>
             </>}
-            {data.canImport && nextStart !== null && <button disabled={busy || selecting} onClick={() => action('/import', { start: nextStart })}>Load older matches</button>}
+            {canImport && nextStart !== null && <button disabled={busy || selecting} onClick={() => action('/import', { start: nextStart })}>Load older matches</button>}
             {data.earnings && data.order.enabled && <footer className="mh-earnings"><div><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3><p>70% of the service revenue, split by approved matches. Unsubmitted games do not count. {data.order.confirmedAt ? 'Earnings confirmed.' : 'Estimates below depend on admin approval.'}</p>{(data.order.confirmedAt ? data.earnings.shares : data.earnings.estimates || []).map(s => <div className="mh-share" key={s.boosterId}><span>{data.boosters.find(b => b.id === s.boosterId)?.username || data.matches.find(m => m.boosterId === s.boosterId)?.booster?.username || 'Booster'} · {s.matches} matches</span><strong>{money(s.cents, data.earnings.currency)}{!data.order.confirmedAt && <small> estimated</small>}</strong></div>)}</div>
                 {data.canConfirm && <button className="mh-primary" disabled={busy || !counts.APPROVED || counts.PENDING > 0} onClick={() => action('/confirm', { revision: data.order.revision })}>Confirm matches for earnings</button>}
                 {data.canReview && !data.canConfirm && <small>Earnings can be confirmed once the order is completed.</small>}

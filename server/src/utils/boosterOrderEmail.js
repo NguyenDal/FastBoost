@@ -41,20 +41,17 @@ function buildBoosterOrderEmail(order, event) {
     const summary = checkoutSummary(order);
     // Keep account credentials, customer identity, chat and payment identifiers
     // out of email. The signed-in workspace remains the source of order access.
-    const rows = [['Order', `#${order.orderNumber}`], ['Game', summary.game === 'tft' ? 'Teamfight Tactics' : 'League of Legends'], ['Service', summary.serviceType],
-        ...(event === 'UNASSIGNED' || event === 'ASSIGNMENT_REQUEST_CANCELLED' ? [] : summary.details)];
-    const showEarnings = event === 'ASSIGNED' || event === 'ASSIGNMENT_REQUEST';
-    const earningsNote = showEarnings ? 'Potential earnings are shared by approved matches.' : '';
-    if (showEarnings) {
-        // The existing service-revenue subtotal is after discounts and Gold,
-        // before tax. Cash totals can include tax and must not fund the pool.
-        const earnings = orderEarnings(order);
-        const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency.toUpperCase() }).format(cents / 100);
-        const totalKnown = Number.isInteger(order.cashAmountCents) || Number.isInteger(order.amountCents) || Number.isFinite(order.totalPrice);
-        rows.push(['Subtotal', earnings ? money(earnings.revenueCents) : 'Not available'],
-            ['Total', totalKnown ? money(summary.totalCents) : 'Not available'],
-            ['Potential earnings', earnings ? `Up to ${money(earnings.boosterCents)}` : 'Not available']);
-    }
+    const rows = [['Order', `#${order.orderNumber}`], ['Game', summary.game === 'tft' ? 'Teamfight Tactics' : 'League of Legends'], ['Service', summary.serviceType], ...summary.details];
+    const earningsNote = 'Potential earnings are shared by approved matches.';
+    // Every event retains the same order snapshot. The saved customer total may
+    // include tax, but only discounted service revenue after Gold funds earnings.
+    // Do not infer a tax charge or rate from the difference between these totals.
+    const earnings = orderEarnings(order);
+    const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency.toUpperCase() }).format(cents / 100);
+    const totalKnown = Number.isInteger(order.cashAmountCents) || Number.isInteger(order.amountCents) || Number.isFinite(order.totalPrice);
+    rows.push(['Subtotal (before tax)', earnings ? money(earnings.revenueCents) : 'Not available'],
+        ['Total (after tax)', totalKnown ? money(summary.totalCents) : 'Not available'],
+        ['Potential earnings (70% of subtotal)', earnings ? `Up to ${money(earnings.boosterCents)}` : 'Not available']);
     const subject = `FastBoost · ${copy.subject} #${order.orderNumber}`;
     return { subject,
         text: [subject, '', copy.text, '', ...rows.map(([label, value]) => `${label}: ${value}`), ...(earningsNote ? ['', earningsNote] : []), '', `${copy.action}: ${url}`].join('\n'),
