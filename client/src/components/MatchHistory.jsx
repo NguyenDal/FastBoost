@@ -150,6 +150,8 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
     const { details } = match;
     const player = details.players[details.selected];
     const isTft = match.game === 'TFT';
+    const approved = match.status === 'APPROVED';
+    const excluded = match.status === 'REJECTED';
     const assets = useAssets(details.version, !isTft);
     const [boosterId, setBoosterId] = useState(match.boosterId || '');
     const [note, setNote] = useState(match.reviews?.[0]?.note || '');
@@ -181,11 +183,10 @@ function MatchCard({ match, boosters, canReview, canSelect, checked, onSelect, b
         </div>
         <div className={`mh-details${expanded ? ' mh-details-open' : ''}`} id={detailsId} aria-hidden={!expanded} inert={!expanded}><div className="mh-details-inner">{hasExpanded && (isTft ? <TftScoreboard match={match} /> : <Scoreboard match={match} teams={teams} assets={assets} path={path} />)}</div></div>
         {canReview && <fieldset className="mh-review" disabled={busy}><legend>Admin review</legend>
-            <label>Played by<select aria-label={`Booster for ${match.externalId}`} value={boosterId} onChange={e => setBoosterId(e.target.value)}><option value="">Select booster</option>{boosters.map(b => <option key={b.id} value={b.id}>{b.username || 'Booster'}</option>)}</select></label>
+            <label>Played by<select aria-label={`Booster for ${match.externalId}`} value={boosterId} disabled={approved} onChange={e => setBoosterId(e.target.value)}><option value="">Select booster</option>{boosters.map(b => <option key={b.id} value={b.id}>{b.username || 'Booster'}</option>)}</select></label>
             <label className="mh-note">Review note<input aria-label={`Review note for ${match.externalId}`} placeholder="Reason if excluding this match" maxLength={500} value={note} onChange={e => setNote(e.target.value)} /></label>
-            <button className="mh-primary" disabled={!boosterId} onClick={() => onReview(match, 'APPROVED', boosterId, note)}>Approve match</button>
-            <button disabled={!note.trim()} onClick={() => onReview(match, 'REJECTED', null, note)}>Exclude</button>
-            {match.status !== 'PENDING' && <button onClick={() => onReview(match, 'PENDING', null, note)}>Undo review</button>}
+            <button className="mh-primary" disabled={!approved && !boosterId} onClick={() => onReview(match, approved ? 'PENDING' : 'APPROVED', approved ? null : boosterId, note)}>{approved ? 'Undo' : 'Approve match'}</button>
+            <button disabled={!excluded && !note.trim()} onClick={() => onReview(match, excluded ? 'PENDING' : 'REJECTED', null, note)}>{excluded ? 'Undo' : 'Exclude'}</button>
         </fieldset>}
     </article>;
 }
@@ -295,13 +296,18 @@ export default function MatchHistory({ orderId }) {
             {data.canSubmit && selecting && <div className="mh-selection-bar"><strong role="status">{selected.length + ownApproved.length} {selected.length + ownApproved.length === 1 ? 'match' : 'matches'} selected</strong><p>Click a card to select or deselect it. Selections stay checked across pages.{ownApproved.length > 0 && ' Approved matches stay locked.'}</p></div>}
             <div ref={listStart} className="mh-page-start" tabIndex={-1} />
             {data.matches.length === 0 ? <div className="mh-empty"><span aria-hidden="true">◇</span><h3>{historyClosed ? 'No saved matches' : 'No matches yet'}</h3><p>{historyClosed ? 'No matches were saved for this order.' : canImport ? 'Use refresh to check for ranked matches played after this order was paid.' : 'Submitted matches for this order will appear here.'}</p></div> : <>
-                <div className="mh-list" id={`match-list-${orderId}`}>{data.matches.slice(firstMatch, firstMatch + PAGE_SIZE).map(match => <MatchCard key={`${match.id}-${match.revision}`} match={match} path={path} boosters={data.boosters} canReview={data.canReview} canSelect={selecting && data.canSubmit && canSelect(match)} checked={selecting && (selected.some(m => m.id === match.id) || ownApproved.some(m => m.id === match.id))} onSelect={() => setSelection(previous => ({ ...previous, [match.id]: previous[match.id] === match.revision ? null : match.revision }))} busy={busy} now={now} onReview={(m, decision, boosterId, note) => action(`/${m.id}/review`, { revision: m.revision, decision, boosterId, note })} />)}</div>
+                <div className="mh-list" id={`match-list-${orderId}`}>{data.matches.slice(firstMatch, firstMatch + PAGE_SIZE).map(match => <MatchCard
+                    key={`${match.id}-${match.revision}`} match={match} path={path} boosters={data.boosters}
+                    canReview={data.canReview} canSelect={selecting && data.canSubmit && canSelect(match)}
+                    checked={((data.canReview || data.canReopen) && match.status === 'APPROVED') || (selecting && (selected.some(m => m.id === match.id) || ownApproved.some(m => m.id === match.id)))}
+                    onSelect={() => setSelection(previous => ({ ...previous, [match.id]: previous[match.id] === match.revision ? null : match.revision }))}
+                    busy={busy} now={now} onReview={(m, decision, boosterId, note) => action(`/${m.id}/review`, { revision: m.revision, decision, boosterId, note })}
+                />)}</div>
                 <div className="mh-pagination"><p role="status">Showing {firstMatch + 1}–{Math.min(firstMatch + PAGE_SIZE, data.matches.length)} of {data.matches.length} matches · {PAGE_SIZE} per page</p><OrderPagination currentPage={currentPage} totalPages={totalPages} tableId={`match-list-${orderId}`} label="Match history pages" onPageChange={next => { setPage(next); listStart.current?.focus({ preventScroll: true }); listStart.current?.scrollIntoView({ block: 'start' }); }} /></div>
             </>}
             {canImport && nextStart !== null && <button disabled={busy || selecting} onClick={() => action('/import', { start: nextStart })}>Load older matches</button>}
-            {data.earnings && data.order.enabled && <footer className="mh-earnings"><div><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3><p>70% of the service revenue, split by approved matches. Unsubmitted games do not count. {data.order.confirmedAt ? 'Earnings confirmed.' : 'Estimates below depend on admin approval.'}</p>{(data.order.confirmedAt ? data.earnings.shares : data.earnings.estimates || []).map(s => <div className="mh-share" key={s.boosterId}><span>{data.boosters.find(b => b.id === s.boosterId)?.username || data.matches.find(m => m.boosterId === s.boosterId)?.booster?.username || 'Booster'} · {s.matches} matches</span><strong>{money(s.cents, data.earnings.currency)}{!data.order.confirmedAt && <small> estimated</small>}</strong></div>)}</div>
+            {data.earnings && data.order.enabled && <footer className="mh-earnings"><div><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3><p>70% of the service revenue, split by approved matches. Unsubmitted games do not count.{data.order.confirmedAt && ' Earnings confirmed.'}</p></div>
                 {data.canConfirm && <button className="mh-primary" disabled={busy || !counts.APPROVED || counts.PENDING > 0} onClick={() => action('/confirm', { revision: data.order.revision })}>Confirm matches for earnings</button>}
-                {data.canReview && !data.canConfirm && <small>Earnings can be confirmed once the order is completed.</small>}
                 {data.canReopen && <button disabled={busy} onClick={() => action('/reopen', { revision: data.order.revision })}>Reopen review &amp; unconfirm earnings</button>}
             </footer>}
             </>}

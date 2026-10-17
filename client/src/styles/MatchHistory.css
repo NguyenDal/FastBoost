@@ -1,7 +1,7 @@
 .match-layout[hidden] { display: none; }
 .mh-panel, .mh-panel * { box-sizing: border-box; }
 .mh-panel { padding: 28px; border: 1px solid #7365ac33; border-radius: 24px; background: #080e22ed; color: #ececf6; container-type: inline-size; }
-.mh-heading, .mh-actions, .mh-counts, .mh-share { display: flex; align-items: center; gap: 12px; }
+.mh-heading, .mh-actions, .mh-counts { display: flex; align-items: center; gap: 12px; }
 .mh-heading { justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .mh-heading h2 { margin: 0; }
 .mh-earnings h3 { margin: 0 0 8px; }
@@ -145,7 +145,6 @@
 .mh-earnings h3 span { color: #c3a1ff; }
 .mh-earnings p, .mh-earnings small { font-size: 13px; color: #aeb7d2; }
 .mh-earnings button { justify-self: start; max-width: 100%; white-space: normal; }
-.mh-share { justify-content: space-between; margin-top: 14px; font-size: 13px; }
 .mh-card.mh-selectable { cursor: pointer; }
 .mh-card.mh-selectable:hover { box-shadow: 0 0 0 1px #b291e636; }
 .mh-card.mh-checked, .mh-card.mh-checked:hover { border-color: #b291e6bf; box-shadow: 0 0 0 1px #b291e659, 0 0 16px #9b6cdc16; }

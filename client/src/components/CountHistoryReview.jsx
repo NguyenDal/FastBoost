@@ -36,6 +36,6 @@ export default function CountHistoryReview({ data, reload }) {
             {!available.length && <p>All available boosters already have a count submitted or approved.</p>}
             {error && <p className="ops-error" role="alert">{error}</p>}
         </form>}
-        {data.earnings && <div className="mh-earnings"><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3>{data.earnings.shares.map(share => <div className="mh-share" key={share.boosterId}><span>{records.get(share.boosterId)?.booster?.username || 'Booster'} · {share.matches} matches</span><strong>{money(share.cents, data.earnings.currency)}</strong></div>)}</div>}
+        {data.earnings && <div className="mh-earnings"><h3>Booster earnings pool <span>{money(data.earnings.boosterCents, data.earnings.currency)}</span></h3></div>}
     </div>;
 }
