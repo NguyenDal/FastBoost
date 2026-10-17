@@ -12,9 +12,9 @@ test('local display uses Stripe quote and leaves all USD accounting inputs uncha
     const price = checkoutPriceDisplay(summary, 'cs_current', display());
     assert.equal(price.currency, 'CAD');
     assert.equal(price.localized, true);
-    assert.match(price.formatPrice(summary.totalCents, 'total'), /CAD\s+23\.97/);
-    assert.match(price.formatPrice(summary.subtotalCents, 'subtotal'), /CAD\s+42\.30/);
-    assert.match(price.formatPrice(summary.goldDiscountCents), /CAD\s+9\.87/);
+    assert.equal(price.formatPrice(summary.totalCents, 'total'), 'CA$23.97');
+    assert.equal(price.formatPrice(summary.subtotalCents, 'subtotal'), 'CA$42.30');
+    assert.equal(price.formatPrice(summary.goldDiscountCents), 'CA$9.87');
     assert.deepEqual(summary, before);
 });
 
@@ -39,15 +39,15 @@ test('missing FX metadata falls back to Stripe quoted total rather than a market
     const state = display('cad', 100, 2550);
     delete state.state.checkout.currencyOptions;
     const price = checkoutPriceDisplay(summary, 'cs_current', state);
-    assert.match(price.formatPrice(200), /CAD\s+3\.00/);
-    assert.match(price.formatPrice(1700, 'total'), /CAD\s+25\.50/);
+    assert.equal(price.formatPrice(200), 'CA$3.00');
+    assert.equal(price.formatPrice(1700, 'total'), 'CA$25.50');
 });
 
 test('switching back to USD uses the same quote with no conversion', () => {
     const price = checkoutPriceDisplay(summary, 'cs_current', display('usd', 100, 1700, 50));
     assert.equal(price.localized, false);
-    assert.match(price.formatPrice(200), /USD\s+2\.00/);
-    assert.match(price.formatPrice(1700, 'total'), /USD\s+17\.00/);
+    assert.equal(price.formatPrice(200), 'US$2.00');
+    assert.equal(price.formatPrice(1700, 'total'), 'US$17.00');
 });
 
 test('stale, loading, erroneous and invalid quotes cannot replace the current order summary', () => {

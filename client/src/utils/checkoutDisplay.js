@@ -21,7 +21,7 @@ export function checkoutPriceDisplay(summary, sessionId, displaySession) {
     // Assign any fractional-unit rounding to the subtotal, so the visible
     // discounts reconcile exactly to Stripe's authoritative charge amount.
     const subtotalMinor = totalMinor + discounts.reduce((sum, cents) => sum + convert(cents), 0);
-    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency, currencyDisplay: 'code' });
+    const formatter = new Intl.NumberFormat(currency === 'USD' ? 'en-CA' : 'en-US', { style: 'currency', currency, currencyDisplay: 'symbol' });
     const formatPrice = (cents, role) => formatter.format((role === 'total' ? totalMinor : role === 'subtotal' ? subtotalMinor : convert(cents)) / divisor);
     return { currency, localized: currency !== sourceCurrency, formatPrice };
 }
