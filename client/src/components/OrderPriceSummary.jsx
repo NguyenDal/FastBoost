@@ -8,8 +8,11 @@ export default function OrderPriceSummary({ summary, variant = 'default', onRemo
     if (variant === 'admin') {
         const breakdown = summary.adminBreakdown;
         const amount = cents => Number.isSafeInteger(cents) ? price(cents) : 'Not recorded';
+        const promotion = breakdown?.promotion;
+        const promotionPercent = Number(promotion?.discountPercent);
+        const promotionLabel = `${promotion?.title || 'Promotion'}${Number.isFinite(promotionPercent) && promotionPercent > 0 && promotionPercent <= 100 ? ` (${promotionPercent}%)` : ''}`;
         const discounts = [
-            { label: 'Promotion', cents: breakdown?.promotionCents },
+            { label: promotionLabel, cents: breakdown?.promotionCents },
             { label: `Coupon${breakdown?.coupon?.code ? ` (${breakdown.coupon.code})` : ''}`, title: breakdown?.coupon?.title, cents: breakdown?.coupon?.amountCents },
             { label: 'Referral discount', cents: breakdown?.referralCents },
             { label: `Gold used${breakdown?.goldRedeemed ? ` (${breakdown.goldRedeemed.toLocaleString()} Gold)` : ''}`, cents: breakdown?.goldDiscountCents },

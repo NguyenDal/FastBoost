@@ -333,7 +333,7 @@ export default function AdminOrderDetailsPage() {
                             </section>
 
                             <aside className="admin-sidebar-stack">
-                                <div className="admin-card premium-card">
+                                <div className="admin-card premium-card admin-order-price-card">
                                     <h3 className="card-title">Price Summary</h3>
 
                                     <OrderPriceSummary summary={order.priceSummary} variant="admin" />

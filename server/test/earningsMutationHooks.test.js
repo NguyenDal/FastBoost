@@ -96,7 +96,7 @@ function fixture(t, { emails = false } = {}) {
         for (const [file, value] of previous) { if (value) require.cache[file] = value; else delete require.cache[file]; }
         if (previousCompletion === undefined) delete process.env.ORDER_COMPLETION_EMAILS_ENABLED; else process.env.ORDER_COMPLETION_EMAILS_ENABLED = previousCompletion;
     });
-    return { state, ledger, async invoke(method, options = {}) {
+    return { state, ledger, db, async invoke(method, options = {}) {
         const res = { code: 200, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
         const controller = controllers.find(value => value[method]);
         await controller[method]({ user: { id: options.actor || 'booster', role: 'ADMIN' },
@@ -117,6 +117,42 @@ test('completion and cancellation create once-only entitlement deltas under ledg
     assert.equal((await f.invoke('updateOrderStatus', { status: 'CANCELLED' })).code, 200);
     assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000]);
     assert.equal(f.ledger.balances[0].amountCents, 0);
+});
+
+test('admin status responses retain promotion labels after commit and optional lookup failure cannot fail the status change', async t => {
+    const f = fixture(t);
+    Object.assign(f.state.order, { serviceId: 'rank-service', createdAt: new Date('2026-10-17T01:00:00Z'),
+        basePrice: 100, addonPrice: 0, amountCents: 8500, totalPrice: 85 });
+    let inTransaction = false;
+    let failLookup = false;
+    const transaction = f.db.$transaction;
+    f.db.$transaction = async callback => {
+        inTransaction = true;
+        try { return await transaction(callback); } finally { inTransaction = false; }
+    };
+    f.db.serviceSale = { findMany: async () => {
+        assert.equal(inTransaction, false, 'display metadata is loaded only after mutation commits');
+        if (failLookup) throw new Error('Synthetic optional campaign read failure');
+        return [{ title: 'Summer sale', discountPercent: '15', appliesTo: 'BASE_PRICE', active: true,
+            scope: 'GLOBAL', serviceId: null, createdAt: new Date('2026-10-16'), updatedAt: new Date('2026-10-16'),
+            startsAt: new Date('2026-10-16'), endsAt: new Date('2026-10-18') }];
+    } };
+    for (const status of ['COMPLETED', 'CANCELLED']) {
+        const result = await f.invoke('updateOrderStatus', { status });
+        assert.equal(result.code, 200);
+        assert.equal(result.body.order.status, status);
+        assert.deepEqual(result.body.order.priceSummary.adminBreakdown.promotion,
+            { title: 'Summer sale', discountPercent: 15, source: 'historical_match' });
+        assert.equal(result.body.order.priceSummary.totalCents, 8500);
+    }
+    failLookup = true;
+    const result = await f.invoke('updateOrderStatus', { status: 'COMPLETED' });
+    assert.equal(result.code, 200);
+    assert.equal(result.body.order.status, 'COMPLETED');
+    assert.equal(f.state.order.status, 'COMPLETED');
+    assert.equal(result.body.order.priceSummary.adminBreakdown.promotion, null);
+    assert.equal(result.body.order.priceSummary.adminBreakdown.promotionCents, 1500);
+    assert.equal(result.body.order.priceSummary.totalCents, 8500);
 });
 
 test('assignment, invitation, leave, completion and cancellation hooks queue only the affected booster transitions', async t => {

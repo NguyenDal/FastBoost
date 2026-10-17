@@ -10,6 +10,7 @@ const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger")
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
 const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
+const { historicalOrderPromotion } = require("../utils/historicalOrderPromotion");
 const { boosterRating } = require("../utils/orderRatings");
 const {
     applyReferralFirstPurchaseDiscount,
@@ -68,6 +69,13 @@ function formatOrderForListResponse(order) {
     const safeOrder = stripEncryptedPasswordFields(order);
     safeOrder.hasAccountPassword = hasEncryptedPasswordFields(order);
     safeOrder.priceSummary = savedOrderPriceSummary(order);
+    return safeOrder;
+}
+
+async function addAdminPromotionMetadata(order, safeOrder) {
+    safeOrder.priceSummary.adminBreakdown.promotion = await historicalOrderPromotion(
+        prisma, order, safeOrder.priceSummary.adminBreakdown
+    );
     return safeOrder;
 }
 
@@ -894,6 +902,7 @@ module.exports.getOrderAdminById = async (req, res) => {
         const safeOrder = await formatOrderForDetailResponse(order, req, {
             includeDecryptedLoginPassword: true,
         });
+        await addAdminPromotionMetadata(order, safeOrder);
 
         return res.json({
             ok: true,
@@ -1025,7 +1034,7 @@ module.exports.updateOrderStatus = async (req, res) => {
                 status === "COMPLETED"
                     ? "Order marked as completed"
                     : "Order cancelled",
-            order: formatOrderForListResponse(updated),
+            order: await addAdminPromotionMetadata(updated, formatOrderForListResponse(updated)),
             loyaltyBonusSync,
             referralReward,
         });

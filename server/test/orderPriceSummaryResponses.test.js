@@ -63,7 +63,9 @@ test('customer, booster and admin order responses share the saved receipt and pr
         const res = await invoke(name, user);
         assert.equal(res.code, 200, name);
         const result = key === 'order' ? res.body.order : res.body[key][0];
-        assert.deepEqual(result.priceSummary, expected, `${name} (${user.role})`);
+        const expectedSummary = name === 'getOrderAdminById' ? { ...expected,
+            adminBreakdown: { ...expected.adminBreakdown, promotion: null } } : expected;
+        assert.deepEqual(result.priceSummary, expectedSummary, `${name} (${user.role})`);
         if (name === 'getMyOrders') assert.equal(listWhere.customerId, customer.id);
         if (name === 'listAssignedOrdersForProvider') assert.equal(listWhere.assignments.some.boosterId, booster.id);
     }
@@ -78,4 +80,27 @@ test('customer, booster and admin order responses share the saved receipt and pr
     const legacy = await invoke('getOrderById', booster);
     assert.equal(legacy.body.order.priceSummary.subtotalCents, 1000);
     assert.equal(legacy.body.order.priceSummary.totalCents, 900);
+
+    let promotionReads = 0;
+    order = { ...order, serviceId: 'rank-service', createdAt: new Date('2026-10-17T01:00:00Z'),
+        basePrice: 10, addonPrice: 0, amountCents: 850, totalPrice: 8.5 };
+    prisma.serviceSale = { findMany: async () => {
+        promotionReads++;
+        return [{ title: 'Summer sale', discountPercent: '15', appliesTo: 'BASE_PRICE', active: true,
+            scope: 'GLOBAL', serviceId: null, createdAt: new Date('2026-10-16'), updatedAt: new Date('2026-10-16'),
+            startsAt: new Date('2026-10-16'), endsAt: new Date('2026-10-18') }];
+    } };
+    for (const [name, user] of [['getOrderById', customer], ['getMyOrders', customer], ['listAllOrders', admin], ['listAssignedOrdersForProvider', booster]]) {
+        assert.equal((await invoke(name, user)).code, 200);
+    }
+    assert.equal(promotionReads, 0, 'customer/provider detail and all list responses avoid campaign lookups');
+    assert.equal((await invoke('getOrderById', { id: 'unassigned', role: 'PROVIDER' })).code, 403);
+    assert.equal(promotionReads, 0, 'denied order access cannot reveal campaign data');
+    const detailed = await invoke('getOrderAdminById', admin);
+    assert.equal(detailed.code, 200);
+    assert.deepEqual(detailed.body.order.priceSummary.adminBreakdown.promotion,
+        { title: 'Summer sale', discountPercent: 15, source: 'historical_match' });
+    assert.equal(detailed.body.order.priceSummary.adminBreakdown.promotionCents, 150);
+    assert.equal(detailed.body.order.priceSummary.totalCents, 750);
+    assert.equal(promotionReads, 1, 'only the single admin detail adds this optional read');
 });
