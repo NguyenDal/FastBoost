@@ -1,6 +1,7 @@
-const { randomUUID } = require('node:crypto');
+const { randomUUID, createHash } = require('node:crypto');
 const { validEmail, createConfirmationTransport } = require('./orderConfirmationEmail');
 const { checkoutSummary } = require('./checkoutSummary');
+const { orderEarnings } = require('./earnings');
 const { renderBoosterOrderEmail } = require('./boosterOrderEmailTemplate');
 
 const enabled = () => process.env.BOOSTER_ORDER_EMAILS_ENABLED === 'true';
@@ -11,10 +12,16 @@ const eventCopy = Object.freeze({
     COMPLETED: { badge: 'ORDER COMPLETED', subject: 'Assigned order completed', title: 'Your assigned order is complete', text: 'This order has been marked complete. You can review its match history and check your contribution status in the Booster Portal.', action: 'View order' },
     CANCELLED: { badge: 'ORDER CANCELLED', subject: 'Assigned order cancelled', title: 'Your assigned order was cancelled', text: 'This order has been cancelled. Please stop work on it. Open the order to review the update or contact our team.', action: 'View order' },
     PAYMENT_CONFIRMED: { badge: 'PAYMENT CONFIRMED', subject: 'Assigned order payment confirmed', title: 'Payment has been confirmed', text: 'Payment has been confirmed for an order assigned to you. Open the order to review its details and continue coordinating with our team.', action: 'Open order' },
+    ASSIGNMENT_REQUEST: { badge: 'ASSIGNMENT REQUEST', subject: 'New assignment request', title: 'You have an assignment request', text: 'Our team has invited you to work on this order. Open the Booster Portal to review and respond to the request.', action: 'Review assignment request' },
+    ASSIGNMENT_REQUEST_CANCELLED: { badge: 'REQUEST CANCELLED', subject: 'Assignment request cancelled', title: 'Your assignment request was cancelled', text: 'Our team has cancelled this assignment request. No response or work is required from you. You can review your current requests in the Booster Portal.', action: 'Open Booster Portal' },
 });
+// Keep the existing database event categories; the immutable request metadata
+// distinguishes invitations from actual order assignments without a migration.
+const requestEvents = Object.freeze({ ASSIGNMENT_REQUEST: 'ASSIGNED', ASSIGNMENT_REQUEST_CANCELLED: 'UNASSIGNED' });
 const orderSelect = {
     id: true, orderNumber: true, status: true, paymentStatus: true, boostType: true,
-    currentRank: true, currentDivision: true, desiredRank: true, desiredDivision: true,
+    amountCents: true, goldDiscountCents: true, cashAmountCents: true, totalPrice: true, currency: true,
+    currentRank: true, desiredRank: true,
     peakRank: true, placementGames: true, desiredWins: true, numberOfGames: true, queueType: true, region: true,
     service: { select: { title: true } },
     assignments: { select: { boosterId: true, booster: { select: { id: true, role: true, hasBoosterAccess: true, suspendedAt: true } } } },
@@ -29,16 +36,29 @@ function buildBoosterOrderEmail(order, event) {
     if (local && process.env.NODE_ENV === 'production') throw new Error('Production email links cannot use localhost');
     const copy = eventCopy[event];
     const portalUrl = new URL('/provider/portal', origin.origin).href;
-    const url = event === 'UNASSIGNED' ? portalUrl : new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;
+    const portalOnly = event === 'UNASSIGNED' || Object.hasOwn(requestEvents, event);
+    const url = portalOnly ? portalUrl : new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;
     const summary = checkoutSummary(order);
     // Keep account credentials, customer identity, chat and payment identifiers
     // out of email. The signed-in workspace remains the source of order access.
     const rows = [['Order', `#${order.orderNumber}`], ['Game', summary.game === 'tft' ? 'Teamfight Tactics' : 'League of Legends'], ['Service', summary.serviceType],
-        ...(event === 'UNASSIGNED' ? [] : summary.details)];
+        ...(event === 'UNASSIGNED' || event === 'ASSIGNMENT_REQUEST_CANCELLED' ? [] : summary.details)];
+    const showEarnings = event === 'ASSIGNED' || event === 'ASSIGNMENT_REQUEST';
+    const earningsNote = showEarnings ? 'Potential earnings are shared by approved matches.' : '';
+    if (showEarnings) {
+        // The existing service-revenue subtotal is after discounts and Gold,
+        // before tax. Cash totals can include tax and must not fund the pool.
+        const earnings = orderEarnings(order);
+        const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency.toUpperCase() }).format(cents / 100);
+        const totalKnown = Number.isInteger(order.cashAmountCents) || Number.isInteger(order.amountCents) || Number.isFinite(order.totalPrice);
+        rows.push(['Subtotal', earnings ? money(earnings.revenueCents) : 'Not available'],
+            ['Total', totalKnown ? money(summary.totalCents) : 'Not available'],
+            ['Potential earnings', earnings ? `Up to ${money(earnings.boosterCents)}` : 'Not available']);
+    }
     const subject = `FastBoost · ${copy.subject} #${order.orderNumber}`;
     return { subject,
-        text: [subject, '', copy.text, '', ...rows.map(([label, value]) => `${label}: ${value}`), '', `${copy.action}: ${url}`, '', `Booster Portal: ${portalUrl}`].join('\n'),
-        html: renderBoosterOrderEmail({ copy, orderNumber: order.orderNumber, rows, url, portalUrl }),
+        text: [subject, '', copy.text, '', ...rows.map(([label, value]) => `${label}: ${value}`), ...(earningsNote ? ['', earningsNote] : []), '', `${copy.action}: ${url}`].join('\n'),
+        html: renderBoosterOrderEmail({ copy, orderNumber: order.orderNumber, rows, url, earningsNote }),
     };
 }
 
@@ -94,9 +114,53 @@ async function withBoosterOrderEmails(tx, orderId, mutation) {
     }
 }
 
-function stillRelevant(row) {
+const requestSelect = { id: true, orderId: true, boosterId: true, status: true, createdAt: true };
+const latestRequest = (db, request) => db.assignmentRequest.findFirst({
+    where: { orderId: request.orderId, boosterId: request.boosterId },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], select: { id: true },
+});
+
+// Invoke after a real request transition in the same transaction, while holding
+// the Order lock. Stable IDs make retries idempotent even after delivery.
+async function queueBoosterAssignmentRequestEmail(tx, requestId, event = 'ASSIGNMENT_REQUEST') {
+    if (!enabled()) return null;
+    if (!Object.hasOwn(requestEvents, event)) throw new Error('Unknown assignment request email event');
+    const request = await tx.assignmentRequest.findUnique({ where: { id: requestId }, select: {
+        ...requestSelect,
+        booster: { select: { role: true, hasBoosterAccess: true, suspendedAt: true } },
+        order: { select: orderSelect },
+    } });
+    const expectedStatus = event === 'ASSIGNMENT_REQUEST' ? 'PENDING' : 'CANCELLED';
+    if (!request || request.status !== expectedStatus || !eligibleBooster(request.booster) || !request.order) return null;
+    if (request.order.assignments.some(assignment => assignment.boosterId === request.boosterId)) return null;
+    if (event === 'ASSIGNMENT_REQUEST' && ['COMPLETED', 'CANCELLED'].includes(request.order.status)) return null;
+    if ((await latestRequest(tx, request))?.id !== request.id) return null;
+    const id = `request-${createHash('sha256').update(`${request.id}\0${event}`).digest('hex')}`;
+    await tx.boosterOrderEmail.updateMany({ where: {
+        orderId: request.orderId, boosterId: request.boosterId, id: { not: id }, sentAt: null, skippedAt: null,
+        OR: Object.keys(requestEvents).map(kind => ({ payload: { path: ['assignmentRequest', 'event'], equals: kind } })),
+    }, data: { skippedAt: new Date(), claim: null, lastError: 'EVENT_SUPERSEDED' } });
+    return tx.boosterOrderEmail.createMany({ skipDuplicates: true, data: [{
+        id, orderId: request.orderId, boosterId: request.boosterId, event: requestEvents[event],
+        payload: { ...buildBoosterOrderEmail(request.order, event), assignmentRequest: { id: request.id, event } },
+    }] });
+}
+
+async function stillRelevant(prisma, row) {
     if (!eligibleBooster(row.booster) || !row.order) return false;
     const assigned = row.order.assignments.some(assignment => assignment.boosterId === row.boosterId);
+    if (row.payload?.assignmentRequest !== undefined) {
+        const metadata = row.payload.assignmentRequest;
+        if (!metadata || typeof metadata.id !== 'string' || !metadata.id || !Object.hasOwn(requestEvents, metadata.event) || requestEvents[metadata.event] !== row.event || assigned) return false;
+        const request = await prisma.assignmentRequest.findUnique({ where: { id: metadata.id }, select: requestSelect });
+        if (!request || request.orderId !== row.orderId || request.boosterId !== row.boosterId) return false;
+        const expectedStatus = metadata.event === 'ASSIGNMENT_REQUEST' ? 'PENDING' : 'CANCELLED';
+        if (request.status !== expectedStatus) return false;
+        if (metadata.event === 'ASSIGNMENT_REQUEST' && ['COMPLETED', 'CANCELLED'].includes(row.order.status)) return false;
+        // Only the newest request episode can notify, including when an earlier
+        // cancelled invitation has since been replaced by a fresh request.
+        return (await latestRequest(prisma, request))?.id === request.id;
+    }
     switch (row.event) {
         case 'ASSIGNED': return assigned && !['COMPLETED', 'CANCELLED'].includes(row.order.status);
         case 'UNASSIGNED': return !assigned;
@@ -122,13 +186,14 @@ async function deliverPendingBoosterOrderEmails(prisma, transport, clock = () =>
                 order: { select: { status: true, paymentStatus: true, assignments: { select: { boosterId: true } } } },
             } });
             if (!fresh || fresh.claim !== claim || fresh.sentAt || fresh.skippedAt) continue;
-            if (!stillRelevant(fresh)) {
+            if (!await stillRelevant(prisma, fresh)) {
                 await prisma.boosterOrderEmail.updateMany({ where: { id: row.id, claim, ...pending }, data: { skippedAt: clock(), claim: null, lastError: 'EVENT_SUPERSEDED' } });
                 continue;
             }
             const recipient = fresh.booster.email;
             if (!validEmail(recipient)) throw new Error('Recipient is invalid');
-            const info = await transport.sendMail({ ...fresh.payload, to: { address: recipient.trim() }, from: process.env.SMTP_FROM || process.env.SMTP_USER,
+            const { subject, text, html } = fresh.payload;
+            const info = await transport.sendMail({ subject, text, html, to: { address: recipient.trim() }, from: process.env.SMTP_FROM || process.env.SMTP_USER,
                 messageId: `<fastboost-booster-${row.id}@${new URL(process.env.CLIENT_URL).hostname}>`, disableFileAccess: true, disableUrlAccess: true });
             if (!info.accepted?.some(address => String(address).toLowerCase() === recipient.trim().toLowerCase())) throw new Error('Recipient not accepted');
             await prisma.boosterOrderEmail.updateMany({ where: { id: row.id, claim, ...pending }, data: { sentAt: clock(), claim: null, lastError: null } });
@@ -157,4 +222,4 @@ function startBoosterOrderEmailWorker(prisma) {
     const timer = setInterval(tick, 30000); timer.unref(); return timer;
 }
 
-module.exports = { buildBoosterOrderEmail, boosterOrderEvents, withBoosterOrderEmails, deliverPendingBoosterOrderEmails, startBoosterOrderEmailWorker };
+module.exports = { buildBoosterOrderEmail, boosterOrderEvents, withBoosterOrderEmails, queueBoosterAssignmentRequestEmail, deliverPendingBoosterOrderEmails, startBoosterOrderEmailWorker };

@@ -717,6 +717,15 @@ pending migrations separately. Flag values in a local `.env` do not configure or
   cancellation and payment confirmation. Only affected eligible boosters receive them; payment
   updates go to boosters already assigned to the order, never the whole team. Unassignment links
   to the portal instead of the removed order. Emails exclude customer identity and game credentials.
+- The admin **Assign Booster** flow also emails when an invitation is created or cancelled,
+  before acceptance. These emails link to the Booster Portal and commit with the invitation and
+  in-app notification. They reuse the assignment/unassignment outbox categories with immutable
+  `payload.assignmentRequest` metadata; no additional migration is needed. Repeated requests
+  do not duplicate emails, and a newer invitation or acceptance makes an older invitation obsolete.
+- Assignment and invitation emails show Subtotal, Total and potential earnings. Subtotal uses
+  service revenue after discounts and Gold, before tax; the potential amount is the existing 70%
+  pool, labelled "up to" because approved matches determine each booster's share. Total uses the
+  saved customer cash total (which can include tax). Unknown earnings are not shown as zero.
 - Both workers check every 30 seconds, claim deliveries and retry at most eight times. Booster
   delivery rechecks current email, access and event relevance; obsolete alerts record `skippedAt`.
   Inspect `attempts`, `lastError`, `nextAttemptAt` and `sentAt` on the corresponding outbox.

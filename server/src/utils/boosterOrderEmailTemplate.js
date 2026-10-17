@@ -1,7 +1,7 @@
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const table = 'role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"';
 
-function renderBoosterOrderEmail({ copy, orderNumber, rows, url, portalUrl }) {
+function renderBoosterOrderEmail({ copy, orderNumber, rows, url, earningsNote }) {
     const details = rows.map(([label, value], index) => `<tr style="background:${index % 2 ? '#f8f9fd' : '#ffffff'}"><td style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;color:#69658b">${escape(label)}</td><td align="right" style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;font-weight:bold;color:#17123b">${escape(value)}</td></tr>`).join('');
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(copy.title)}</title><style>@media only screen and (max-width:620px){.email-pad{padding:22px!important}.email-title{font-size:25px!important}.email-outer{padding:12px 6px!important}.email-button{padding:16px 24px!important}}</style></head>
     <body style="margin:0;padding:0;background:#f2f5fb;font-family:Arial,Helvetica,sans-serif;color:#17123b">
@@ -14,8 +14,8 @@ function renderBoosterOrderEmail({ copy, orderNumber, rows, url, portalUrl }) {
     <h1 class="email-title" style="margin:0 0 14px;font-size:29px;line-height:1.3;overflow-wrap:anywhere">${escape(copy.title)}</h1>
     <p style="margin:0 0 24px;font-size:15px;line-height:25px;color:#69658b">${escape(copy.text)}</p>
     <table ${table} style="border:1px solid #e1dcfa;border-radius:10px"><tr><td style="padding:12px"><table ${table}>${details}</table></td></tr></table>
+    ${earningsNote ? `<p style="margin:12px 0 0;font-size:13px;line-height:20px;color:#69658b">${escape(earningsNote)}</p>` : ''}
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px"><tr><td bgcolor="#7929f4" style="border-radius:9px;background:#7929f4;background-image:linear-gradient(110deg,#992cf5,#6232ff)"><a class="email-button" href="${escape(url)}" style="display:inline-block;padding:17px 36px;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;border:1px solid #7929f4;border-radius:9px">${escape(copy.action)} &nbsp; &#8594;</a></td></tr></table>
-    <p style="margin:22px 0 0;font-size:13px;line-height:22px;color:#69658b">Your current assignments and contribution status are in the <a href="${escape(portalUrl)}" style="color:#7431ef;text-decoration:underline">Booster Portal</a>.</p>
     </td></tr></table></td></tr></table></body></html>`;
 }
 

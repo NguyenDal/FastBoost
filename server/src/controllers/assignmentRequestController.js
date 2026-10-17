@@ -1,7 +1,7 @@
 const { canBoost } = require("../utils/boosterAccess");
 const prisma = require("../prisma");
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
-const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
+const { withBoosterOrderEmails, queueBoosterAssignmentRequestEmail } = require("../utils/boosterOrderEmail");
 
 function getOrderTitle(order) {
   if (!order) return "order";
@@ -107,79 +107,58 @@ exports.createAssignmentRequest = async (req, res) => {
       });
     }
 
-    const existingAssignment = await prisma.orderAssignment.findUnique({
-      where: {
-        orderId_boosterId: {
-          orderId,
-          boosterId,
+    const result = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+      const existingAssignment = await tx.orderAssignment.findUnique({
+        where: { orderId_boosterId: { orderId, boosterId } },
+      });
+      if (existingAssignment) return { alreadyAssigned: true };
+
+      const existingPending = await tx.assignmentRequest.findFirst({
+        where: { orderId, boosterId, status: "PENDING" },
+      });
+      if (existingPending) return { request: existingPending, created: false };
+
+      const request = await tx.assignmentRequest.create({
+        data: {
+          status: "PENDING",
+          order: { connect: { id: orderId } },
+          booster: { connect: { id: boosterId } },
+          requester: { connect: { id: adminId } },
         },
-      },
+      });
+      await tx.notification.create({
+        data: {
+          userId: boosterId,
+          type: "ASSIGNMENT_REQUEST",
+          title: "Assignment request",
+          message: `Admin requested you for ${getOrderTitle(order)}.`,
+          data: { requestId: request.id, orderId, boosterId, requestedBy: adminId, orderTitle: getOrderTitle(order) },
+        },
+      });
+      await queueBoosterAssignmentRequestEmail(tx, request.id, "ASSIGNMENT_REQUEST");
+      return { request, created: true };
     });
 
-    if (existingAssignment) {
+    if (result.alreadyAssigned) {
       return res.status(409).json({
         ok: false,
         message: "Booster is already assigned to this order",
       });
     }
 
-    const existingPending = await prisma.assignmentRequest.findFirst({
-      where: {
-        orderId,
-        boosterId,
-        status: "PENDING",
-      },
-    });
-
-    if (existingPending) {
+    if (!result.created) {
       return res.status(200).json({
         ok: true,
         message: "Assignment request already pending",
-        request: existingPending,
+        request: result.request,
       });
     }
-
-    const request = await prisma.assignmentRequest.create({
-      data: {
-        status: "PENDING",
-        order: {
-          connect: {
-            id: orderId,
-          },
-        },
-        booster: {
-          connect: {
-            id: boosterId,
-          },
-        },
-        requester: {
-          connect: {
-            id: adminId,
-          },
-        },
-      },
-    });
-
-    await prisma.notification.create({
-      data: {
-        userId: boosterId,
-        type: "ASSIGNMENT_REQUEST",
-        title: "Assignment request",
-        message: `Admin requested you for ${getOrderTitle(order)}.`,
-        data: {
-          requestId: request.id,
-          orderId,
-          boosterId,
-          requestedBy: adminId,
-          orderTitle: getOrderTitle(order),
-        },
-      },
-    });
 
     return res.status(201).json({
       ok: true,
       message: "Assignment request sent",
-      request,
+      request: result.request,
     });
   } catch (error) {
     console.error("createAssignmentRequest error:", error);
@@ -214,35 +193,31 @@ exports.cancelAssignmentRequest = async (req, res) => {
       });
     }
 
-    const updated = await prisma.assignmentRequest.update({
-      where: { id: requestId },
-      data: {
-        status: "CANCELLED",
-        respondedAt: new Date(),
-      },
-    });
-
-    // Clear the actionable booster notification.
-    await prisma.notification.updateMany({
-      where: {
-        userId: request.boosterId,
-        type: "ASSIGNMENT_REQUEST",
-        active: true,
-        data: {
-          path: ["requestId"],
-          equals: requestId,
+    const result = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${request.orderId} FOR UPDATE`;
+      const current = await tx.assignmentRequest.findUnique({ where: { id: requestId } });
+      if (!current || current.status !== "PENDING") return { changed: true };
+      const updated = await tx.assignmentRequest.update({
+        where: { id: requestId },
+        data: { status: "CANCELLED", respondedAt: new Date() },
+      });
+      // Commit the invitation, notification and email together.
+      await tx.notification.updateMany({
+        where: {
+          userId: current.boosterId, type: "ASSIGNMENT_REQUEST", active: true,
+          data: { path: ["requestId"], equals: requestId },
         },
-      },
-      data: {
-        active: false,
-        read: true,
-      },
+        data: { active: false, read: true },
+      });
+      await queueBoosterAssignmentRequestEmail(tx, requestId, "ASSIGNMENT_REQUEST_CANCELLED");
+      return { updated };
     });
+    if (result.changed) return res.status(400).json({ ok: false, message: "Assignment request is no longer pending" });
 
     return res.json({
       ok: true,
       message: "Assignment request cancelled",
-      request: updated,
+      request: result.updated,
     });
   } catch (error) {
     console.error("cancelAssignmentRequest error:", error);
