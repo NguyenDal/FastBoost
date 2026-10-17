@@ -32,12 +32,12 @@ test('agreement HTML and PDF require a valid session and current admin or booste
             for (const auth of [null, 'invalid', token('admin', -1)]) {
                 const response = await request(suffix, auth);
                 assert.equal(response.status, 401);
-                assert.doesNotMatch(await response.text(), /Booster &amp; Service Provider|%PDF/);
+                assert.doesNotMatch(await response.text(), /Booster Service Agreement|%PDF/);
             }
             for (const id of ['customer', 'suspended', 'missing']) {
                 const response = await request(suffix, token(id));
                 assert.equal(response.status, 403, `${id} cannot access ${suffix || 'HTML'} even with stale admin claims`);
-                assert.doesNotMatch(await response.text(), /Booster &amp; Service Provider|%PDF/);
+                assert.doesNotMatch(await response.text(), /Booster Service Agreement|%PDF/);
             }
             for (const id of ['admin', 'booster', 'extraAccess']) {
                 const response = await request(suffix, token(id));
@@ -46,12 +46,12 @@ test('agreement HTML and PDF require a valid session and current admin or booste
                 if (suffix) {
                     assert.match(response.headers.get('content-type'), /application\/pdf/);
                     assert.equal(Buffer.from(await response.arrayBuffer()).subarray(0, 5).toString(), '%PDF-');
-                } else assert.match((await response.json()).html, /Booster &amp; Service Provider Agreement/);
+                } else assert.match((await response.json()).html, /Booster Service Agreement/);
             }
         }
         users.extraAccess.hasBoosterAccess = false;
         assert.equal((await request('', token('extraAccess'))).status, 403, 'revoked access is read from the database');
-        for (const name of ['provider-agreement.html', 'provider-agreement-review.pdf']) {
+        for (const name of ['provider-agreement.html', 'provider-agreement-review.pdf', 'booster-service-agreement.pdf', 'booster-service-agreement.template.json']) {
             assert.equal(existsSync(resolve(__dirname, '../../client/public/legal', name)), false, `${name} must not be a public asset`);
         }
     } finally {

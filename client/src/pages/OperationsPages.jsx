@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { operations, downloadContract, date, tenure } from '../api/operations';
 import { loadChampions } from '../api/champions';
 import BoosterPreferenceSummary from '../components/BoosterPreferenceSummary';
+import BoosterDocumentForm from '../components/BoosterDocumentForm';
 import OrderPagination from '../components/OrderPagination';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
@@ -72,22 +73,10 @@ function BoosterRating({ rating }) {
     </> : <span className="ops-booster-rating-count">Rating unavailable</span>}</span>;
 }
 function BoosterDetails({ booster, champions, preferencesAvailable, reload, configured, onError }) {
-    const [busy, setBusy] = useState(false);
-    const [requestId, setRequestId] = useState(() => crypto.randomUUID());
-    async function submit(event) {
-        event.preventDefault(); const form = event.currentTarget;
-        setBusy(true); onError('');
-        try {
-            const body = new FormData(form);
-            await operations(`/boosters/${booster.id}/contracts`, { requestId, title: body.get('title'), startsAt: body.get('startsAt'), signerName: body.get('signerName') });
-            form.reset(); setRequestId(crypto.randomUUID());
-            reload();
-        } catch (e) { onError(e.message); reload(); } finally { setBusy(false); }
-    }
     return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><span className="ops-booster-title"><strong>{booster.profile?.displayName || booster.username}</strong><BoosterRating rating={booster.rating} /></span><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
-            <h3>Send a DocuSign contract</h3><form className="ops-form" onSubmit={submit}><label>Contract title<input name="title" placeholder="Booster service agreement" required maxLength={100} /></label><label>Start date<input type="date" name="startsAt" required /></label><label>Signer’s full legal name<input name="signerName" required minLength={2} maxLength={100} /></label><button className="ops-primary" disabled={!configured || busy || booster.suspendedAt}>{busy ? 'Sending…' : 'Send with DocuSign'}</button></form>
-            <h3>Contracts</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No contracts sent yet.</p>}</div>
+            <h3>Send a document</h3><BoosterDocumentForm boosterId={booster.id} configured={configured} suspended={booster.suspendedAt} reload={reload} onError={onError} />
+            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No documents sent yet.</p>}</div>
     </details>;
 }
 export function BoosterManagementPage() {
@@ -106,7 +95,7 @@ export function BoosterManagementPage() {
         return () => { active = false; };
     }, [needsChampions]);
     const championsById = new Map(champions.map(champion => [champion.id, champion]));
-    return <div className="ops-page"><Heading title="Booster Management">Your team and agreements in one place.</Heading><Feedback error={error || actionError} loading={!data} />
+    return <div className="ops-page"><Heading title="Booster Management">Your team and documents in one place.</Heading><Feedback error={error || actionError} loading={!data} />
         <div className="ops-toolbar"><h2 className="ops-team-heading">Your team {data && <span className="ops-team-count" aria-label={`${data.boosters.length} ${data.boosters.length === 1 ? 'booster' : 'boosters'}`}>{data.boosters.length}</span>}</h2><input aria-label="Search boosters" placeholder="Search boosters…" value={query} onChange={e => setQuery(e.target.value)} /></div>
         {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} champions={championsById} preferencesAvailable={data.preferencesAvailable} reload={reload} configured={signing?.configured} onError={setActionError} />)}
         {data?.boosters.length === 0 && <section className="ops-card ops-empty">Add booster access in <Link to="/admin/accounts">Account Management</Link> to grow your team.</section>}</div>;

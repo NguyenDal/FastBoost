@@ -40,23 +40,37 @@ async function send(contract) {
 router.get('/docusign/configuration', handle(async (req, res) => { admin(req); res.json({ ok: true, ...docusign.readiness() }); }));
 router.post('/boosters/:boosterId/contracts', handle(async (req, res) => {
     admin(req);
+    const documentType = req.body.documentType === undefined ? 'BOOSTER_SERVICE_AGREEMENT' : req.body.documentType;
+    if (documentType === 'PAYOUT_INFORMATION') fail(409, 'Payout Information is not available yet.');
+    if (documentType !== 'BOOSTER_SERVICE_AGREEMENT') fail(400, 'Choose a supported document type.');
+    const { requestId, startsAt } = req.body;
+    const signerName = String(req.body.signerName || '').trim();
+    if (!/^[a-f0-9-]{36}$/i.test(requestId || '') || !validDate(startsAt) || signerName.length < 2 || signerName.length > 100) fail(400, 'Enter the full signer name and a valid start date.');
+    const title = 'Booster Service Agreement';
+    // An existing request retains its original document, recipients and version.
+    // Older clients sent a free-form title; use it only to recognize their retry.
+    const matchesRequest = contract => contract.boosterId === req.params.boosterId && contract.issuedById === req.actor.id && contract.signerName === signerName
+        && contract.startsAt.toISOString().slice(0, 10) === startsAt
+        && contract.title === (req.body.documentType === undefined && contract.templateId !== docusign.AGREEMENT_VERSION ? String(req.body.title || '').trim() : title);
+    const existing = await db.boosterContract.findUnique({ where: { id: requestId } });
+    if (existing) {
+        if (!matchesRequest(existing)) fail(409, 'This request already belongs to another document. Refresh before creating a new document.');
+        const sent = await send(existing);
+        return res.status(201).json({ ok: true, id: sent.id });
+    }
     const config = docusign.configuration();
     const company = docusign.companySigner();
     const countersigner = await db.user.findFirst({ where: { email: { equals: company.email, mode: 'insensitive' }, role: 'ADMIN', suspendedAt: null } });
     if (!countersigner) fail(400, 'The FastBoost countersigner must have an active admin account with the configured email.');
-    const { requestId, startsAt } = req.body;
-    const title = String(req.body.title || '').trim();
-    const signerName = String(req.body.signerName || '').trim();
-    if (!/^[a-f0-9-]{36}$/i.test(requestId || '') || !validDate(startsAt) || !title || title.length > 100 || signerName.length < 2 || signerName.length > 100) fail(400, 'Enter a contract title, full signer name, and valid start date.');
     const booster = await db.user.findUnique({ where: { id: req.params.boosterId } });
     if (!booster || booster.suspendedAt || !(booster.role === 'PROVIDER' || booster.hasBoosterAccess)) fail(404, 'Active booster not found.');
     if (booster.id === countersigner.id) fail(400, 'The booster and FastBoost must be different signers.');
     const contract = await db.boosterContract.upsert({ where: { id: requestId }, update: {}, create: {
         id: requestId, boosterId: booster.id, issuedById: req.actor.id, title, signerName, signerEmail: booster.email,
-        startsAt: new Date(startsAt), templateId: config.templateId, accountId: config.accountId, environment: config.environment,
+        startsAt: new Date(startsAt), templateId: docusign.AGREEMENT_VERSION, accountId: config.accountId, environment: config.environment,
         companySignerName: company.name, companySignerEmail: company.email,
     } });
-    if (contract.boosterId !== booster.id || contract.issuedById !== req.actor.id || contract.title !== title || contract.signerName !== signerName || contract.startsAt.toISOString().slice(0, 10) !== startsAt) fail(409, 'This request already belongs to another contract. Refresh before creating a new contract.');
+    if (!matchesRequest(contract)) fail(409, 'This request already belongs to another document. Refresh before creating a new document.');
     const sent = await send(contract);
     res.status(201).json({ ok: true, id: sent.id });
 }));

@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken');
 const { createHmac, timingSafeEqual } = require('node:crypto');
 const { readFileSync } = require('node:fs');
+const { resolve } = require('node:path');
 let cached, pendingToken;
 const failure = (message, status = 503) => Object.assign(new Error(message), { status });
+const AGREEMENT_VERSION = 'FB-BSA-2.0';
+const agreementPath = resolve(__dirname, '../../private/legal/booster-service-agreement.template.json');
 
 function configuration() {
     const environment = process.env.DOCUSIGN_ENVIRONMENT || 'demo';
@@ -15,14 +18,16 @@ function configuration() {
         origin: process.env.DOCUSIGN_RETURN_ORIGIN,
     };
     if (!config.privateKey && process.env.DOCUSIGN_PRIVATE_KEY_PATH) config.privateKey = readFileSync(process.env.DOCUSIGN_PRIVATE_KEY_PATH, 'utf8');
-    if (Object.values(config).some(value => !value)) throw failure('DocuSign setup is incomplete. Configure the server integration first.');
+    // Remote template IDs are retained for historical requests. New agreements
+    // carry their versioned PDF and signing fields with the envelope itself.
+    if (Object.entries(config).some(([key, value]) => key !== 'templateId' && !value)) throw failure('DocuSign setup is incomplete. Configure the server integration first.');
     const origin = new URL(config.origin);
     if (origin.protocol !== 'https:' && !(environment === 'demo' && origin.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(origin.hostname))) throw failure('DocuSign return origin must use HTTPS.');
     config.origin = origin.origin;
     return config;
 }
 function readiness() {
-    try { const config = configuration(); companySigner(); return { configured: true, environment: config.environment }; }
+    try { const config = configuration(); companySigner(); agreementPackage(); return { configured: true, environment: config.environment }; }
     catch { return { configured: false, environment: process.env.DOCUSIGN_ENVIRONMENT || 'demo' }; }
 }
 function companySigner() {
@@ -32,6 +37,57 @@ function companySigner() {
     return { name, email };
 }
 const companyClientId = contract => `fastboost:${contract.id}`;
+function agreementPackage() {
+    let document;
+    try { document = JSON.parse(readFileSync(agreementPath, 'utf8')); }
+    catch { throw failure('The Booster Service Agreement document is unavailable.'); }
+    const signers = document.recipients?.signers;
+    const requiredFields = ['ProviderLegalName', 'ProviderEmail', 'ProviderUsername', 'AgreementId', 'EffectiveDate'];
+    const requiredRoles = [['FastBoost', '1'], ['Booster', '2']];
+    const documents = document.documents;
+    const invalid = document.version !== AGREEMENT_VERSION || !Array.isArray(documents) || documents.length !== 1
+        || documents[0].documentId !== '1' || documents[0].fileExtension !== 'pdf'
+        || typeof documents[0].documentBase64 !== 'string' || Buffer.from(documents[0].documentBase64, 'base64').subarray(0, 5).toString() !== '%PDF-'
+        || !Array.isArray(signers) || signers.length !== 2
+        || Object.entries(document.recipients || {}).some(([key, value]) => key !== 'signers' && Array.isArray(value) && value.length)
+        || requiredRoles.some(([role, order]) => {
+            const signer = signers.find(value => value.roleName === role);
+            return !signer || String(signer.recipientId) !== order || String(signer.routingOrder) !== order
+                || !signer.tabs?.signHereTabs?.some(tab => tab.optional === false || tab.optional === 'false')
+                || !signer.tabs?.dateSignedTabs?.length;
+        })
+        || requiredFields.some(label => !signers.find(signer => signer.roleName === 'FastBoost')?.tabs?.textTabs?.some(tab => tab.tabLabel === label));
+    if (invalid) throw failure('The Booster Service Agreement document or signing fields are invalid.');
+    return document;
+}
+function identityTabs(contract, usernameLabel = 'ProviderUsername') {
+    const username = String(contract.providerUsername || '').trim();
+    if (!username) throw failure('Set the booster’s username in Account Management before sending an agreement.', 400);
+    return [
+        { tabLabel: 'ProviderLegalName', value: contract.signerName, locked: 'true' },
+        { tabLabel: 'ProviderEmail', value: contract.signerEmail, locked: 'true' },
+        { tabLabel: usernameLabel, value: username, locked: 'true' },
+        { tabLabel: 'AgreementId', value: contract.id, locked: 'true' },
+        { tabLabel: 'EffectiveDate', value: new Date(contract.startsAt).toISOString().slice(0, 10), locked: 'true' },
+    ];
+}
+function localAgreementEnvelope(contract) {
+    const document = agreementPackage();
+    const values = new Map(identityTabs(contract).map(tab => [tab.tabLabel, tab]));
+    const signers = document.recipients.signers.map(signer => {
+        const company = signer.roleName === 'FastBoost';
+        return {
+            recipientId: signer.recipientId, routingOrder: signer.routingOrder,
+            name: company ? contract.companySignerName : contract.signerName,
+            email: company ? contract.companySignerEmail : contract.signerEmail,
+            clientUserId: company ? companyClientId(contract) : contract.boosterId,
+            tabs: { ...signer.tabs, ...(signer.tabs.textTabs && {
+                textTabs: signer.tabs.textTabs.map(tab => values.has(tab.tabLabel) ? { ...tab, ...values.get(tab.tabLabel), required: 'true' } : tab),
+            }) },
+        };
+    });
+    return { documents: document.documents, recipients: { signers } };
+}
 async function checkedFetch(url, options = {}) {
     let response;
     try { response = await fetch(url, { ...options, signal: AbortSignal.timeout(20000), redirect: 'error' }); }
@@ -77,6 +133,12 @@ async function sendContract(contract) {
         if (found.envelopes?.length) return found.envelopes[0].envelopeId;
     }
     if (!contract.companySignerName || !contract.companySignerEmail) throw failure('This unsent agreement has no FastBoost countersigner. Create a new two-party agreement.', 409);
+    if (contract.templateId === AGREEMENT_VERSION) {
+        const body = { ...localAgreementEnvelope(contract), transactionId: contract.id, status: 'sent', emailSubject: contract.title };
+        const result = await api('/envelopes', { method: 'POST', body }, contract);
+        if (!result.envelopeId) throw failure('DocuSign has not returned an envelope ID. Retry this contract.');
+        return result.envelopeId;
+    }
     const template = await api(`/templates/${encodeURIComponent(contract.templateId)}/recipients?include_tabs=true`, {}, contract);
     const roles = template.signers || [];
     const required = [['FastBoost', '1'], ['Booster', '2']];
@@ -91,8 +153,7 @@ async function sendContract(contract) {
     // Older templates retain the old data label; new sends still display the username.
     const usernameLabel = ['ProviderUsername', 'ProviderAccountId'].find(label => textTabs.some(t => t.tabLabel === label));
     if (!usernameLabel || providerFields.some(label => !textTabs.some(t => t.tabLabel === label))) throw failure('The template is missing required provider identity or agreement fields. Follow the DocuSign setup guide.');
-    const providerUsername = String(contract.providerUsername || '').trim();
-    if (!providerUsername) throw failure('Set the booster’s username in Account Management before sending an agreement.', 400);
+    const prefilledTabs = identityTabs(contract, usernameLabel);
     const result = await api('/envelopes', { method: 'POST', body: {
         templateId: contract.templateId, transactionId: contract.id, status: 'sent', emailSubject: contract.title,
         // FastBoost completes the commercial fields and signs first (template order 1).
@@ -100,13 +161,7 @@ async function sendContract(contract) {
         templateRoles: [
             { roleName: 'Booster', name: contract.signerName, email: contract.signerEmail, clientUserId: contract.boosterId },
             { roleName: 'FastBoost', name: contract.companySignerName, email: contract.companySignerEmail, clientUserId: companyClientId(contract),
-                tabs: { textTabs: [
-                    { tabLabel: 'ProviderLegalName', value: contract.signerName, locked: 'true' },
-                    { tabLabel: 'ProviderEmail', value: contract.signerEmail, locked: 'true' },
-                    { tabLabel: usernameLabel, value: providerUsername, locked: 'true' },
-                    { tabLabel: 'AgreementId', value: contract.id, locked: 'true' },
-                    { tabLabel: 'EffectiveDate', value: new Date(contract.startsAt).toISOString().slice(0, 10), locked: 'true' },
-                ] } },
+                tabs: { textTabs: prefilledTabs } },
         ],
     } }, contract);
     if (!result.envelopeId) throw failure('DocuSign has not returned an envelope ID. Retry this contract.');
@@ -151,4 +206,4 @@ function validWebhook(body, headers) {
     });
 }
 const document = contract => api(`/envelopes/${encodeURIComponent(contract.envelopeId)}/documents/combined?certificate=true`, { pdf: true }, contract);
-module.exports = { configuration, companySigner, readiness, sendContract, signingView, getStatus, validWebhook, document };
+module.exports = { AGREEMENT_VERSION, configuration, companySigner, readiness, sendContract, signingView, getStatus, validWebhook, document };

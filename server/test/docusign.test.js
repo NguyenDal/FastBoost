@@ -59,6 +59,43 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         const legacyBody = JSON.parse(calls.filter(c => c.url.endsWith('/envelopes')).at(-1).options.body);
         assert.equal(legacyBody.templateRoles[1].tabs.textTabs.find(t => t.tabLabel === 'ProviderAccountId').value, 'LolBoost');
         legacyUsernameLabel = false;
+        const remoteTemplateReads = calls.filter(c => c.url.includes('/templates/')).length;
+        assert.equal(await ds.sendContract({ ...contract, templateId: ds.AGREEMENT_VERSION }), 'envelope');
+        const localBody = JSON.parse(calls.filter(c => c.url.endsWith('/envelopes')).at(-1).options.body);
+        assert.equal(localBody.templateId, undefined, 'new agreements carry the versioned document instead of an old remote template');
+        assert.equal(localBody.templateRoles, undefined);
+        assert.equal(calls.filter(c => c.url.includes('/templates/')).length, remoteTemplateReads);
+        assert.equal(localBody.transactionId, contract.id);
+        assert.equal(localBody.emailSubject, contract.title);
+        assert.equal(localBody.documents.length, 1);
+        assert.equal(Buffer.from(localBody.documents[0].documentBase64, 'base64').subarray(0, 5).toString(), '%PDF-');
+        const localCompany = localBody.recipients.signers.find(s => s.recipientId === '1');
+        const localBooster = localBody.recipients.signers.find(s => s.recipientId === '2');
+        assert.equal(localCompany.routingOrder, '1');
+        assert.equal(localCompany.name, 'Test Owner');
+        assert.equal(localCompany.email, 'owner@example.test');
+        assert.equal(localCompany.clientUserId, 'fastboost:request-uuid');
+        assert.equal(localBooster.routingOrder, '2');
+        assert.equal(localBooster.name, 'Test Booster');
+        assert.equal(localBooster.email, 'booster@example.test');
+        assert.equal(localBooster.clientUserId, 'booster');
+        for (const [label, value] of Object.entries({ ProviderLegalName: 'Test Booster', ProviderEmail: 'booster@example.test', ProviderUsername: 'LolBoost', AgreementId: contract.id, EffectiveDate: '2026-09-30' })) {
+            const field = localCompany.tabs.textTabs.find(tab => tab.tabLabel === label);
+            assert.equal(field.value, value);
+            assert.equal(field.locked, 'true');
+            assert.equal(field.required, 'true');
+            assert.ok(field.pageNumber && field.xPosition && field.yPosition, 'identity values retain their visible PDF field coordinates');
+        }
+        for (const signer of [localCompany, localBooster]) {
+            assert.ok(signer.tabs.signHereTabs.some(tab => tab.optional === 'false'));
+            assert.ok(signer.tabs.dateSignedTabs.length);
+        }
+        const sendsBeforeLocalMissingUsername = calls.filter(c => c.url.endsWith('/envelopes')).length;
+        await assert.rejects(ds.sendContract({ ...contract, templateId: ds.AGREEMENT_VERSION, providerUsername: '' }), /Set the booster’s username/);
+        assert.equal(calls.filter(c => c.url.endsWith('/envelopes')).length, sendsBeforeLocalMissingUsername);
+        delete process.env.DOCUSIGN_TEMPLATE_ID;
+        assert.equal(ds.readiness().configured, true, 'the bundled agreement does not need a remote template ID');
+        process.env.DOCUSIGN_TEMPLATE_ID = 'template';
         assert.equal(ds.readiness().configured, true);
         delete process.env.DOCUSIGN_COMPANY_SIGNER_EMAIL;
         assert.equal(ds.readiness().configured, false);
@@ -67,6 +104,8 @@ test('DocuSign JWT, template sends, retry recovery, verified completion and HMAC
         const sendsBefore = calls.filter(c => c.url.endsWith('/envelopes')).length;
         assert.equal(await ds.sendContract({ ...contract, sendAttemptAt: new Date() }), 'recovered');
         assert.equal(calls.filter(c => c.url.endsWith('/envelopes')).length, sendsBefore);
+        assert.equal(await ds.sendContract({ ...contract, templateId: ds.AGREEMENT_VERSION, sendAttemptAt: new Date() }), 'recovered');
+        assert.equal(calls.filter(c => c.url.endsWith('/envelopes')).length, sendsBefore, 'bundled agreements recover the same transaction before creating an envelope');
         await assert.rejects(ds.sendContract({ ...contract, sendAttemptAt: new Date(Date.now() - 8 * 86400000) }), /recovery window/);
         await ds.signingView(contract);
         const view = JSON.parse(calls.find(c => c.url.endsWith('/views/recipient')).options.body);

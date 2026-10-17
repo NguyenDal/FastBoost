@@ -21,62 +21,59 @@ contract has been sent by the coding agent.
    separate from the redirect URIs. Both documents currently carry a review-draft
    label; review their wording and publication dates before making them final.
 
-## 2. Contract template
+## 2. Versioned Booster Service Agreement
 
-The review page `/provider-agreement` requires an active admin or booster account.
-The HTML and PDF live in `server/private/legal/`, outside the frontend's public
-assets and bundles. Both `/api/operations/provider-agreement` and its `/document`
-download check the current account's permissions and return `Cache-Control: no-store`.
-The frontend fetches them with an Authorization header; no token is put in a URL.
-Deploy both API and frontend changes together; do not copy these files into a
-public folder. Terms and Privacy Policy remain public. Rebuild the PDF from the
-wording with `python scripts/build-provider-agreement-pdf.py` at the repository
-root (ReportLab, lxml, and Arial or Liberation Sans TTF fonts are required).
-The current FB-PA-1.1 PDF is an unsigned **review draft**, not a final signing
-template. Approve the remaining commercial settings and finalize the wording
-before removing its review labels and uploading a signing version.
+Admin Booster Management uses **Send a document** with a **Document type** selector.
+**Booster Service Agreement** requires a Start date and the booster's full legal name.
+**Payout Information (to be implemented)** displays an Effective date and cannot be
+sent. The API rejects that unavailable type before creating a record or contacting
+DocuSign. It does not collect payout account credentials or change tenure.
 
-For sandbox setup while commercial settings are still pending, run
-`python scripts/build-provider-agreement-pdf.py --sandbox-template`. This creates
-a separate 13-page test PDF, field-coordinate manifest, and importable template
-JSON in `output/pdf/`; it does not replace the review PDF served by FastBoost.
-Every page is marked as a sandbox test copy, not for real contract execution.
-In DocuSign, choose **Templates → Start → Envelope Templates → Upload Template**
-and select `FastBoost_Provider_Agreement_EN_sandbox.template.json`. This imports
-the PDF, both roles in signing order, and 26 fields. Check the first-page identity
-fields and final signature page, then save. Use the resulting template ID only
-with `DOCUSIGN_ENVIRONMENT=demo`. Do not send this draft for real execution.
+New agreements use bundled version **FB-BSA-2.0**. The server sends its PDF and
+required signing fields with each envelope; it no longer depends on the old remote
+sandbox template. `BoosterContract.templateId` snapshots this version marker, while
+historical records retain their saved remote template IDs and recipient details.
+Issued envelopes are never rewritten by later source or configuration changes.
 
-1. In the sandbox's Templates area, upload the finalized PDF and save a template.
-2. Enable signing order. Add exactly two signer roles, with name/email blank:
-   **FastBoost** at order **1**, and **Booster** at order **2**. Do not add other
-   recipients. The server validates both roles and inherits template routing.
-3. Give each role a required Signature and Date Signed field in its own signature
-   block. Add required initials for Schedule A approval. Add the appropriate Full
-   Name field for the provider signature block; do not leave placeholder text there.
-4. Add FastBoost-owned text fields with these exact **Data Labels**. The server fills
-   and locks them before either signer opens the envelope. Assign them to the first
-   signer, FastBoost, so that identity and reference details are visible from the
-   first signing step, independently of the account's initial-field visibility setting:
+The private HTML, preview PDF and signing package live in `server/private/legal/`,
+outside frontend public assets. `/provider-agreement` requires an active admin or
+booster account; both authenticated API endpoints return `Cache-Control: no-store`.
+The HTML is the source for the agreement wording. Rebuild from the repository root:
 
-   | Data Label | Source |
-   | --- | --- |
-   | `ProviderLegalName` | Legal name entered by the admin |
-   | `ProviderEmail` | Booster's registered email |
-   | `ProviderUsername` | Booster's saved FastBoost username |
-   | `AgreementId` | FastBoost contract reference |
-   | `EffectiveDate` | Admin's requested start date (`YYYY-MM-DD`) |
+```powershell
+python scripts/build-provider-agreement-pdf.py
+python scripts/build-provider-agreement-pdf.py --signing-template
+```
 
-5. Replace the remaining bracketed placeholders with required FastBoost-owned
-   fields (or finalized fixed wording): authorized signatory if applicable, work
-   location, optional end date, payment method/payee/currency, conversion rule,
-   transfer fees, permitted scope, time zone/data-access countries, language, and
-   any jurisdiction addendum. Make enough room for realistic values; replace the
-   placeholder text rather than overlapping it. FastBoost completes these and
-   signs first, so the booster reviews the completed terms before signing.
-6. Record the Template ID in the backend. New sends reject missing identity
-   fields or a single-signer template. Published webpage edits never amend an
-   issued envelope. Keep a separate template/version for revised terms.
+ReportLab, lxml and Arial or Liberation Sans TTF fonts are required. The first command
+creates the unsigned PDF served by the preview. The second creates the execution
+layout, field coordinates and importable JSON under `output/pdf/`, and updates the
+versioned package `server/private/legal/booster-service-agreement.template.json`.
+The package contains the entire PDF and required DocuSign fields. Deploy the API
+and those private assets together. Do not copy them into a public directory.
+
+The signing document identifies An Nguyen Nguyen, trading as FastBoost, retains
+Manitoba/applicable Canadian governing law subject to mandatory local protections,
+and records the 70% approved-match pool and payment on the 1st. It uses USD and
+requires provider identity, work location and remaining commercial settings before
+signing. FastBoost completes and signs first (recipient 1); the Booster reviews the
+completed terms and signs second (recipient 2). Identity, agreement reference and
+start date are prefilled and locked. Both recipients have signature/date fields and
+commercial-settings initials. Payment credentials and tax IDs are collected through
+a separate approved secure process, not the agreement.
+
+Review the completed terms and any required local addendum before execution. A
+production-quality document does not change the configured DocuSign environment:
+`demo` remains the developer sandbox. Production use requires the production API
+account, integration approval/consent, credentials, return origin and Connect setup.
+The source update never promotes the integration, sends an agreement or signs one.
+
+For explicit sandbox-only layout copies, `--sandbox-template` remains available.
+Those exports are visibly marked as tests and are never used by the bundled send
+path. If importing a version into DocuSign Templates for inspection, use the
+`FastBoost_Booster_Service_Agreement_signing.template.json` output. No remote
+Template ID is needed for new bundled sends. Keep `DOCUSIGN_TEMPLATE_ID` only if
+other legacy tooling still relies on it; retries use each saved record's ID.
 
 Only the configured FastBoost signer can open its company signing session; their
 FastBoost login must be an active admin. The sender's DocuSign API user can be a
@@ -111,7 +108,8 @@ DOCUSIGN_ENVIRONMENT=demo
 DOCUSIGN_INTEGRATION_KEY=<integration-key>
 DOCUSIGN_USER_ID=<sender-user-id>
 DOCUSIGN_ACCOUNT_ID=<api-account-id>
-DOCUSIGN_TEMPLATE_ID=<template-id>
+# Optional for legacy tooling; new agreements use the bundled version:
+# DOCUSIGN_TEMPLATE_ID=<legacy-remote-template-id>
 DOCUSIGN_PRIVATE_KEY_PATH=<absolute-path-to-private-PEM-file>
 DOCUSIGN_RETURN_ORIGIN=http://localhost:5173
 DOCUSIGN_CONSENT_REDIRECT_URI=http://localhost:5173/

@@ -56,13 +56,13 @@ export default function ProviderAgreementPage() {
             catch (e) {
                 setError(e.message);
                 if ([401, 403].includes(e.status)) setHtml('');
-            } finally { button.disabled = false; button.textContent = 'Download review PDF'; }
+            } finally { button.disabled = false; button.textContent = 'Download agreement PDF'; }
         });
     };
     return <div className="legal-document-page">
         <Navbar />
         {error && <p className="legal-document-status" role="alert">{error}</p>}
         {!html && !error && <p className="legal-document-status" role="status">Loading agreement…</p>}
-        {html && <iframe title="Provider Agreement" srcDoc={html} className="legal-document-frame" onLoad={frameLoaded} />}
+        {html && <iframe title="Booster Service Agreement" srcDoc={html} className="legal-document-frame" onLoad={frameLoaded} />}
     </div>;
 }

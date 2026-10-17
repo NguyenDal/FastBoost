@@ -19,6 +19,6 @@ export async function downloadProviderAgreement() {
     const response = await request('/document');
     const url = URL.createObjectURL(await response.blob());
     const link = document.createElement('a');
-    link.href = url; link.download = 'FastBoost-provider-agreement-review.pdf'; link.click();
+    link.href = url; link.download = 'FastBoost-Booster-Service-Agreement.pdf'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
 }

@@ -18,8 +18,8 @@ router.get('/', async (req, res, next) => {
     } catch (error) { next(error); }
 });
 router.get('/document', (req, res, next) => {
-    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-provider-agreement-review.pdf"' });
-    res.sendFile(resolve(documentRoot, 'provider-agreement-review.pdf'), { cacheControl: false, lastModified: false }, error => {
+    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-Booster-Service-Agreement.pdf"' });
+    res.sendFile(resolve(documentRoot, 'booster-service-agreement.pdf'), { cacheControl: false, lastModified: false }, error => {
         if (error) next(error);
     });
 });

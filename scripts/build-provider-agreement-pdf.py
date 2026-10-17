@@ -1,8 +1,8 @@
-"""Build the review PDF from the website agreement; requires lxml and reportlab.
+"""Build the private agreement PDFs; requires lxml and reportlab.
 
 Usage: python scripts/build-provider-agreement-pdf.py --font-dir <TTF directory>
 The website HTML is the single source of agreement wording. This exports an
-unsigned review copy, not an executed agreement or a populated DocuSign template.
+unsigned copy. --signing-template builds the versioned document used for new sends.
 """
 from pathlib import Path
 import argparse
@@ -23,7 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--font-dir', type=Path, default=Path('C:/Windows/Fonts'))
 parser.add_argument('--sandbox-template', action='store_true', help='Export a separate sandbox-only PDF and DocuSign field definitions')
+parser.add_argument('--signing-template', action='store_true', help='Export the execution PDF and bundled DocuSign document package')
 args = parser.parse_args()
+if args.sandbox_template and args.signing_template:
+    parser.error('Choose either a signing template or a sandbox test copy.')
+signing = args.sandbox_template or args.signing_template
+VERSION = 'FB-BSA-2.0'
 field_positions = []
 field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
@@ -43,7 +48,7 @@ field_names = {
     'PROVIDER_TIME_ZONE': ('ProviderTimeZone', 'Provider time zone', '1'),
     'COUNTRIES': ('DataAccessCountries', 'Approved data-access countries', '1'),
     'ENGLISH / IDENTIFY REVIEWED TRANSLATION AND AGREED CONFLICT RULE': ('ReferenceLanguage', 'English, or translation and conflict rule', '1'),
-    'NONE AFTER LOCAL REVIEW / IDENTIFIED SIGNED ADDENDUM': ('JurisdictionAddendum', 'None after review, or identified signed addendum', '1'),
+    'NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM': ('JurisdictionAddendum', 'None required, or identified signed addendum', '1'),
 }
 names = ['LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf', 'LiberationSans-BoldItalic.ttf']
 if not (args.font_dir / names[0]).exists():
@@ -116,16 +121,16 @@ def signing_cell(node):
     for part in parts:
         if part.startswith('[') and part.endswith(']'):
             label, caption, recipient = field_names[entities.unescape(part[1:-1])]
-            height = 42 if label in ('ServiceScope', 'ConversionRule', 'JurisdictionAddendum', 'ReferenceLanguage', 'TransferFeeVariation') else 24
+            height = 60 if label == 'ProviderEmail' else 42 if label in ('ProviderLegalName', 'AuthorizedSignatory', 'PayeeLegalName', 'WorkLocation', 'DataAccessCountries', 'ServiceScope', 'ConversionRule', 'JurisdictionAddendum', 'ReferenceLanguage', 'TransferFeeVariation') else 24
             result += [SigningField(label, caption, recipient, height=height), Spacer(1, 5)]
         elif part.strip(' ./;'):
-            result += [Paragraph(part, styles['cell']), Spacer(1, 4)]
+            result += [Paragraph(part.lstrip(' ./;'), styles['cell']), Spacer(1, 4)]
     return result
 
 def table(node):
     rows = []
     for row in node.xpath('./thead/tr | ./tbody/tr | ./tr'):
-        rows.append([signing_cell(cell) if args.sandbox_template and cell.tag != 'th' and '[' in cell.text_content() else para(cell, 'cellhead' if cell.tag == 'th' else 'cell') for cell in row])
+        rows.append([signing_cell(cell) if signing and cell.tag != 'th' and '[' in cell.text_content() else para(cell, 'cellhead' if cell.tag == 'th' else 'cell') for cell in row])
     tab = Table(rows, colWidths=[170, 334], repeatRows=1, hAlign='LEFT')
     tab.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#eee9fa')),
@@ -142,14 +147,14 @@ def table(node):
 tree = html.parse(str(ROOT / 'server/private/legal/provider-agreement.html'))
 story = [Paragraph('FASTBOOST', ParagraphStyle('brand', fontName='FB-Bold', fontSize=13, textColor=purple, spaceAfter=18))]
 story += [para(tree.xpath('//h1')[0], 'title')]
-story += [Paragraph('ENGLISH REVIEW DRAFT  |  FB-PA-1.1  |  30 SEPTEMBER 2026', styles['small'])]
+story += [Paragraph(f'ENGLISH  |  {VERSION}  |  17 OCTOBER 2026', styles['small'])]
 if args.sandbox_template:
     story += [Paragraph('<b>SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION.</b> Field layout for integration testing. Commercial settings remain subject to approval.', styles['body'])]
 story += [para(tree.xpath('//p[@class="fb-intro"]')[0])]
-story += [para(tree.xpath('//div[@class="fb-review"]')[0], 'small')]
+story += [para(tree.xpath('//div[@class="fb-agreement-note"]')[0], 'small')]
 story += [Spacer(1, 6)]
 for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)," ")," fb-section ")]'):
-    if section.get('id') == 'schedule-a' or (section.get('id') == 'signatures' and not args.sandbox_template):
+    if section.get('id') == 'schedule-a':
         story.append(PageBreak())
     number = section.xpath('.//span[@class="fb-section-number"]')[0].text_content()
     heading = section.xpath('.//h2')[0].text_content()
@@ -168,12 +173,12 @@ for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)
                 cells = [para(card.find('h3'), 'heading')]
                 recipient = '1' if 'FASTBOOST' in card.find('h3').text_content() else '2'
                 for p in card.findall('p'):
-                    if args.sandbox_template and 'fb-signline' in p.get('class', ''):
+                    if signing and 'fb-signline' in p.get('class', ''):
                         label = p.text_content().split(':')[0]
                         kind = 'signHereTabs' if label == 'Signature' else 'dateSignedTabs' if label == 'Date' else 'initialHereTabs'
                         cells.append(SigningField(('Company' if recipient == '1' else 'Provider') + kind, label, recipient,
                             width=216, height=46 if kind == 'signHereTabs' else 32, tab_type=kind))
-                    elif args.sandbox_template and '[' in p.text_content():
+                    elif signing and '[' in p.text_content():
                         cells.append(SigningField('ProviderSignatureName', 'Provider / authorized signatory', recipient, width=216, tab_type='fullNameTabs'))
                     elif 'fb-signline' in p.get('class', ''):
                         label = p.text_content().split(':')[0]
@@ -191,21 +196,21 @@ def page_chrome(canvas, doc):
     canvas.line(54, 746, 558, 746)
     canvas.setFont('FB-Bold', 8)
     canvas.setFillColor(purple)
-    canvas.drawString(54, 756, 'FASTBOOST  /  PROVIDER AGREEMENT')
+    canvas.drawString(54, 756, 'FASTBOOST  /  BOOSTER SERVICE AGREEMENT')
     canvas.setFont('FB', 8)
     canvas.setFillColor(muted)
-    canvas.drawRightString(558, 756, 'FB-PA-1.1 / SANDBOX' if args.sandbox_template else 'FB-PA-1.1')
+    canvas.drawRightString(558, 756, f'{VERSION} / SANDBOX' if args.sandbox_template else VERSION)
     canvas.line(54, 46, 558, 46)
-    canvas.drawString(54, 32, 'SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION' if args.sandbox_template else 'Unsigned review draft - complete all required fields before signing')
+    canvas.drawString(54, 32, 'SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION' if args.sandbox_template else 'Complete required details before signing. Retain the completed agreement.')
     canvas.drawRightString(558, 32, f'Page {doc.page}')
     canvas.restoreState()
 
-output = ROOT / ('output/pdf/FastBoost_Provider_Agreement_EN_sandbox.pdf' if args.sandbox_template else 'output/pdf/FastBoost_Provider_Agreement_EN_review.pdf')
+output = ROOT / ('output/pdf/FastBoost_Booster_Service_Agreement_sandbox.pdf' if args.sandbox_template else 'output/pdf/FastBoost_Booster_Service_Agreement_signing.pdf' if signing else 'output/pdf/FastBoost_Booster_Service_Agreement.pdf')
 output.parent.mkdir(parents=True, exist_ok=True)
 doc = SimpleDocTemplate(str(output), pagesize=letter, topMargin=63, bottomMargin=60, leftMargin=54, rightMargin=54,
-    title='FastBoost Provider Agreement - FB-PA-1.1 Review Draft', author='FastBoost')
+    title=f'FastBoost Booster Service Agreement - {VERSION}', author='FastBoost')
 doc.build(story, onFirstPage=page_chrome, onLaterPages=page_chrome)
-if args.sandbox_template:
+if signing:
     signers = []
     for recipient, role in [('1', 'FastBoost'), ('2', 'Booster')]:
         tabs = {}
@@ -215,19 +220,21 @@ if args.sandbox_template:
             tab = {k: v for k, v in field.items() if k != 'type'}
             if field['type'] == 'textTabs':
                 tab.update(required='true', locked='true' if field['tabLabel'] in ('AgreementId', 'ProviderLegalName', 'ProviderEmail', 'ProviderUsername', 'EffectiveDate') else 'false',
-                    font='Arial', fontSize='Size10', maxLength='500' if int(field['height']) > 30 else '100')
+                    font='Arial', fontSize='Size9', disableAutoSize='false', maxLength='254' if field['tabLabel'] == 'ProviderEmail' else '250' if int(field['height']) > 30 else '100')
             elif field['type'] in ('signHereTabs', 'initialHereTabs'):
                 tab.update(optional='false', scaleValue='1')
                 tab.pop('width'); tab.pop('height')
             tabs.setdefault(field['type'], []).append(tab)
         signers.append({'recipientId': recipient, 'roleName': role, 'routingOrder': recipient, 'tabs': tabs})
-    template = {'name': 'FastBoost Provider Agreement FB-PA-1.1 - Sandbox Draft',
-        'description': 'Sandbox testing only. Commercial settings pending. FastBoost first, Booster second. Not for real execution.',
-        'emailSubject': 'FastBoost Provider Agreement - SANDBOX TEST',
+    template = {'version': VERSION, 'name': f'FastBoost Booster Service Agreement {VERSION}' + (' - Sandbox Test' if args.sandbox_template else ''),
+        'description': 'FastBoost completes the required commercial settings and signs first; the Booster then reviews and signs.' + (' Sandbox testing only.' if args.sandbox_template else ''),
+        'emailSubject': 'Booster Service Agreement' + (' - SANDBOX TEST' if args.sandbox_template else ''),
         'documents': [{'documentId': '1', 'name': output.name, 'fileExtension': 'pdf', 'documentBase64': base64.b64encode(output.read_bytes()).decode()}],
         'recipients': {'signers': signers}}
-    (output.parent / 'FastBoost_Provider_Agreement_EN_sandbox.template.json').write_text(json.dumps(template, indent=2), encoding='utf8')
-    (output.parent / 'FastBoost_Provider_Agreement_EN_sandbox.fields.json').write_text(json.dumps(field_positions, indent=2), encoding='utf8')
+    output.with_suffix('.template.json').write_text(json.dumps(template, indent=2), encoding='utf8')
+    output.with_suffix('.fields.json').write_text(json.dumps(field_positions, indent=2), encoding='utf8')
+    if args.signing_template:
+        (ROOT / 'server/private/legal/booster-service-agreement.template.json').write_text(json.dumps(template, indent=2), encoding='utf8')
 else:
-    shutil.copyfile(output, ROOT / 'server/private/legal/provider-agreement-review.pdf')
+    shutil.copyfile(output, ROOT / 'server/private/legal/booster-service-agreement.pdf')
 print(output)
