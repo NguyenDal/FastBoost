@@ -190,7 +190,7 @@ export default function CustomerOrdersPage() {
                                     </td>
 
                                     <td className="right">
-                                        <Link className="secondary-btn" to={`/match/${order.id}`}>
+                                        <Link className="secondary-btn customer-order-chat-btn" to={`/match/${order.id}`}>
                                             {order.status === 'COMPLETED' ? 'View & rate' : 'Open Chat'}
                                         </Link>
                                     </td>

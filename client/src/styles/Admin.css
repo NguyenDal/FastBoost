@@ -888,6 +888,15 @@
   margin-bottom: 20px;
 }
 
+.customer-orders-embedded .customer-order-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 /* Keep list pages contained while their wide tables scroll independently. */
 .customer-orders-embedded .premium-table-wrap,
 .admin-orders-page .premium-table-wrap,
