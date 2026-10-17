@@ -19,6 +19,8 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
         create:async(args,options)=>{
             creates++;
             assert.equal(args.ui_mode,'elements');
+            assert.deepEqual(args.adaptive_pricing,{enabled:true});
+            assert.equal(args.line_items[0].price_data.currency,'usd');
             assert.equal(args.metadata.orderNumber,order.orderNumber);
             assert.equal(args.payment_intent_data.metadata.orderNumber,order.orderNumber);
             assert.ok(args.line_items[0].price_data.product_data.description.includes(order.orderNumber));
@@ -29,7 +31,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
             assert.equal(args.success_url,undefined);
             assert.ok(args.return_url.includes('{CHECKOUT_SESSION_ID}'));
             assert.ok(options.idempotencyKey);
-            existing={id:'cs_test_'+creates,client_secret:'test-secret',status:'open',ui_mode:'elements',amount_total:1700,metadata:args.metadata};
+            existing={id:'cs_test_'+creates,client_secret:'test-secret',status:'open',ui_mode:'elements',amount_total:1700,currency:args.line_items[0].price_data.currency,adaptive_pricing:{...args.adaptive_pricing},metadata:args.metadata};
             return existing;
         },
     }}};
@@ -122,4 +124,55 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(queued.length,1);
     assert.equal(res.body.orderId,order.id);
     assert.equal(creates,2);
+});
+
+const { paymentFixture } = require('../test-helpers/paymentFixture');
+
+test('USD checkout replaces older sessions without Adaptive Pricing once, then reuses the replacement', async t => {
+    for (const oldPricing of [{ enabled: false }, undefined]) await t.test(String(oldPricing?.enabled), async context => {
+        const f = paymentFixture(context, { orders: [{ id: 'order' }] });
+        const first = await f.checkout('order');
+        const olderSession = f.sessions.get(first.body.sessionId);
+        olderSession.adaptive_pricing = oldPricing;
+        const create = f.stripe.checkout.sessions.create;
+        f.stripe.checkout.sessions.create = async (parameters, options) => {
+            assert.deepEqual(parameters.adaptive_pricing, { enabled: true });
+            assert.equal(parameters.line_items[0].price_data.currency, 'usd');
+            assert.ok(options.idempotencyKey.startsWith('checkout-adaptive-v2-'));
+            return create(parameters, options);
+        };
+        const replacement = await f.checkout('order');
+        assert.equal(replacement.code, 200);
+        assert.notEqual(replacement.body.sessionId, first.body.sessionId);
+        assert.deepEqual(f.state.expired, [first.body.sessionId]);
+        assert.equal((await f.checkout('order')).body.sessionId, replacement.body.sessionId);
+        assert.equal(f.state.created.length, 2);
+    });
+});
+
+test('checkout preserves legacy integration currencies and only reuses a matching session currency', async t => {
+    const f = paymentFixture(t, { orders: [{ id: 'legacy', currency: 'cad' }] });
+    const first = await f.checkout('legacy');
+    const session = f.sessions.get(first.body.sessionId);
+    assert.equal(session.currency, 'cad');
+    assert.deepEqual(session.adaptive_pricing, { enabled: false });
+    assert.equal((await f.checkout('legacy')).body.sessionId, first.body.sessionId);
+    session.currency = 'usd';
+    const replacement = await f.checkout('legacy');
+    assert.notEqual(replacement.body.sessionId, first.body.sessionId);
+    assert.deepEqual(f.state.expired, [first.body.sessionId]);
+    assert.equal(f.sessions.get(replacement.body.sessionId).currency, 'cad');
+    assert.equal(f.state.orders[0].currency, 'cad');
+});
+
+test('a completed session without Adaptive Pricing is verified without creating a replacement charge', async t => {
+    const f = paymentFixture(t, { orders: [{ id: 'order' }] });
+    const first = await f.checkout('order');
+    Object.assign(f.sessions.get(first.body.sessionId), { status: 'complete', adaptive_pricing: { enabled: false } });
+    const result = await f.checkout('order');
+    assert.equal(result.body.completed, true);
+    assert.equal(result.body.sessionId, first.body.sessionId);
+    assert.equal(result.body.clientSecret, undefined);
+    assert.equal(f.state.created.length, 1);
+    assert.equal(f.state.expired.length, 0);
 });

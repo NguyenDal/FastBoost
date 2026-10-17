@@ -82,7 +82,7 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
             const amount = args.line_items[0].price_data.unit_amount;
             const session = { id, status: 'open', payment_status: 'unpaid', livemode: false, ui_mode: 'elements',
                 client_secret: 'offline-secret', metadata: args.metadata, amount_subtotal: amount, amount_total: amount,
-                currency: args.line_items[0].price_data.currency };
+                currency: args.line_items[0].price_data.currency, adaptive_pricing: { ...args.adaptive_pricing } };
             sessions.set(id, session); state.created.push(id);
             return structuredClone(session);
         },

@@ -63,6 +63,8 @@
 .checkout-pay { display: block; width: 100%; padding: 16px; margin-top: 24px; border: 0; border-radius: 10px; background: linear-gradient(110deg,#a333ef,#493cff); box-shadow: 0 5px 20px #7838ef33; color: white; font: inherit; font-weight: 700; cursor: pointer; }
 .checkout-pay:disabled { opacity: .6; cursor: wait; }
 .checkout-wallet-slot { min-height: 44px; }
+.checkout-currency-selector { margin-bottom: 22px; }
+.checkout-currency-selector h3 { margin-top: 0; }
 .checkout-price-error { padding: 12px; margin-top: 16px; border: 1px solid #fb718566; border-radius: 10px; color: #fecdd3; font-size: .85rem; }
 .checkout-price-error p { margin: 0 0 10px; }
 .checkout-price-error button { padding: 8px 12px; border: 1px solid #a78bfa; border-radius: 8px; background: #312052; color: #eee7ff; cursor: pointer; }

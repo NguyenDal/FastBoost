@@ -26,6 +26,18 @@ test('signed paid webhooks settle once across duplicate concurrent and async eve
     assert.deepEqual(f.state.referrals, ['order']);
 });
 
+test('local-currency presentment does not change the USD amounts recorded for an order', async t => {
+    const f = paymentFixture(t, { orders: [order] });
+    const session = { ...paidSession, currency: 'usd', adaptive_pricing: { enabled: true },
+        presentment_details: { presentment_currency: 'cad', presentment_amount: 1537 } };
+    assert.equal((await f.webhook('checkout.session.completed', session)).code, 200);
+    assert.equal(f.state.orders[0].paymentStatus, 'PAID');
+    assert.equal(f.state.orders[0].currency, 'usd');
+    assert.equal(f.state.orders[0].amountCents, 2000, 'USD service subtotal includes the USD Gold discount');
+    assert.equal(f.state.orders[0].cashAmountCents, 1130, 'cash accounting uses integration USD, not presented CAD');
+    assert.equal(f.state.redemptions.length, 1);
+});
+
 test('signature validation rejects missing, wrong, stale and tampered signatures before mutation', async t => {
     const f = paymentFixture(t, { orders: [order] });
     for (const overrides of [

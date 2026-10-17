@@ -273,6 +273,11 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             return res.status(400).json({ ok: false, message: "This order has been cancelled" });
         }
 
+        const checkoutCurrency = (order.currency || "usd").toLowerCase();
+        // Local-currency presentment keeps new USD orders denominated in USD.
+        // Historical orders retain their original currency and checkout behavior.
+        const adaptivePricingEnabled = checkoutCurrency === "usd";
+
         // Check for a payment already in flight before changing its price snapshot.
         const previousCoupon = order.couponCode;
         const previousAmount = order.amountCents;
@@ -321,7 +326,14 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (existingSession.ui_mode === "elements" && existingSession.metadata?.editableEmail === "1" && existingSession.metadata?.orderNumber === order.orderNumber && (existingSession.metadata?.couponCode || "") === (order.couponCode || "") && existingSession.amount_total === cashAmountCents && Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
+                if (existingSession.ui_mode === "elements" &&
+                    existingSession.adaptive_pricing?.enabled === adaptivePricingEnabled &&
+                    (!existingSession.currency || existingSession.currency === checkoutCurrency) &&
+                    existingSession.metadata?.editableEmail === "1" &&
+                    existingSession.metadata?.orderNumber === order.orderNumber &&
+                    (existingSession.metadata?.couponCode || "") === (order.couponCode || "") &&
+                    existingSession.amount_total === cashAmountCents &&
+                    Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
                 await stripe.checkout.sessions.expire(existingSession.id, {}, stripeOptions);
@@ -382,12 +394,12 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             // Collect contact email in the editable checkout form. Setting
             // customer_email here locks it and rejects confirm({ email }).
             payment_method_types: ["card", "link"],
-            adaptive_pricing: { enabled: false },
+            adaptive_pricing: { enabled: adaptivePricingEnabled },
             line_items: [
                 {
                     quantity: 1,
                     price_data: {
-                        currency: order.currency || "usd",
+                        currency: checkoutCurrency,
                         unit_amount: cashAmountCents,
                         product_data: {
                             name: order.service?.title || order.boostType || "FastBoost Order",
@@ -411,7 +423,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
             payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber, couponCode: order.couponCode || "" } },
-        }, `checkout-coupon-v1-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}`, createdSessions, order.stripeCheckoutSessionId);
+        }, `checkout-adaptive-v2-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}`, createdSessions, order.stripeCheckoutSessionId);
 
         await db.order.update({
             where: { id: order.id },
