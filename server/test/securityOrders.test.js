@@ -2,12 +2,15 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { paymentFixture } = require('../test-helpers/paymentFixture');
 
-// Security proof cases describe the current vulnerable behavior. All records,
+// Security regressions exercise the real handlers with synthetic records. All records,
 // credentials, Stripe events, notifications and rewards are synthetic in memory.
 const response = () => ({ code: 200, status(code) { this.code = code; return this; },
     json(body) { this.body = body; return this; } });
 
 function orderFixture(t, overrides = {}) {
+    const previousSecret = process.env.JWT_SECRET;
+    process.env.JWT_SECRET = 'synthetic-order-regression-secret';
+    t.after(() => { if (previousSecret === undefined) delete process.env.JWT_SECRET; else process.env.JWT_SECRET = previousSecret; });
     const order = { id: 'synthetic-order', orderNumber: 'TEST-ONLY', customerId: 'customer',
         serviceId: 'service', status: 'CANCELLED', paymentStatus: 'PAID',
         basePrice: 200, totalPrice: 200, amountCents: 20000, currency: 'usd',
@@ -65,7 +68,14 @@ function orderFixture(t, overrides = {}) {
             else delete require.cache[path];
         }
     });
+    const { createProtect } = require('../src/middleware/authMiddleware');
     return { order, actor, calls, db, controller,
+        invokeSession: async (method, token) => {
+            const res = response();
+            const req = { headers: { authorization: 'Bearer ' + token }, params: { id: order.id }, query: {} };
+            await createProtect(db)(req, res, () => controller[method](req, res));
+            return res;
+        },
         invoke: async (method, user = { id: actor.id, role: actor.role }) => {
             const res = response();
             await controller[method]({ user, params: { id: order.id }, query: {} }, res);
@@ -73,30 +83,34 @@ function orderFixture(t, overrides = {}) {
         } };
 }
 
-test('security proof: a suspended or revoked assigned booster can still read decrypted order credentials', async t => {
+test('security regression: suspended and revoked boosters cannot read decrypted order credentials', async t => {
     const f = orderFixture(t, { accountPasswordCiphertext: 'synthetic-ciphertext' });
+    const token = require('../src/utils/sessionToken').signSessionToken(f.actor);
     // Admin suspension/access changes retain assignments in the application.
     Object.assign(f.actor, { role: 'CUSTOMER', suspendedAt: new Date(), hasBoosterAccess: false });
-    const result = await f.invoke('getOrderById', { id: 'booster', role: 'CUSTOMER' });
-    assert.equal(result.code, 200);
-    assert.equal(result.body.order.accountPassword, 'synthetic-password-never-real');
-    assert.equal(f.calls.users, 0, 'credential access never reloads current account privileges');
-    assert.equal(f.calls.decryptions, 1);
+    const result = await f.invokeSession('getOrderById', token);
+    assert.equal(result.code, 401);
+    assert.equal(f.calls.decryptions, 0);
+    f.actor.suspendedAt = null;
+    const revoked = await f.invokeSession('getOrderById', token);
+    assert.equal(revoked.code, 403);
+    assert.equal(f.calls.decryptions, 0);
     const outsider = await f.invoke('getOrderById', { id: 'outsider', role: 'PROVIDER' });
     assert.equal(outsider.code, 403, 'negative control: unrelated booster is rejected');
-    assert.equal(f.calls.decryptions, 1);
+    assert.equal(f.calls.decryptions, 0);
 });
 
-test('security proof: a demoted or suspended previous ADMIN token can decrypt an unrelated order', async t => {
+test('security regression: a demoted or suspended previous ADMIN token cannot decrypt an unrelated order', async t => {
     const f = orderFixture(t, { assignments: [], accountPasswordCiphertext: 'synthetic-ciphertext' });
-    Object.assign(f.actor, { id: 'former-admin', role: 'CUSTOMER', suspendedAt: new Date() });
-    const result = await f.invoke('getOrderById', { id: f.actor.id, role: 'ADMIN' });
-    assert.equal(result.code, 200);
+    Object.assign(f.actor, { id: 'former-admin', role: 'ADMIN' });
+    const token = require('../src/utils/sessionToken').signSessionToken(f.actor);
+    Object.assign(f.actor, { role: 'CUSTOMER', suspendedAt: new Date() });
+    const result = await f.invokeSession('getOrderById', token);
+    assert.equal(result.code, 401);
     assert.notEqual(f.order.customerId, f.actor.id);
     assert.deepEqual(f.order.assignments, []);
-    assert.equal(result.body.order.accountPassword, 'synthetic-password-never-real');
-    assert.equal(f.calls.users, 0, 'current database role and suspension are never consulted');
-    assert.equal(f.calls.decryptions, 1);
+    assert.equal(f.calls.users, 1);
+    assert.equal(f.calls.decryptions, 0);
     const { routeFor } = require('../src/utils/managementAudit');
     assert.equal(routeFor('GET', `/orders/${f.order.id}`), null,
         'the mounted management audit does not guard this read route');
@@ -116,32 +130,32 @@ test('security negative control: previous ADMIN token cannot change an unrelated
         'the mounted write additionally receives the fresh management actor check');
 });
 
-test('security proof: an assigned booster can complete an admin-cancelled paid order', async t => {
+test('security regression: an assigned booster cannot complete an admin-cancelled paid order', async t => {
     const f = orderFixture(t);
     const result = await f.invoke('providerCompleteAssignedOrder');
-    assert.equal(result.code, 200);
-    assert.equal(f.order.status, 'COMPLETED');
-    assert.deepEqual(f.calls.statuses, ['COMPLETED']);
-    assert.deepEqual(f.calls.referrals, [f.order.id]);
+    assert.equal(result.code, 409);
+    assert.equal(f.order.status, 'CANCELLED');
+    assert.deepEqual(f.calls.statuses, []);
+    assert.deepEqual(f.calls.referrals, []);
 });
 
-test('security proof: an assigned booster can mark an unpaid order completed', async t => {
+test('security regression: an assigned booster cannot mark an unpaid order completed', async t => {
     const f = orderFixture(t, { status: 'PENDING', paymentStatus: 'PENDING' });
     const result = await f.invoke('providerCompleteAssignedOrder');
-    assert.equal(result.code, 200);
-    assert.equal(f.order.status, 'COMPLETED');
-    assert.equal(f.order.paymentStatus, 'PENDING', 'this bypasses workflow, not Stripe payment validation');
+    assert.equal(result.code, 409);
+    assert.equal(f.order.status, 'PENDING');
+    assert.equal(f.order.paymentStatus, 'PENDING');
 });
 
-test('security proof: the last booster can reopen a completed order by leaving it', async t => {
+test('security regression: the last booster leaving preserves a completed order status', async t => {
     const f = orderFixture(t, { status: 'COMPLETED' });
     const result = await f.invoke('providerLeaveAssignedOrder');
     assert.equal(result.code, 200);
-    assert.equal(f.order.status, 'PENDING');
+    assert.equal(f.order.status, 'COMPLETED');
     assert.deepEqual(f.order.assignments, []);
 });
 
-test('security proof: accepting a pending invitation reopens an admin-cancelled order', async t => {
+test('security regression: accepting a pending invitation cannot reopen an admin-cancelled order', async t => {
     const f = orderFixture(t, { assignments: [] });
     const request = { id: 'synthetic-invitation', orderId: f.order.id, boosterId: 'booster',
         requestedBy: 'admin', status: 'PENDING', order: structuredClone(f.order), booster: { ...f.actor } };
@@ -167,13 +181,42 @@ test('security proof: accepting a pending invitation reopens an admin-cancelled 
         if (previous) require.cache[path] = previous;
         else delete require.cache[path];
     }
-    assert.equal(res.code, 200);
-    assert.equal(request.status, 'ACCEPTED');
-    assert.equal(f.order.status, 'IN_PROGRESS');
-    assert.equal(f.order.assignments[0].boosterId, 'booster');
+    assert.equal(res.code, 409);
+    assert.equal(request.status, 'PENDING');
+    assert.equal(f.order.status, 'CANCELLED');
+    assert.deepEqual(f.order.assignments, []);
 });
 
-test('security proof: previously saved first-purchase referral discounts remain usable after the first payment', async t => {
+test('security regression: cancellation winning the order lock cannot be overwritten by provider completion', async t => {
+    const f = orderFixture(t, { status: 'IN_PROGRESS' });
+    f.db.$queryRaw = async strings => {
+        if (strings.join('?').includes('"Order"')) f.order.status = 'CANCELLED';
+        return [];
+    };
+    const result = await f.invoke('providerCompleteAssignedOrder');
+    assert.equal(result.code, 409);
+    assert.equal(f.order.status, 'CANCELLED');
+    assert.deepEqual(f.calls.statuses, []);
+});
+
+test('security regression: declining a stale invitation cannot overwrite a concurrent acceptance', async t => {
+    const f = orderFixture(t, { status: 'IN_PROGRESS' });
+    const request = { id: 'invitation', orderId: f.order.id, boosterId: 'booster', requestedBy: 'admin', status: 'PENDING',
+        order: structuredClone(f.order), booster: { ...f.actor } };
+    f.db.assignmentRequest = { findUnique: async () => structuredClone(request), update: async ({ data }) => Object.assign(request, data) };
+    f.db.$queryRaw = async () => { request.status = 'ACCEPTED'; return []; };
+    const path = require.resolve('../src/controllers/assignmentRequestController');
+    const previous = require.cache[path]; delete require.cache[path];
+    const controller = require(path);
+    const res = response();
+    try {
+        await controller.declineAssignmentRequest({ user: { id: 'booster', role: 'PROVIDER' }, params: { requestId: request.id } }, res);
+    } finally { if (previous) require.cache[path] = previous; else delete require.cache[path]; }
+    assert.equal(res.code, 409);
+    assert.equal(request.status, 'ACCEPTED');
+});
+
+test('security regression: saved referral drafts lose the first-purchase discount after the first payment', async t => {
     // createOrder obtains the offer only while there are no PAID orders and
     // saves that 10% discount in every draft. Checkout does not revalidate it.
     const f = paymentFixture(t, { initialGold: 0, orders: ['first', 'second'].map(id => ({
@@ -187,7 +230,7 @@ test('security proof: previously saved first-purchase referral discounts remain 
     assert.equal(f.state.orders[0].paymentStatus, 'PAID');
     const second = await f.checkout('second', { goldToUse: 0 });
     assert.equal(second.code, 200);
-    assert.equal(f.sessions.get(second.body.sessionId).amount_total, 4500);
-    assert.equal(f.state.orders[1].referralDiscount, 5);
+    assert.equal(f.sessions.get(second.body.sessionId).amount_total, 5000);
+    assert.equal(f.state.orders[1].referralDiscount, 0);
     assert.equal(f.state.orders[1].paymentStatus, 'PENDING');
 });

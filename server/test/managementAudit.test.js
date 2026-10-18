@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const { signSessionToken } = require('../src/utils/sessionToken');
+const { adminOnly } = require('../src/middleware/authMiddleware');
 const { createManagementAudit } = require('../src/middleware/managementAudit');
 const { createActivityLogRouter, filters } = require('../src/routes/activityLogRoutes');
 const { routeFor, safe } = require('../src/utils/managementAudit');
@@ -73,7 +74,7 @@ async function serve(t, app) {
     const server = await new Promise(resolve => { const value = app.listen(0, '127.0.0.1', () => resolve(value)); });
     t.after(async () => { await new Promise(resolve => server.close(resolve)); if (previous === undefined) delete process.env.JWT_SECRET; else process.env.JWT_SECRET = previous; });
     return (path, actor = 'owner', method = 'GET', body) => fetch(`http://127.0.0.1:${server.address().port}${path}`, {
-        method, headers: { 'Content-Type': 'application/json', ...(actor ? { Authorization: `Bearer ${jwt.sign({ userId: actor, role: 'ADMIN', isOwner: true }, process.env.JWT_SECRET)}` } : {}) },
+        method, headers: { 'Content-Type': 'application/json', ...(actor ? { Authorization: `Bearer ${signSessionToken({ ...actors[actor], role: 'ADMIN', isOwner: true })}` } : {}) },
         ...(body ? { body: JSON.stringify(body) } : {}),
     });
 }
@@ -81,7 +82,7 @@ async function serve(t, app) {
 test('admin actions are durably started, finalized with safe state, and failed requests remain visible', async t => {
     const { db, state } = fixture();
     const app = express(); app.use(express.json()); app.use('/api', createManagementAudit(db));
-    app.patch('/api/admin/users/target/role', (req, res) => {
+    app.patch('/api/admin/users/target/role', adminOnly, (req, res) => {
         assert.equal(state.entries.at(-1).outcome, 'STARTED', 'the log exists before any mutation');
         if (req.body.role === 'INVALID') return res.status(400).json({ message: 'PRIVATE-ERROR' });
         state.target.role = req.body.role; state.changes++;
@@ -121,7 +122,7 @@ test('admin actions are durably started, finalized with safe state, and failed r
     assert.equal(state.entries.at(-1).outcome, 'STARTED', 'a failed final write remains unconfirmed, never disappears');
     assert.equal(state.target.role, 'ADMIN', 'never imply that completed work was rolled back');
     state.endFails = false;
-    for (const actor of ['suspended', 'downgraded']) assert.equal((await request('/api/admin/users/target/role', actor, 'PATCH', { role: 'CUSTOMER' })).status, 403);
+    for (const actor of ['suspended', 'downgraded']) assert.equal((await request('/api/admin/users/target/role', actor, 'PATCH', { role: 'CUSTOMER' })).status, actor === 'suspended' ? 401 : 403);
     assert.equal(state.target.role, 'ADMIN');
 });
 
@@ -132,8 +133,8 @@ test('log list and access are owner-only using current database permissions, wit
     const app = express(); app.use('/api/admin/activity-logs', createActivityLogRouter(db));
     const request = await serve(t, app);
     for (const actor of ['admin', 'customer', 'booster', 'suspended', 'downgraded']) {
-        assert.equal((await request('/api/admin/activity-logs/access', actor)).status, 403);
-        assert.equal((await request('/api/admin/activity-logs', actor)).status, 403);
+        assert.equal((await request('/api/admin/activity-logs/access', actor)).status, actor === 'suspended' ? 401 : 403);
+        assert.equal((await request('/api/admin/activity-logs', actor)).status, actor === 'suspended' ? 401 : 403);
     }
     assert.equal((await request('/api/admin/activity-logs', null)).status, 401);
     assert.equal((await request('/api/admin/activity-logs/access')).status, 200);

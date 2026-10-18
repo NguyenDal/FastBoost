@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma');
 const { registrationConsent } = require('../utils/registrationConsent');
+const { verifySessionToken, sessionSecurityStamp } = require('../utils/sessionToken');
 
 const providers = {
   google: { authorization: 'https://accounts.google.com/o/oauth2/v2/auth', token: 'https://oauth2.googleapis.com/token', user: 'https://openidconnect.googleapis.com/v1/userinfo', scope: 'openid email profile' },
@@ -123,13 +124,12 @@ async function startSocialAccountAction(req, res, mode) {
   if (!config) return finish(res, origin, { error: 'This sign-in provider is not available yet.' });
   let session;
   try {
-    session = jwt.verify(req.body.sessionToken, process.env.JWT_SECRET, { algorithms: ['HS256'] });
-    if (session.aud || typeof session.userId !== 'string' || !session.userId || !Number.isFinite(session.exp)) throw new Error('Invalid session');
+    session = await verifySessionToken(req.body.sessionToken, { db: prisma });
   } catch { return finish(res, origin, { error: 'Your session expired. Please sign in again.' }); }
   try {
     const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { id: true, suspendedAt: true } });
     if (!user || user.suspendedAt) return finish(res, origin, { error: 'This account is unavailable.' });
-    const context = { origin, mode, userId: user.id, sessionExpiresAt: session.exp };
+    const context = { origin, mode, userId: user.id, sessionExpiresAt: session.exp, securityStamp: session.securityStamp };
     if (mode === 'unlink') {
       const linked = await prisma.socialIdentity.findUnique({ where: { userId_provider: { userId: user.id, provider } }, select: { id: true, providerUserId: true } });
       if (!linked) return finish(res, origin, { error: 'This account is not linked. Please refresh Profile Settings.' });
@@ -188,7 +188,9 @@ async function resolveSocialUser(db, provider, identity, context) {
     // has never completed FastBoost's separate email-verification flow.
     if (!googleOwnsEmail && provider !== 'discord') throw new Error('Please sign in with email and password, then link this provider in Profile Settings.');
     if (existing.suspendedAt) throw new Error('This account is suspended. Please contact support.');
-    throw Object.assign(new Error('Allow linking to sign in faster next time.'), { code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED', userId: existing.id });
+    throw Object.assign(new Error('Allow linking to sign in faster next time.'), {
+      code: 'SOCIAL_LINK_CONFIRMATION_REQUIRED', userId: existing.id, securityStamp: sessionSecurityStamp(existing),
+    });
   }
   if (context.username === undefined || context.termsAccepted !== true) {
     const error = new Error('Choose a username and agree to the Privacy Policy and Terms and Conditions to create an account.');
@@ -215,8 +217,20 @@ async function resolveSocialUser(db, provider, identity, context) {
     throw error;
   }
 }
-function linkConfirmation(provider, identity, context, userId) {
-  return { provider, linkToken: jwt.sign({ provider, identity, userId, origin: context.origin, rememberMe: context.rememberMe }, signupSecret(), { audience: 'fastboost-social-link-confirmation', expiresIn: '10m' }) };
+function linkConfirmation(provider, identity, context, userId, securityStamp) {
+  return { provider, linkToken: jwt.sign({ provider, identity, userId, securityStamp, origin: context.origin, rememberMe: context.rememberMe }, signupSecret(), { audience: 'fastboost-social-link-confirmation', expiresIn: '10m' }) };
+}
+async function lockAccountSession(tx, userId, stamp) {
+  const user = await tx.user.findUnique({ where: { id: userId }, include: { profile: true } });
+  if (!user || user.suspendedAt || typeof stamp !== 'string' || stamp !== sessionSecurityStamp(user)) {
+    throw new Error('This account changed. Please sign in again.');
+  }
+  // The conditional write locks the user row and detects password changes that
+  // committed while waiting. Recovery and concurrent linking share this lock.
+  const locked = await tx.user.updateMany({ where: { id: user.id, email: user.email,
+    emailVerifiedAt: user.emailVerifiedAt, passwordHash: user.passwordHash, suspendedAt: null }, data: { passwordHash: user.passwordHash } });
+  if (locked.count !== 1) throw new Error('This account changed. Please sign in again.');
+  return user;
 }
 exports.confirmSocialLink = async (req, res) => {
   res.set('Cache-Control', 'no-store');
@@ -228,11 +242,20 @@ exports.confirmSocialLink = async (req, res) => {
   if (req.body.allow !== true) return res.json({ cancelled: true });
   try {
     const linked = await prisma.$transaction(async tx => {
-      const user = await tx.user.findUnique({ where: { id: pending.userId }, include: { profile: true } });
+      let user = await lockAccountSession(tx, pending.userId, pending.securityStamp);
       if (!user || user.email !== String(pending.identity.email).trim().toLowerCase()) throw new Error('This account changed. Please sign in again.');
+      if (!user.emailVerifiedAt) {
+        // The provider just proved email ownership. An unverified preregistrant
+        // may know the old password or control previously linked identities.
+        await tx.socialIdentity.deleteMany({ where: { userId: user.id } });
+        await tx.passwordResetToken.deleteMany({ where: { userId: user.id } });
+        user = await tx.user.update({ where: { id: user.id }, data: {
+          passwordHash: await bcrypt.hash(crypto.randomBytes(48).toString('base64url'), 10),
+          emailVerifiedAt: new Date(),
+        }, include: { profile: true } });
+      }
       const account = await linkSocialUser(tx, user.id, pending.provider, pending.identity);
-      if (account.emailVerifiedAt) return account;
-      return tx.user.update({ where: { id: account.id }, data: { emailVerifiedAt: new Date() }, include: { profile: true } });
+      return account;
     });
     return res.json(sessionPayload(linked, pending.rememberMe));
   } catch (error) { return res.status(400).json({ error: error.code ? 'Could not link your account. Please try again.' : error.message }); }
@@ -255,7 +278,7 @@ exports.completeSocialSignup = async (req, res) => {
     });
     return res.json(sessionPayload(user, pending.rememberMe));
   } catch (error) {
-    if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return res.json(linkConfirmation(pending.provider, pending.identity, pending, error.userId));
+    if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return res.json(linkConfirmation(pending.provider, pending.identity, pending, error.userId, error.securityStamp));
     if (error.field === 'username') return res.status(error.status || 400).json({ error: error.message, field: 'username' });
     if (error.code === 'P2002') return res.status(409).json({ error: 'This account was just created. Please try signing in again.' });
     return res.status(error.code ? 500 : 400).json({ error: error.code ? 'We could not create your account. Please try again.' : error.message });
@@ -289,17 +312,23 @@ exports.socialCallback = async (req, res) => {
     let user;
     try {
       if (context.mode === 'link') {
-        user = await linkSocialUser(prisma, context.userId, provider, identity);
+        user = await prisma.$transaction(async tx => {
+          await lockAccountSession(tx, context.userId, context.securityStamp);
+          return linkSocialUser(tx, context.userId, provider, identity);
+        });
         return finish(res, context.origin, { linked: provider, userId: user.id });
       }
       if (context.mode === 'unlink') {
-        await unlinkSocialUser(prisma, context.userId, provider, identity, context);
+        await prisma.$transaction(async tx => {
+          await lockAccountSession(tx, context.userId, context.securityStamp);
+          return unlinkSocialUser(tx, context.userId, provider, identity, context);
+        });
         return finish(res, context.origin, { unlinked: provider, userId: context.userId });
       }
       user = await resolveSocialUser(prisma, provider, identity, context);
     }
     catch (error) {
-      if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return finish(res, context.origin, linkConfirmation(provider, identity, context, error.userId));
+      if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return finish(res, context.origin, linkConfirmation(provider, identity, context, error.userId, error.securityStamp));
       if (error.code === 'SOCIAL_SIGNUP_REQUIRED') {
         const signupToken = jwt.sign({ provider, origin: context.origin,
           identity: { sub: identity.sub, id: identity.id, email: identity.email, email_verified: identity.email_verified, verified: identity.verified, hd: identity.hd },

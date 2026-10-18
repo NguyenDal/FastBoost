@@ -189,8 +189,7 @@ test('Stripe and Gold settlement hooks notify existing assigned boosters once an
         { id: 'gold', assignments: [assignedBooster('gold-booster')] },
     ] });
     attachEmailOutbox(f.db, f.state);
-    const session = { id: 'cs_test_paid', status: 'complete', payment_status: 'paid', payment_intent: 'pi_test_synthetic',
-        amount_subtotal: 2000, amount_total: 2000, currency: 'usd', metadata: { orderId: 'card' }, customer_email: 'customer@example.test' };
+    const session = f.paidSession('card', { customer_email: 'customer@example.test' });
     await Promise.all([f.webhook('checkout.session.completed', session), f.webhook('checkout.session.completed', session)]);
     assert.deepEqual(f.state.emails.map(row => [row.boosterId, row.event]), [['card-booster', 'PAYMENT_CONFIRMED']]);
     assert.equal((await f.checkout('gold', { goldToUse: 200, contactEmail: 'customer@example.test' })).code, 200);
@@ -208,7 +207,7 @@ test('ledger failure rolls back completion instead of losing the corresponding m
     assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000]);
 });
 
-test('assignment changes, leaving, and accepted invitations reconcile completed order allocations', async t => {
+test('assignment corrections and leaving preserve completed status, while stale invitations cannot reopen it', async t => {
     const f = fixture(t);
     await f.invoke('updateOrderStatus');
     assert.equal((await f.invoke('assignBooster')).code, 200);
@@ -218,13 +217,13 @@ test('assignment changes, leaving, and accepted invitations reconcile completed 
     assert.equal((await f.invoke('unassignBooster')).code, 200);
     assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000, 7000]);
     assert.equal((await f.invoke('providerLeaveAssignedOrder')).code, 200);
-    assert.equal(f.state.order.status, 'PENDING');
-    assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000, 7000, -7000]);
+    assert.equal(f.state.order.status, 'COMPLETED');
+    assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000, 7000]);
     f.state.order.assignments = [{ boosterId: 'booster' }];
     await f.invoke('updateOrderStatus');
-    assert.equal((await f.invoke('acceptAssignmentRequest', { actor: 'new-booster' })).code, 200);
-    assert.equal(f.state.order.status, 'IN_PROGRESS');
-    assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000, 7000, -7000, 7000, -7000]);
+    assert.equal((await f.invoke('acceptAssignmentRequest', { actor: 'new-booster' })).code, 409);
+    assert.equal(f.state.order.status, 'COMPLETED');
+    assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000, -7000, 7000]);
 });
 
 test('settling a completed order recognizes paid earnings once and ignores replayed webhooks', async t => {
@@ -233,8 +232,7 @@ test('settling a completed order recognizes paid earnings once and ignores repla
         boostType: 'Rank Boost', matchHistoryEnabled: false, assignments: [{ boosterId: 'booster' }],
         contributions: [{ boosterId: 'booster', submittedMatches: 1, approvedMatches: 1 }] }] });
     const ledger = attachEarningsLedger(f.db);
-    const session = { id: 'cs_test_paid', status: 'complete', payment_status: 'paid', payment_intent: 'pi_test_synthetic',
-        amount_subtotal: 2000, amount_total: 2000, currency: 'usd', metadata: { orderId: 'order' }, customer_email: 'customer@example.test' };
+    const session = f.paidSession('order', { customer_email: 'customer@example.test' });
     assert.equal((await f.webhook('checkout.session.completed', session)).code, 200);
     assert.deepEqual(ledger.entries.map(row => row.amountCents), [1400]);
     await f.webhook('checkout.session.completed', session);

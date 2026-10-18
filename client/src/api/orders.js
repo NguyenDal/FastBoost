@@ -10,6 +10,24 @@ function authHeaders() {
     };
 }
 
+async function paymentJson(url, options, timeoutMs) {
+  const controller = new AbortController();
+  const incoming = options.signal;
+  if (incoming?.aborted) throw incoming.reason || new DOMException("Request cancelled.", "AbortError");
+  const cancel = () => controller.abort(incoming.reason);
+  incoming?.addEventListener("abort", cancel, { once: true });
+  const timer = setTimeout(() => controller.abort(new DOMException("Payment request timed out.", "TimeoutError")), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    // Keep the deadline until the response body has arrived as well.
+    const data = await response.json();
+    return { response, data };
+  } finally {
+    clearTimeout(timer);
+    incoming?.removeEventListener("abort", cancel);
+  }
+}
+
 export async function getOrderRating(orderId) {
     const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}/rating`, { headers: authHeaders() });
     const result = await response.json();
@@ -42,10 +60,11 @@ export async function updateOrderLoginInfo(orderId, payload) {
     return data.order;
 }
 
-export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail, couponCode) {
-  const res = await fetch(`${API_BASE_URL}/payments/create-checkout-session`, {
+export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail, couponCode, { signal } = {}) {
+  const { response: res, data } = await paymentJson(`${API_BASE_URL}/payments/create-checkout-session`, {
     method: "POST",
     headers: authHeaders(),
+    signal,
     body: JSON.stringify({
       orderId,
       goldToUse,
@@ -53,41 +72,41 @@ export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnl
       contactEmail,
       couponCode,
     }),
-  });
-
-  const data = await res.json();
+  }, 20000);
 
   if (!res.ok || data.ok === false) {
-    throw Object.assign(new Error(data.message || "Failed to create checkout session"), { code: data.code });
+    throw Object.assign(new Error(data.message || "Failed to create checkout session"), { code: data.code, status: res.status });
   }
 
   return data;
 }
 
-export async function verifyCheckoutSession({ sessionId, orderId }) {
+export async function verifyCheckoutSession({ sessionId, orderId, signal }) {
   const params = new URLSearchParams();
 
   if (sessionId) params.set("sessionId", sessionId);
   if (orderId) params.set("orderId", orderId);
 
-  const res = await fetch(
+  const { response: res, data } = await paymentJson(
     `${API_BASE_URL}/payments/verify-checkout-session?${params.toString()}`,
     {
       method: "GET",
       headers: authHeaders(),
-    }
+      signal,
+    }, 15000,
   );
 
-  const data = await res.json();
-
   if (!res.ok || data.ok === false) {
-    throw new Error(data.message || "Failed to verify payment");
+    throw Object.assign(new Error(data.message || "Failed to verify payment"), { status: res.status });
   }
 
   return data;
 }
 
 export async function deleteUnpaidCheckoutOrder(orderId) {
+  if (typeof orderId !== "string" || !/^[a-zA-Z0-9_-]{1,128}$/.test(orderId)) {
+    throw new Error("This checkout link is invalid. Open your order from your account.");
+  }
   const res = await fetch(`${API_BASE_URL}/orders/unpaid-checkout/${orderId}`, {
     method: "DELETE",
     headers: authHeaders(),
@@ -103,8 +122,7 @@ export async function deleteUnpaidCheckoutOrder(orderId) {
 }
 
 export async function checkServiceAvailability(serviceId) {
-  const response = await fetch(`${API_BASE_URL}/services/${encodeURIComponent(serviceId)}`, { cache: "no-store" });
+  const { response, data } = await paymentJson(`${API_BASE_URL}/services/${encodeURIComponent(serviceId)}`, { cache: "no-store" }, 15000);
   if (!response.ok) throw new Error("Service availability could not be verified.");
-  const data = await response.json();
   if (data.service?.active !== true) throw Object.assign(new Error(), { code: "SERVICE_UNAVAILABLE" });
 }

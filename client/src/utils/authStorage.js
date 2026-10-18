@@ -23,3 +23,11 @@ export function storeAuthSession(token, user, rememberMe = false) {
   storage.setItem("user", JSON.stringify(user));
   sessionStorage.removeItem("fastboost:session-expired-shown");
 }
+
+// A response from an older request must never restore a logged-out session or
+// replace the credentials of an account that signed in while it was pending.
+export function replaceAuthToken(previousToken, nextToken) {
+  if (!previousToken || typeof nextToken !== "string" || !nextToken || authStorage.getItem("token") !== previousToken) return false;
+  authStorage.setItem("token", nextToken);
+  return true;
+}

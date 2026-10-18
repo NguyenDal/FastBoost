@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../prisma');
-const { protect } = require('../middleware/authMiddleware');
+const { createProtect } = require('../middleware/authMiddleware');
 const { ratingSelect, orderSelect, ratingRecipientIds, missingRatingTable } = require('../utils/orderRatings');
 
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -22,6 +22,7 @@ async function ownedOrder(client, id, customerId) {
 
 function createOrderRatingRouter(client = db) {
     const router = express.Router();
+    const protect = createProtect(client);
     router.get('/:id/rating', protect, handle(async (req, res) => {
         res.set('Cache-Control', 'no-store');
         const actor = await customer(client, req.user.id || req.user.userId);

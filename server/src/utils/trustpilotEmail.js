@@ -1,5 +1,8 @@
 const nodemailer = require("nodemailer");
 
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,
+    character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+
 function getRequiredEnv(name) {
     const value = process.env[name];
 
@@ -65,15 +68,15 @@ async function sendTrustpilotReviewInvite(order) {
             `Order Total: ${total}`,
         ].join("\n"),
         html: `
-        <p>FastBoost completed order #${shortOrderId}</p>
-        <p><strong>Customer:</strong> ${customerName}</p>
-        <p><strong>Email:</strong> ${customerEmail}</p>
-        <p><strong>Reference ID:</strong> ${order.orderNumber}</p>
-        <p><strong>Service:</strong> ${serviceTitle}</p>
-        <p><strong>Order Total:</strong> ${total}</p>
+        <p>FastBoost completed order #${escapeHtml(shortOrderId)}</p>
+        <p><strong>Customer:</strong> ${escapeHtml(customerName)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(customerEmail)}</p>
+        <p><strong>Reference ID:</strong> ${escapeHtml(order.orderNumber)}</p>
+        <p><strong>Service:</strong> ${escapeHtml(serviceTitle)}</p>
+        <p><strong>Order Total:</strong> ${escapeHtml(total)}</p>
 
         <script type="application/json+trustpilot">
-            ${JSON.stringify(trustpilotPayload)}
+            ${JSON.stringify(trustpilotPayload).replace(/</g, '\\u003c')}
         </script>
     `,
     });

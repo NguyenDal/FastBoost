@@ -96,7 +96,7 @@ test("payment settlement survives failed metadata lookup outside transaction, wi
         assert.equal(inTransaction, false, "optional Stripe metadata does not hold the checkout lock");
         throw new Error("Optional receipt lookup unavailable");
     } };
-    const session = { id: "cs_paid", object: "checkout.session", status: "complete", payment_status: "paid", payment_intent: "pi_paid", amount_subtotal: 1000, amount_total: 1000, currency: "usd", metadata: { orderId: "order" }, customer_details: { email: "customer@example.test" }, livemode: false };
+    const session = f.paidSession("order", { payment_intent: "pi_paid", customer_details: { email: "customer@example.test" } });
     assert.equal((await f.webhook("checkout.session.completed", session)).code, 200);
     assert.equal((await f.webhook("checkout.session.completed", session)).code, 200);
     assert.equal(lookups, 1);
@@ -120,7 +120,7 @@ test("successful reconciliation queues the Stripe card snapshot with the confirm
     delete require.cache[controllerPath];
     const controller = require(controllerPath);
     f.stripe.paymentIntents = { retrieve: async () => ({ latest_charge: { payment_method_details: card } }) };
-    f.sessions.set("cs_paid", { id: "cs_paid", status: "complete", payment_status: "paid", payment_intent: "pi_paid", amount_total: 1000, amount_subtotal: 1000, currency: "usd", metadata: { orderId: "order" }, customer_details: { email: "customer@example.test" } });
+    f.sessions.set("cs_paid", f.paidSession("order", { payment_intent: "pi_paid", customer_details: { email: "customer@example.test" } }));
     for (let attempt = 0; attempt < 2; attempt++) {
         const res = f.response();
         await controller.verifyCheckoutSession({ user: { id: "customer" }, query: { sessionId: "cs_paid" } }, res);

@@ -14,6 +14,8 @@ const {
 } = require("../controllers/userController");
 
 const router = express.Router();
+const { createRateLimit } = require('../middleware/rateLimit');
+const userBudget = limit => createRateLimit({ limit, windowMs: 15 * 60 * 1000, key: req => req.user.userId });
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -33,10 +35,10 @@ const upload = multer({
 
 router.get("/me", protect, me);
 router.patch("/me", protect, updateMyAccount);
-router.patch("/me/password", protect, changeMyPassword);
+router.patch("/me/password", protect, userBudget(10), changeMyPassword);
 
-router.post("/me/email-verification/send", protect, sendEmailVerificationCode);
-router.post("/me/email-verification/confirm", protect, confirmEmailVerificationCode);
+router.post("/me/email-verification/send", protect, userBudget(3), sendEmailVerificationCode);
+router.post("/me/email-verification/confirm", protect, userBudget(10), confirmEmailVerificationCode);
 
 router.post(
   "/me/profile-picture",

@@ -51,7 +51,10 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
     const currencySelectorLoading = session?.sessionId === sessionId && session.currencySelectorStatus === "loading";
     const currencySelectorError = session?.sessionId === sessionId && session.currencySelectorStatus === "error";
     const activeSessionId = useRef(sessionId);
-    useLayoutEffect(() => { activeSessionId.current = sessionId; }, [sessionId]);
+    useLayoutEffect(() => {
+        activeSessionId.current = sessionId;
+        return () => { activeSessionId.current = null; };
+    }, [sessionId]);
     const handleSessionState = useCallback(next => {
         // A retired session can still emit while Stripe tears down its Elements.
         if (next.sessionId !== activeSessionId.current || (next.state.type === "success" && next.state.checkout.id !== next.sessionId)) return;
@@ -96,6 +99,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
         onBusyChange?.(true);
         setError("");
         let stage = "validating contact details";
+        let confirmationStarted = false;
         try {
             const contactEmail = email.trim();
             if (!contactEmail || !emailNode.current?.validity.valid) throw Object.assign(new Error(), { code: "email_required" });
@@ -114,10 +118,14 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
             }
             stage = "confirming checkout";
             await onBeforeConfirm?.();
+            if (activeSessionId.current !== sessionId) return;
+            confirmationStarted = true;
             const result = await state.checkout.confirm(confirmation);
+            if (activeSessionId.current !== sessionId) return;
             if (result.type === "error") throw result.error;
             else onSuccess({ session_id: sessionId });
         } catch (failure) {
+            if (activeSessionId.current !== sessionId) return;
             // Keep technical diagnostics in the local developer console, never in
             // the customer popup. Do not log payment objects or entered details.
             if (import.meta.env.DEV) console.error("[FastBoost payment]", {
@@ -126,7 +134,11 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
                 code: failure?.code,
                 message: String(failure?.message || "No error message returned").replace(/(?:sk|pk|cs|pi)_(?:test_|live_)?[A-Za-z0-9_]+/g, "[redacted]"),
             });
-            setError(paymentErrorMessage(failure));
+            // Losing the response does not mean Stripe rejected the charge.
+            // Verify this exact session before exposing another payment attempt.
+            if (confirmationStarted && !["card_error", "validation_error"].includes(failure?.type)) {
+                onSuccess({ session_id: sessionId });
+            } else setError(paymentErrorMessage(failure));
         }
         finally { submitting.current = false; setBusy(false); onBusyChange?.(false); }
     };

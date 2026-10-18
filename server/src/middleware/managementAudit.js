@@ -1,14 +1,15 @@
 const db = require('../prisma');
-const { protect } = require('./authMiddleware');
+const { createProtect } = require('./authMiddleware');
 const { routeFor, snapshot, requestDetails, responseDetails, resultId } = require('../utils/managementAudit');
 
 function createManagementAudit(client = db) {
+    const protect = createProtect(client);
     return (req, res, next) => {
         let route;
         try { route = routeFor(req.method, req.path); }
         catch { return res.status(400).json({ message: 'Invalid management request.' }); }
         if (!route) return next();
-        protect(req, res, async () => {
+        return protect(req, res, async () => {
             let actor, record, targetId;
             try {
                 actor = await client.user.findUnique({ where: { id: req.user.id || req.user.userId },

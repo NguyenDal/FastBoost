@@ -7,6 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+model RateLimitBucket {
+  key       String   @id @db.VarChar(64)
+  count     Int
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
 model User {
   boosterProfile BoosterProfile?
   boosterPreferences BoosterPreferences?
@@ -682,6 +690,7 @@ model Message {
   sender       User         @relation(fields: [senderId], references: [id])
 
   @@index([conversationId, createdAt])
+  @@index([senderId, createdAt])
   @@index([attachmentKey])
 }
 

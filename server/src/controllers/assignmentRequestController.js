@@ -290,6 +290,16 @@ exports.acceptAssignmentRequest = async (req, res) => {
 
     const { updated, assignment } = await prisma.$transaction(tx => withEarningsLedgerMutation(tx, request.orderId, async () => {
         await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${request.orderId} FOR UPDATE`;
+        const current = await tx.assignmentRequest.findUnique({ where: { id: requestId } });
+        const currentOrder = await tx.order.findUnique({ where: { id: request.orderId } });
+        const currentBooster = await tx.user.findUnique({ where: { id: userId } });
+        if (!current || current.status !== "PENDING" || current.boosterId !== userId) {
+            throw Object.assign(new Error("Assignment request is no longer pending"), { status: 409 });
+        }
+        if (!canBoost(currentBooster)) throw Object.assign(new Error("Booster access is no longer active"), { status: 403 });
+        if (!currentOrder || !["PENDING", "IN_PROGRESS"].includes(currentOrder.status) || currentOrder.paymentStatus !== "PAID") {
+            throw Object.assign(new Error("Only paid active orders can accept assignments"), { status: 409 });
+        }
         return withBoosterOrderEmails(tx, request.orderId, async () => {
             const updated = await tx.assignmentRequest.update({
               where: { id: requestId },
@@ -365,6 +375,7 @@ exports.acceptAssignmentRequest = async (req, res) => {
       assignment,
     });
   } catch (error) {
+    if ([403, 409].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
     console.error("acceptAssignmentRequest error:", error);
 
     return res.status(500).json({
@@ -423,42 +434,51 @@ exports.declineAssignmentRequest = async (req, res) => {
       });
     }
 
-    const updated = await prisma.assignmentRequest.update({
-      where: { id: requestId },
-      data: {
-        status: "DECLINED",
-        respondedAt: new Date(),
-      },
-    });
-
-    await prisma.notification.updateMany({
-      where: {
-        userId: request.boosterId,
-        type: "ASSIGNMENT_REQUEST",
-        active: true,
+    const updated = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "Order" WHERE id = ${request.orderId} FOR UPDATE`;
+      const current = await tx.assignmentRequest.findUnique({ where: { id: requestId } });
+      if (!current || current.status !== "PENDING" || current.boosterId !== userId) {
+        throw Object.assign(new Error("Assignment request is no longer pending"), { status: 409 });
+      }
+      const updated = await tx.assignmentRequest.update({
+        where: { id: requestId },
         data: {
-          path: ["requestId"],
-          equals: requestId,
+          status: "DECLINED",
+          respondedAt: new Date(),
         },
-      },
-      data: {
-        active: false,
-        read: true,
-      },
-    });
+      });
 
-    await prisma.notification.create({
-      data: {
-        userId: request.requestedBy,
-        type: "ASSIGNMENT_DECLINED",
-        title: "Assignment declined",
-        message: `${request.booster.username || request.booster.email} declined Order #${request.order.orderNumber}.`,
-        data: {
-          requestId,
-          orderId: request.orderId,
-          boosterId: request.boosterId,
+      await tx.notification.updateMany({
+        where: {
+          userId: request.boosterId,
+          type: "ASSIGNMENT_REQUEST",
+          active: true,
+          data: {
+            path: ["requestId"],
+            equals: requestId,
+          },
         },
-      },
+        data: {
+          active: false,
+          read: true,
+        },
+      });
+
+      await tx.notification.create({
+        data: {
+          userId: request.requestedBy,
+          type: "ASSIGNMENT_DECLINED",
+          title: "Assignment declined",
+          message: `${request.booster.username || request.booster.email} declined Order #${request.order.orderNumber}.`,
+          data: {
+            requestId,
+            orderId: request.orderId,
+            boosterId: request.boosterId,
+          },
+        },
+      });
+
+      return updated;
     });
 
     return res.json({
@@ -467,6 +487,7 @@ exports.declineAssignmentRequest = async (req, res) => {
       request: updated,
     });
   } catch (error) {
+    if (error.status === 409) return res.status(409).json({ ok: false, message: error.message });
     console.error("declineAssignmentRequest error:", error);
 
     return res.status(500).json({

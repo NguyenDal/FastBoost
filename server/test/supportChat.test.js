@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const { signSessionToken } = require('../src/utils/sessionToken');
 const { authorizeThread, onlineAdmins, validateMessage, saveSupportMessage, markSupportRead, EMAIL_DELAY_MS } = require('../src/utils/supportChat');
 const { deliverSupportAlerts, buildSupportEmail, shouldDeliver } = require('../src/utils/supportEmail');
 
@@ -195,7 +195,7 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
     t.after(() => { server.close(); delete require.cache[route]; paths.forEach((path, i) => { if (saved[i]) require.cache[path] = saved[i]; else delete require.cache[path]; }); if (oldSecret === undefined) delete process.env.JWT_SECRET; else process.env.JWT_SECRET = oldSecret; });
     const base = `http://127.0.0.1:${server.address().port}/support`;
-    const headers = { Authorization: `Bearer ${jwt.sign({ id: 'customer', role: 'ADMIN' }, process.env.JWT_SECRET, { expiresIn: '5m' })}`, 'Content-Type': 'application/json' };
+    const headers = { Authorization: `Bearer ${signSessionToken({ id: 'customer', role: 'ADMIN' })}`, 'Content-Type': 'application/json' };
     assert.equal((await fetch(`${base}/status`)).status, 401);
     assert.equal((await fetch(`${base}/threads`, { headers })).status, 403);
     assert.equal((await fetch(`${base}/presence`, { method: 'POST', headers, body: JSON.stringify({ sessionId: 'test-presence-id-001' }) })).status, 403);
@@ -204,7 +204,7 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 404);
     assert.equal(signed, 0);
     currentRole = 'PROVIDER'; assert.equal((await fetch(`${base}/status`, { headers })).status, 403);
-    currentRole = 'ADMIN'; suspended = true; assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 403);
+    currentRole = 'ADMIN'; suspended = true; assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 401);
     suspended = false;
     const readAt = new Date('2026-09-29T10:00:00Z');
     f.db.supportThread.findMany = async () => [{ id: 'private-thread', customerId: 'customer', adminReadAt: readAt,

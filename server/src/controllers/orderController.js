@@ -9,6 +9,7 @@ const { queueOrderCompletion } = require("../utils/orderCompletionEmail");
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
+const { orderQuantities, orderChampionPreferences } = require("../utils/orderQuantity");
 const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
 const { historicalOrderPromotion } = require("../utils/historicalOrderPromotion");
 const { boosterRating } = require("../utils/orderRatings");
@@ -88,13 +89,8 @@ const createOrder = async (req, res) => {
             currentRank,
             desiredRank,
             currentLP,
-            currentMasterLp,
-            desiredMasterLp,
             lpGain,
             peakRank,
-            desiredWins,
-            placementGames,
-            numberOfGames,
 
             firstRole,
             secondRole,
@@ -112,7 +108,6 @@ const createOrder = async (req, res) => {
             bonusWin,
             soloOnly,
             highMMRDuo,
-            championPreferenceTier,
         } = req.body || {};
 
         if (!serviceId || !boostType) {
@@ -256,37 +251,15 @@ const createOrder = async (req, res) => {
          * The customer is allowed to control these options.
          * They are NOT allowed to control the resulting dollar price.
          */
+        const quantities = orderQuantities(req.body, priceRule);
+        const championPreferences = orderChampionPreferences(selectedChampions);
         const pricingOptions = {
             currentRank: currentRank || null,
             desiredRank: desiredRank || null,
             currentLP: currentLP || null,
 
-            currentMasterLp:
-                currentMasterLp !== null &&
-                    currentMasterLp !== undefined
-                    ? Number(currentMasterLp)
-                    : 0,
-
-            desiredMasterLp:
-                desiredMasterLp !== null &&
-                    desiredMasterLp !== undefined
-                    ? Number(desiredMasterLp)
-                    : 0,
-
             lpGain: lpGain || null,
             peakRank: peakRank || null,
-
-            desiredWins: desiredWins
-                ? Number(desiredWins)
-                : 1,
-
-            placementGames: placementGames
-                ? Number(placementGames)
-                : 1,
-
-            numberOfGames: numberOfGames
-                ? Number(numberOfGames)
-                : 1,
 
             playMode: playMode || "Solo",
 
@@ -297,8 +270,8 @@ const createOrder = async (req, res) => {
             soloOnly: Boolean(soloOnly),
             highMMRDuo: Boolean(highMMRDuo),
 
-            championPreferenceTier:
-                championPreferenceTier || "4+",
+            championPreferenceTier: championPreferences.championPreferenceTier,
+            ...quantities,
         };
 
         /*
@@ -351,38 +324,19 @@ const createOrder = async (req, res) => {
                 desiredRank: desiredRank || null,
                 currentLP: currentLP || null,
 
-                currentMasterLp:
-                    currentMasterLp !== null &&
-                        currentMasterLp !== undefined
-                        ? Number(currentMasterLp)
-                        : null,
-
-                desiredMasterLp:
-                    desiredMasterLp !== null &&
-                        desiredMasterLp !== undefined
-                        ? Number(desiredMasterLp)
-                        : null,
+                currentMasterLp: quantities.currentMasterLp,
+                desiredMasterLp: quantities.desiredMasterLp,
 
                 lpGain: lpGain || null,
                 peakRank: peakRank || null,
 
-                desiredWins: desiredWins
-                    ? Number(desiredWins)
-                    : null,
-
-                placementGames: placementGames
-                    ? Number(placementGames)
-                    : null,
-
-                numberOfGames: numberOfGames
-                    ? Number(numberOfGames)
-                    : null,
+                desiredWins: quantities.desiredWins,
+                placementGames: quantities.placementGames,
+                numberOfGames: quantities.numberOfGames,
 
                 firstRole: firstRole || null,
                 secondRole: secondRole || null,
-                selectedChampions: Array.isArray(selectedChampions)
-                    ? selectedChampions
-                    : [],
+                selectedChampions: championPreferences.selectedChampions,
 
                 region: region || null,
                 queueType: selectedService.title.startsWith('TFT ') ? 'Ranked' : queueType || null,
@@ -396,8 +350,7 @@ const createOrder = async (req, res) => {
                 bonusWin: Boolean(bonusWin),
                 soloOnly: Boolean(soloOnly),
                 highMMRDuo: Boolean(highMMRDuo),
-                championPreferenceTier:
-                    championPreferenceTier || "4+",
+                championPreferenceTier: championPreferences.championPreferenceTier,
 
                 /*
                  * PRICE SNAPSHOT
@@ -454,6 +407,7 @@ const createOrder = async (req, res) => {
             },
         });
     } catch (error) {
+        if (error.status === 400) return res.status(400).json({ ok: false, message: error.message });
         console.error("createOrder error:", error);
 
         return res.status(500).json({
@@ -660,7 +614,7 @@ const getOrderById = async (req, res) => {
 
         const isCustomer = order.customerId === userId;
         const isAdmin = userRole === "ADMIN";
-        const isAssignedBooster = order.assignments.some(
+        const isAssignedBooster = canBoost(req.user) && order.assignments.some(
             (assignment) => assignment.boosterId === userId
         );
 
@@ -949,6 +903,7 @@ module.exports.updateOrderStatus = async (req, res) => {
             });
         }
 
+        let referralReward = { granted: false };
         const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, async (db, current) => {
             const result = await db.order.update({
                 where: { id },
@@ -989,6 +944,7 @@ module.exports.updateOrderStatus = async (req, res) => {
                 },
             });
             if (current.status !== "COMPLETED") await queueOrderCompletion(db, result);
+            if (result.status === "COMPLETED" && result.paymentStatus === "PAID") referralReward = await grantReferralCompletionRewards(result.id, db);
             return result;
         }, status === "CANCELLED");
 
@@ -998,11 +954,6 @@ module.exports.updateOrderStatus = async (req, res) => {
 
         const loyaltyBonusSync = await syncLoyaltyTierBonuses(prisma, updated.customerId);
 
-        const referralReward =
-            status === "COMPLETED" &&
-                updated.paymentStatus === "PAID"
-                ? await grantReferralCompletionRewards(updated.id)
-                : { granted: false };
 
         if (
             status === "COMPLETED" &&
@@ -1159,7 +1110,8 @@ module.exports.unassignBooster = async (req, res) => {
 
                 let updatedOrder = null;
 
-                if (remainingAssignments === 0) {
+                const currentOrder = await tx.order.findUnique({ where: { id: orderId } });
+                if (remainingAssignments === 0 && ["PENDING", "IN_PROGRESS"].includes(currentOrder?.status)) {
                     updatedOrder = await tx.order.update({
                         where: { id: orderId },
                         data: {
@@ -1431,7 +1383,15 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             });
         }
 
+        let referralReward = { granted: false };
         const updated = await mutateCheckoutOrder(prisma, existingOrder, stripe, async (db, current) => {
+            // Recheck under the checkout/order locks so cancellation or removal
+            // that won the race cannot be overwritten by a stale completion.
+            const activeAssignment = await db.orderAssignment.findFirst({ where: { orderId, boosterId: providerId } });
+            if (!isAdmin && !activeAssignment) throw Object.assign(new Error("You are not assigned to this order"), { status: 403 });
+            if (current.paymentStatus !== "PAID" || !["PENDING", "IN_PROGRESS", "COMPLETED"].includes(current.status)) {
+                throw Object.assign(new Error("Only paid active orders can be completed"), { status: 409 });
+            }
             const result = await db.order.update({
                 where: { id: orderId },
                 data: {
@@ -1473,6 +1433,7 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
                 },
             });
             if (current.status !== "COMPLETED") await queueOrderCompletion(db, result);
+            if (result.status === "COMPLETED" && result.paymentStatus === "PAID") referralReward = await grantReferralCompletionRewards(result.id, db);
             return result;
         }, false);
 
@@ -1482,10 +1443,6 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
 
         const loyaltyBonusSync = await syncLoyaltyTierBonuses(prisma, updated.customerId);
 
-        const referralReward =
-            updated.paymentStatus === "PAID"
-                ? await grantReferralCompletionRewards(updated.id)
-                : { granted: false };
 
         if (
             existingOrder.status !== "COMPLETED" &&
@@ -1517,6 +1474,7 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
             referralReward,
         });
     } catch (error) {
+        if ([403, 409].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
         console.error("providerCompleteAssignedOrder error:", error);
 
         return res.status(500).json({
@@ -1607,7 +1565,8 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
                     },
                 });
 
-                if (remainingAssignments === 0) {
+                const currentOrder = await tx.order.findUnique({ where: { id: orderId } });
+                if (remainingAssignments === 0 && ["PENDING", "IN_PROGRESS"].includes(currentOrder?.status)) {
                     await tx.order.update({
                         where: { id: orderId },
                         data: {

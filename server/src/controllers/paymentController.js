@@ -9,6 +9,7 @@ const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
 const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
 const { releaseOtherGoldCheckouts } = require("../utils/checkoutGold");
+const { enforceCheckoutReferral } = require("../utils/checkoutReferral");
 const {
     grantReferralCompletionRewards,
 } = require("../utils/referralProgram");
@@ -131,6 +132,31 @@ async function completeCheckoutSessionPayment(order, session) {
 
     const paymentApplied = await prisma.$transaction(async (transaction) => withEarningsLedgerMutation(transaction, order.id, async () => {
         await lockCheckout(transaction, order.customerId, order.id);
+        const current = await transaction.order.findUnique({ where: { id: order.id } });
+        if (!current || current.paymentStatus === "PAID" || current.status === "CANCELLED" || current.stripeCheckoutSessionId !== session.id) return false;
+        const amountCents = Number(current.amountCents ?? Math.round(Number(current.totalPrice || 0) * 100));
+        const goldRedeemed = Number(current.goldRedeemed || 0);
+        const goldDiscountCents = Number(current.goldDiscountCents || 0);
+        const cashAmountCents = Number(current.cashAmountCents ?? amountCents - goldDiscountCents);
+        const metadata = session.metadata || {};
+        const configuredMode = /^(?:sk|rk)_(live|test)_/.exec(process.env.STRIPE_SECRET_KEY || "")?.[1];
+        // Stripe's API amounts stay in the integration currency even when
+        // Adaptive Pricing presents a different currency to the customer.
+        // Tax may increase the final total; the pre-tax line item must still
+        // match the immutable cash/Gold quote that owns this exact session.
+        if (session.object !== "checkout.session" || session.mode !== "payment" || session.status !== "complete" || session.payment_status !== "paid" ||
+            typeof session.livemode !== "boolean" || (configuredMode && session.livemode !== (configuredMode === "live")) ||
+            typeof paymentIntentId !== "string" || !/^pi_[A-Za-z0-9_]+$/.test(paymentIntentId) ||
+            session.currency !== (current.currency || "usd").toLowerCase() ||
+            !Number.isSafeInteger(session.amount_subtotal) || session.amount_subtotal !== cashAmountCents ||
+            !Number.isSafeInteger(session.amount_total) || session.amount_total < session.amount_subtotal ||
+            metadata.orderId !== current.id || metadata.customerId !== current.customerId ||
+            Number(metadata.goldRedeemed) !== goldRedeemed || Number(metadata.goldDiscountCents) !== goldDiscountCents ||
+            Number(metadata.cashAmountCents) !== cashAmountCents || !Number.isSafeInteger(amountCents) || amountCents <= 0 ||
+            !Number.isSafeInteger(goldRedeemed) || !Number.isSafeInteger(goldDiscountCents) || goldDiscountCents !== goldRedeemed * 10 ||
+            goldDiscountCents < 0 || (goldRedeemed !== 0 && goldRedeemed < 100) || cashAmountCents < 50 || amountCents - goldDiscountCents !== cashAmountCents) {
+            throw Object.assign(new Error("Paid Stripe session does not match the saved order quote."), { code: "PAYMENT_QUOTE_MISMATCH" });
+        }
         return withBoosterOrderEmails(transaction, order.id, async () => {
             const updateResult = await transaction.order.updateMany({
                 where: {
@@ -143,12 +169,9 @@ async function completeCheckoutSessionPayment(order, session) {
                     paymentStatus: "PAID",
                     stripePaymentIntentId: paymentIntentId,
                     paidAt: new Date(),
-                    amountCents: session.amount_subtotal
-                        ? Number(session.amount_subtotal) +
-                        Number(order.goldDiscountCents || 0)
-                        : undefined,
-                    cashAmountCents: session.amount_total || 0,
-                    currency: session.currency || "usd",
+                    amountCents,
+                    cashAmountCents: session.amount_total,
+                    currency: current.currency || "usd",
                 },
             });
 
@@ -156,15 +179,15 @@ async function completeCheckoutSessionPayment(order, session) {
                 return false;
             }
 
-            if (Number(order.goldRedeemed || 0) > 0) {
+            if (goldRedeemed > 0) {
                 await transaction.rewardHistory.createMany({
                     data: [
                         {
-                            userId: order.customerId,
+                            userId: current.customerId,
                             type: "ORDER_REDEMPTION",
-                            goldAmount: -Number(order.goldRedeemed),
+                            goldAmount: -goldRedeemed,
                             title: "Gold redeemed for order",
-                            description: `Used ${order.goldRedeemed} gold for order #${order.orderNumber}.`,
+                            description: `Used ${goldRedeemed} gold for order #${current.orderNumber}.`,
                             sourceUserId: order.id,
                         },
                     ],
@@ -173,12 +196,12 @@ async function completeCheckoutSessionPayment(order, session) {
             }
 
             await queueOrderConfirmation(transaction, order.id, session.customer_details?.email || session.customer_email, paymentMethod);
+            await grantReferralCompletionRewards(order.id, transaction);
             return true;
         });
     }));
 
     if (paymentApplied) {
-        await grantReferralCompletionRewards(order.id);
         console.log(`Stripe payment completed for order ${order.id}.`);
     }
 
@@ -289,8 +312,9 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         }
         const availableRule = await db.servicePriceRule.findFirst({ where: { serviceId: order.serviceId, active: true }, select: { id: true } });
         if (!availableRule) return res.status(409).json({ ok: false, code: "SERVICE_UNAVAILABLE", message: "This service is currently unavailable. Please choose another service or check back later." });
+        const referralNotice = await enforceCheckoutReferral(db, order, stripe);
         const couponNotice = await applyCheckoutCoupon(db, order, couponCode, stripe);
-        res.couponNotice = couponNotice;
+        res.couponNotice = couponNotice || referralNotice;
 
         const amountCents =
             order.amountCents || Math.round(Number(order.totalPrice || 0) * 100);
@@ -348,7 +372,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 return res.status(400).json({ ok: false, message: "Please enter a valid email address before paying with gold." });
             }
             if (goldRedeemed > 0) await releaseOtherGoldCheckouts(db, order, stripe);
-            const applied = await (async transaction => {
+            await (async transaction => {
                 const result = await transaction.order.updateMany({
                     where: { id: order.id, paymentStatus: { not: "PAID" } },
                     data: {
@@ -375,9 +399,9 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                     });
                 }
                 await queueOrderConfirmation(transaction, order.id, contactEmail);
+                await grantReferralCompletionRewards(order.id, transaction);
                 return true;
             })(db);
-            res.rewardOrderId = applied ? order.id : null;
 
             return res.json({
                 ok: true,
@@ -507,9 +531,12 @@ const verifyCheckoutSession = async (req, res) => {
             });
         }
 
-        if (sessionId && order.paymentStatus !== "PAID") {
+        // A power/network interruption may prevent the Stripe return URL from
+        // reaching the browser. Recover its durable session from the owned order.
+        const savedSessionId = sessionId || order.stripeCheckoutSessionId;
+        if (savedSessionId && order.paymentStatus !== "PAID") {
             try {
-                const session = await stripe.checkout.sessions.retrieve(sessionId);
+                const session = await stripe.checkout.sessions.retrieve(savedSessionId, {}, stripeOptions);
                 const sessionOrderId = session.metadata?.orderId;
 
                 if (
@@ -681,10 +708,6 @@ const createCheckoutSession = async (req, res) => {
             return res.status(503).json({ ok: false, message: "Checkout is busy. Please try again shortly." });
         }
         return res.status(response.code).json(response.body);
-    }
-    if (response.rewardOrderId) {
-        try { await grantReferralCompletionRewards(response.rewardOrderId); }
-        catch { console.error("Referral reward sync deferred", response.rewardOrderId); }
     }
     return res.status(response.code).json({ ...response.body, ...(response.couponNotice ? { couponNotice: response.couponNotice } : {}) });
 };

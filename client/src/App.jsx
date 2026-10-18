@@ -1,41 +1,46 @@
 import { authStorage } from "./utils/authStorage";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-import LegalDocumentPage from "./pages/LegalDocumentPage";
-import ProviderAgreementPage from "./pages/ProviderAgreementPage";
-import LoginPage from "./pages/LoginPage";
-import OrderPage from "./pages/OrderPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import MatchPage from "./pages/MatchPage";
-import AdminOrdersPage from "./pages/AdminOrdersPage";
-import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
-import ProviderOrdersPage from "./pages/ProviderOrdersPage";
-import CustomerOrdersPage from "./pages/CustomerOrdersPage";
-import ProviderOrderDetailsPage from "./pages/ProviderOrderDetailsPage";
-import LoyaltyPage from "./pages/LoyaltyPage";
-import AccountSettingsPage from "./pages/AccountSettingsPage";
-import AdminManagementPage from "./pages/AdminManagementPage";
-import AdminAccountsPage from "./pages/AdminAccountsPage";
-import DashboardPage from "./pages/DashboardPage";
-import FaqPage from "./pages/FaqPage";
-import ChangePasswordPage from "./pages/ChangePasswordPage";
-import DashboardLayout from "./layouts/DashboardLayout";
-import PaymentResultPage from "./pages/PaymentResultPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import ContactPage from "./pages/ContactPage";
-import PriceManagementPage from "./pages/PriceManagementPage";
-import AdminLayout from "./layouts/AdminLayout";
 import DynamicTitle from "./components/DynamicTitle";
 import SaleFooter from "./components/SaleFooter";
-import SupportChat from "./components/SupportChat";
 import SessionActivity from "./components/SessionActivity";
-import AdminSupportPage from "./pages/AdminSupportPage";
-import { BoosterManagementPage, BoosterContractPage, ContractSigningReturnPage } from './pages/OperationsPages';
-import EarningsPage from './pages/EarningsPage';
-import BoosterPortalPage from './pages/BoosterPortalPage';
-import ActivityLogsPage from './pages/ActivityLogsPage';
+import PageLoadBoundary from './components/PageLoadBoundary';
+// Public browsing does not need checkout, account or administration code.
+// React only requests each module when its authorized route is rendered.
+const LegalDocumentPage = lazy(() => import('./pages/LegalDocumentPage'));
+const ProviderAgreementPage = lazy(() => import('./pages/ProviderAgreementPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const OrderPage = lazy(() => import('./pages/OrderPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const MatchPage = lazy(() => import('./pages/MatchPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
+const AdminOrderDetailsPage = lazy(() => import('./pages/AdminOrderDetailsPage'));
+const ProviderOrdersPage = lazy(() => import('./pages/ProviderOrdersPage'));
+const CustomerOrdersPage = lazy(() => import('./pages/CustomerOrdersPage'));
+const ProviderOrderDetailsPage = lazy(() => import('./pages/ProviderOrderDetailsPage'));
+const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'));
+const AccountSettingsPage = lazy(() => import('./pages/AccountSettingsPage'));
+const AdminManagementPage = lazy(() => import('./pages/AdminManagementPage'));
+const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage'));
+const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
+const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PriceManagementPage = lazy(() => import('./pages/PriceManagementPage'));
+const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
+const AdminSupportPage = lazy(() => import('./pages/AdminSupportPage'));
+const BoosterManagementPage = lazy(() => import('./pages/OperationsPages').then(module => ({ default: module.BoosterManagementPage })));
+const BoosterContractPage = lazy(() => import('./pages/OperationsPages').then(module => ({ default: module.BoosterContractPage })));
+const ContractSigningReturnPage = lazy(() => import('./pages/OperationsPages').then(module => ({ default: module.ContractSigningReturnPage })));
+const EarningsPage = lazy(() => import('./pages/EarningsPage'));
+const BoosterPortalPage = lazy(() => import('./pages/BoosterPortalPage'));
+const ActivityLogsPage = lazy(() => import('./pages/ActivityLogsPage'));
+const SupportChat = lazy(() => import('./components/SupportChat'));
 
 import {
   clearExpiredSession,
@@ -63,6 +68,7 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false);
 
   useEffect(() => {
@@ -101,6 +107,8 @@ function App() {
     <>
       <DynamicTitle />
 
+      <PageLoadBoundary key={location.pathname}>
+      <Suspense fallback={<div role="status" style={{ padding: '4rem 1.5rem', textAlign: 'center' }}>Loading page…</div>}>
       <Routes>
         <Route path="/checkout/:orderId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         <Route path="/r/:referralCode" element={<HomePage />} />
@@ -226,8 +234,10 @@ function App() {
           }
         />
       </Routes>
+      </Suspense>
+      </PageLoadBoundary>
       <SaleFooter />
-      <SupportChat />
+      <PageLoadBoundary compact><Suspense fallback={null}><SupportChat /></Suspense></PageLoadBoundary>
       <SessionActivity />
 
       {sessionExpiredOpen && (

@@ -67,6 +67,7 @@ function OrderCheckout({ orderId }) {
     const priceRequest = useRef(false);
     const [goldConfirmation, setGoldConfirmation] = useState(null);
     const [goldError, setGoldError] = useState("");
+    const goldSubmitting = useRef(false);
     const [contactEmail, setContactEmail] = useState(null);
     const [couponNotice, setCouponNotice] = useState(null);
     const request = useRef(null);
@@ -187,12 +188,15 @@ function OrderCheckout({ orderId }) {
     };
     const applyCoupon = code => updatePrice(data?.summary.goldRedeemed || 0, code);
     const payWithGold = async () => {
-        if (!active.current || paymentBusy || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
+        if (!active.current || paymentBusy || goldSubmitting.current || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
+        goldSubmitting.current = true;
         setGoldError("");
         setPaymentBusy(true);
+        let settlementStarted = false;
         try {
             const email = (contactEmail ?? data?.summary.email ?? "").trim();
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
+            settlementStarted = true;
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
             if (!active.current) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
@@ -201,8 +205,16 @@ function OrderCheckout({ orderId }) {
             } else if (result.clientSecret) { setData(result); setGoldConfirmation(null); }
             else throw new Error("Your balance changed. Please review your payment again.");
         } catch (failure) {
-            if (active.current) { setGoldConfirmation(null); setGoldError(paymentErrorMessage(failure)); }
-        } finally { if (active.current) setPaymentBusy(false); }
+            if (active.current) {
+                setGoldConfirmation(null);
+                if (settlementStarted && (!Number.isInteger(failure?.status) || failure.status >= 500)) {
+                    // A disconnected browser may have missed a committed Gold
+                    // payment. Read this order's status before allowing payment.
+                    setData(previous => previous?.summary ? { ...previous, summary: { ...previous.summary, priceSummary: undefined } } : previous);
+                    setVerification({ orderId, gold: "1" });
+                } else setGoldError(paymentErrorMessage(failure));
+            }
+        } finally { goldSubmitting.current = false; if (active.current) setPaymentBusy(false); }
     };
     const beforeConfirm = async () => {
         if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');

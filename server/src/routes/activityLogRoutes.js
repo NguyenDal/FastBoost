@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../prisma');
-const { protect } = require('../middleware/authMiddleware');
+const { createProtect } = require('../middleware/authMiddleware');
 const { actions, categories } = require('../utils/managementAudit');
 const { auditActors } = require('../utils/auditActors');
 const PAGE_SIZE = 10;
@@ -36,6 +36,7 @@ function filters(query) {
     return { where, page };
 }
 function createActivityLogRouter(client = db) {
+    const protect = createProtect(client);
     const router = express.Router();
     router.use(protect, async (req, res, next) => {
         res.set('Cache-Control', 'no-store');

@@ -10,7 +10,7 @@ function getUserId(req) {
 }
 
 function createSixDigitCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 function hashVerificationCode(code) {
@@ -249,60 +249,75 @@ module.exports.updateMyAccount = async (req, res) => {
       });
     }
 
-    const currentUser = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        email: true,
-      },
-    });
+    const updatedUser = await prisma.$transaction(async tx => {
+      const currentUser = await tx.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          email: true,
+          passwordHash: true,
+          suspendedAt: true,
+        },
+      });
+      if (!currentUser || currentUser.suspendedAt) throw Object.assign(new Error('Account changed'), { code: 'ACCOUNT_CHANGED' });
+      const locked = await tx.user.updateMany({
+        where: { id: userId, email: currentUser.email, passwordHash: currentUser.passwordHash, suspendedAt: null },
+        data: { passwordHash: currentUser.passwordHash },
+      });
+      if (locked.count !== 1) throw Object.assign(new Error('Account changed'), { code: 'ACCOUNT_CHANGED' });
 
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        username,
-        email,
-        emailVerifiedAt:
-          currentUser?.email?.toLowerCase() === email ? undefined : null,
-        profile: {
-          upsert: {
-            create: {
-              displayName: username,
-              profileImageUrl: profileImageUrl || null,
-              discord: discord || null,
-              country: country || null,
-              birthday,
+      const updated = await tx.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          username,
+          email,
+          emailVerifiedAt:
+            currentUser?.email?.toLowerCase() === email ? undefined : null,
+          profile: {
+            upsert: {
+              create: {
+                displayName: username,
+                profileImageUrl: profileImageUrl || null,
+                discord: discord || null,
+                country: country || null,
+                birthday,
+              },
+              update: {
+                displayName: username,
+                profileImageUrl: profileImageUrl || null,
+                discord: discord || null,
+                country: country || null,
+                birthday,
+              },
             },
-            update: {
-              displayName: username,
-              profileImageUrl: profileImageUrl || null,
-              discord: discord || null,
-              country: country || null,
-              birthday,
+          },
+        },
+        include: {
+          profile: {
+            select: {
+              displayName: true,
+              bio: true,
+              profileImageUrl: true,
+              discord: true,
+              country: true,
+              birthday: true,
+            },
+          },
+          _count: {
+            select: {
+              referrals: true,
             },
           },
         },
-      },
-      include: {
-        profile: {
-          select: {
-            displayName: true,
-            bio: true,
-            profileImageUrl: true,
-            discord: true,
-            country: true,
-            birthday: true,
-          },
-        },
-        _count: {
-          select: {
-            referrals: true,
-          },
-        },
-      },
+      });
+      if (currentUser.email.toLowerCase() !== email) {
+        await tx.passwordResetToken.deleteMany({ where: { userId } });
+        await tx.verificationCode.deleteMany({ where: { userId, type: 'EMAIL' } });
+      }
+      return updated;
     });
 
     return res.json({
@@ -311,6 +326,7 @@ module.exports.updateMyAccount = async (req, res) => {
       user: sanitizeUser(updatedUser),
     });
   } catch (error) {
+    if (error.code === 'ACCOUNT_CHANGED') return res.status(409).json({ ok: false, message: 'Your account changed. Please refresh and try again.' });
     console.error("updateMyAccount error:", error);
 
     return res.status(500).json({
@@ -336,7 +352,7 @@ module.exports.changeMyPassword = async (req, res) => {
     const newPassword = req.body.newPassword || "";
     const confirmPassword = req.body.confirmPassword || "";
 
-    if (!currentPassword) {
+    if (typeof currentPassword !== 'string' || !currentPassword || currentPassword.length > 1024) {
       return res.status(400).json({
         ok: false,
         field: "currentPassword",
@@ -344,7 +360,7 @@ module.exports.changeMyPassword = async (req, res) => {
       });
     }
 
-    if (!newPassword) {
+    if (typeof newPassword !== 'string' || !newPassword) {
       return res.status(400).json({
         ok: false,
         field: "newPassword",
@@ -361,7 +377,7 @@ module.exports.changeMyPassword = async (req, res) => {
     }
 
     const passwordChecks = {
-      length: newPassword.length >= 8,
+      length: newPassword.length >= 8 && newPassword.length <= 64 && Buffer.byteLength(newPassword, 'utf8') <= 72,
       upper: /[A-Z]/.test(newPassword),
       lower: /[a-z]/.test(newPassword),
       number: /[0-9]/.test(newPassword),
@@ -385,10 +401,11 @@ module.exports.changeMyPassword = async (req, res) => {
       select: {
         id: true,
         passwordHash: true,
+        suspendedAt: true,
       },
     });
 
-    if (!user) {
+    if (!user || user.suspendedAt) {
       return res.status(404).json({
         ok: false,
         message: "User not found.",
@@ -423,18 +440,21 @@ module.exports.changeMyPassword = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
-    await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        passwordHash,
-      },
+    const updatedUser = await prisma.$transaction(async tx => {
+      const changed = await tx.user.updateMany({
+        where: { id: userId, passwordHash: user.passwordHash, suspendedAt: null },
+        data: { passwordHash },
+      });
+      if (changed.count !== 1) return null;
+      await tx.passwordResetToken.deleteMany({ where: { userId } });
+      return tx.user.findUnique({ where: { id: userId } });
     });
+    if (!updatedUser) return res.status(409).json({ ok: false, message: 'Your account changed. Please sign in again.' });
 
     return res.json({
       ok: true,
       message: "Password updated successfully.",
+      token: require('../utils/sessionToken').signSessionToken(updatedUser, req.user.rememberMe === true),
     });
   } catch (error) {
     console.error("changeMyPassword error:", error);

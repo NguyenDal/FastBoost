@@ -14,12 +14,15 @@ function getTransporter() {
 
 exports.sendContactMessage = async (req, res) => {
     try {
-        const { name, email, subject, message } = req.body;
+        const { name, email, subject, message } = req.body || {};
 
-        if (!name || !email || !subject || !message) {
+        if (![name, email, subject, message].every(value => typeof value === 'string' && value.trim()) ||
+            name.length > 120 || email.length > 254 || subject.length > 160 || message.length > 10000 ||
+            !/^[^\s@<>(),;:"\\]+@[^\s@<>(),;:"\\]+\.[^\s@<>(),;:"\\]+$/.test(email) ||
+            /[\r\n\x00]/.test(name + email + subject)) {
             return res.status(400).json({
                 ok: false,
-                message: "Please fill in all fields.",
+                message: "Please enter a valid name, email, subject and message within the allowed lengths.",
             });
         }
 

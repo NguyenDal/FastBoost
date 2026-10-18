@@ -19,14 +19,14 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         serviceId: 'service', status: 'PENDING', paymentStatus: 'PENDING', currency: 'usd',
         amountCents: 2000, totalPrice: 20, basePrice: 20, goldRedeemed: 0, goldDiscountCents: 0,
         stripeCheckoutSessionId: null, customer: { email: 'unused@example.test' }, service: { title: 'Test service' }, ...order })),
-    redemptions: [], queued: [], referrals: [], expired: [], created: [], failRetrieve: false, failExpire: false, failQueue: false };
+    redemptions: [], queued: [], referrals: [], expired: [], created: [], failRetrieve: false, failExpire: false, failQueue: false, failReferral: false };
     const sessions = new Map();
     let transactions = Promise.resolve();
     const db = {
         $queryRaw: async () => [],
         $transaction: callback => {
             const result = transactions.then(async () => {
-                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued });
+                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued, referrals: state.referrals });
                 try { return await callback(db); }
                 catch (error) { Object.assign(state, snapshot); throw error; }
             });
@@ -80,7 +80,7 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         create: async args => {
             const id = `cs_test_${state.created.length + 1}`;
             const amount = args.line_items[0].price_data.unit_amount;
-            const session = { id, status: 'open', payment_status: 'unpaid', livemode: false, ui_mode: 'elements',
+            const session = { id, object: 'checkout.session', mode: args.mode, status: 'open', payment_status: 'unpaid', livemode: false, ui_mode: 'elements',
                 client_secret: 'offline-secret', metadata: args.metadata, amount_subtotal: amount, amount_total: amount,
                 currency: args.line_items[0].price_data.currency, adaptive_pricing: { ...args.adaptive_pricing } };
             sessions.set(id, session); state.created.push(id);
@@ -89,7 +89,12 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
     } } };
     const replacements = new Map([
         [require.resolve('../src/prisma'), db], [require.resolve('../src/utils/stripeClient'), stripe],
-        [require.resolve('../src/utils/referralProgram'), { grantReferralCompletionRewards: async id => state.referrals.push(id) }],
+        [require.resolve('../src/utils/referralProgram'), { grantReferralCompletionRewards: async (id, tx) => {
+            assert.equal(tx, db, 'referral Gold awards must share the settlement transaction');
+            if (state.failReferral) throw new Error('Simulated referral award failure');
+            if (!state.referrals.includes(id)) state.referrals.push(id);
+            return { granted: false };
+        } }],
         [require.resolve('../src/utils/orderConfirmationEmail'), {
             validEmail: email => typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
             queueOrderConfirmation: async (tx, id, email) => {
@@ -105,10 +110,11 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
     }
     const controllerPath = require.resolve('../src/controllers/paymentController');
     originals.set(controllerPath, require.cache[controllerPath]); delete require.cache[controllerPath];
-    const controller = require(controllerPath);
-    const env = { STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET, CLIENT_URL: process.env.CLIENT_URL };
+    let controller = require(controllerPath);
+    const env = { STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET, CLIENT_URL: process.env.CLIENT_URL, STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY };
     process.env.STRIPE_WEBHOOK_SECRET = 'whsec_offline_fixture';
     process.env.CLIENT_URL = 'http://localhost:5173';
+    process.env.STRIPE_SECRET_KEY = 'sk_test_offline_fixture';
     t.mock.method(console, 'error', () => {});
     t.mock.method(console, 'log', () => {});
     t.mock.method(console, 'warn', () => {});
@@ -129,7 +135,17 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         await controller.handleStripeWebhook({ body: Buffer.from(payload), headers: { 'stripe-signature': signature }, ...overrides }, res);
         return res;
     }
-    return { state, sessions, db, stripe, controller, checkout, webhook, response,
+    return { state, sessions, db, stripe, get controller() { return controller; }, checkout, webhook, response,
+        restart() { delete require.cache[controllerPath]; controller = require(controllerPath); return controller; },
+        paidSession(orderId, overrides = {}) {
+            const order = state.orders.find(row => row.id === orderId);
+            const cash = order.cashAmountCents ?? order.amountCents - (order.goldDiscountCents || 0);
+            return { id: order.stripeCheckoutSessionId, object: 'checkout.session', mode: 'payment', status: 'complete',
+                payment_status: 'paid', livemode: false, payment_intent: 'pi_test_synthetic', amount_subtotal: cash, amount_total: cash,
+                currency: order.currency, metadata: { orderId, customerId: order.customerId,
+                    goldRedeemed: String(order.goldRedeemed || 0), goldDiscountCents: String(order.goldDiscountCents || 0), cashAmountCents: String(cash) },
+                ...overrides };
+        },
         balance: () => initialGold + state.redemptions.reduce((sum, row) => sum + row.goldAmount, 0) };
 }
 

@@ -2,10 +2,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { paymentFixture } = require('../test-helpers/paymentFixture');
 
-const order = { id: 'order', stripeCheckoutSessionId: 'cs_test_paid', goldRedeemed: 100, goldDiscountCents: 1000 };
-const paidSession = { id: 'cs_test_paid', object: 'checkout.session', status: 'complete', payment_status: 'paid',
+const order = { id: 'order', stripeCheckoutSessionId: 'cs_test_paid', goldRedeemed: 100, goldDiscountCents: 1000, cashAmountCents: 1000, currency: 'cad' };
+const paidSession = { id: 'cs_test_paid', object: 'checkout.session', mode: 'payment', status: 'complete', payment_status: 'paid',
     payment_intent: { id: 'pi_test_paid' }, amount_subtotal: 1000, amount_total: 1130, currency: 'cad',
-    metadata: { orderId: 'order' }, customer_details: { email: 'receipt@example.test' }, livemode: false };
+    metadata: { orderId: 'order', customerId: 'customer', goldRedeemed: '100', goldDiscountCents: '1000', cashAmountCents: '1000' }, customer_details: { email: 'receipt@example.test' }, livemode: false };
 
 test('signed paid webhooks settle once across duplicate concurrent and async events', async t => {
     const f = paymentFixture(t, { orders: [order] });
@@ -27,7 +27,7 @@ test('signed paid webhooks settle once across duplicate concurrent and async eve
 });
 
 test('local-currency presentment does not change the USD amounts recorded for an order', async t => {
-    const f = paymentFixture(t, { orders: [order] });
+    const f = paymentFixture(t, { orders: [{ ...order, currency: 'usd' }] });
     const session = { ...paidSession, currency: 'usd', adaptive_pricing: { enabled: true },
         presentment_details: { presentment_currency: 'cad', presentment_amount: 1537 } };
     assert.equal((await f.webhook('checkout.session.completed', session)).code, 200);

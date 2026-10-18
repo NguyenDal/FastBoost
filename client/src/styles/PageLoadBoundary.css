@@ -1,0 +1,6 @@
+.page-load-message { padding: 4rem 1.5rem; text-align: center; color: #e2e8f0; }
+.page-load-message h2 { margin: 0 0 1rem; font-size: 1.5rem; }
+.page-load-message p { margin: 0 0 1.5rem; color: #a8b3c7; line-height: 1.6; }
+.page-load-message button { border: 1px solid #a78bfa; border-radius: 999px; padding: .75rem 1.5rem; background: #7c3aed; color: white; font: inherit; font-weight: 600; cursor: pointer; }
+.page-load-message button:focus-visible { outline: 3px solid #c4b5fd; outline-offset: 4px; }
+.page-load-message--compact { padding: 1.5rem; }

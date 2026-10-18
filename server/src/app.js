@@ -18,6 +18,14 @@ const pricingRoutes = require("./routes/pricingRoutes");
 const { handleStripeWebhook } = require("./controllers/paymentController");
 
 const app = express();
+require('./config/trustedProxy').configureTrustedProxy(app);
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('Referrer-Policy', 'no-referrer');
+  if (req.headers.authorization) res.set('Cache-Control', 'private, no-store');
+  next();
+});
 
 app.use(cors());
 

@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
+const { signSessionToken, sessionSecurityStamp } = require('../src/utils/sessionToken');
 const oauthStateSecret = () => require('node:crypto').createHmac('sha256', process.env.JWT_SECRET).update('fastboost-oauth-state').digest('hex');
 const { registrationConsent } = require('../src/utils/registrationConsent');
 
@@ -268,7 +269,7 @@ test('new users from Login and Register must choose a username even if terms wer
 
 function linkingDatabase(users) {
   const links = [];
-  return { links, user: {
+  const db = { links, user: {
     findUnique: async ({ where, include }) => {
       const user = users.find(user => where.id ? user.id === where.id : user.email === where.email);
       if (!user) return null;
@@ -276,6 +277,11 @@ function linkingDatabase(users) {
     },
     create: async () => assert.fail('Linking must never create a second user'),
     update: async () => assert.fail('Linking must not overwrite passwords or profiles'),
+    updateMany: async ({ where, data }) => {
+      const user = users.find(user => user.id === where.id && user.passwordHash === where.passwordHash && !user.suspendedAt);
+      if (!user) return { count: 0 };
+      Object.assign(user, data); return { count: 1 };
+    },
   }, socialIdentity: {
     findUnique: async ({ where, include }) => {
       const key = where.provider_providerUserId || where.userId_provider;
@@ -296,10 +302,13 @@ function linkingDatabase(users) {
       }
       return { count };
     },
-  } };
+  }, passwordResetToken: { deleteMany: async () => ({ count: 0 }) } };
+  db.$transaction = async callback => callback(db);
+  return db;
 }
 
 test('matching verified Gmail and Workspace emails link to the same account and preserve password/profile', async t => {
+  environment(t);
   const { resolveSocialUser } = controller(t);
   for (const email of ['existing@gmail.com', 'existing@workspace.example']) {
     const user = { id: 'existing', email, emailVerifiedAt: new Date(), username: 'ChosenName', passwordHash: 'original-hash', role: 'CUSTOMER', profile: { displayName: 'Original' } };
@@ -345,6 +354,7 @@ test('authenticated linking supports both providers and different emails without
 });
 
 test('linking rejects unverified identities and suspended accounts; automatic linking cannot replace an identity', async t => {
+  environment(t);
   const { linkSocialUser, resolveSocialUser } = controller(t);
   const user = { id: 'user', email: 'user@gmail.com', emailVerifiedAt: new Date() };
   const db = linkingDatabase([user]);
@@ -379,7 +389,7 @@ test('link start requires a valid app session and allowed POST origin, never a u
   const db = linkingDatabase([{ id: 'authenticated' }]);
   const auth = controller(t, db);
   const origin = 'http://localhost:5173';
-  const sessionToken = jwt.sign({ userId: 'authenticated' }, process.env.JWT_SECRET, { expiresIn: '3d' });
+  const sessionToken = signSessionToken({ id: 'authenticated' });
   const request = { params: { provider: 'google' }, headers: { origin }, body: { origin, sessionToken, userId: 'attacker-target' } };
   const res = response(); await auth.startSocialLink(request, res);
   assert.equal(res.code, 303); assert.equal(new URL(res.url).origin, 'https://accounts.google.com');
@@ -407,7 +417,7 @@ test('link callback adds the identity to the authenticated user and returns link
   for (const provider of ['google', 'discord']) {
     let calls = 0;
     global.fetch = async () => ({ ok: true, json: async () => ++calls === 1 ? { access_token: 'secret' } : identity });
-    const context = { provider, origin: 'http://localhost:5173', state: 'state', mode: 'link', userId: 'owner', sessionExpiresAt: Math.floor(Date.now() / 1000) + 300 };
+    const context = { provider, origin: 'http://localhost:5173', state: 'state', mode: 'link', userId: 'owner', securityStamp: sessionSecurityStamp({ id: 'owner', passwordHash: 'unchanged' }), sessionExpiresAt: Math.floor(Date.now() / 1000) + 300 };
     const cookie = jwt.sign(context, oauthStateSecret(), { audience: 'fastboost-oauth-state', expiresIn: '10m' });
     const request = { params: { provider }, headers: { cookie: `fb_oauth_${provider}=${cookie}` }, query: { state: 'state', code: 'code' } };
     const res = response(); await auth.socialCallback(request, res);
@@ -435,7 +445,7 @@ test('connection status exposes only the signed-in user link flags and provider 
 function unlinkContext(provider, link, overrides = {}) {
   return { provider, origin: 'http://localhost:5173', state: 'unlink-state', verifier: 'verifier', mode: 'unlink',
     userId: link.userId, identityId: link.id, providerUserId: link.providerUserId,
-    sessionExpiresAt: Math.floor(Date.now() / 1000) + 300, ...overrides };
+    sessionExpiresAt: Math.floor(Date.now() / 1000) + 300, securityStamp: sessionSecurityStamp({ id: link.userId }), ...overrides };
 }
 function unlinkRequest(context, query = {}) {
   const signed = jwt.sign(context, oauthStateSecret(), { audience: 'fastboost-oauth-state', expiresIn: '10m' });
@@ -449,7 +459,7 @@ test('unlink starts provider verification with the app session and exact stored 
   environment(t);
   const db = linkingDatabase([{ id: 'owner' }]);
   const auth = controller(t, db);
-  const sessionToken = jwt.sign({ userId: 'owner' }, process.env.JWT_SECRET, { expiresIn: '3d' });
+  const sessionToken = signSessionToken({ id: 'owner' });
   for (const provider of ['google', 'discord']) {
     const linked = { id: `${provider}-row`, userId: 'owner', provider, providerUserId: `${provider}-identity` };
     db.links.push(linked);
@@ -475,7 +485,7 @@ test('unlink start rejects missing/expired session, foreign origin, missing conn
   const user = { id: 'owner' };
   const db = linkingDatabase([user]);
   const auth = controller(t, db);
-  const req = { params: { provider: 'google' }, headers: { origin: 'http://localhost:5173' }, body: { origin: 'http://localhost:5173', sessionToken: jwt.sign({ userId: 'owner' }, process.env.JWT_SECRET, { expiresIn: '3d' }) } };
+  const req = { params: { provider: 'google' }, headers: { origin: 'http://localhost:5173' }, body: { origin: 'http://localhost:5173', sessionToken: signSessionToken({ id: 'owner' }) } };
   for (const sessionToken of [undefined, 'invalid', jwt.sign({ userId: 'owner' }, process.env.JWT_SECRET, { expiresIn: -1 })]) {
     const res = response(); await auth.startSocialUnlink({ ...req, body: { ...req.body, sessionToken } }, res);
     assert.equal(res.url, undefined); assert.match(callbackPayload(res).error, /session expired/);
@@ -484,7 +494,7 @@ test('unlink start rejects missing/expired session, foreign origin, missing conn
   assert.equal(foreign.code, 400); assert.equal(foreign.url, undefined);
   const missing = response(); await auth.startSocialUnlink(req, missing); assert.match(callbackPayload(missing).error, /not linked/);
   user.suspendedAt = new Date();
-  const suspended = response(); await auth.startSocialUnlink(req, suspended); assert.match(callbackPayload(suspended).error, /unavailable/);
+  const suspended = response(); await auth.startSocialUnlink(req, suspended); assert.match(callbackPayload(suspended).error, /session expired/);
 });
 
 test('Google and Discord callbacks unlink the verified identity even when it is the last sign-in method, preserving the user', async t => {
@@ -499,7 +509,7 @@ test('Google and Discord callbacks unlink the verified identity even when it is 
     const auth = controller(t, db);
     let calls = 0;
     global.fetch = async () => ({ ok: true, json: async () => ++calls === 1 ? { access_token: 'provider-secret' } : identity });
-    const res = response(); await auth.socialCallback(unlinkRequest(unlinkContext(provider, link)), res);
+    const res = response(); await auth.socialCallback(unlinkRequest(unlinkContext(provider, link, { securityStamp: sessionSecurityStamp(user) })), res);
     assert.equal(calls, 2); assert.deepEqual(callbackPayload(res), { type: 'fastboost:social-auth', unlinked: provider, userId: 'owner' });
     assert.equal(db.links.length, 1); assert.equal(db.links[0].userId, 'other'); assert.deepEqual(user, before);
     assert.equal(res.cleared.k, `fb_oauth_${provider}`); assert.doesNotMatch(res.body, /provider-secret|discarded-social-hash/);
@@ -552,6 +562,7 @@ test('cancelled, failed, tampered and expired unlink callbacks leave connections
 });
 
 test('stale or repeated unlink authorization cannot delete a replacement connection or another users link', async t => {
+  environment(t);
   const db = linkingDatabase([{ id: 'owner' }, { id: 'other' }]);
   const { unlinkSocialUser } = controller(t, db);
   const old = { id: 'old-row', userId: 'owner', provider: 'google', providerUserId: identity.sub };
@@ -567,7 +578,7 @@ test('stale or repeated unlink authorization cannot delete a replacement connect
 
 
 
-test('both providers require permission before email linking, preserve the account and sign in directly afterward', async t => {
+test('both providers require permission before email linking and recover unverified login methods atomically', async t => {
   environment(t);
   for (const provider of ['google', 'discord']) for (const initiallyVerified of [true, false]) {
     const user = { id: 'existing', email: 'player@gmail.com', emailVerifiedAt: initiallyVerified ? new Date() : null, username: 'Original', passwordHash: 'keep', role: 'CUSTOMER', profile: { displayName: 'Original' } };
@@ -579,7 +590,7 @@ test('both providers require permission before email linking, preserve the accou
       catch (error) { Object.assign(user, savedUser); db.links.splice(0, db.links.length, ...savedLinks); throw error; }
     };
     db.user.update = async ({ data }) => {
-      assert.deepEqual(Object.keys(data), ['emailVerifiedAt']);
+      assert.deepEqual(Object.keys(data).sort(), ['emailVerifiedAt', 'passwordHash']);
       assert.ok(data.emailVerifiedAt instanceof Date); Object.assign(user, data); return user;
     };
     const auth = controller(t, db);
@@ -616,9 +627,31 @@ test('both providers require permission before email linking, preserve the accou
       db.user.update = update;
     }
     const confirmed = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, confirmed);
-    assert.ok(confirmed.body.token); assert.equal(confirmed.body.user.id, user.id); assert.equal(confirmed.body.rememberMe, true); assert.equal(db.links.length, 1); assert.ok(user.emailVerifiedAt instanceof Date); assert.deepEqual(user, { ...before, emailVerifiedAt: user.emailVerifiedAt }); if (initiallyVerified) assert.deepEqual(user.emailVerifiedAt, before.emailVerifiedAt);
+    assert.ok(confirmed.body.token); assert.equal(confirmed.body.user.id, user.id); assert.equal(confirmed.body.rememberMe, true); assert.equal(db.links.length, 1); assert.ok(user.emailVerifiedAt instanceof Date);
+    assert.deepEqual(user, { ...before, passwordHash: user.passwordHash, emailVerifiedAt: user.emailVerifiedAt });
+    if (initiallyVerified) { assert.deepEqual(user.emailVerifiedAt, before.emailVerifiedAt); assert.equal(user.passwordHash, before.passwordHash); }
+    else assert.notEqual(user.passwordHash, before.passwordHash);
     assert.equal(await auth.resolveSocialUser(db, provider, profile, { mode: 'login' }), user);
     const repeated = response(); await auth.confirmSocialLink({ ...request, body: { ...request.body, allow: true } }, repeated);
-    assert.equal(db.links.length, 1); assert.ok(repeated.body.token);
+    assert.equal(db.links.length, 1); assert.equal(Boolean(repeated.body.token), initiallyVerified);
+  }
+});
+
+test('password recovery invalidates pending authenticated provider link and unlink callbacks', async t => {
+  environment(t);
+  const user = { id: 'owner', passwordHash: 'before-recovery', role: 'CUSTOMER', emailVerifiedAt: new Date() };
+  const db = linkingDatabase([user]);
+  const auth = controller(t, db);
+  const originalStamp = sessionSecurityStamp(user);
+  const link = { id: 'google-row', userId: user.id, provider: 'google', providerUserId: identity.sub };
+  db.links.push(link);
+  user.passwordHash = 'after-recovery';
+  let calls = 0;
+  t.mock.method(global, 'fetch', async () => ({ ok: true, json: async () => ++calls % 2 ? { access_token: 'provider-token' } : identity }));
+  for (const mode of ['link', 'unlink']) {
+    const context = unlinkContext('google', link, { mode, securityStamp: originalStamp });
+    const res = response(); await auth.socialCallback(unlinkRequest(context), res);
+    assert.match(callbackPayload(res).error, /account changed/);
+    assert.deepEqual(db.links, [link]);
   }
 });

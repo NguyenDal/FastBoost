@@ -22,7 +22,8 @@ test("only the referred friend gets 10%; both receive one $5 reward notice after
             },
             findMany: async () => [],
         },
-        $transaction: async (operations) => Promise.all(operations),
+        $queryRaw: async () => [],
+        $transaction: async callback => callback(prisma),
     };
     try {
         require.cache[prismaPath] = { exports: prisma };

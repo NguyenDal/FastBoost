@@ -1,3 +1,5 @@
+const { canBoost } = require('./boosterAccess');
+
 async function createChatMessageNotifications({
   prisma,
   conversationId,
@@ -15,11 +17,13 @@ async function createChatMessageNotifications({
           orderNumber: true,
           boostType: true,
           customerId: true,
+          assignments: { select: { boosterId: true } },
         },
       },
       participants: {
         select: {
           userId: true,
+          user: { select: { role: true, hasBoosterAccess: true, suspendedAt: true } },
         },
       },
     },
@@ -50,9 +54,11 @@ async function createChatMessageNotifications({
 
   const boostTitle = conversation.order?.boostType || "Order chat";
 
-  const receivers = conversation.participants.filter(
-    (participant) => String(participant.userId) !== String(senderId)
-  );
+  const receivers = conversation.participants.filter(participant => {
+    if (String(participant.userId) === String(senderId) || !participant.user || participant.user.suspendedAt) return false;
+    return participant.user.role === 'ADMIN' || participant.userId === conversation.order?.customerId ||
+      (canBoost(participant.user) && conversation.order?.assignments?.some(assignment => assignment.boosterId === participant.userId));
+  });
 
   if (!receivers.length) return;
 

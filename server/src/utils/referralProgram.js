@@ -50,6 +50,9 @@ async function getReferralFirstPurchaseOffer(customerId) {
                 {
                     createdAt: "asc",
                 },
+            {
+                id: "asc",
+            },
             ],
             select: {
                 id: true,
@@ -84,8 +87,8 @@ function applyReferralFirstPurchaseDiscount(totalPrice, referralOffer) {
     };
 }
 
-async function grantReferralCompletionRewards(orderId) {
-    const order = await prisma.order.findUnique({
+async function reconcileReferralCompletionRewards(db, orderId) {
+    const order = await db.order.findUnique({
         where: {
             id: orderId,
         },
@@ -109,14 +112,14 @@ async function grantReferralCompletionRewards(orderId) {
         order.status !== "COMPLETED" ||
         order.paymentStatus !== "PAID" ||
         Number(order.referralDiscount || 0) <= 0 ||
-        !order.customer?.referredById
+        !order.customer?.referredById || order.customer.referredById === order.customerId
     ) {
         return {
             granted: false,
         };
     }
 
-    const firstPaidOrder = await prisma.order.findFirst({
+    const firstPaidOrder = await db.order.findFirst({
         where: {
             customerId: order.customerId,
             paymentStatus: "PAID",
@@ -127,6 +130,9 @@ async function grantReferralCompletionRewards(orderId) {
             },
             {
                 createdAt: "asc",
+            },
+            {
+                id: "asc",
             },
         ],
         select: {
@@ -142,6 +148,7 @@ async function grantReferralCompletionRewards(orderId) {
 
     if (
         firstPaidOrder?.id !== order.id ||
+        !Number.isSafeInteger(originalPurchaseCents) ||
         originalPurchaseCents <
         REFERRAL_QUALIFYING_PURCHASE_MINIMUM_CENTS
     ) {
@@ -153,7 +160,7 @@ async function grantReferralCompletionRewards(orderId) {
     const inviterId = order.customer.referredById;
     const rewardDetails = getReferralProgramDetails();
 
-    const legacyInvitedReward = await prisma.rewardHistory.findFirst({
+    const legacyInvitedReward = await db.rewardHistory.findFirst({
         where: {
             userId: order.customerId,
             type: "REFERRAL_INVITED",
@@ -170,8 +177,8 @@ async function grantReferralCompletionRewards(orderId) {
         };
     }
 
-    await prisma.$transaction([
-        prisma.rewardHistory.upsert({
+    await Promise.all([
+        db.rewardHistory.upsert({
             where: {
                 userId_type_sourceUserId: {
                     userId: inviterId,
@@ -189,7 +196,7 @@ async function grantReferralCompletionRewards(orderId) {
                 sourceUserId: order.id,
             },
         }),
-        prisma.rewardHistory.upsert({
+        db.rewardHistory.upsert({
             where: {
                 userId_type_sourceUserId: {
                     userId: order.customerId,
@@ -207,7 +214,7 @@ async function grantReferralCompletionRewards(orderId) {
                 sourceUserId: order.id,
             },
         }),
-        ...[inviterId, order.customerId].map((userId) => prisma.notification.upsert({
+        ...[inviterId, order.customerId].map((userId) => db.notification.upsert({
             where: { id: `referral-reward-${order.id}-${userId}` },
             update: {},
             create: {
@@ -227,6 +234,19 @@ async function grantReferralCompletionRewards(orderId) {
         granted: true,
         goldAmount: REFERRAL_REWARD_GOLD,
     };
+}
+
+// Passing an existing transaction keeps completion, Gold and notifications in
+// one commit. Such callers already hold the customer's checkout/order locks.
+async function grantReferralCompletionRewards(orderId, db) {
+    if (db) return reconcileReferralCompletionRewards(db, orderId);
+    return prisma.$transaction(async transaction => {
+        const anchor = await transaction.order.findUnique({ where: { id: orderId }, select: { customerId: true } });
+        if (!anchor) return { granted: false };
+        await transaction.$queryRaw`SELECT id FROM "User" WHERE id = ${anchor.customerId} FOR UPDATE`;
+        await transaction.$queryRaw`SELECT id FROM "Order" WHERE id = ${orderId} FOR UPDATE`;
+        return reconcileReferralCompletionRewards(transaction, orderId);
+    });
 }
 
 module.exports = {

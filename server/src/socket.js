@@ -1,231 +1,99 @@
 const { Server } = require("socket.io");
-const jwt = require("jsonwebtoken");
 const prisma = require("./prisma");
+const { verifySessionToken } = require("./utils/sessionToken");
 const { withAuditedSocketMessage } = require('./utils/auditedSocketMessage');
-const {
-    createChatMessageNotifications,
-} = require("./utils/chatNotifications");
+const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect } = require('./utils/orderChat');
 
-function getSocketUserId(socket) {
-    return socket.user?.id || socket.user?.userId;
+async function refreshSocketUser(socket) {
+    const token = socket.sessionToken || socket.handshake.auth?.token || (socket.handshake.headers?.authorization || '').split(' ')[1];
+    socket.user = await verifySessionToken(token, { db: prisma });
+    return socket.user;
 }
 
-async function ensureConversationForOrder(orderId) {
-    let convo = await prisma.conversation.findUnique({ where: { orderId } });
-    if (!convo) {
-        convo = await prisma.conversation.create({ data: { orderId } });
+async function conversationAccess(socket, conversationId) {
+    const user = await refreshSocketUser(socket);
+    const conversation = await prisma.conversation.findUnique({ where: { id: conversationId }, select: { id: true, orderId: true } });
+    if (!conversation || !await canAccessOrderChat(prisma, user, conversation.orderId)) {
+        throw Object.assign(new Error('Forbidden'), { status: 403 });
     }
-    return convo;
+    return conversation;
 }
 
-async function canAccessOrder(user, orderId) {
-    if (!user) return false;
-
-    const userId = user.id || user.userId;
-    const userRole = user.role;
-
-    if (!userId) return false;
-    if (userRole === "ADMIN") return true;
-
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return false;
-
-    if (order.customerId === userId) return true;
-
-    const assignment = await prisma.orderAssignment.findFirst({
-        where: {
-            orderId,
-            boosterId: userId,
-        },
-    });
-
-    return Boolean(assignment);
-}
-
-async function ensureParticipant(conversationId, user) {
-    const userId = user.id || user.userId;
-    const userRole = user.role;
-
-    if (!userId) {
-        throw new Error("Socket user ID missing");
-    }
-
-    await prisma.conversationParticipant.upsert({
-        where: {
-            conversationId_userId: {
-                conversationId,
-                userId,
-            },
-        },
-        update: {},
-        create: {
-            conversationId,
-            userId,
-            roleAtJoin: userRole || "CUSTOMER",
-        },
-    });
+// A retained room membership is not authorization. Revalidate each recipient
+// before every private emission, including sessions suspended or unassigned
+// since joining, then evict subscriptions that no longer have access.
+async function emitAuthorized(io, conversationId, event, payload, exceptId) {
+    const room = 'conv:' + conversationId;
+    const recipients = await io.in(room).fetchSockets();
+    await Promise.all(recipients.map(async recipient => {
+        try {
+            await conversationAccess(recipient, conversationId);
+            if (recipient.id !== exceptId) recipient.emit(event, payload);
+        } catch {
+            await recipient.leave(room);
+        }
+    }));
 }
 
 function initSocket(httpServer) {
-    const io = new Server(httpServer, {
-        cors: { origin: "*" },
-    });
-
-    io.use((socket, next) => {
+    const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL || false }, maxHttpBufferSize: 16 * 1024 });
+    io.use(async (socket, next) => {
         try {
-            const token = socket.handshake.auth?.token ||
-                (socket.handshake.headers?.authorization || "").split(" ")[1];
-            if (!token) return next(new Error("Unauthorized"));
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
-            socket.user = payload;
+            socket.sessionToken = socket.handshake.auth?.token || (socket.handshake.headers?.authorization || '').split(' ')[1];
+            await refreshSocketUser(socket);
             next();
-        } catch (err) {
-            next(new Error("Unauthorized"));
-        }
+        } catch { next(new Error('Unauthorized')); }
     });
-
-    io.on("connection", (socket) => {
-        socket.on("chat:join", async ({ orderId }, cb) => {
+    io.on('connection', socket => {
+        socket.on('chat:join', async (payload, cb) => {
+            const reply = typeof cb === 'function' ? cb : () => {};
             try {
-                if (!orderId) return cb?.({ ok: false, message: "orderId required" });
-                const allowed = await canAccessOrder(socket.user, orderId);
-                if (!allowed) return cb?.({ ok: false, message: "Forbidden" });
-
-                const convo = await ensureConversationForOrder(orderId);
-                await ensureParticipant(convo.id, socket.user);
-
-                const room = `conv:${convo.id}`;
-                socket.join(room);
-
-                const recent = await prisma.message.findMany({
-                    where: { conversationId: convo.id },
-                    orderBy: { createdAt: "desc" },
-                    take: 20,
-                    include: {
-                        sender: {
-                            select: {
-                                id: true,
-                                email: true,
-                                username: true,
-                                role: true,
-                                profile: true,
-                            },
-                        },
-                    },
+                const orderId = payload?.orderId;
+                if (typeof orderId !== 'string' || !orderId || orderId.length > 128) return reply({ ok: false, message: 'orderId required' });
+                await refreshSocketUser(socket);
+                if (!await canAccessOrderChat(prisma, socket.user, orderId)) return reply({ ok: false, message: 'Forbidden' });
+                const conversation = await prisma.conversation.upsert({ where: { orderId }, create: { orderId }, update: {} });
+                await prisma.conversationParticipant.upsert({
+                    where: { conversationId_userId: { conversationId: conversation.id, userId: socket.user.userId } },
+                    create: { conversationId: conversation.id, userId: socket.user.userId, roleAtJoin: socket.user.role }, update: {},
                 });
-
-                cb?.({ ok: true, conversationId: convo.id, messages: recent.reverse() });
-            } catch (err) {
-                cb?.({ ok: false, message: "Join failed" });
+                const messages = await prisma.message.findMany({ where: { conversationId: conversation.id }, orderBy: { createdAt: 'desc' }, take: 20,
+                    include: { sender: { select: senderSelect } } });
+                // Check again after asynchronous history reads before exposing it.
+                await conversationAccess(socket, conversation.id);
+                await socket.join('conv:' + conversation.id);
+                reply({ ok: true, conversationId: conversation.id, messages: messages.reverse() });
+            } catch { reply({ ok: false, message: 'Join failed' }); }
+        });
+        socket.on('chat:message', async (payload, cb) => {
+            const reply = typeof cb === 'function' ? cb : () => {};
+            try {
+                const conversationId = payload?.conversationId;
+                const content = validateOrderChatContent(payload?.content);
+                if (typeof conversationId !== 'string' || !conversationId || conversationId.length > 128) return reply({ ok: false, message: 'Invalid payload' });
+                await conversationAccess(socket, conversationId);
+                const message = await withAuditedSocketMessage(prisma, socket.user, conversationId, () => saveOrderChatMessage(prisma, {
+                    conversationId, senderId: socket.user.userId, content,
+                }));
+                await emitAuthorized(io, conversationId, 'chat:message', message);
+                reply({ ok: true, message });
+            } catch (error) {
+                reply({ ok: false, message: [400, 429].includes(error.status) ? error.message : 'Send failed' });
             }
         });
-
-        socket.on("chat:message", async ({ conversationId, content }, cb) => {
+        socket.on('chat:typing', async payload => {
             try {
-                const userId = getSocketUserId(socket);
-
-                if (!conversationId || !content?.trim()) {
-                    return cb?.({ ok: false, message: "Invalid payload" });
-                }
-
-                if (!userId) {
-                    return cb?.({ ok: false, message: "User ID missing from token" });
-                }
-
-                const msg = await withAuditedSocketMessage(prisma, socket.user, conversationId, async () => {
-                    const member = await prisma.conversationParticipant.findUnique({
-                        where: {
-                            conversationId_userId: {
-                                conversationId,
-                                userId,
-                            },
-                        },
-                    });
-
-                    if (!member) {
-                        throw Object.assign(new Error('Forbidden'), { status: 403 });
-                    }
-
-                    const msg = await prisma.message.create({
-                        data: {
-                            conversationId,
-                            senderId: userId,
-                            content: content.trim(),
-                        },
-                        include: {
-                            sender: {
-                                select: {
-                                    id: true,
-                                    email: true,
-                                    username: true,
-                                    role: true,
-                                    profile: true,
-                                },
-                            },
-                        },
-                    });
-
-                    await prisma.conversation.update({
-                        where: { id: conversationId },
-                        data: { lastMessageAt: msg.createdAt },
-                    });
-
-                    await createChatMessageNotifications({
-                        prisma,
-                        conversationId,
-                        senderId: userId,
-                        message: msg,
-                    });
-                    return msg;
-                });
-
-                const room = `conv:${conversationId}`;
-
-                io.to(room).emit("chat:message", msg);
-
-                cb?.({ ok: true, message: msg });
-            } catch (err) {
-                console.error("socket chat:message error:", err);
-
-                cb?.({
-                    ok: false,
-                    message: "Send failed",
-                    error: err.message,
-                });
-            }
-        });
-
-        socket.on("chat:typing", async ({ conversationId, isTyping }) => {
-            try {
-                if (!conversationId) return;
-
-                const userId = getSocketUserId(socket);
-
-                if (!userId) return;
-
-                const member = await prisma.conversationParticipant.findUnique({
-                    where: {
-                        conversationId_userId: {
-                            conversationId,
-                            userId,
-                        },
-                    },
-                });
-
-                if (!member) return;
-
-                const room = `conv:${conversationId}`;
-
-                socket.to(room).emit("chat:typing", {
-                    userId,
-                    isTyping: !!isTyping,
-                });
-            } catch (err) {
-                console.error("socket chat:typing error:", err);
-            }
+                const conversationId = payload?.conversationId;
+                if (typeof conversationId !== 'string' || !conversationId || conversationId.length > 128) return;
+                // Bound typing events before database work.
+                const now = Date.now();
+                if (now - (socket.lastTypingAt || 0) < 1000) return;
+                socket.lastTypingAt = now;
+                await conversationAccess(socket, conversationId);
+                await emitAuthorized(io, conversationId, 'chat:typing', { userId: socket.user.userId, isTyping: Boolean(payload.isTyping) }, socket.id);
+            } catch {}
         });
     });
-
     return io;
 }
 

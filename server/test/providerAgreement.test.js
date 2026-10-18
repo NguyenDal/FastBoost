@@ -4,6 +4,7 @@ const { existsSync } = require('node:fs');
 const { resolve } = require('node:path');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const { sessionSecurityStamp } = require('../src/utils/sessionToken');
 
 test('agreement HTML and PDF require a valid session and current admin or booster access', async () => {
     const dbPath = require.resolve('../src/prisma');
@@ -26,7 +27,7 @@ test('agreement HTML and PDF require a valid session and current admin or booste
         app.use('/api/operations', require(routePaths[0]));
         server = await new Promise(resolve => { const value = app.listen(0, '127.0.0.1', () => resolve(value)); });
         const base = `http://127.0.0.1:${server.address().port}/api/operations/provider-agreement`;
-        const token = (id, expiresIn = '1h') => jwt.sign({ userId: id, role: 'ADMIN', hasBoosterAccess: true }, process.env.JWT_SECRET, { expiresIn });
+        const token = (id, expiresIn = '1h') => jwt.sign({ userId: id, role: 'ADMIN', hasBoosterAccess: true, securityStamp: sessionSecurityStamp(users[id] || { id }) }, process.env.JWT_SECRET, { expiresIn });
         const request = (suffix, auth) => fetch(base + suffix, { headers: auth ? { Authorization: `Bearer ${auth}` } : {} });
         for (const suffix of ['', '/document']) {
             for (const auth of [null, 'invalid', token('admin', -1)]) {
@@ -36,7 +37,7 @@ test('agreement HTML and PDF require a valid session and current admin or booste
             }
             for (const id of ['customer', 'suspended', 'missing']) {
                 const response = await request(suffix, token(id));
-                assert.equal(response.status, 403, `${id} cannot access ${suffix || 'HTML'} even with stale admin claims`);
+                assert.equal(response.status, id === 'customer' ? 403 : 401, `${id} cannot access ${suffix || 'HTML'} even with stale admin claims`);
                 assert.doesNotMatch(await response.text(), /Booster Service Agreement|%PDF/);
             }
             for (const id of ['admin', 'booster', 'extraAccess']) {

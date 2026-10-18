@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
+    "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "test": "node --test",
     "benchmark:backend": "node scripts/benchmark-backend-reads.js",
@@ -18,23 +18,22 @@
     "@aws-sdk/client-kms": "^3.1041.0",
     "@aws-sdk/client-s3": "^3.1045.0",
     "@aws-sdk/s3-request-presigner": "^3.1075.0",
-    "@prisma/adapter-pg": "^7.5.0",
-    "@prisma/client": "^7.5.0",
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
-    "nodemailer": "^8.0.4",
+    "nodemailer": "^10.1.2",
     "pdfkit": "^0.20.2",
     "pg": "^8.20.0",
-    "prisma": "^7.5.0",
+    "prisma": "^7.10.1",
     "socket.io": "^4.8.3",
     "stripe": "^22.2.2"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "nodemon": "^3.1.14"
+    "@types/node": "^25.5.0"
   }
 }

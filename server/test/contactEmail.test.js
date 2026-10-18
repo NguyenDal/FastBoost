@@ -93,6 +93,18 @@ test("invalid form or missing SMTP configuration never acknowledges sending", as
     assert.equal(transport.mock.callCount(), 0);
 });
 
+test('contact rejects structured addresses, header injection and oversized fields before SMTP', async t => {
+    const { send, response, transport } = controller(t, () => assert.fail('must not send invalid input'));
+    for (const body of [null, { ...form, email: { address: form.email } }, { ...form, email: 'one@example.com,two@example.com' },
+        { ...form, subject: 'Hello\r\nBcc: other@example.com' }, { ...form, name: ['name'] },
+        { ...form, message: 'x'.repeat(10001) }]) {
+        const res = response();
+        await send({ body }, res);
+        assert.equal(res.code, 400);
+    }
+    assert.equal(transport.mock.callCount(), 0);
+});
+
 function client(fetch) {
     // Execute the actual browser API wrapper with only its Vite config import substituted.
     const source = fs.readFileSync(require.resolve("../../client/src/api/contact.js"), "utf8")

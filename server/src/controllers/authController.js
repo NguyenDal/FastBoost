@@ -27,6 +27,10 @@ const validatePassword = (password) => {
     return "Password must be 64 characters or fewer";
   }
 
+  if (Buffer.byteLength(password, 'utf8') > 72) {
+    return 'Password must be 72 UTF-8 bytes or fewer';
+  }
+
   if (!PASSWORD_RULES.upper.test(password)) {
     return "Password must include at least one uppercase letter";
   }
@@ -93,7 +97,8 @@ const registerUser = async (req, res) => {
     try { consent = registrationConsent(req.body); }
     catch (error) { return res.status(400).json({ ok: false, message: error.message }); }
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || email.length > 254 || !email.trim()
+      || typeof password !== 'string' || !password) {
       return res.status(400).json({
         ok: false,
         message: "Email and password are required",
@@ -101,6 +106,11 @@ const registerUser = async (req, res) => {
     }
 
     const normalizedEmail = String(email).toLowerCase().trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+      || (username !== undefined && (typeof username !== 'string' || username.trim().length > 60))) {
+      return res.status(400).json({ ok: false, message: 'Enter a valid email and username.' });
+    }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
@@ -202,7 +212,8 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || email.length > 254 || !email.trim()
+      || typeof password !== 'string' || !password || password.length > 1024) {
       return res.status(400).json({
         ok: false,
         message: "Email and password are required",
@@ -268,9 +279,9 @@ const loginUser = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase().trim() : '';
 
-    if (!email) {
+    if (!email || email.length > 254) {
       return res.status(400).json({
         ok: false,
         message: "Email is required",
@@ -288,31 +299,27 @@ const forgotPassword = async (req, res) => {
       });
     }
 
-    await prisma.passwordResetToken.deleteMany({
-      where: {
-        userId: user.id,
-        usedAt: null,
-      },
-    });
-
     const rawToken = crypto.randomBytes(32).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    await prisma.passwordResetToken.create({
-      data: {
-        tokenHash,
-        userId: user.id,
-        expiresAt,
-      },
+    const created = await prisma.$transaction(async tx => {
+      // Lock the same account snapshot used for the email destination. Profile
+      // changes share this lock and invalidate previously issued recovery links.
+      const locked = await tx.user.updateMany({
+        where: { id: user.id, email: user.email, passwordHash: user.passwordHash, suspendedAt: null },
+        data: { passwordHash: user.passwordHash },
+      });
+      if (locked.count !== 1) return false;
+      await tx.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } });
+      await tx.passwordResetToken.create({ data: { tokenHash, userId: user.id, expiresAt } });
+      return true;
     });
 
-    const resetUrl = `${process.env.APP_BASE_URL}/reset-password?token=${rawToken}`;
-
-    await sendPasswordResetEmail({
-      to: user.email,
-      resetUrl,
-    });
+    if (created) {
+      const resetUrl = `${process.env.APP_BASE_URL}/reset-password?token=${rawToken}`;
+      await sendPasswordResetEmail({ to: user.email, resetUrl });
+    }
 
     return res.status(200).json({
       ok: true,
@@ -331,7 +338,7 @@ const resetPassword = async (req, res) => {
   try {
     const { token, password, confirmPassword } = req.body;
 
-    if (!token) {
+    if (typeof token !== 'string' || !token || token.length > 256) {
       return res.status(400).json({
         ok: false,
         message: "Reset token is required",
@@ -382,36 +389,48 @@ const resetPassword = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: resetRecord.userId },
-        data: { passwordHash },
-      }),
-      prisma.passwordResetToken.update({
-        where: { id: resetRecord.id },
-        data: { usedAt: new Date() },
-      }),
-      prisma.passwordResetToken.deleteMany({
-        where: {
-          userId: resetRecord.userId,
-          id: { not: resetRecord.id },
-        },
-      }),
-    ]);
+    const updatedUser = await prisma.$transaction(async tx => {
+      const user = await tx.user.findUnique({ where: { id: resetRecord.userId } });
+      if (!user || user.suspendedAt) throw Object.assign(new Error('Account unavailable'), { code: 'INVALID_RESET_TOKEN' });
+      // Keep the user -> token lock order shared with password changes and OAuth
+      // recovery. A password change while waiting invalidates this attempt.
+      const locked = await tx.user.updateMany({
+        where: { id: user.id, email: user.email, emailVerifiedAt: user.emailVerifiedAt, passwordHash: user.passwordHash, suspendedAt: null },
+        data: { passwordHash: user.passwordHash },
+      });
+      if (locked.count !== 1) throw Object.assign(new Error('Account unavailable'), { code: 'INVALID_RESET_TOKEN' });
+      const now = new Date();
+      // Claim under the transaction lock: a concurrent request cannot consume
+      // the same link after its first use, even if both preliminary reads pass.
+      const claimed = await tx.passwordResetToken.updateMany({
+        where: { id: resetRecord.id, tokenHash, usedAt: null, expiresAt: { gt: now } },
+        data: { usedAt: now },
+      });
+      if (claimed.count !== 1) throw Object.assign(new Error('Invalid reset token'), { code: 'INVALID_RESET_TOKEN' });
+      if (!user.emailVerifiedAt) await tx.socialIdentity.deleteMany({ where: { userId: user.id } });
+      const updated = await tx.user.update({ where: { id: user.id }, data: {
+        passwordHash, ...(!user.emailVerifiedAt ? { emailVerifiedAt: now } : {}),
+      } });
+      await tx.passwordResetToken.deleteMany({ where: { userId: user.id, id: { not: resetRecord.id } } });
+      return updated;
+    });
 
-    const authToken = signToken(resetRecord.user);
+    const authToken = signToken(updatedUser);
 
     return res.status(200).json({
       ok: true,
       message: "Password reset successful",
       token: authToken,
       user: {
-        id: resetRecord.user.id,
-        email: resetRecord.user.email,
-        role: resetRecord.user.role,
+        id: updatedUser.id,
+        email: updatedUser.email,
+        role: updatedUser.role,
       },
     });
   } catch (error) {
+    if (error.code === 'INVALID_RESET_TOKEN') {
+      return res.status(400).json({ ok: false, message: 'This reset link is invalid or has expired' });
+    }
     console.error("Reset password error:", error);
     return res.status(500).json({
       ok: false,
@@ -425,4 +444,5 @@ module.exports = {
   loginUser,
   forgotPassword,
   resetPassword,
+  validatePassword,
 };

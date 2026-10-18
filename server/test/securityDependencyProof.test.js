@@ -1,18 +1,11 @@
-// Bounded proofs of the audited dependencies' CURRENT VULNERABLE behavior.
-// These are audit evidence, not remediation tests. After updating a dependency,
-// re-audit it and replace the corresponding proof with fixed-behavior coverage.
-// Version gates prevent a security update from failing on an obsolete proof.
+// Bounded regression checks for the patched runtime transport/parser.
 // No listener, network connection, application service or database is started.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Decoder } = require('socket.io-parser');
 const { Polling } = require('../node_modules/engine.io/build/transports/polling');
-const engineVersion = require('../node_modules/engine.io/package.json').version;
-const parserVersion = require('../node_modules/socket.io-parser/package.json').version;
 
-test('security proof: engine.io 6.6.6 leaves an invalid binary polling response open', {
-    skip: engineVersion !== '6.6.6' && `Audited engine.io version changed to ${engineVersion}; re-audit this proof.`,
-}, t => {
+test('engine.io rejects and closes an invalid binary polling response', t => {
     // GHSA-r635-g3xr-vw7x: default polling accepts Engine.IO protocol 4 before
     // the app's Socket.IO namespace JWT middleware executes. A malformed binary
     // POST emits an error without responding to that request. One mock request
@@ -31,13 +24,11 @@ test('security proof: engine.io 6.6.6 leaves an invalid binary polling response 
 
     assert.equal(errors.length, 1);
     assert.equal(errors[0].message, 'invalid content');
-    assert.equal(response.headerWrites, 0, 'vulnerable transport sends no rejection headers');
-    assert.equal(response.ended, false, 'vulnerable transport leaves the malformed request unanswered');
+    assert.equal(response.headerWrites, 1);
+    assert.equal(response.ended, true, 'malformed request must be answered');
 });
 
-test('security proof: socket.io-parser 4.2.6 retains bounded data after a zero-attachment packet', {
-    skip: parserVersion !== '4.2.6' && `Audited socket.io-parser version changed to ${parserVersion}; re-audit this proof.`,
-}, t => {
+test('socket.io-parser releases zero-attachment state and rejects unsolicited binary data', t => {
     // GHSA-2m8v-j782-fhvr. Scope this app exposure to an authenticated namespace:
     // socket.io closes decoded events from clients without a joined namespace.
     // The isolated decoder below represents a connection already authorized.
@@ -46,18 +37,16 @@ test('security proof: socket.io-parser 4.2.6 retains bounded data after a zero-a
     let decoded = 0;
     decoder.on('decoded', () => decoded++);
 
-    decoder.add('50-["synthetic-audit-event"]');
+    assert.throws(() => decoder.add('50-["synthetic-audit-event"]'), /attachments/i);
     const chunkSize = 1024;
     const chunkCount = 64;
     const maximumBytes = 64 * 1024;
     assert.equal(chunkCount * chunkSize, maximumBytes);
-    for (let index = 0; index < chunkCount; index++) decoder.add(Buffer.alloc(chunkSize));
+    for (let index = 0; index < chunkCount; index++) assert.throws(() => decoder.add(Buffer.alloc(chunkSize)));
 
-    assert.equal(decoded, 1);
-    assert.ok(decoder.reconstructor, 'vulnerable decoder keeps a zero-attachment reconstructor');
-    assert.equal(decoder.reconstructor.buffers.length, chunkCount);
-    assert.equal(decoder.reconstructor.buffers.reduce((sum, buffer) => sum + buffer.length, 0), maximumBytes);
+    assert.equal(decoded, 0);
+    assert.ok(!decoder.reconstructor, 'invalid zero-attachment packets must not allocate reconstruction state');
 
     decoder.destroy();
-    assert.equal(decoder.reconstructor, null, 'release all retained data after this bounded proof');
+    assert.ok(!decoder.reconstructor, 'no reconstruction state is retained');
 });

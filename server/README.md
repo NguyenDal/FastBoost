@@ -2,7 +2,31 @@
 
 Base URL: `http://localhost:5000/api`
 
-Auth: Send `Authorization: Bearer <JWT>` header. Admin endpoints require `role=ADMIN` in token payload.
+Auth: Send `Authorization: Bearer <JWT>` header. Every protected request resolves the current account; administrative permissions come from its current database role.
+
+## Security release configuration
+
+- Apply the additive `20261017010000_match_chat_sender_rate_index` and
+  `20261017020000_shared_request_rate_limits` migrations before deploying this release.
+  Production auth/contact throttles use atomic PostgreSQL budgets and fail with 503
+  if their storage is unavailable. Development uses bounded process-local budgets.
+- Set `NODE_ENV=production` on deployed API instances. Configure `TRUSTED_PROXY_CIDRS`
+  with the verified IP addresses/CIDRs of the reverse proxies that directly reach the
+  API (comma-separated). The default trusts no forwarded source headers. Do not
+  guess proxy ranges or use `true`, a hop count, or a global subnet. Without a correct
+  proxy policy, visitors behind a shared proxy share its source budget.
+- Existing JWTs without a security stamp require a fresh sign-in after this release.
+  Password changes/reset revoke old HTTP, renewal and socket sessions. Transient
+  account-store failures return 503; they do not declare a valid session expired.
+- Checkout enforces one payable first-purchase referral session under the account
+  lock. Existing overlapping sessions issued before this release need a separately
+  planned Stripe cleanup; restarting the API alone does not expire them.
+- New chat attachments download as inert octet streams. Signed reads also override
+  legacy metadata. Previously public raw S3 objects require separate bucket/metadata
+  review; changing app code cannot alter those objects or their public access.
+- Run `npm ci`, then `npx prisma generate` as part of setup/build after installing
+  the aligned Prisma dependencies. `npm run dev` now uses Node's built-in watch mode
+  (Node 22+); the production `npm start` command is unchanged.
 
 ## Orders (Customer)
 - POST `/orders` — create order (auth)

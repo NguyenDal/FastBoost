@@ -68,6 +68,7 @@ function Navbar({
 
     const clearPanelItems = async (id) => {
         if (clearPending.current) return;
+        const sessionToken = authStorage.getItem("token");
         const kind = openPanel;
         const items = kind === "messages" ? messageNotifications : notifications;
         const ids = id === undefined ? items.map(item => item.id) : [id];
@@ -76,8 +77,10 @@ function Navbar({
         setClearError("");
         try {
             await clearNotifications(kind, id);
+            if (authStorage.getItem("token") !== sessionToken) return;
             setRemovingIds(ids);
             await new Promise(resolve => setTimeout(resolve, 560));
+            if (authStorage.getItem("token") !== sessionToken) return;
             const remaining = items.filter(item => !ids.includes(item.id));
             const unread = remaining.filter(item => !item.read).length;
             if (kind === "messages") {
@@ -152,6 +155,7 @@ function Navbar({
                     const res = await fetch(`${API_BASE_URL}/user/me`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+                    if (authStorage.getItem("token") !== token) return;
 
                     if (res.status === 401 || res.status === 403) {
                         clearExpiredSession();
@@ -162,6 +166,7 @@ function Navbar({
                     }
 
                     const data = await res.json();
+                    if (authStorage.getItem("token") !== token) return;
 
                     if (res.ok && data?.user) {
                         authStorage.setItem("user", JSON.stringify(data.user));
@@ -312,6 +317,7 @@ function Navbar({
             setNotificationsError("");
 
             const items = await listMyNotifications();
+            if (authStorage.getItem("token") !== tokenBeforeCheck) return [];
 
             const sortedItems = [...items].sort((a, b) => {
                 if (a.read !== b.read) return a.read ? 1 : -1;
@@ -344,6 +350,7 @@ function Navbar({
 
             return sortedItems;
         } catch (error) {
+            if (authStorage.getItem("token") !== tokenBeforeCheck) return [];
             if (
                 error.message?.toLowerCase().includes("unauthorized") ||
                 error.message?.toLowerCase().includes("jwt") ||
@@ -389,12 +396,14 @@ function Navbar({
     }, [effectiveHasSession]);
 
     const markNotificationsReadOnClose = async () => {
+        const sessionToken = authStorage.getItem("token");
         try {
             const hasUnread = notifications.some((item) => !item.read);
 
             if (!hasUnread) return;
 
             const readItems = await markAllNotificationsRead();
+            if (authStorage.getItem("token") !== sessionToken) return;
 
             const sortedReadItems = [...readItems].sort((a, b) => {
                 if (a.read !== b.read) return a.read ? 1 : -1;

@@ -17,6 +17,16 @@ test("login return keeps existing provider agreement and contract destinations",
   ]) assert.equal(authReturnPath(value), value);
 });
 
+test("signing in resumes the same interrupted checkout or payment verification", () => {
+  for (const value of [
+    "/checkout/order-123", "/checkout/order-123?gold=100",
+    "/payment/success/service-123?session_id=cs_test_existing",
+    "/payment/cancelled/service-123?orderId=order-123",
+  ]) assert.equal(authReturnPath(value), value);
+  for (const value of ["/checkout/../admin", "/checkout/%2e%2e", "/payment/success/../../admin", "/payment/unknown/service-123"])
+    assert.equal(authReturnPath(value), null);
+});
+
 test("login return rejects external, malformed, traversing and unrelated destinations", () => {
   for (const value of [
     undefined, null, {}, 1, "", "https://example.com/match/order", "//example.com/match/order",

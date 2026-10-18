@@ -5,9 +5,18 @@ export async function pollPaymentVerification({ verify, sessionId, orderId, isCa
     let lastData = null;
     for (let attempt = 0; attempt < 8; attempt += 1) {
         if (isCancelled()) return null;
-        lastData = await verify({ sessionId, orderId });
+        try {
+            lastData = await verify({ sessionId, orderId });
+        } catch (error) {
+            if (isCancelled()) return null;
+            // Brief Wi-Fi/API interruptions retry reads of the same payment.
+            // Authentication/ownership errors require user action instead.
+            if (attempt === 7 || (error?.status >= 400 && error.status < 500)) throw error;
+            await wait();
+            continue;
+        }
         if (isCancelled()) return null;
-        if (lastData.paid) return lastData;
+        if (lastData?.paid === true) return { ...lastData, orderId: lastData.orderId || orderId || '' };
         if (attempt < 7) await wait();
     }
     return { ...lastData, paid: false, orderId: lastData?.orderId || orderId || '' };

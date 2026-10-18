@@ -13,6 +13,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
   const [verificationAttempt, setVerificationAttempt] = useState(0);
+  const [continuing, setContinuing] = useState(false);
 
   const [state, setState] = useState({
     loading: type === "success",
@@ -25,33 +26,6 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
     if (verification) return new URLSearchParams(verification);
     return new URLSearchParams(location.search);
   }, [location.search, verification]);
-
-  useEffect(() => {
-    if (type !== "cancelled") return;
-
-    const orderId = params.get("orderId");
-    if (!orderId) return;
-
-    let cancelled = false;
-
-    async function cleanupCancelledCheckout() {
-      try {
-        await deleteUnpaidCheckoutOrder(orderId);
-
-        if (cancelled) return;
-
-        console.log("Cancelled unpaid checkout order cleaned:", orderId);
-      } catch (error) {
-        console.error("Failed to clean cancelled checkout order:", error);
-      }
-    }
-
-    cleanupCancelledCheckout();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [type, params]);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,14 +111,23 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
   const confirmedSuccess = isSuccess && state.paid && !state.error;
   const showNeedsReview = isSuccess && !state.loading && !state.paid;
 
-  function handleContinueOrder() {
+  async function handleContinueOrder() {
     if (isSuccess) {
       setVerificationAttempt(attempt => attempt + 1);
       return;
     }
-    navigate(`/order/${getServiceIdFromPath(location.pathname)}`, {
-      replace: true,
-    });
+    if (continuing) return;
+    setContinuing(true);
+    try {
+      // Cancellation URLs can be shared or forged. Only the customer's explicit
+      // edit action may abandon an unpaid checkout, never loading a URL.
+      if (state.orderId) await deleteUnpaidCheckoutOrder(state.orderId);
+      navigate(`/order/${getServiceIdFromPath(location.pathname)}`, { replace: true });
+    } catch (error) {
+      setState(previous => ({ ...previous, error: error.message || "We couldn’t reopen your order. Please try again." }));
+    } finally {
+      setContinuing(false);
+    }
   }
 
   return (
@@ -221,7 +204,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
                 : showNeedsReview
                   ? state.error ||
                   "The payment was not confirmed. Review your order and try again."
-                  : "No payment was taken. You can adjust your order and try again."}
+                  : state.error || "You can adjust your order and try again. Your account shows the latest payment status."}
           </p>
 
           {!confirmedSuccess && !state.loading && (
@@ -230,8 +213,9 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
                 type="button"
                 className="payment-result-primary"
                 onClick={handleContinueOrder}
+                disabled={continuing}
               >
-                {isSuccess ? "Check Payment Again" : "Continue Editing Order"}
+                {isSuccess ? "Check Payment Again" : continuing ? "Opening Order…" : "Continue Editing Order"}
               </button>
             </div>
           )}

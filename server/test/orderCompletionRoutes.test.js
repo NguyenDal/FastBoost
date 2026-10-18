@@ -108,9 +108,9 @@ test('disabled completion delivery needs no outbox schema and does not change cu
     assert.equal(f.state.outbox.size, 0);
 });
 
-test('unpaid completion and cancellation do not enqueue completion emails', async t => {
+test('unpaid provider completion is rejected and cancellation does not enqueue completion emails', async t => {
     const f = fixture(t, { paymentStatus: 'PENDING' });
-    assert.equal((await f.invoke('providerCompleteAssignedOrder')).code, 200);
+    assert.equal((await f.invoke('providerCompleteAssignedOrder')).code, 409);
     assert.equal(f.state.outbox.size, 0);
     f.state.order.status = 'IN_PROGRESS'; f.state.order.paymentStatus = 'PAID';
     assert.equal((await f.invoke('updateOrderStatus', 'CANCELLED')).code, 200);

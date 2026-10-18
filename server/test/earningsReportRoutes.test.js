@@ -12,6 +12,7 @@ test('admin report is read-only, keeps missing amounts, and preserves provider e
     { id: 'unknown', currency: 'cad', amountCents: null, paidAt: null, contributions: [], assignments: [], matches: [] }];
     let earningsReads = 0;
     const db = {
+        $queryRaw: async () => [{ boosterId: booster.id, average: 4.5, count: 2 }],
         user: { findUnique: async ({ where }) => where.id === 'admin' ? { id: 'admin', role: 'ADMIN' } : booster, findMany: async () => [booster] },
         order: { findMany: async query => {
             earningsReads++;

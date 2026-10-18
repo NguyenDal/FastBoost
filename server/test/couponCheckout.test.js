@@ -19,7 +19,7 @@ test('checkout charges the winning coupon price; card and gold previews never co
     const stripe={checkout:{sessions:{
         retrieve:async id=>sessions.get(id),
         expire:async id=>{sessions.get(id).status='expired';},
-        create:async args=>{const session={id:'cs_'+(++sequence),status:'open',ui_mode:args.ui_mode,metadata:args.metadata,client_secret:'secret-'+sequence,amount_total:args.line_items[0].price_data.unit_amount};sessions.set(session.id,session);return session;},
+        create:async args=>{const session={id:'cs_'+(++sequence),object:'checkout.session',mode:args.mode,livemode:false,status:'open',ui_mode:args.ui_mode,adaptive_pricing:{...args.adaptive_pricing},currency:args.line_items[0].price_data.currency,metadata:args.metadata,client_secret:'secret-'+sequence,amount_total:args.line_items[0].price_data.unit_amount,amount_subtotal:args.line_items[0].price_data.unit_amount};sessions.set(session.id,session);return session;},
     }}};
     const originals=new Map();
     const mocks=new Map([
@@ -57,7 +57,7 @@ test('checkout charges the winning coupon price; card and gold previews never co
     delete req.body.couponCode;
     // Simulate a verified card payment: the order, reward/email work are one transaction.
     const paidSession=sessions.get(discountedSession);
-    Object.assign(paidSession,{status:'complete',payment_status:'paid',payment_intent:'pi-test',currency:'cad',customer_details:{email:'receipt@example.test'}});
+    Object.assign(paidSession,{status:'complete',payment_status:'paid',payment_intent:'pi_test_synthetic',currency:'cad',customer_details:{email:'receipt@example.test'}});
     prisma.order.findFirst=async()=>order;
     req.query={sessionId:discountedSession};
     await verifyCheckoutSession(req,res);

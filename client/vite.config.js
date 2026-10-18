@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => {
   }
   return {
     plugins: [react()],
+    build: { manifest: true },
     // Expose only this public value, never the rest of the Stripe environment.
     define: { 'import.meta.env.STRIPE_PUBLISHABLE_KEY': JSON.stringify(publishableKey) },
   }

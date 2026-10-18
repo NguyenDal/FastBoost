@@ -1,11 +1,9 @@
 const prisma = require("../prisma");
+const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect } = require("../utils/orderChat");
 const {
   uploadChatAttachmentToS3,
   createChatAttachmentSignedUrl,
 } = require("../utils/s3Upload");
-const {
-  createChatMessageNotifications,
-} = require("../utils/chatNotifications");
 
 function getUserId(req) {
   return req.user?.id || req.user?.userId;
@@ -36,28 +34,7 @@ function pickAttachmentType(mimeType = "", fileName = "") {
 
 
 async function canAccessOrder(req, orderId) {
-  const userId = getUserId(req);
-  const userRole = getUserRole(req);
-
-  if (!userId) return false;
-  if (userRole === "ADMIN") return true;
-
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-  });
-
-  if (!order) return false;
-
-  if (order.customerId === userId) return true;
-
-  const assignment = await prisma.orderAssignment.findFirst({
-    where: {
-      orderId,
-      boosterId: userId,
-    },
-  });
-
-  return Boolean(assignment);
+  return canAccessOrderChat(prisma, req.user, orderId);
 }
 
 async function ensureParticipant(conversationId, req) {
@@ -101,10 +78,9 @@ exports.getOrCreateOrderConversation = async (req, res) => {
         customer: {
           select: {
             id: true,
-            email: true,
             username: true,
             role: true,
-            profile: true,
+            profile: { select: { displayName: true, profileImageUrl: true } },
           },
         },
         assignments: {
@@ -112,11 +88,10 @@ exports.getOrCreateOrderConversation = async (req, res) => {
             booster: {
               select: {
                 id: true,
-                email: true,
                 username: true,
                 role: true,
                 createdAt: true,
-                profile: true,
+                profile: { select: { displayName: true, profileImageUrl: true } },
               },
             },
           },
@@ -192,11 +167,10 @@ exports.getOrCreateOrderConversation = async (req, res) => {
             user: {
               select: {
                 id: true,
-                email: true,
                 username: true,
                 role: true,
                 createdAt: true,
-                profile: true,
+                profile: { select: { displayName: true, profileImageUrl: true } },
               },
             },
           },
@@ -252,15 +226,7 @@ exports.getMessages = async (req, res) => {
       where: { conversationId },
       orderBy: { createdAt: "asc" },
       include: {
-        sender: {
-          select: {
-            id: true,
-            email: true,
-            username: true,
-            role: true,
-            profile: true,
-          },
-        },
+        sender: { select: senderSelect },
       },
     });
 
@@ -286,12 +252,7 @@ exports.postMessage = async (req, res) => {
 
     const senderId = getUserId(req);
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({
-        ok: false,
-        message: "Message content is required",
-      });
-    }
+    const validatedContent = validateOrderChatContent(content);
 
     const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
@@ -318,37 +279,8 @@ exports.postMessage = async (req, res) => {
 
     await ensureParticipant(conversationId, req);
 
-    const message = await prisma.message.create({
-      data: {
-        conversationId,
-        senderId,
-        content: content.trim(),
-      },
-      include: {
-        sender: {
-          select: {
-            id: true,
-            email: true,
-            username: true,
-            role: true,
-            profile: true,
-          },
-        },
-      },
-    });
-
-    await prisma.conversation.update({
-      where: { id: conversationId },
-      data: {
-        lastMessageAt: message.createdAt,
-      },
-    });
-
-    await createChatMessageNotifications({
-      prisma,
-      conversationId,
-      senderId,
-      message,
+    const message = await saveOrderChatMessage(prisma, {
+      conversationId, senderId, content: validatedContent,
     });
 
     return res.status(201).json({
@@ -356,6 +288,7 @@ exports.postMessage = async (req, res) => {
       message,
     });
   } catch (error) {
+    if ([400, 403, 404, 429].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
     console.error("postMessage error:", error);
 
     return res.status(500).json({
@@ -416,42 +349,11 @@ exports.uploadAttachmentMessage = async (req, res) => {
       file: req.file,
     });
 
-    const message = await prisma.message.create({
-      data: {
-        conversationId,
-        senderId,
-        content: formatAttachmentContent(req.file),
-        attachmentKey: uploaded.key,
-        attachmentUrl: uploaded.url,
-        attachmentName: req.file.originalname || "attachment",
-        attachmentMimeType: req.file.mimetype || "application/octet-stream",
-        attachmentSize: req.file.size || 0,
-      },
-      include: {
-        sender: {
-          select: {
-            id: true,
-            email: true,
-            username: true,
-            role: true,
-            profile: true,
-          },
-        },
-      },
-    });
-
-    await prisma.conversation.update({
-      where: { id: conversationId },
-      data: {
-        lastMessageAt: message.createdAt,
-      },
-    });
-
-    await createChatMessageNotifications({
-      prisma,
-      conversationId,
-      senderId,
-      message,
+    const message = await saveOrderChatMessage(prisma, {
+      conversationId, senderId, content: formatAttachmentContent(req.file),
+      attachmentKey: uploaded.key, attachmentUrl: uploaded.url,
+      attachmentName: req.file.originalname || "attachment",
+      attachmentMimeType: "application/octet-stream", attachmentSize: req.file.size || 0,
     });
 
     return res.status(201).json({
@@ -465,6 +367,7 @@ exports.uploadAttachmentMessage = async (req, res) => {
       },
     });
   } catch (error) {
+    if ([400, 403, 404, 429].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
     console.error("uploadAttachmentMessage error:", error);
 
     return res.status(500).json({

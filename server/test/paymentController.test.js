@@ -9,10 +9,13 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
     let paymentStatus = "PENDING";
     let referralOrderId = null;
     const queued = [];
+    const savedQuote = { id: orderId, customerId, currency: 'cad', amountCents: 2500, cashAmountCents: 2500,
+        goldRedeemed: 0, goldDiscountCents: 0, stripeCheckoutSessionId: sessionId };
 
     const prisma = {
         order: {
             findFirst: async () => ({
+                ...savedQuote,
                 id: orderId,
                 customerId,
                 paymentStatus,
@@ -23,6 +26,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
                 goldDiscountCents: 0,
             }),
             findUnique: async () => ({
+                ...savedQuote,
                 id: orderId,
                 paymentStatus,
                 status: "PENDING",
@@ -32,6 +36,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
         $transaction: async (callback) => callback({
             $queryRaw: async () => [],
             order: {
+                findUnique: async () => ({ ...savedQuote, paymentStatus, status: 'PENDING' }),
                 updateMany: async ({ where, data }) => {
                     assert.equal(where.id, orderId);
                     assert.equal(where.stripeCheckoutSessionId, sessionId);
@@ -56,13 +61,14 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
 
                     return {
                         id: sessionId,
+                        object: 'checkout.session', mode: 'payment', status: 'complete', livemode: false,
                         payment_status: "paid",
                         payment_intent: "pi_test_123",
                         amount_subtotal: 2500,
                         amount_total: 2500,
                         currency: "cad",
                         customer_details: { email: "edited-checkout@example.com" },
-                        metadata: { orderId },
+                        metadata: { orderId, customerId, goldRedeemed: '0', goldDiscountCents: '0', cashAmountCents: '2500' },
                     };
                 },
             },

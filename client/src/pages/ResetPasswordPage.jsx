@@ -1,4 +1,5 @@
-import { authStorage } from "../utils/authStorage";
+import { storeAuthSession } from "../utils/authStorage";
+import { notifyAuthChanged } from "../utils/authSession";
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
@@ -109,15 +110,14 @@ function ResetPasswordPage() {
         return;
       }
 
-      authStorage.setItem("token", data.token);
-      sessionStorage.removeItem("fastboost:session-expired-shown");
-      authStorage.setItem("user", JSON.stringify(data.user || {}));
+      storeAuthSession(data.token, data.user || {}, false);
+      notifyAuthChanged({ loggedIn: true });
       setSuccess(true);
 
       setTimeout(() => {
         navigate("/");
       }, 1200);
-    } catch (error) {
+    } catch {
       setErrors((prev) => ({
         ...prev,
         general: "Could not connect to backend",

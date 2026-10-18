@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const { signSessionToken } = require('../src/utils/sessionToken');
 const { ratingRecipientIds, boosterRating, missingRatingTable } = require('../src/utils/orderRatings');
 
 // Loading the route must never initialize or contact the configured database.
@@ -95,7 +95,7 @@ async function serve(t, overrides) {
     f.request = async ({ actor = 'customer', role = 'CUSTOMER', body, orderId = 'order', token } = {}) => {
         const response = await fetch(`http://127.0.0.1:${server.address().port}/orders/${orderId}/rating`, {
             method: body === undefined ? 'GET' : 'POST',
-            headers: { ...(actor ? { Authorization: `Bearer ${token || jwt.sign({ userId: actor, role }, process.env.JWT_SECRET)}` } : {}),
+            headers: { ...(actor ? { Authorization: `Bearer ${token || signSessionToken({ ...(f.state.users.find(user => user.id === actor) || {}), id: actor, role })}` } : {}),
                 ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
             ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         });
@@ -124,13 +124,13 @@ test('authentication, current account status and exact ownership protect both me
     for (const body of [undefined, { stars: 4 }]) {
         assert.equal((await request({ actor: null, body })).status, 401);
         assert.equal((await request({ token: 'invalid', body })).status, 401);
-        assert.equal((await request({ actor: 'deleted-user', body })).status, 403);
+        assert.equal((await request({ actor: 'deleted-user', body })).status, 401);
         assert.equal((await request({ actor: 'other', body })).status, 404);
         assert.equal((await request({ actor: 'admin', role: 'ADMIN', body })).status, 404);
         assert.equal((await request({ actor: 'booster', role: 'PROVIDER', body })).status, 404);
         assert.equal((await request({ orderId: 'missing', body })).status, 404);
         state.users[0].suspendedAt = new Date();
-        assert.equal((await request({ body })).status, 403);
+        assert.equal((await request({ body })).status, 401);
         state.users[0].suspendedAt = null;
     }
     assert.equal(state.creates, 0);

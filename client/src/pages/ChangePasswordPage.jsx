@@ -1,4 +1,4 @@
-import { authStorage } from "../utils/authStorage";
+import { authStorage, replaceAuthToken } from "../utils/authStorage";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changeMyPassword } from "../api/accountSettings";
@@ -128,7 +128,11 @@ export default function ChangePasswordPage() {
             setSavingPassword(true);
             setPasswordSuccess("");
 
-            await changeMyPassword(passwordForm);
+            const sessionToken = authStorage.getItem("token");
+            const result = await changeMyPassword(passwordForm);
+            if (replaceAuthToken(sessionToken, result.token)) {
+                window.dispatchEvent(new Event("auth:refreshed"));
+            }
 
             setPasswordForm({
                 currentPassword: "",
