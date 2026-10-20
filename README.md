@@ -1667,3 +1667,54 @@ Schema: `20260922210000_sale_coupons` and `20260922220000_checkout_coupon_redemp
 Verification: `npm test` in `server`; `RUN_COUPON_DB_TEST=1 node --test test/couponDatabase.test.js` runs the database trigger/uniqueness lifecycle checks inside a completely rolled-back isolated schema. No Stripe charge or email send is needed for these tests.
 
 Personal coupons support multiple selected accounts under one code. Each selected account can redeem once; other accounts cannot view or redeem the private offer. Apply `20260923050000_multiple_coupon_recipients` before deploying this change, then regenerate Prisma Client. The migration is applied in the configured development database only.
+
+### Customer wallet and cashback
+
+The account Wallet accepts USD packages of $5, $10, $25, $50 and $100, with 10%,
+10%, 12%, 13% and 15% bonus credit respectively. Checkout can pay the full remaining
+USD order total from the wallet after coupons and Gold. Wallet/card split payments
+are not supported. Purchased and promotional credit are recorded separately in an
+append-only integer-cent ledger; the database rejects updates/deletes of ledger
+entries. Financial history survives order deletion and prevents account deletion.
+
+Loyalty cashback is separate from top-up bonuses: Bronze 0%, Silver 3%, Gold 5%,
+Platinum 10%, Diamond 15%. Successful order payment snapshots the existing tier
+from completed-order spend, excluding that order. A paid, completed USD order then
+earns cashback on its saved Total as promotional wallet credit. Cancellation,
+deletion or a controlled refunded status reverses its entitlement; repeat events
+and re-completion cannot duplicate the net reward. Old orders with no rate snapshot
+are not backfilled, and Gold-only orders earn no cashback. Booster earnings use
+70% of the saved order Total, regardless of card or wallet tender.
+
+Before running this version, apply the three scoped additive migrations
+`20261020010000_customer_wallet`, `20261020020000_order_promotion_snapshot` and
+`20261020030000_customer_order_cashback`, then generate the matching Prisma client.
+Do not apply unrelated pending migrations automatically. All three were approved,
+applied and checksum-verified on the configured development database on October 20,
+2026 (UTC); this does not configure or deploy production.
+
+Stripe uses the existing signed `/api/payments/webhook` endpoint. Subscribe to
+`checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+`checkout.session.expired`, `charge.refunded`, `charge.dispute.created` and
+`charge.dispute.funds_withdrawn`. Production requires an HTTPS `CLIENT_URL`, matching
+Stripe key/webhook mode and the shared request-budget migration/configuration.
+Top-ups use durable creation IDs and exact saved package/session/PaymentIntent/
+charge validation. Order payments confirm the quoted total under customer/order
+locks, retire payable card sessions and atomically record wallet debit, Gold,
+payment and receipt. Ambiguous responses verify the same payment before retrying.
+
+A top-up refund (including a partial refund) or dispute conservatively reverses
+the whole package and bonus, and freezes the wallet for manual support review.
+Credit already spent remains a recorded liability. Reversing spent cashback also
+freezes the wallet. There is no automatic unfreeze, cash withdrawal or cash refund;
+paid-order cancellation does not automatically refund its wallet payment. Refund
+reconciliation remains a separate support workflow. No tax is added by the current
+checkout configuration; the UI labels final amounts simply Total, with a
+pre-discount Subtotal when useful. New orders persist their promotion description
+so future campaign edits do not relabel past receipts.
+
+Run `node server/scripts/preview-order-emails.js` from the repository root to render
+12 synthetic customer/booster email examples in the ignored local handoff preview
+folder. It does not load `.env`, connect to a database or send mail. Backend tests
+cover wallet/cashback races and recovery with mocks, and SQL constraints with an
+optional in-memory PGlite installation; they do not prove hosted crash durability.

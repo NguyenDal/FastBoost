@@ -36,6 +36,25 @@ test('fully redeemed and missing historical amounts never invent earnings', () =
     assert.equal(orderEarnings({ amountCents: null }), null);
 });
 
+test('earnings use the saved Total for card and wallet payments, including zero', () => {
+    for (const walletAmountCents of [0, 8500]) {
+        const result = orderEarnings({ ...order([9, 1], 12000, 2000), cashAmountCents: 8500, walletAmountCents });
+        assert.equal(result.revenueCents, 8500);
+        assert.equal(result.boosterCents, 5950);
+        assert.equal(result.shares.reduce((sum, share) => sum + share.cents, 0), 5950);
+    }
+    assert.equal(orderEarnings({ ...order([1]), cashAmountCents: 0 }).boosterCents, 0);
+    assert.equal(orderEarnings({ amountCents: null, cashAmountCents: 1000 }).boosterCents, 700);
+});
+
+test('malformed legacy amounts do not create earnings and a valid legacy snapshot is retained', () => {
+    for (const amountCents of [-1, 1.5, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+        assert.equal(orderEarnings({ amountCents }), null);
+    }
+    assert.equal(orderEarnings({ amountCents: 1000, goldDiscountCents: -50 }), null);
+    assert.equal(orderEarnings({ amountCents: 1000, goldDiscountCents: 100, cashAmountCents: null }).revenueCents, 900);
+});
+
 test('match-based earnings require full confirmation and never also count legacy submissions', () => {
     const input = { ...order([100, 100]), matchHistoryEnabled: true, boostType: 'Rank Boost', queueType: 'Solo/Duo',
         matches: [...Array.from({ length: 9 }, () => ({ game: 'LOL', details: { queueId: 420 }, status: 'APPROVED', boosterId: 'a' })),

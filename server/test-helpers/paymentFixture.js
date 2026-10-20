@@ -17,7 +17,7 @@ const response = () => ({ code: 200, status(code) { this.code = code; return thi
 function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
     const state = { orders: orders.map(order => ({ orderNumber: `TEST-${order.id}`, customerId: 'customer',
         serviceId: 'service', status: 'PENDING', paymentStatus: 'PENDING', currency: 'usd',
-        amountCents: 2000, totalPrice: 20, basePrice: 20, goldRedeemed: 0, goldDiscountCents: 0,
+        amountCents: 2000, totalPrice: 20, basePrice: 20, goldRedeemed: 0, goldDiscountCents: 0, cashbackPercent: null,
         stripeCheckoutSessionId: null, customer: { email: 'unused@example.test' }, service: { title: 'Test service' }, ...order })),
     redemptions: [], queued: [], referrals: [], expired: [], created: [], failRetrieve: false, failExpire: false, failQueue: false, failReferral: false };
     const sessions = new Map();
@@ -35,6 +35,8 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         },
         servicePriceRule: { findFirst: async () => ({ id: 'active-rule' }) },
         order: {
+            aggregate: async ({ where }) => ({ _sum: { totalPrice: state.orders.filter(row => matches(row, where))
+                .reduce((sum, row) => sum + Number(row.totalPrice || 0), 0) } }),
             findMany: async ({ where, select }) => state.orders.filter(row => matches(row, where)).map(row => selected(row, select)),
             findFirst: async ({ where, select }) => selected(state.orders.find(row => matches(row, where)), select),
             findUnique: async ({ where, select }) => selected(state.orders.find(row => matches(row, where)), select),

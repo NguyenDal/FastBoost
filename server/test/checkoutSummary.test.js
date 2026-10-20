@@ -31,6 +31,18 @@ test('checkout breakdown balances sale, referral and gold discounts to the charg
     assert.equal(summary.basePriceCents + summary.addonPriceCents - summary.saleDiscountCents - summary.referralDiscountCents - summary.goldDiscountCents, summary.totalCents);
 });
 
+test('saved promotion labels survive campaign changes and are suppressed when a coupon replaces them', () => {
+    const order = { basePrice: 100, addonPrice: 20, amountCents: 10500, cashAmountCents: 10500,
+        promotionTitle: 'Fall Sale', promotionPercent: '15', promotionAppliesTo: 'BASE_PRICE' };
+    const expected = { title: 'Fall Sale', discountPercent: 15, appliesTo: 'BASE_PRICE' };
+    assert.deepEqual(checkoutSummary(order).priceSummary.promotion, expected);
+    assert.deepEqual(savedOrderPriceSummary(order).adminBreakdown.promotion, expected);
+    assert.equal(checkoutSummary({ ...order, couponSaleId: 'coupon' }).priceSummary.promotion, undefined);
+    assert.equal(checkoutSummary({ ...order, promotionPercent: null }).priceSummary.promotion, undefined);
+    assert.equal(checkoutSummary({ ...order, promotionTitle: null }).priceSummary.promotion, undefined);
+    assert.equal(checkoutSummary({ ...order, amountCents: 12000 }).priceSummary.promotion, undefined);
+});
+
 test('legacy order without breakdown still displays the correct base price', () => {
     const summary = checkoutSummary({totalPrice: 12.34}, 0, 0, 1234);
     assert.equal(summary.basePriceCents, 1234);

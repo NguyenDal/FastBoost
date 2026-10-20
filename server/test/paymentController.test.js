@@ -37,6 +37,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
             $queryRaw: async () => [],
             order: {
                 findUnique: async () => ({ ...savedQuote, paymentStatus, status: 'PENDING' }),
+                aggregate: async () => ({ _sum: { totalPrice: 0 } }),
                 updateMany: async ({ where, data }) => {
                     assert.equal(where.id, orderId);
                     assert.equal(where.stripeCheckoutSessionId, sessionId);

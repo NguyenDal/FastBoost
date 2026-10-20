@@ -25,6 +25,7 @@ const AccountSettingsPage = lazy(() => import('./pages/AccountSettingsPage'));
 const AdminManagementPage = lazy(() => import('./pages/AdminManagementPage'));
 const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const WalletPage = lazy(() => import('./pages/WalletPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
 const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage'));
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
@@ -203,6 +204,7 @@ function App() {
           }
         >
           <Route path="/account/dashboard" element={<DashboardPage />} />
+          <Route path="/account/wallet" element={<WalletPage />} />
           <Route path="/account/orders" element={<CustomerOrdersPage />} />
           <Route path="/account/change-password" element={<ChangePasswordPage />} />
         </Route>

@@ -9,7 +9,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     const prisma = {
         servicePriceRule: { findFirst: async () => ({ id: 'active-rule' }) },
         $queryRaw: async () => [],
-        order: {findUnique:async()=>order,findFirst:async()=>null,findMany:async()=>[],update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},
+        order: {findUnique:async()=>order,findFirst:async()=>null,findMany:async()=>[],aggregate:async()=>({_sum:{totalPrice:0}}),update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},
         rewardHistory:{aggregate:async()=>({_sum:{goldAmount:100}}),create:async()=>({})},
         $transaction:async callback=>callback(prisma),
     };

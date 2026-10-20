@@ -24,6 +24,26 @@ export type RateLimitBucket = $Result.DefaultSelection<Prisma.$RateLimitBucketPa
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model WalletAccount
+ * 
+ */
+export type WalletAccount = $Result.DefaultSelection<Prisma.$WalletAccountPayload>
+/**
+ * Model WalletTopUp
+ * 
+ */
+export type WalletTopUp = $Result.DefaultSelection<Prisma.$WalletTopUpPayload>
+/**
+ * Model WalletEntry
+ * 
+ */
+export type WalletEntry = $Result.DefaultSelection<Prisma.$WalletEntryPayload>
+/**
+ * Model WalletCashbackEntitlement
+ * 
+ */
+export type WalletCashbackEntitlement = $Result.DefaultSelection<Prisma.$WalletCashbackEntitlementPayload>
+/**
  * Model ManagementAuditLog
  * 
  */
@@ -473,6 +493,46 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.walletAccount`: Exposes CRUD operations for the **WalletAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WalletAccounts
+    * const walletAccounts = await prisma.walletAccount.findMany()
+    * ```
+    */
+  get walletAccount(): Prisma.WalletAccountDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.walletTopUp`: Exposes CRUD operations for the **WalletTopUp** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WalletTopUps
+    * const walletTopUps = await prisma.walletTopUp.findMany()
+    * ```
+    */
+  get walletTopUp(): Prisma.WalletTopUpDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.walletEntry`: Exposes CRUD operations for the **WalletEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WalletEntries
+    * const walletEntries = await prisma.walletEntry.findMany()
+    * ```
+    */
+  get walletEntry(): Prisma.WalletEntryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.walletCashbackEntitlement`: Exposes CRUD operations for the **WalletCashbackEntitlement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WalletCashbackEntitlements
+    * const walletCashbackEntitlements = await prisma.walletCashbackEntitlement.findMany()
+    * ```
+    */
+  get walletCashbackEntitlement(): Prisma.WalletCashbackEntitlementDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.managementAuditLog`: Exposes CRUD operations for the **ManagementAuditLog** model.
@@ -1292,6 +1352,10 @@ export namespace Prisma {
   export const ModelName: {
     RateLimitBucket: 'RateLimitBucket',
     User: 'User',
+    WalletAccount: 'WalletAccount',
+    WalletTopUp: 'WalletTopUp',
+    WalletEntry: 'WalletEntry',
+    WalletCashbackEntitlement: 'WalletCashbackEntitlement',
     ManagementAuditLog: 'ManagementAuditLog',
     RegistrationConsent: 'RegistrationConsent',
     BoosterProfile: 'BoosterProfile',
@@ -1344,7 +1408,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rateLimitBucket" | "user" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1493,6 +1557,302 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      WalletAccount: {
+        payload: Prisma.$WalletAccountPayload<ExtArgs>
+        fields: Prisma.WalletAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WalletAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WalletAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.WalletAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WalletAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          findMany: {
+            args: Prisma.WalletAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>[]
+          }
+          create: {
+            args: Prisma.WalletAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          createMany: {
+            args: Prisma.WalletAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WalletAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.WalletAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          update: {
+            args: Prisma.WalletAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.WalletAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WalletAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WalletAccountUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>[]
+          }
+          upsert: {
+            args: Prisma.WalletAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.WalletAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWalletAccount>
+          }
+          groupBy: {
+            args: Prisma.WalletAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WalletAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WalletAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<WalletAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      WalletTopUp: {
+        payload: Prisma.$WalletTopUpPayload<ExtArgs>
+        fields: Prisma.WalletTopUpFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WalletTopUpFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WalletTopUpFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          findFirst: {
+            args: Prisma.WalletTopUpFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WalletTopUpFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          findMany: {
+            args: Prisma.WalletTopUpFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>[]
+          }
+          create: {
+            args: Prisma.WalletTopUpCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          createMany: {
+            args: Prisma.WalletTopUpCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WalletTopUpCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>[]
+          }
+          delete: {
+            args: Prisma.WalletTopUpDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          update: {
+            args: Prisma.WalletTopUpUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          deleteMany: {
+            args: Prisma.WalletTopUpDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WalletTopUpUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WalletTopUpUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>[]
+          }
+          upsert: {
+            args: Prisma.WalletTopUpUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletTopUpPayload>
+          }
+          aggregate: {
+            args: Prisma.WalletTopUpAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWalletTopUp>
+          }
+          groupBy: {
+            args: Prisma.WalletTopUpGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WalletTopUpGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WalletTopUpCountArgs<ExtArgs>
+            result: $Utils.Optional<WalletTopUpCountAggregateOutputType> | number
+          }
+        }
+      }
+      WalletEntry: {
+        payload: Prisma.$WalletEntryPayload<ExtArgs>
+        fields: Prisma.WalletEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WalletEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WalletEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.WalletEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WalletEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          findMany: {
+            args: Prisma.WalletEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>[]
+          }
+          create: {
+            args: Prisma.WalletEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          createMany: {
+            args: Prisma.WalletEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WalletEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.WalletEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          update: {
+            args: Prisma.WalletEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.WalletEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WalletEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WalletEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.WalletEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.WalletEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWalletEntry>
+          }
+          groupBy: {
+            args: Prisma.WalletEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WalletEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WalletEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<WalletEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      WalletCashbackEntitlement: {
+        payload: Prisma.$WalletCashbackEntitlementPayload<ExtArgs>
+        fields: Prisma.WalletCashbackEntitlementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WalletCashbackEntitlementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WalletCashbackEntitlementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          findFirst: {
+            args: Prisma.WalletCashbackEntitlementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WalletCashbackEntitlementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          findMany: {
+            args: Prisma.WalletCashbackEntitlementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>[]
+          }
+          create: {
+            args: Prisma.WalletCashbackEntitlementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          createMany: {
+            args: Prisma.WalletCashbackEntitlementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WalletCashbackEntitlementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>[]
+          }
+          delete: {
+            args: Prisma.WalletCashbackEntitlementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          update: {
+            args: Prisma.WalletCashbackEntitlementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          deleteMany: {
+            args: Prisma.WalletCashbackEntitlementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WalletCashbackEntitlementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WalletCashbackEntitlementUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>[]
+          }
+          upsert: {
+            args: Prisma.WalletCashbackEntitlementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WalletCashbackEntitlementPayload>
+          }
+          aggregate: {
+            args: Prisma.WalletCashbackEntitlementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWalletCashbackEntitlement>
+          }
+          groupBy: {
+            args: Prisma.WalletCashbackEntitlementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WalletCashbackEntitlementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WalletCashbackEntitlementCountArgs<ExtArgs>
+            result: $Utils.Optional<WalletCashbackEntitlementCountAggregateOutputType> | number
           }
         }
       }
@@ -4359,6 +4719,10 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     rateLimitBucket?: RateLimitBucketOmit
     user?: UserOmit
+    walletAccount?: WalletAccountOmit
+    walletTopUp?: WalletTopUpOmit
+    walletEntry?: WalletEntryOmit
+    walletCashbackEntitlement?: WalletCashbackEntitlementOmit
     managementAuditLog?: ManagementAuditLogOmit
     registrationConsent?: RegistrationConsentOmit
     boosterProfile?: BoosterProfileOmit
@@ -4715,6 +5079,86 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationWhereInput
+  }
+
+
+  /**
+   * Count Type WalletAccountCountOutputType
+   */
+
+  export type WalletAccountCountOutputType = {
+    topUps: number
+    entries: number
+    cashbackEntitlements: number
+  }
+
+  export type WalletAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    topUps?: boolean | WalletAccountCountOutputTypeCountTopUpsArgs
+    entries?: boolean | WalletAccountCountOutputTypeCountEntriesArgs
+    cashbackEntitlements?: boolean | WalletAccountCountOutputTypeCountCashbackEntitlementsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * WalletAccountCountOutputType without action
+   */
+  export type WalletAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccountCountOutputType
+     */
+    select?: WalletAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * WalletAccountCountOutputType without action
+   */
+  export type WalletAccountCountOutputTypeCountTopUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletTopUpWhereInput
+  }
+
+  /**
+   * WalletAccountCountOutputType without action
+   */
+  export type WalletAccountCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletEntryWhereInput
+  }
+
+  /**
+   * WalletAccountCountOutputType without action
+   */
+  export type WalletAccountCountOutputTypeCountCashbackEntitlementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletCashbackEntitlementWhereInput
+  }
+
+
+  /**
+   * Count Type WalletTopUpCountOutputType
+   */
+
+  export type WalletTopUpCountOutputType = {
+    entries: number
+  }
+
+  export type WalletTopUpCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | WalletTopUpCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * WalletTopUpCountOutputType without action
+   */
+  export type WalletTopUpCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUpCountOutputType
+     */
+    select?: WalletTopUpCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * WalletTopUpCountOutputType without action
+   */
+  export type WalletTopUpCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletEntryWhereInput
   }
 
 
@@ -6309,6 +6753,7 @@ export namespace Prisma {
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
     rewardHistory?: boolean | User$rewardHistoryArgs<ExtArgs>
+    walletAccount?: boolean | User$walletAccountArgs<ExtArgs>
     referredBy?: boolean | User$referredByArgs<ExtArgs>
     referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
@@ -6398,6 +6843,7 @@ export namespace Prisma {
     passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     profile?: boolean | User$profileArgs<ExtArgs>
     rewardHistory?: boolean | User$rewardHistoryArgs<ExtArgs>
+    walletAccount?: boolean | User$walletAccountArgs<ExtArgs>
     referredBy?: boolean | User$referredByArgs<ExtArgs>
     referrals?: boolean | User$referralsArgs<ExtArgs>
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
@@ -6441,6 +6887,7 @@ export namespace Prisma {
       passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
       profile: Prisma.$ProfilePayload<ExtArgs> | null
       rewardHistory: Prisma.$RewardHistoryPayload<ExtArgs>[]
+      walletAccount: Prisma.$WalletAccountPayload<ExtArgs> | null
       referredBy: Prisma.$UserPayload<ExtArgs> | null
       referrals: Prisma.$UserPayload<ExtArgs>[]
       providedAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
@@ -6882,6 +7329,7 @@ export namespace Prisma {
     passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     profile<T extends User$profileArgs<ExtArgs> = {}>(args?: Subset<T, User$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     rewardHistory<T extends User$rewardHistoryArgs<ExtArgs> = {}>(args?: Subset<T, User$rewardHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RewardHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    walletAccount<T extends User$walletAccountArgs<ExtArgs> = {}>(args?: Subset<T, User$walletAccountArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     referredBy<T extends User$referredByArgs<ExtArgs> = {}>(args?: Subset<T, User$referredByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     referrals<T extends User$referralsArgs<ExtArgs> = {}>(args?: Subset<T, User$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     providedAssignments<T extends User$providedAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$providedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -7861,6 +8309,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.walletAccount
+   */
+  export type User$walletAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    where?: WalletAccountWhereInput
+  }
+
+  /**
    * User.referredBy
    */
   export type User$referredByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8063,6 +8530,4808 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WalletAccount
+   */
+
+  export type AggregateWalletAccount = {
+    _count: WalletAccountCountAggregateOutputType | null
+    _avg: WalletAccountAvgAggregateOutputType | null
+    _sum: WalletAccountSumAggregateOutputType | null
+    _min: WalletAccountMinAggregateOutputType | null
+    _max: WalletAccountMaxAggregateOutputType | null
+  }
+
+  export type WalletAccountAvgAggregateOutputType = {
+    purchasedBalanceCents: number | null
+    promotionalBalanceCents: number | null
+  }
+
+  export type WalletAccountSumAggregateOutputType = {
+    purchasedBalanceCents: number | null
+    promotionalBalanceCents: number | null
+  }
+
+  export type WalletAccountMinAggregateOutputType = {
+    userId: string | null
+    purchasedBalanceCents: number | null
+    promotionalBalanceCents: number | null
+    frozenAt: Date | null
+    freezeReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletAccountMaxAggregateOutputType = {
+    userId: string | null
+    purchasedBalanceCents: number | null
+    promotionalBalanceCents: number | null
+    frozenAt: Date | null
+    freezeReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletAccountCountAggregateOutputType = {
+    userId: number
+    purchasedBalanceCents: number
+    promotionalBalanceCents: number
+    frozenAt: number
+    freezeReason: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WalletAccountAvgAggregateInputType = {
+    purchasedBalanceCents?: true
+    promotionalBalanceCents?: true
+  }
+
+  export type WalletAccountSumAggregateInputType = {
+    purchasedBalanceCents?: true
+    promotionalBalanceCents?: true
+  }
+
+  export type WalletAccountMinAggregateInputType = {
+    userId?: true
+    purchasedBalanceCents?: true
+    promotionalBalanceCents?: true
+    frozenAt?: true
+    freezeReason?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletAccountMaxAggregateInputType = {
+    userId?: true
+    purchasedBalanceCents?: true
+    promotionalBalanceCents?: true
+    frozenAt?: true
+    freezeReason?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletAccountCountAggregateInputType = {
+    userId?: true
+    purchasedBalanceCents?: true
+    promotionalBalanceCents?: true
+    frozenAt?: true
+    freezeReason?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WalletAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletAccount to aggregate.
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletAccounts to fetch.
+     */
+    orderBy?: WalletAccountOrderByWithRelationInput | WalletAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WalletAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WalletAccounts
+    **/
+    _count?: true | WalletAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WalletAccountAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WalletAccountSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WalletAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WalletAccountMaxAggregateInputType
+  }
+
+  export type GetWalletAccountAggregateType<T extends WalletAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregateWalletAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWalletAccount[P]>
+      : GetScalarType<T[P], AggregateWalletAccount[P]>
+  }
+
+
+
+
+  export type WalletAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletAccountWhereInput
+    orderBy?: WalletAccountOrderByWithAggregationInput | WalletAccountOrderByWithAggregationInput[]
+    by: WalletAccountScalarFieldEnum[] | WalletAccountScalarFieldEnum
+    having?: WalletAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WalletAccountCountAggregateInputType | true
+    _avg?: WalletAccountAvgAggregateInputType
+    _sum?: WalletAccountSumAggregateInputType
+    _min?: WalletAccountMinAggregateInputType
+    _max?: WalletAccountMaxAggregateInputType
+  }
+
+  export type WalletAccountGroupByOutputType = {
+    userId: string
+    purchasedBalanceCents: number
+    promotionalBalanceCents: number
+    frozenAt: Date | null
+    freezeReason: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: WalletAccountCountAggregateOutputType | null
+    _avg: WalletAccountAvgAggregateOutputType | null
+    _sum: WalletAccountSumAggregateOutputType | null
+    _min: WalletAccountMinAggregateOutputType | null
+    _max: WalletAccountMaxAggregateOutputType | null
+  }
+
+  type GetWalletAccountGroupByPayload<T extends WalletAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WalletAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WalletAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WalletAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], WalletAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WalletAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    purchasedBalanceCents?: boolean
+    promotionalBalanceCents?: boolean
+    frozenAt?: boolean
+    freezeReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    topUps?: boolean | WalletAccount$topUpsArgs<ExtArgs>
+    entries?: boolean | WalletAccount$entriesArgs<ExtArgs>
+    cashbackEntitlements?: boolean | WalletAccount$cashbackEntitlementsArgs<ExtArgs>
+    _count?: boolean | WalletAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletAccount"]>
+
+  export type WalletAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    purchasedBalanceCents?: boolean
+    promotionalBalanceCents?: boolean
+    frozenAt?: boolean
+    freezeReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletAccount"]>
+
+  export type WalletAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    purchasedBalanceCents?: boolean
+    promotionalBalanceCents?: boolean
+    frozenAt?: boolean
+    freezeReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletAccount"]>
+
+  export type WalletAccountSelectScalar = {
+    userId?: boolean
+    purchasedBalanceCents?: boolean
+    promotionalBalanceCents?: boolean
+    frozenAt?: boolean
+    freezeReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WalletAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"userId" | "purchasedBalanceCents" | "promotionalBalanceCents" | "frozenAt" | "freezeReason" | "createdAt" | "updatedAt", ExtArgs["result"]["walletAccount"]>
+  export type WalletAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    topUps?: boolean | WalletAccount$topUpsArgs<ExtArgs>
+    entries?: boolean | WalletAccount$entriesArgs<ExtArgs>
+    cashbackEntitlements?: boolean | WalletAccount$cashbackEntitlementsArgs<ExtArgs>
+    _count?: boolean | WalletAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type WalletAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WalletAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $WalletAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WalletAccount"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      topUps: Prisma.$WalletTopUpPayload<ExtArgs>[]
+      entries: Prisma.$WalletEntryPayload<ExtArgs>[]
+      cashbackEntitlements: Prisma.$WalletCashbackEntitlementPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      purchasedBalanceCents: number
+      promotionalBalanceCents: number
+      frozenAt: Date | null
+      freezeReason: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["walletAccount"]>
+    composites: {}
+  }
+
+  type WalletAccountGetPayload<S extends boolean | null | undefined | WalletAccountDefaultArgs> = $Result.GetResult<Prisma.$WalletAccountPayload, S>
+
+  type WalletAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WalletAccountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WalletAccountCountAggregateInputType | true
+    }
+
+  export interface WalletAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WalletAccount'], meta: { name: 'WalletAccount' } }
+    /**
+     * Find zero or one WalletAccount that matches the filter.
+     * @param {WalletAccountFindUniqueArgs} args - Arguments to find a WalletAccount
+     * @example
+     * // Get one WalletAccount
+     * const walletAccount = await prisma.walletAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WalletAccountFindUniqueArgs>(args: SelectSubset<T, WalletAccountFindUniqueArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WalletAccount that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WalletAccountFindUniqueOrThrowArgs} args - Arguments to find a WalletAccount
+     * @example
+     * // Get one WalletAccount
+     * const walletAccount = await prisma.walletAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WalletAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, WalletAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountFindFirstArgs} args - Arguments to find a WalletAccount
+     * @example
+     * // Get one WalletAccount
+     * const walletAccount = await prisma.walletAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WalletAccountFindFirstArgs>(args?: SelectSubset<T, WalletAccountFindFirstArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountFindFirstOrThrowArgs} args - Arguments to find a WalletAccount
+     * @example
+     * // Get one WalletAccount
+     * const walletAccount = await prisma.walletAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WalletAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, WalletAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WalletAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WalletAccounts
+     * const walletAccounts = await prisma.walletAccount.findMany()
+     * 
+     * // Get first 10 WalletAccounts
+     * const walletAccounts = await prisma.walletAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const walletAccountWithUserIdOnly = await prisma.walletAccount.findMany({ select: { userId: true } })
+     * 
+     */
+    findMany<T extends WalletAccountFindManyArgs>(args?: SelectSubset<T, WalletAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WalletAccount.
+     * @param {WalletAccountCreateArgs} args - Arguments to create a WalletAccount.
+     * @example
+     * // Create one WalletAccount
+     * const WalletAccount = await prisma.walletAccount.create({
+     *   data: {
+     *     // ... data to create a WalletAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends WalletAccountCreateArgs>(args: SelectSubset<T, WalletAccountCreateArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WalletAccounts.
+     * @param {WalletAccountCreateManyArgs} args - Arguments to create many WalletAccounts.
+     * @example
+     * // Create many WalletAccounts
+     * const walletAccount = await prisma.walletAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WalletAccountCreateManyArgs>(args?: SelectSubset<T, WalletAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WalletAccounts and returns the data saved in the database.
+     * @param {WalletAccountCreateManyAndReturnArgs} args - Arguments to create many WalletAccounts.
+     * @example
+     * // Create many WalletAccounts
+     * const walletAccount = await prisma.walletAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WalletAccounts and only return the `userId`
+     * const walletAccountWithUserIdOnly = await prisma.walletAccount.createManyAndReturn({
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WalletAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, WalletAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WalletAccount.
+     * @param {WalletAccountDeleteArgs} args - Arguments to delete one WalletAccount.
+     * @example
+     * // Delete one WalletAccount
+     * const WalletAccount = await prisma.walletAccount.delete({
+     *   where: {
+     *     // ... filter to delete one WalletAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WalletAccountDeleteArgs>(args: SelectSubset<T, WalletAccountDeleteArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WalletAccount.
+     * @param {WalletAccountUpdateArgs} args - Arguments to update one WalletAccount.
+     * @example
+     * // Update one WalletAccount
+     * const walletAccount = await prisma.walletAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WalletAccountUpdateArgs>(args: SelectSubset<T, WalletAccountUpdateArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WalletAccounts.
+     * @param {WalletAccountDeleteManyArgs} args - Arguments to filter WalletAccounts to delete.
+     * @example
+     * // Delete a few WalletAccounts
+     * const { count } = await prisma.walletAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WalletAccountDeleteManyArgs>(args?: SelectSubset<T, WalletAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WalletAccounts
+     * const walletAccount = await prisma.walletAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WalletAccountUpdateManyArgs>(args: SelectSubset<T, WalletAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletAccounts and returns the data updated in the database.
+     * @param {WalletAccountUpdateManyAndReturnArgs} args - Arguments to update many WalletAccounts.
+     * @example
+     * // Update many WalletAccounts
+     * const walletAccount = await prisma.walletAccount.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WalletAccounts and only return the `userId`
+     * const walletAccountWithUserIdOnly = await prisma.walletAccount.updateManyAndReturn({
+     *   select: { userId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WalletAccountUpdateManyAndReturnArgs>(args: SelectSubset<T, WalletAccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WalletAccount.
+     * @param {WalletAccountUpsertArgs} args - Arguments to update or create a WalletAccount.
+     * @example
+     * // Update or create a WalletAccount
+     * const walletAccount = await prisma.walletAccount.upsert({
+     *   create: {
+     *     // ... data to create a WalletAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WalletAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WalletAccountUpsertArgs>(args: SelectSubset<T, WalletAccountUpsertArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WalletAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountCountArgs} args - Arguments to filter WalletAccounts to count.
+     * @example
+     * // Count the number of WalletAccounts
+     * const count = await prisma.walletAccount.count({
+     *   where: {
+     *     // ... the filter for the WalletAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends WalletAccountCountArgs>(
+      args?: Subset<T, WalletAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WalletAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WalletAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WalletAccountAggregateArgs>(args: Subset<T, WalletAccountAggregateArgs>): Prisma.PrismaPromise<GetWalletAccountAggregateType<T>>
+
+    /**
+     * Group by WalletAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WalletAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WalletAccountGroupByArgs['orderBy'] }
+        : { orderBy?: WalletAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WalletAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWalletAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WalletAccount model
+   */
+  readonly fields: WalletAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WalletAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WalletAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    topUps<T extends WalletAccount$topUpsArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccount$topUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    entries<T extends WalletAccount$entriesArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccount$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    cashbackEntitlements<T extends WalletAccount$cashbackEntitlementsArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccount$cashbackEntitlementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WalletAccount model
+   */
+  interface WalletAccountFieldRefs {
+    readonly userId: FieldRef<"WalletAccount", 'String'>
+    readonly purchasedBalanceCents: FieldRef<"WalletAccount", 'Int'>
+    readonly promotionalBalanceCents: FieldRef<"WalletAccount", 'Int'>
+    readonly frozenAt: FieldRef<"WalletAccount", 'DateTime'>
+    readonly freezeReason: FieldRef<"WalletAccount", 'String'>
+    readonly createdAt: FieldRef<"WalletAccount", 'DateTime'>
+    readonly updatedAt: FieldRef<"WalletAccount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WalletAccount findUnique
+   */
+  export type WalletAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletAccount to fetch.
+     */
+    where: WalletAccountWhereUniqueInput
+  }
+
+  /**
+   * WalletAccount findUniqueOrThrow
+   */
+  export type WalletAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletAccount to fetch.
+     */
+    where: WalletAccountWhereUniqueInput
+  }
+
+  /**
+   * WalletAccount findFirst
+   */
+  export type WalletAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletAccount to fetch.
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletAccounts to fetch.
+     */
+    orderBy?: WalletAccountOrderByWithRelationInput | WalletAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletAccounts.
+     */
+    cursor?: WalletAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletAccounts.
+     */
+    distinct?: WalletAccountScalarFieldEnum | WalletAccountScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount findFirstOrThrow
+   */
+  export type WalletAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletAccount to fetch.
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletAccounts to fetch.
+     */
+    orderBy?: WalletAccountOrderByWithRelationInput | WalletAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletAccounts.
+     */
+    cursor?: WalletAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletAccounts.
+     */
+    distinct?: WalletAccountScalarFieldEnum | WalletAccountScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount findMany
+   */
+  export type WalletAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletAccounts to fetch.
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletAccounts to fetch.
+     */
+    orderBy?: WalletAccountOrderByWithRelationInput | WalletAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WalletAccounts.
+     */
+    cursor?: WalletAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletAccounts.
+     */
+    distinct?: WalletAccountScalarFieldEnum | WalletAccountScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount create
+   */
+  export type WalletAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WalletAccount.
+     */
+    data: XOR<WalletAccountCreateInput, WalletAccountUncheckedCreateInput>
+  }
+
+  /**
+   * WalletAccount createMany
+   */
+  export type WalletAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WalletAccounts.
+     */
+    data: WalletAccountCreateManyInput | WalletAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WalletAccount createManyAndReturn
+   */
+  export type WalletAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * The data used to create many WalletAccounts.
+     */
+    data: WalletAccountCreateManyInput | WalletAccountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletAccount update
+   */
+  export type WalletAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WalletAccount.
+     */
+    data: XOR<WalletAccountUpdateInput, WalletAccountUncheckedUpdateInput>
+    /**
+     * Choose, which WalletAccount to update.
+     */
+    where: WalletAccountWhereUniqueInput
+  }
+
+  /**
+   * WalletAccount updateMany
+   */
+  export type WalletAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WalletAccounts.
+     */
+    data: XOR<WalletAccountUpdateManyMutationInput, WalletAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletAccounts to update
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * Limit how many WalletAccounts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletAccount updateManyAndReturn
+   */
+  export type WalletAccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * The data used to update WalletAccounts.
+     */
+    data: XOR<WalletAccountUpdateManyMutationInput, WalletAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletAccounts to update
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * Limit how many WalletAccounts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletAccount upsert
+   */
+  export type WalletAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WalletAccount to update in case it exists.
+     */
+    where: WalletAccountWhereUniqueInput
+    /**
+     * In case the WalletAccount found by the `where` argument doesn't exist, create a new WalletAccount with this data.
+     */
+    create: XOR<WalletAccountCreateInput, WalletAccountUncheckedCreateInput>
+    /**
+     * In case the WalletAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WalletAccountUpdateInput, WalletAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * WalletAccount delete
+   */
+  export type WalletAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+    /**
+     * Filter which WalletAccount to delete.
+     */
+    where: WalletAccountWhereUniqueInput
+  }
+
+  /**
+   * WalletAccount deleteMany
+   */
+  export type WalletAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletAccounts to delete
+     */
+    where?: WalletAccountWhereInput
+    /**
+     * Limit how many WalletAccounts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletAccount.topUps
+   */
+  export type WalletAccount$topUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    where?: WalletTopUpWhereInput
+    orderBy?: WalletTopUpOrderByWithRelationInput | WalletTopUpOrderByWithRelationInput[]
+    cursor?: WalletTopUpWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WalletTopUpScalarFieldEnum | WalletTopUpScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount.entries
+   */
+  export type WalletAccount$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    where?: WalletEntryWhereInput
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    cursor?: WalletEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WalletEntryScalarFieldEnum | WalletEntryScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount.cashbackEntitlements
+   */
+  export type WalletAccount$cashbackEntitlementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    where?: WalletCashbackEntitlementWhereInput
+    orderBy?: WalletCashbackEntitlementOrderByWithRelationInput | WalletCashbackEntitlementOrderByWithRelationInput[]
+    cursor?: WalletCashbackEntitlementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WalletCashbackEntitlementScalarFieldEnum | WalletCashbackEntitlementScalarFieldEnum[]
+  }
+
+  /**
+   * WalletAccount without action
+   */
+  export type WalletAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletAccount
+     */
+    select?: WalletAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletAccount
+     */
+    omit?: WalletAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WalletTopUp
+   */
+
+  export type AggregateWalletTopUp = {
+    _count: WalletTopUpCountAggregateOutputType | null
+    _avg: WalletTopUpAvgAggregateOutputType | null
+    _sum: WalletTopUpSumAggregateOutputType | null
+    _min: WalletTopUpMinAggregateOutputType | null
+    _max: WalletTopUpMaxAggregateOutputType | null
+  }
+
+  export type WalletTopUpAvgAggregateOutputType = {
+    amountCents: number | null
+    bonusPercent: number | null
+    bonusCents: number | null
+  }
+
+  export type WalletTopUpSumAggregateOutputType = {
+    amountCents: number | null
+    bonusPercent: number | null
+    bonusCents: number | null
+  }
+
+  export type WalletTopUpMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    packageId: string | null
+    amountCents: number | null
+    bonusPercent: number | null
+    bonusCents: number | null
+    currency: string | null
+    status: string | null
+    clientUrl: string | null
+    stripeCheckoutSessionId: string | null
+    stripePaymentIntentId: string | null
+    paidAt: Date | null
+    reversedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletTopUpMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    packageId: string | null
+    amountCents: number | null
+    bonusPercent: number | null
+    bonusCents: number | null
+    currency: string | null
+    status: string | null
+    clientUrl: string | null
+    stripeCheckoutSessionId: string | null
+    stripePaymentIntentId: string | null
+    paidAt: Date | null
+    reversedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletTopUpCountAggregateOutputType = {
+    id: number
+    userId: number
+    packageId: number
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency: number
+    status: number
+    clientUrl: number
+    stripeCheckoutSessionId: number
+    stripePaymentIntentId: number
+    paidAt: number
+    reversedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WalletTopUpAvgAggregateInputType = {
+    amountCents?: true
+    bonusPercent?: true
+    bonusCents?: true
+  }
+
+  export type WalletTopUpSumAggregateInputType = {
+    amountCents?: true
+    bonusPercent?: true
+    bonusCents?: true
+  }
+
+  export type WalletTopUpMinAggregateInputType = {
+    id?: true
+    userId?: true
+    packageId?: true
+    amountCents?: true
+    bonusPercent?: true
+    bonusCents?: true
+    currency?: true
+    status?: true
+    clientUrl?: true
+    stripeCheckoutSessionId?: true
+    stripePaymentIntentId?: true
+    paidAt?: true
+    reversedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletTopUpMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    packageId?: true
+    amountCents?: true
+    bonusPercent?: true
+    bonusCents?: true
+    currency?: true
+    status?: true
+    clientUrl?: true
+    stripeCheckoutSessionId?: true
+    stripePaymentIntentId?: true
+    paidAt?: true
+    reversedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletTopUpCountAggregateInputType = {
+    id?: true
+    userId?: true
+    packageId?: true
+    amountCents?: true
+    bonusPercent?: true
+    bonusCents?: true
+    currency?: true
+    status?: true
+    clientUrl?: true
+    stripeCheckoutSessionId?: true
+    stripePaymentIntentId?: true
+    paidAt?: true
+    reversedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WalletTopUpAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletTopUp to aggregate.
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletTopUps to fetch.
+     */
+    orderBy?: WalletTopUpOrderByWithRelationInput | WalletTopUpOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WalletTopUpWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletTopUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletTopUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WalletTopUps
+    **/
+    _count?: true | WalletTopUpCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WalletTopUpAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WalletTopUpSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WalletTopUpMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WalletTopUpMaxAggregateInputType
+  }
+
+  export type GetWalletTopUpAggregateType<T extends WalletTopUpAggregateArgs> = {
+        [P in keyof T & keyof AggregateWalletTopUp]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWalletTopUp[P]>
+      : GetScalarType<T[P], AggregateWalletTopUp[P]>
+  }
+
+
+
+
+  export type WalletTopUpGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletTopUpWhereInput
+    orderBy?: WalletTopUpOrderByWithAggregationInput | WalletTopUpOrderByWithAggregationInput[]
+    by: WalletTopUpScalarFieldEnum[] | WalletTopUpScalarFieldEnum
+    having?: WalletTopUpScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WalletTopUpCountAggregateInputType | true
+    _avg?: WalletTopUpAvgAggregateInputType
+    _sum?: WalletTopUpSumAggregateInputType
+    _min?: WalletTopUpMinAggregateInputType
+    _max?: WalletTopUpMaxAggregateInputType
+  }
+
+  export type WalletTopUpGroupByOutputType = {
+    id: string
+    userId: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency: string
+    status: string
+    clientUrl: string
+    stripeCheckoutSessionId: string | null
+    stripePaymentIntentId: string | null
+    paidAt: Date | null
+    reversedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: WalletTopUpCountAggregateOutputType | null
+    _avg: WalletTopUpAvgAggregateOutputType | null
+    _sum: WalletTopUpSumAggregateOutputType | null
+    _min: WalletTopUpMinAggregateOutputType | null
+    _max: WalletTopUpMaxAggregateOutputType | null
+  }
+
+  type GetWalletTopUpGroupByPayload<T extends WalletTopUpGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WalletTopUpGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WalletTopUpGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WalletTopUpGroupByOutputType[P]>
+            : GetScalarType<T[P], WalletTopUpGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WalletTopUpSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    packageId?: boolean
+    amountCents?: boolean
+    bonusPercent?: boolean
+    bonusCents?: boolean
+    currency?: boolean
+    status?: boolean
+    clientUrl?: boolean
+    stripeCheckoutSessionId?: boolean
+    stripePaymentIntentId?: boolean
+    paidAt?: boolean
+    reversedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    entries?: boolean | WalletTopUp$entriesArgs<ExtArgs>
+    _count?: boolean | WalletTopUpCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletTopUp"]>
+
+  export type WalletTopUpSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    packageId?: boolean
+    amountCents?: boolean
+    bonusPercent?: boolean
+    bonusCents?: boolean
+    currency?: boolean
+    status?: boolean
+    clientUrl?: boolean
+    stripeCheckoutSessionId?: boolean
+    stripePaymentIntentId?: boolean
+    paidAt?: boolean
+    reversedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletTopUp"]>
+
+  export type WalletTopUpSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    packageId?: boolean
+    amountCents?: boolean
+    bonusPercent?: boolean
+    bonusCents?: boolean
+    currency?: boolean
+    status?: boolean
+    clientUrl?: boolean
+    stripeCheckoutSessionId?: boolean
+    stripePaymentIntentId?: boolean
+    paidAt?: boolean
+    reversedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletTopUp"]>
+
+  export type WalletTopUpSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    packageId?: boolean
+    amountCents?: boolean
+    bonusPercent?: boolean
+    bonusCents?: boolean
+    currency?: boolean
+    status?: boolean
+    clientUrl?: boolean
+    stripeCheckoutSessionId?: boolean
+    stripePaymentIntentId?: boolean
+    paidAt?: boolean
+    reversedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WalletTopUpOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "packageId" | "amountCents" | "bonusPercent" | "bonusCents" | "currency" | "status" | "clientUrl" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "reversedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["walletTopUp"]>
+  export type WalletTopUpInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    entries?: boolean | WalletTopUp$entriesArgs<ExtArgs>
+    _count?: boolean | WalletTopUpCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type WalletTopUpIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }
+  export type WalletTopUpIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $WalletTopUpPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WalletTopUp"
+    objects: {
+      account: Prisma.$WalletAccountPayload<ExtArgs>
+      entries: Prisma.$WalletEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      packageId: string
+      amountCents: number
+      bonusPercent: number
+      bonusCents: number
+      currency: string
+      status: string
+      clientUrl: string
+      stripeCheckoutSessionId: string | null
+      stripePaymentIntentId: string | null
+      paidAt: Date | null
+      reversedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["walletTopUp"]>
+    composites: {}
+  }
+
+  type WalletTopUpGetPayload<S extends boolean | null | undefined | WalletTopUpDefaultArgs> = $Result.GetResult<Prisma.$WalletTopUpPayload, S>
+
+  type WalletTopUpCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WalletTopUpFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WalletTopUpCountAggregateInputType | true
+    }
+
+  export interface WalletTopUpDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WalletTopUp'], meta: { name: 'WalletTopUp' } }
+    /**
+     * Find zero or one WalletTopUp that matches the filter.
+     * @param {WalletTopUpFindUniqueArgs} args - Arguments to find a WalletTopUp
+     * @example
+     * // Get one WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WalletTopUpFindUniqueArgs>(args: SelectSubset<T, WalletTopUpFindUniqueArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WalletTopUp that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WalletTopUpFindUniqueOrThrowArgs} args - Arguments to find a WalletTopUp
+     * @example
+     * // Get one WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WalletTopUpFindUniqueOrThrowArgs>(args: SelectSubset<T, WalletTopUpFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletTopUp that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpFindFirstArgs} args - Arguments to find a WalletTopUp
+     * @example
+     * // Get one WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WalletTopUpFindFirstArgs>(args?: SelectSubset<T, WalletTopUpFindFirstArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletTopUp that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpFindFirstOrThrowArgs} args - Arguments to find a WalletTopUp
+     * @example
+     * // Get one WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WalletTopUpFindFirstOrThrowArgs>(args?: SelectSubset<T, WalletTopUpFindFirstOrThrowArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WalletTopUps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WalletTopUps
+     * const walletTopUps = await prisma.walletTopUp.findMany()
+     * 
+     * // Get first 10 WalletTopUps
+     * const walletTopUps = await prisma.walletTopUp.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const walletTopUpWithIdOnly = await prisma.walletTopUp.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WalletTopUpFindManyArgs>(args?: SelectSubset<T, WalletTopUpFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WalletTopUp.
+     * @param {WalletTopUpCreateArgs} args - Arguments to create a WalletTopUp.
+     * @example
+     * // Create one WalletTopUp
+     * const WalletTopUp = await prisma.walletTopUp.create({
+     *   data: {
+     *     // ... data to create a WalletTopUp
+     *   }
+     * })
+     * 
+     */
+    create<T extends WalletTopUpCreateArgs>(args: SelectSubset<T, WalletTopUpCreateArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WalletTopUps.
+     * @param {WalletTopUpCreateManyArgs} args - Arguments to create many WalletTopUps.
+     * @example
+     * // Create many WalletTopUps
+     * const walletTopUp = await prisma.walletTopUp.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WalletTopUpCreateManyArgs>(args?: SelectSubset<T, WalletTopUpCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WalletTopUps and returns the data saved in the database.
+     * @param {WalletTopUpCreateManyAndReturnArgs} args - Arguments to create many WalletTopUps.
+     * @example
+     * // Create many WalletTopUps
+     * const walletTopUp = await prisma.walletTopUp.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WalletTopUps and only return the `id`
+     * const walletTopUpWithIdOnly = await prisma.walletTopUp.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WalletTopUpCreateManyAndReturnArgs>(args?: SelectSubset<T, WalletTopUpCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WalletTopUp.
+     * @param {WalletTopUpDeleteArgs} args - Arguments to delete one WalletTopUp.
+     * @example
+     * // Delete one WalletTopUp
+     * const WalletTopUp = await prisma.walletTopUp.delete({
+     *   where: {
+     *     // ... filter to delete one WalletTopUp
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WalletTopUpDeleteArgs>(args: SelectSubset<T, WalletTopUpDeleteArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WalletTopUp.
+     * @param {WalletTopUpUpdateArgs} args - Arguments to update one WalletTopUp.
+     * @example
+     * // Update one WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WalletTopUpUpdateArgs>(args: SelectSubset<T, WalletTopUpUpdateArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WalletTopUps.
+     * @param {WalletTopUpDeleteManyArgs} args - Arguments to filter WalletTopUps to delete.
+     * @example
+     * // Delete a few WalletTopUps
+     * const { count } = await prisma.walletTopUp.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WalletTopUpDeleteManyArgs>(args?: SelectSubset<T, WalletTopUpDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletTopUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WalletTopUps
+     * const walletTopUp = await prisma.walletTopUp.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WalletTopUpUpdateManyArgs>(args: SelectSubset<T, WalletTopUpUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletTopUps and returns the data updated in the database.
+     * @param {WalletTopUpUpdateManyAndReturnArgs} args - Arguments to update many WalletTopUps.
+     * @example
+     * // Update many WalletTopUps
+     * const walletTopUp = await prisma.walletTopUp.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WalletTopUps and only return the `id`
+     * const walletTopUpWithIdOnly = await prisma.walletTopUp.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WalletTopUpUpdateManyAndReturnArgs>(args: SelectSubset<T, WalletTopUpUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WalletTopUp.
+     * @param {WalletTopUpUpsertArgs} args - Arguments to update or create a WalletTopUp.
+     * @example
+     * // Update or create a WalletTopUp
+     * const walletTopUp = await prisma.walletTopUp.upsert({
+     *   create: {
+     *     // ... data to create a WalletTopUp
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WalletTopUp we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WalletTopUpUpsertArgs>(args: SelectSubset<T, WalletTopUpUpsertArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WalletTopUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpCountArgs} args - Arguments to filter WalletTopUps to count.
+     * @example
+     * // Count the number of WalletTopUps
+     * const count = await prisma.walletTopUp.count({
+     *   where: {
+     *     // ... the filter for the WalletTopUps we want to count
+     *   }
+     * })
+    **/
+    count<T extends WalletTopUpCountArgs>(
+      args?: Subset<T, WalletTopUpCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WalletTopUpCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WalletTopUp.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WalletTopUpAggregateArgs>(args: Subset<T, WalletTopUpAggregateArgs>): Prisma.PrismaPromise<GetWalletTopUpAggregateType<T>>
+
+    /**
+     * Group by WalletTopUp.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletTopUpGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WalletTopUpGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WalletTopUpGroupByArgs['orderBy'] }
+        : { orderBy?: WalletTopUpGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WalletTopUpGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWalletTopUpGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WalletTopUp model
+   */
+  readonly fields: WalletTopUpFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WalletTopUp.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WalletTopUpClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends WalletAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccountDefaultArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    entries<T extends WalletTopUp$entriesArgs<ExtArgs> = {}>(args?: Subset<T, WalletTopUp$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WalletTopUp model
+   */
+  interface WalletTopUpFieldRefs {
+    readonly id: FieldRef<"WalletTopUp", 'String'>
+    readonly userId: FieldRef<"WalletTopUp", 'String'>
+    readonly packageId: FieldRef<"WalletTopUp", 'String'>
+    readonly amountCents: FieldRef<"WalletTopUp", 'Int'>
+    readonly bonusPercent: FieldRef<"WalletTopUp", 'Int'>
+    readonly bonusCents: FieldRef<"WalletTopUp", 'Int'>
+    readonly currency: FieldRef<"WalletTopUp", 'String'>
+    readonly status: FieldRef<"WalletTopUp", 'String'>
+    readonly clientUrl: FieldRef<"WalletTopUp", 'String'>
+    readonly stripeCheckoutSessionId: FieldRef<"WalletTopUp", 'String'>
+    readonly stripePaymentIntentId: FieldRef<"WalletTopUp", 'String'>
+    readonly paidAt: FieldRef<"WalletTopUp", 'DateTime'>
+    readonly reversedAt: FieldRef<"WalletTopUp", 'DateTime'>
+    readonly createdAt: FieldRef<"WalletTopUp", 'DateTime'>
+    readonly updatedAt: FieldRef<"WalletTopUp", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WalletTopUp findUnique
+   */
+  export type WalletTopUpFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletTopUp to fetch.
+     */
+    where: WalletTopUpWhereUniqueInput
+  }
+
+  /**
+   * WalletTopUp findUniqueOrThrow
+   */
+  export type WalletTopUpFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletTopUp to fetch.
+     */
+    where: WalletTopUpWhereUniqueInput
+  }
+
+  /**
+   * WalletTopUp findFirst
+   */
+  export type WalletTopUpFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletTopUp to fetch.
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletTopUps to fetch.
+     */
+    orderBy?: WalletTopUpOrderByWithRelationInput | WalletTopUpOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletTopUps.
+     */
+    cursor?: WalletTopUpWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletTopUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletTopUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletTopUps.
+     */
+    distinct?: WalletTopUpScalarFieldEnum | WalletTopUpScalarFieldEnum[]
+  }
+
+  /**
+   * WalletTopUp findFirstOrThrow
+   */
+  export type WalletTopUpFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletTopUp to fetch.
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletTopUps to fetch.
+     */
+    orderBy?: WalletTopUpOrderByWithRelationInput | WalletTopUpOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletTopUps.
+     */
+    cursor?: WalletTopUpWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletTopUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletTopUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletTopUps.
+     */
+    distinct?: WalletTopUpScalarFieldEnum | WalletTopUpScalarFieldEnum[]
+  }
+
+  /**
+   * WalletTopUp findMany
+   */
+  export type WalletTopUpFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletTopUps to fetch.
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletTopUps to fetch.
+     */
+    orderBy?: WalletTopUpOrderByWithRelationInput | WalletTopUpOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WalletTopUps.
+     */
+    cursor?: WalletTopUpWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletTopUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletTopUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletTopUps.
+     */
+    distinct?: WalletTopUpScalarFieldEnum | WalletTopUpScalarFieldEnum[]
+  }
+
+  /**
+   * WalletTopUp create
+   */
+  export type WalletTopUpCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WalletTopUp.
+     */
+    data: XOR<WalletTopUpCreateInput, WalletTopUpUncheckedCreateInput>
+  }
+
+  /**
+   * WalletTopUp createMany
+   */
+  export type WalletTopUpCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WalletTopUps.
+     */
+    data: WalletTopUpCreateManyInput | WalletTopUpCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WalletTopUp createManyAndReturn
+   */
+  export type WalletTopUpCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * The data used to create many WalletTopUps.
+     */
+    data: WalletTopUpCreateManyInput | WalletTopUpCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletTopUp update
+   */
+  export type WalletTopUpUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WalletTopUp.
+     */
+    data: XOR<WalletTopUpUpdateInput, WalletTopUpUncheckedUpdateInput>
+    /**
+     * Choose, which WalletTopUp to update.
+     */
+    where: WalletTopUpWhereUniqueInput
+  }
+
+  /**
+   * WalletTopUp updateMany
+   */
+  export type WalletTopUpUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WalletTopUps.
+     */
+    data: XOR<WalletTopUpUpdateManyMutationInput, WalletTopUpUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletTopUps to update
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * Limit how many WalletTopUps to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletTopUp updateManyAndReturn
+   */
+  export type WalletTopUpUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * The data used to update WalletTopUps.
+     */
+    data: XOR<WalletTopUpUpdateManyMutationInput, WalletTopUpUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletTopUps to update
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * Limit how many WalletTopUps to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletTopUp upsert
+   */
+  export type WalletTopUpUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WalletTopUp to update in case it exists.
+     */
+    where: WalletTopUpWhereUniqueInput
+    /**
+     * In case the WalletTopUp found by the `where` argument doesn't exist, create a new WalletTopUp with this data.
+     */
+    create: XOR<WalletTopUpCreateInput, WalletTopUpUncheckedCreateInput>
+    /**
+     * In case the WalletTopUp was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WalletTopUpUpdateInput, WalletTopUpUncheckedUpdateInput>
+  }
+
+  /**
+   * WalletTopUp delete
+   */
+  export type WalletTopUpDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    /**
+     * Filter which WalletTopUp to delete.
+     */
+    where: WalletTopUpWhereUniqueInput
+  }
+
+  /**
+   * WalletTopUp deleteMany
+   */
+  export type WalletTopUpDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletTopUps to delete
+     */
+    where?: WalletTopUpWhereInput
+    /**
+     * Limit how many WalletTopUps to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletTopUp.entries
+   */
+  export type WalletTopUp$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    where?: WalletEntryWhereInput
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    cursor?: WalletEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WalletEntryScalarFieldEnum | WalletEntryScalarFieldEnum[]
+  }
+
+  /**
+   * WalletTopUp without action
+   */
+  export type WalletTopUpDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WalletEntry
+   */
+
+  export type AggregateWalletEntry = {
+    _count: WalletEntryCountAggregateOutputType | null
+    _avg: WalletEntryAvgAggregateOutputType | null
+    _sum: WalletEntrySumAggregateOutputType | null
+    _min: WalletEntryMinAggregateOutputType | null
+    _max: WalletEntryMaxAggregateOutputType | null
+  }
+
+  export type WalletEntryAvgAggregateOutputType = {
+    amountCents: number | null
+    purchasedCents: number | null
+    promotionalCents: number | null
+  }
+
+  export type WalletEntrySumAggregateOutputType = {
+    amountCents: number | null
+    purchasedCents: number | null
+    promotionalCents: number | null
+  }
+
+  export type WalletEntryMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    topUpId: string | null
+    orderId: string | null
+    key: string | null
+    type: string | null
+    amountCents: number | null
+    purchasedCents: number | null
+    promotionalCents: number | null
+    description: string | null
+    createdAt: Date | null
+  }
+
+  export type WalletEntryMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    topUpId: string | null
+    orderId: string | null
+    key: string | null
+    type: string | null
+    amountCents: number | null
+    purchasedCents: number | null
+    promotionalCents: number | null
+    description: string | null
+    createdAt: Date | null
+  }
+
+  export type WalletEntryCountAggregateOutputType = {
+    id: number
+    userId: number
+    topUpId: number
+    orderId: number
+    key: number
+    type: number
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WalletEntryAvgAggregateInputType = {
+    amountCents?: true
+    purchasedCents?: true
+    promotionalCents?: true
+  }
+
+  export type WalletEntrySumAggregateInputType = {
+    amountCents?: true
+    purchasedCents?: true
+    promotionalCents?: true
+  }
+
+  export type WalletEntryMinAggregateInputType = {
+    id?: true
+    userId?: true
+    topUpId?: true
+    orderId?: true
+    key?: true
+    type?: true
+    amountCents?: true
+    purchasedCents?: true
+    promotionalCents?: true
+    description?: true
+    createdAt?: true
+  }
+
+  export type WalletEntryMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    topUpId?: true
+    orderId?: true
+    key?: true
+    type?: true
+    amountCents?: true
+    purchasedCents?: true
+    promotionalCents?: true
+    description?: true
+    createdAt?: true
+  }
+
+  export type WalletEntryCountAggregateInputType = {
+    id?: true
+    userId?: true
+    topUpId?: true
+    orderId?: true
+    key?: true
+    type?: true
+    amountCents?: true
+    purchasedCents?: true
+    promotionalCents?: true
+    description?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WalletEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletEntry to aggregate.
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletEntries to fetch.
+     */
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WalletEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WalletEntries
+    **/
+    _count?: true | WalletEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WalletEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WalletEntrySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WalletEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WalletEntryMaxAggregateInputType
+  }
+
+  export type GetWalletEntryAggregateType<T extends WalletEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateWalletEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWalletEntry[P]>
+      : GetScalarType<T[P], AggregateWalletEntry[P]>
+  }
+
+
+
+
+  export type WalletEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletEntryWhereInput
+    orderBy?: WalletEntryOrderByWithAggregationInput | WalletEntryOrderByWithAggregationInput[]
+    by: WalletEntryScalarFieldEnum[] | WalletEntryScalarFieldEnum
+    having?: WalletEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WalletEntryCountAggregateInputType | true
+    _avg?: WalletEntryAvgAggregateInputType
+    _sum?: WalletEntrySumAggregateInputType
+    _min?: WalletEntryMinAggregateInputType
+    _max?: WalletEntryMaxAggregateInputType
+  }
+
+  export type WalletEntryGroupByOutputType = {
+    id: string
+    userId: string
+    topUpId: string | null
+    orderId: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt: Date
+    _count: WalletEntryCountAggregateOutputType | null
+    _avg: WalletEntryAvgAggregateOutputType | null
+    _sum: WalletEntrySumAggregateOutputType | null
+    _min: WalletEntryMinAggregateOutputType | null
+    _max: WalletEntryMaxAggregateOutputType | null
+  }
+
+  type GetWalletEntryGroupByPayload<T extends WalletEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WalletEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WalletEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WalletEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], WalletEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WalletEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    topUpId?: boolean
+    orderId?: boolean
+    key?: boolean
+    type?: boolean
+    amountCents?: boolean
+    purchasedCents?: boolean
+    promotionalCents?: boolean
+    description?: boolean
+    createdAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }, ExtArgs["result"]["walletEntry"]>
+
+  export type WalletEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    topUpId?: boolean
+    orderId?: boolean
+    key?: boolean
+    type?: boolean
+    amountCents?: boolean
+    purchasedCents?: boolean
+    promotionalCents?: boolean
+    description?: boolean
+    createdAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }, ExtArgs["result"]["walletEntry"]>
+
+  export type WalletEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    topUpId?: boolean
+    orderId?: boolean
+    key?: boolean
+    type?: boolean
+    amountCents?: boolean
+    purchasedCents?: boolean
+    promotionalCents?: boolean
+    description?: boolean
+    createdAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }, ExtArgs["result"]["walletEntry"]>
+
+  export type WalletEntrySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    topUpId?: boolean
+    orderId?: boolean
+    key?: boolean
+    type?: boolean
+    amountCents?: boolean
+    purchasedCents?: boolean
+    promotionalCents?: boolean
+    description?: boolean
+    createdAt?: boolean
+  }
+
+  export type WalletEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "topUpId" | "orderId" | "key" | "type" | "amountCents" | "purchasedCents" | "promotionalCents" | "description" | "createdAt", ExtArgs["result"]["walletEntry"]>
+  export type WalletEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }
+  export type WalletEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }
+  export type WalletEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+    topUp?: boolean | WalletEntry$topUpArgs<ExtArgs>
+  }
+
+  export type $WalletEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WalletEntry"
+    objects: {
+      account: Prisma.$WalletAccountPayload<ExtArgs>
+      topUp: Prisma.$WalletTopUpPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      topUpId: string | null
+      orderId: string | null
+      key: string
+      type: string
+      amountCents: number
+      purchasedCents: number
+      promotionalCents: number
+      description: string
+      createdAt: Date
+    }, ExtArgs["result"]["walletEntry"]>
+    composites: {}
+  }
+
+  type WalletEntryGetPayload<S extends boolean | null | undefined | WalletEntryDefaultArgs> = $Result.GetResult<Prisma.$WalletEntryPayload, S>
+
+  type WalletEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WalletEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WalletEntryCountAggregateInputType | true
+    }
+
+  export interface WalletEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WalletEntry'], meta: { name: 'WalletEntry' } }
+    /**
+     * Find zero or one WalletEntry that matches the filter.
+     * @param {WalletEntryFindUniqueArgs} args - Arguments to find a WalletEntry
+     * @example
+     * // Get one WalletEntry
+     * const walletEntry = await prisma.walletEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WalletEntryFindUniqueArgs>(args: SelectSubset<T, WalletEntryFindUniqueArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WalletEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WalletEntryFindUniqueOrThrowArgs} args - Arguments to find a WalletEntry
+     * @example
+     * // Get one WalletEntry
+     * const walletEntry = await prisma.walletEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WalletEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, WalletEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryFindFirstArgs} args - Arguments to find a WalletEntry
+     * @example
+     * // Get one WalletEntry
+     * const walletEntry = await prisma.walletEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WalletEntryFindFirstArgs>(args?: SelectSubset<T, WalletEntryFindFirstArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryFindFirstOrThrowArgs} args - Arguments to find a WalletEntry
+     * @example
+     * // Get one WalletEntry
+     * const walletEntry = await prisma.walletEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WalletEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, WalletEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WalletEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WalletEntries
+     * const walletEntries = await prisma.walletEntry.findMany()
+     * 
+     * // Get first 10 WalletEntries
+     * const walletEntries = await prisma.walletEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const walletEntryWithIdOnly = await prisma.walletEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WalletEntryFindManyArgs>(args?: SelectSubset<T, WalletEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WalletEntry.
+     * @param {WalletEntryCreateArgs} args - Arguments to create a WalletEntry.
+     * @example
+     * // Create one WalletEntry
+     * const WalletEntry = await prisma.walletEntry.create({
+     *   data: {
+     *     // ... data to create a WalletEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends WalletEntryCreateArgs>(args: SelectSubset<T, WalletEntryCreateArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WalletEntries.
+     * @param {WalletEntryCreateManyArgs} args - Arguments to create many WalletEntries.
+     * @example
+     * // Create many WalletEntries
+     * const walletEntry = await prisma.walletEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WalletEntryCreateManyArgs>(args?: SelectSubset<T, WalletEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WalletEntries and returns the data saved in the database.
+     * @param {WalletEntryCreateManyAndReturnArgs} args - Arguments to create many WalletEntries.
+     * @example
+     * // Create many WalletEntries
+     * const walletEntry = await prisma.walletEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WalletEntries and only return the `id`
+     * const walletEntryWithIdOnly = await prisma.walletEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WalletEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, WalletEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WalletEntry.
+     * @param {WalletEntryDeleteArgs} args - Arguments to delete one WalletEntry.
+     * @example
+     * // Delete one WalletEntry
+     * const WalletEntry = await prisma.walletEntry.delete({
+     *   where: {
+     *     // ... filter to delete one WalletEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WalletEntryDeleteArgs>(args: SelectSubset<T, WalletEntryDeleteArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WalletEntry.
+     * @param {WalletEntryUpdateArgs} args - Arguments to update one WalletEntry.
+     * @example
+     * // Update one WalletEntry
+     * const walletEntry = await prisma.walletEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WalletEntryUpdateArgs>(args: SelectSubset<T, WalletEntryUpdateArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WalletEntries.
+     * @param {WalletEntryDeleteManyArgs} args - Arguments to filter WalletEntries to delete.
+     * @example
+     * // Delete a few WalletEntries
+     * const { count } = await prisma.walletEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WalletEntryDeleteManyArgs>(args?: SelectSubset<T, WalletEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WalletEntries
+     * const walletEntry = await prisma.walletEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WalletEntryUpdateManyArgs>(args: SelectSubset<T, WalletEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletEntries and returns the data updated in the database.
+     * @param {WalletEntryUpdateManyAndReturnArgs} args - Arguments to update many WalletEntries.
+     * @example
+     * // Update many WalletEntries
+     * const walletEntry = await prisma.walletEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WalletEntries and only return the `id`
+     * const walletEntryWithIdOnly = await prisma.walletEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WalletEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, WalletEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WalletEntry.
+     * @param {WalletEntryUpsertArgs} args - Arguments to update or create a WalletEntry.
+     * @example
+     * // Update or create a WalletEntry
+     * const walletEntry = await prisma.walletEntry.upsert({
+     *   create: {
+     *     // ... data to create a WalletEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WalletEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WalletEntryUpsertArgs>(args: SelectSubset<T, WalletEntryUpsertArgs<ExtArgs>>): Prisma__WalletEntryClient<$Result.GetResult<Prisma.$WalletEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WalletEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryCountArgs} args - Arguments to filter WalletEntries to count.
+     * @example
+     * // Count the number of WalletEntries
+     * const count = await prisma.walletEntry.count({
+     *   where: {
+     *     // ... the filter for the WalletEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends WalletEntryCountArgs>(
+      args?: Subset<T, WalletEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WalletEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WalletEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WalletEntryAggregateArgs>(args: Subset<T, WalletEntryAggregateArgs>): Prisma.PrismaPromise<GetWalletEntryAggregateType<T>>
+
+    /**
+     * Group by WalletEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WalletEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WalletEntryGroupByArgs['orderBy'] }
+        : { orderBy?: WalletEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WalletEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWalletEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WalletEntry model
+   */
+  readonly fields: WalletEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WalletEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WalletEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends WalletAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccountDefaultArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    topUp<T extends WalletEntry$topUpArgs<ExtArgs> = {}>(args?: Subset<T, WalletEntry$topUpArgs<ExtArgs>>): Prisma__WalletTopUpClient<$Result.GetResult<Prisma.$WalletTopUpPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WalletEntry model
+   */
+  interface WalletEntryFieldRefs {
+    readonly id: FieldRef<"WalletEntry", 'String'>
+    readonly userId: FieldRef<"WalletEntry", 'String'>
+    readonly topUpId: FieldRef<"WalletEntry", 'String'>
+    readonly orderId: FieldRef<"WalletEntry", 'String'>
+    readonly key: FieldRef<"WalletEntry", 'String'>
+    readonly type: FieldRef<"WalletEntry", 'String'>
+    readonly amountCents: FieldRef<"WalletEntry", 'Int'>
+    readonly purchasedCents: FieldRef<"WalletEntry", 'Int'>
+    readonly promotionalCents: FieldRef<"WalletEntry", 'Int'>
+    readonly description: FieldRef<"WalletEntry", 'String'>
+    readonly createdAt: FieldRef<"WalletEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WalletEntry findUnique
+   */
+  export type WalletEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletEntry to fetch.
+     */
+    where: WalletEntryWhereUniqueInput
+  }
+
+  /**
+   * WalletEntry findUniqueOrThrow
+   */
+  export type WalletEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletEntry to fetch.
+     */
+    where: WalletEntryWhereUniqueInput
+  }
+
+  /**
+   * WalletEntry findFirst
+   */
+  export type WalletEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletEntry to fetch.
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletEntries to fetch.
+     */
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletEntries.
+     */
+    cursor?: WalletEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletEntries.
+     */
+    distinct?: WalletEntryScalarFieldEnum | WalletEntryScalarFieldEnum[]
+  }
+
+  /**
+   * WalletEntry findFirstOrThrow
+   */
+  export type WalletEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletEntry to fetch.
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletEntries to fetch.
+     */
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletEntries.
+     */
+    cursor?: WalletEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletEntries.
+     */
+    distinct?: WalletEntryScalarFieldEnum | WalletEntryScalarFieldEnum[]
+  }
+
+  /**
+   * WalletEntry findMany
+   */
+  export type WalletEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletEntries to fetch.
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletEntries to fetch.
+     */
+    orderBy?: WalletEntryOrderByWithRelationInput | WalletEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WalletEntries.
+     */
+    cursor?: WalletEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletEntries.
+     */
+    distinct?: WalletEntryScalarFieldEnum | WalletEntryScalarFieldEnum[]
+  }
+
+  /**
+   * WalletEntry create
+   */
+  export type WalletEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WalletEntry.
+     */
+    data: XOR<WalletEntryCreateInput, WalletEntryUncheckedCreateInput>
+  }
+
+  /**
+   * WalletEntry createMany
+   */
+  export type WalletEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WalletEntries.
+     */
+    data: WalletEntryCreateManyInput | WalletEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WalletEntry createManyAndReturn
+   */
+  export type WalletEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many WalletEntries.
+     */
+    data: WalletEntryCreateManyInput | WalletEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletEntry update
+   */
+  export type WalletEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WalletEntry.
+     */
+    data: XOR<WalletEntryUpdateInput, WalletEntryUncheckedUpdateInput>
+    /**
+     * Choose, which WalletEntry to update.
+     */
+    where: WalletEntryWhereUniqueInput
+  }
+
+  /**
+   * WalletEntry updateMany
+   */
+  export type WalletEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WalletEntries.
+     */
+    data: XOR<WalletEntryUpdateManyMutationInput, WalletEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletEntries to update
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * Limit how many WalletEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletEntry updateManyAndReturn
+   */
+  export type WalletEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update WalletEntries.
+     */
+    data: XOR<WalletEntryUpdateManyMutationInput, WalletEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletEntries to update
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * Limit how many WalletEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletEntry upsert
+   */
+  export type WalletEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WalletEntry to update in case it exists.
+     */
+    where: WalletEntryWhereUniqueInput
+    /**
+     * In case the WalletEntry found by the `where` argument doesn't exist, create a new WalletEntry with this data.
+     */
+    create: XOR<WalletEntryCreateInput, WalletEntryUncheckedCreateInput>
+    /**
+     * In case the WalletEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WalletEntryUpdateInput, WalletEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * WalletEntry delete
+   */
+  export type WalletEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+    /**
+     * Filter which WalletEntry to delete.
+     */
+    where: WalletEntryWhereUniqueInput
+  }
+
+  /**
+   * WalletEntry deleteMany
+   */
+  export type WalletEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletEntries to delete
+     */
+    where?: WalletEntryWhereInput
+    /**
+     * Limit how many WalletEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletEntry.topUp
+   */
+  export type WalletEntry$topUpArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletTopUp
+     */
+    select?: WalletTopUpSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletTopUp
+     */
+    omit?: WalletTopUpOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletTopUpInclude<ExtArgs> | null
+    where?: WalletTopUpWhereInput
+  }
+
+  /**
+   * WalletEntry without action
+   */
+  export type WalletEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletEntry
+     */
+    select?: WalletEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletEntry
+     */
+    omit?: WalletEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WalletCashbackEntitlement
+   */
+
+  export type AggregateWalletCashbackEntitlement = {
+    _count: WalletCashbackEntitlementCountAggregateOutputType | null
+    _avg: WalletCashbackEntitlementAvgAggregateOutputType | null
+    _sum: WalletCashbackEntitlementSumAggregateOutputType | null
+    _min: WalletCashbackEntitlementMinAggregateOutputType | null
+    _max: WalletCashbackEntitlementMaxAggregateOutputType | null
+  }
+
+  export type WalletCashbackEntitlementAvgAggregateOutputType = {
+    entitledCents: number | null
+    revision: number | null
+  }
+
+  export type WalletCashbackEntitlementSumAggregateOutputType = {
+    entitledCents: number | null
+    revision: number | null
+  }
+
+  export type WalletCashbackEntitlementMinAggregateOutputType = {
+    orderId: string | null
+    userId: string | null
+    entitledCents: number | null
+    revision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletCashbackEntitlementMaxAggregateOutputType = {
+    orderId: string | null
+    userId: string | null
+    entitledCents: number | null
+    revision: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WalletCashbackEntitlementCountAggregateOutputType = {
+    orderId: number
+    userId: number
+    entitledCents: number
+    revision: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WalletCashbackEntitlementAvgAggregateInputType = {
+    entitledCents?: true
+    revision?: true
+  }
+
+  export type WalletCashbackEntitlementSumAggregateInputType = {
+    entitledCents?: true
+    revision?: true
+  }
+
+  export type WalletCashbackEntitlementMinAggregateInputType = {
+    orderId?: true
+    userId?: true
+    entitledCents?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletCashbackEntitlementMaxAggregateInputType = {
+    orderId?: true
+    userId?: true
+    entitledCents?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WalletCashbackEntitlementCountAggregateInputType = {
+    orderId?: true
+    userId?: true
+    entitledCents?: true
+    revision?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WalletCashbackEntitlementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletCashbackEntitlement to aggregate.
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletCashbackEntitlements to fetch.
+     */
+    orderBy?: WalletCashbackEntitlementOrderByWithRelationInput | WalletCashbackEntitlementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WalletCashbackEntitlementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletCashbackEntitlements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletCashbackEntitlements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WalletCashbackEntitlements
+    **/
+    _count?: true | WalletCashbackEntitlementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WalletCashbackEntitlementAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WalletCashbackEntitlementSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WalletCashbackEntitlementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WalletCashbackEntitlementMaxAggregateInputType
+  }
+
+  export type GetWalletCashbackEntitlementAggregateType<T extends WalletCashbackEntitlementAggregateArgs> = {
+        [P in keyof T & keyof AggregateWalletCashbackEntitlement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWalletCashbackEntitlement[P]>
+      : GetScalarType<T[P], AggregateWalletCashbackEntitlement[P]>
+  }
+
+
+
+
+  export type WalletCashbackEntitlementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WalletCashbackEntitlementWhereInput
+    orderBy?: WalletCashbackEntitlementOrderByWithAggregationInput | WalletCashbackEntitlementOrderByWithAggregationInput[]
+    by: WalletCashbackEntitlementScalarFieldEnum[] | WalletCashbackEntitlementScalarFieldEnum
+    having?: WalletCashbackEntitlementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WalletCashbackEntitlementCountAggregateInputType | true
+    _avg?: WalletCashbackEntitlementAvgAggregateInputType
+    _sum?: WalletCashbackEntitlementSumAggregateInputType
+    _min?: WalletCashbackEntitlementMinAggregateInputType
+    _max?: WalletCashbackEntitlementMaxAggregateInputType
+  }
+
+  export type WalletCashbackEntitlementGroupByOutputType = {
+    orderId: string
+    userId: string
+    entitledCents: number
+    revision: number
+    createdAt: Date
+    updatedAt: Date
+    _count: WalletCashbackEntitlementCountAggregateOutputType | null
+    _avg: WalletCashbackEntitlementAvgAggregateOutputType | null
+    _sum: WalletCashbackEntitlementSumAggregateOutputType | null
+    _min: WalletCashbackEntitlementMinAggregateOutputType | null
+    _max: WalletCashbackEntitlementMaxAggregateOutputType | null
+  }
+
+  type GetWalletCashbackEntitlementGroupByPayload<T extends WalletCashbackEntitlementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WalletCashbackEntitlementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WalletCashbackEntitlementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WalletCashbackEntitlementGroupByOutputType[P]>
+            : GetScalarType<T[P], WalletCashbackEntitlementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WalletCashbackEntitlementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    userId?: boolean
+    entitledCents?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletCashbackEntitlement"]>
+
+  export type WalletCashbackEntitlementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    userId?: boolean
+    entitledCents?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletCashbackEntitlement"]>
+
+  export type WalletCashbackEntitlementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orderId?: boolean
+    userId?: boolean
+    entitledCents?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["walletCashbackEntitlement"]>
+
+  export type WalletCashbackEntitlementSelectScalar = {
+    orderId?: boolean
+    userId?: boolean
+    entitledCents?: boolean
+    revision?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WalletCashbackEntitlementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"orderId" | "userId" | "entitledCents" | "revision" | "createdAt" | "updatedAt", ExtArgs["result"]["walletCashbackEntitlement"]>
+  export type WalletCashbackEntitlementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }
+  export type WalletCashbackEntitlementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }
+  export type WalletCashbackEntitlementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | WalletAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $WalletCashbackEntitlementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WalletCashbackEntitlement"
+    objects: {
+      account: Prisma.$WalletAccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      orderId: string
+      userId: string
+      entitledCents: number
+      revision: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["walletCashbackEntitlement"]>
+    composites: {}
+  }
+
+  type WalletCashbackEntitlementGetPayload<S extends boolean | null | undefined | WalletCashbackEntitlementDefaultArgs> = $Result.GetResult<Prisma.$WalletCashbackEntitlementPayload, S>
+
+  type WalletCashbackEntitlementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WalletCashbackEntitlementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WalletCashbackEntitlementCountAggregateInputType | true
+    }
+
+  export interface WalletCashbackEntitlementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WalletCashbackEntitlement'], meta: { name: 'WalletCashbackEntitlement' } }
+    /**
+     * Find zero or one WalletCashbackEntitlement that matches the filter.
+     * @param {WalletCashbackEntitlementFindUniqueArgs} args - Arguments to find a WalletCashbackEntitlement
+     * @example
+     * // Get one WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WalletCashbackEntitlementFindUniqueArgs>(args: SelectSubset<T, WalletCashbackEntitlementFindUniqueArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WalletCashbackEntitlement that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WalletCashbackEntitlementFindUniqueOrThrowArgs} args - Arguments to find a WalletCashbackEntitlement
+     * @example
+     * // Get one WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WalletCashbackEntitlementFindUniqueOrThrowArgs>(args: SelectSubset<T, WalletCashbackEntitlementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletCashbackEntitlement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementFindFirstArgs} args - Arguments to find a WalletCashbackEntitlement
+     * @example
+     * // Get one WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WalletCashbackEntitlementFindFirstArgs>(args?: SelectSubset<T, WalletCashbackEntitlementFindFirstArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WalletCashbackEntitlement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementFindFirstOrThrowArgs} args - Arguments to find a WalletCashbackEntitlement
+     * @example
+     * // Get one WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WalletCashbackEntitlementFindFirstOrThrowArgs>(args?: SelectSubset<T, WalletCashbackEntitlementFindFirstOrThrowArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WalletCashbackEntitlements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WalletCashbackEntitlements
+     * const walletCashbackEntitlements = await prisma.walletCashbackEntitlement.findMany()
+     * 
+     * // Get first 10 WalletCashbackEntitlements
+     * const walletCashbackEntitlements = await prisma.walletCashbackEntitlement.findMany({ take: 10 })
+     * 
+     * // Only select the `orderId`
+     * const walletCashbackEntitlementWithOrderIdOnly = await prisma.walletCashbackEntitlement.findMany({ select: { orderId: true } })
+     * 
+     */
+    findMany<T extends WalletCashbackEntitlementFindManyArgs>(args?: SelectSubset<T, WalletCashbackEntitlementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WalletCashbackEntitlement.
+     * @param {WalletCashbackEntitlementCreateArgs} args - Arguments to create a WalletCashbackEntitlement.
+     * @example
+     * // Create one WalletCashbackEntitlement
+     * const WalletCashbackEntitlement = await prisma.walletCashbackEntitlement.create({
+     *   data: {
+     *     // ... data to create a WalletCashbackEntitlement
+     *   }
+     * })
+     * 
+     */
+    create<T extends WalletCashbackEntitlementCreateArgs>(args: SelectSubset<T, WalletCashbackEntitlementCreateArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WalletCashbackEntitlements.
+     * @param {WalletCashbackEntitlementCreateManyArgs} args - Arguments to create many WalletCashbackEntitlements.
+     * @example
+     * // Create many WalletCashbackEntitlements
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WalletCashbackEntitlementCreateManyArgs>(args?: SelectSubset<T, WalletCashbackEntitlementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WalletCashbackEntitlements and returns the data saved in the database.
+     * @param {WalletCashbackEntitlementCreateManyAndReturnArgs} args - Arguments to create many WalletCashbackEntitlements.
+     * @example
+     * // Create many WalletCashbackEntitlements
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WalletCashbackEntitlements and only return the `orderId`
+     * const walletCashbackEntitlementWithOrderIdOnly = await prisma.walletCashbackEntitlement.createManyAndReturn({
+     *   select: { orderId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WalletCashbackEntitlementCreateManyAndReturnArgs>(args?: SelectSubset<T, WalletCashbackEntitlementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WalletCashbackEntitlement.
+     * @param {WalletCashbackEntitlementDeleteArgs} args - Arguments to delete one WalletCashbackEntitlement.
+     * @example
+     * // Delete one WalletCashbackEntitlement
+     * const WalletCashbackEntitlement = await prisma.walletCashbackEntitlement.delete({
+     *   where: {
+     *     // ... filter to delete one WalletCashbackEntitlement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WalletCashbackEntitlementDeleteArgs>(args: SelectSubset<T, WalletCashbackEntitlementDeleteArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WalletCashbackEntitlement.
+     * @param {WalletCashbackEntitlementUpdateArgs} args - Arguments to update one WalletCashbackEntitlement.
+     * @example
+     * // Update one WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WalletCashbackEntitlementUpdateArgs>(args: SelectSubset<T, WalletCashbackEntitlementUpdateArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WalletCashbackEntitlements.
+     * @param {WalletCashbackEntitlementDeleteManyArgs} args - Arguments to filter WalletCashbackEntitlements to delete.
+     * @example
+     * // Delete a few WalletCashbackEntitlements
+     * const { count } = await prisma.walletCashbackEntitlement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WalletCashbackEntitlementDeleteManyArgs>(args?: SelectSubset<T, WalletCashbackEntitlementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletCashbackEntitlements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WalletCashbackEntitlements
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WalletCashbackEntitlementUpdateManyArgs>(args: SelectSubset<T, WalletCashbackEntitlementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WalletCashbackEntitlements and returns the data updated in the database.
+     * @param {WalletCashbackEntitlementUpdateManyAndReturnArgs} args - Arguments to update many WalletCashbackEntitlements.
+     * @example
+     * // Update many WalletCashbackEntitlements
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WalletCashbackEntitlements and only return the `orderId`
+     * const walletCashbackEntitlementWithOrderIdOnly = await prisma.walletCashbackEntitlement.updateManyAndReturn({
+     *   select: { orderId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WalletCashbackEntitlementUpdateManyAndReturnArgs>(args: SelectSubset<T, WalletCashbackEntitlementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WalletCashbackEntitlement.
+     * @param {WalletCashbackEntitlementUpsertArgs} args - Arguments to update or create a WalletCashbackEntitlement.
+     * @example
+     * // Update or create a WalletCashbackEntitlement
+     * const walletCashbackEntitlement = await prisma.walletCashbackEntitlement.upsert({
+     *   create: {
+     *     // ... data to create a WalletCashbackEntitlement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WalletCashbackEntitlement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WalletCashbackEntitlementUpsertArgs>(args: SelectSubset<T, WalletCashbackEntitlementUpsertArgs<ExtArgs>>): Prisma__WalletCashbackEntitlementClient<$Result.GetResult<Prisma.$WalletCashbackEntitlementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WalletCashbackEntitlements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementCountArgs} args - Arguments to filter WalletCashbackEntitlements to count.
+     * @example
+     * // Count the number of WalletCashbackEntitlements
+     * const count = await prisma.walletCashbackEntitlement.count({
+     *   where: {
+     *     // ... the filter for the WalletCashbackEntitlements we want to count
+     *   }
+     * })
+    **/
+    count<T extends WalletCashbackEntitlementCountArgs>(
+      args?: Subset<T, WalletCashbackEntitlementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WalletCashbackEntitlementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WalletCashbackEntitlement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WalletCashbackEntitlementAggregateArgs>(args: Subset<T, WalletCashbackEntitlementAggregateArgs>): Prisma.PrismaPromise<GetWalletCashbackEntitlementAggregateType<T>>
+
+    /**
+     * Group by WalletCashbackEntitlement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WalletCashbackEntitlementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WalletCashbackEntitlementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WalletCashbackEntitlementGroupByArgs['orderBy'] }
+        : { orderBy?: WalletCashbackEntitlementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WalletCashbackEntitlementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWalletCashbackEntitlementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WalletCashbackEntitlement model
+   */
+  readonly fields: WalletCashbackEntitlementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WalletCashbackEntitlement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WalletCashbackEntitlementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends WalletAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WalletAccountDefaultArgs<ExtArgs>>): Prisma__WalletAccountClient<$Result.GetResult<Prisma.$WalletAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WalletCashbackEntitlement model
+   */
+  interface WalletCashbackEntitlementFieldRefs {
+    readonly orderId: FieldRef<"WalletCashbackEntitlement", 'String'>
+    readonly userId: FieldRef<"WalletCashbackEntitlement", 'String'>
+    readonly entitledCents: FieldRef<"WalletCashbackEntitlement", 'Int'>
+    readonly revision: FieldRef<"WalletCashbackEntitlement", 'Int'>
+    readonly createdAt: FieldRef<"WalletCashbackEntitlement", 'DateTime'>
+    readonly updatedAt: FieldRef<"WalletCashbackEntitlement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WalletCashbackEntitlement findUnique
+   */
+  export type WalletCashbackEntitlementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletCashbackEntitlement to fetch.
+     */
+    where: WalletCashbackEntitlementWhereUniqueInput
+  }
+
+  /**
+   * WalletCashbackEntitlement findUniqueOrThrow
+   */
+  export type WalletCashbackEntitlementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletCashbackEntitlement to fetch.
+     */
+    where: WalletCashbackEntitlementWhereUniqueInput
+  }
+
+  /**
+   * WalletCashbackEntitlement findFirst
+   */
+  export type WalletCashbackEntitlementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletCashbackEntitlement to fetch.
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletCashbackEntitlements to fetch.
+     */
+    orderBy?: WalletCashbackEntitlementOrderByWithRelationInput | WalletCashbackEntitlementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletCashbackEntitlements.
+     */
+    cursor?: WalletCashbackEntitlementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletCashbackEntitlements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletCashbackEntitlements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletCashbackEntitlements.
+     */
+    distinct?: WalletCashbackEntitlementScalarFieldEnum | WalletCashbackEntitlementScalarFieldEnum[]
+  }
+
+  /**
+   * WalletCashbackEntitlement findFirstOrThrow
+   */
+  export type WalletCashbackEntitlementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletCashbackEntitlement to fetch.
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletCashbackEntitlements to fetch.
+     */
+    orderBy?: WalletCashbackEntitlementOrderByWithRelationInput | WalletCashbackEntitlementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WalletCashbackEntitlements.
+     */
+    cursor?: WalletCashbackEntitlementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletCashbackEntitlements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletCashbackEntitlements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletCashbackEntitlements.
+     */
+    distinct?: WalletCashbackEntitlementScalarFieldEnum | WalletCashbackEntitlementScalarFieldEnum[]
+  }
+
+  /**
+   * WalletCashbackEntitlement findMany
+   */
+  export type WalletCashbackEntitlementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter, which WalletCashbackEntitlements to fetch.
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WalletCashbackEntitlements to fetch.
+     */
+    orderBy?: WalletCashbackEntitlementOrderByWithRelationInput | WalletCashbackEntitlementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WalletCashbackEntitlements.
+     */
+    cursor?: WalletCashbackEntitlementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WalletCashbackEntitlements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WalletCashbackEntitlements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WalletCashbackEntitlements.
+     */
+    distinct?: WalletCashbackEntitlementScalarFieldEnum | WalletCashbackEntitlementScalarFieldEnum[]
+  }
+
+  /**
+   * WalletCashbackEntitlement create
+   */
+  export type WalletCashbackEntitlementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WalletCashbackEntitlement.
+     */
+    data: XOR<WalletCashbackEntitlementCreateInput, WalletCashbackEntitlementUncheckedCreateInput>
+  }
+
+  /**
+   * WalletCashbackEntitlement createMany
+   */
+  export type WalletCashbackEntitlementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WalletCashbackEntitlements.
+     */
+    data: WalletCashbackEntitlementCreateManyInput | WalletCashbackEntitlementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WalletCashbackEntitlement createManyAndReturn
+   */
+  export type WalletCashbackEntitlementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * The data used to create many WalletCashbackEntitlements.
+     */
+    data: WalletCashbackEntitlementCreateManyInput | WalletCashbackEntitlementCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletCashbackEntitlement update
+   */
+  export type WalletCashbackEntitlementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WalletCashbackEntitlement.
+     */
+    data: XOR<WalletCashbackEntitlementUpdateInput, WalletCashbackEntitlementUncheckedUpdateInput>
+    /**
+     * Choose, which WalletCashbackEntitlement to update.
+     */
+    where: WalletCashbackEntitlementWhereUniqueInput
+  }
+
+  /**
+   * WalletCashbackEntitlement updateMany
+   */
+  export type WalletCashbackEntitlementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WalletCashbackEntitlements.
+     */
+    data: XOR<WalletCashbackEntitlementUpdateManyMutationInput, WalletCashbackEntitlementUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletCashbackEntitlements to update
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * Limit how many WalletCashbackEntitlements to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletCashbackEntitlement updateManyAndReturn
+   */
+  export type WalletCashbackEntitlementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * The data used to update WalletCashbackEntitlements.
+     */
+    data: XOR<WalletCashbackEntitlementUpdateManyMutationInput, WalletCashbackEntitlementUncheckedUpdateManyInput>
+    /**
+     * Filter which WalletCashbackEntitlements to update
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * Limit how many WalletCashbackEntitlements to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WalletCashbackEntitlement upsert
+   */
+  export type WalletCashbackEntitlementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WalletCashbackEntitlement to update in case it exists.
+     */
+    where: WalletCashbackEntitlementWhereUniqueInput
+    /**
+     * In case the WalletCashbackEntitlement found by the `where` argument doesn't exist, create a new WalletCashbackEntitlement with this data.
+     */
+    create: XOR<WalletCashbackEntitlementCreateInput, WalletCashbackEntitlementUncheckedCreateInput>
+    /**
+     * In case the WalletCashbackEntitlement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WalletCashbackEntitlementUpdateInput, WalletCashbackEntitlementUncheckedUpdateInput>
+  }
+
+  /**
+   * WalletCashbackEntitlement delete
+   */
+  export type WalletCashbackEntitlementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
+    /**
+     * Filter which WalletCashbackEntitlement to delete.
+     */
+    where: WalletCashbackEntitlementWhereUniqueInput
+  }
+
+  /**
+   * WalletCashbackEntitlement deleteMany
+   */
+  export type WalletCashbackEntitlementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WalletCashbackEntitlements to delete
+     */
+    where?: WalletCashbackEntitlementWhereInput
+    /**
+     * Limit how many WalletCashbackEntitlements to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WalletCashbackEntitlement without action
+   */
+  export type WalletCashbackEntitlementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WalletCashbackEntitlement
+     */
+    select?: WalletCashbackEntitlementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WalletCashbackEntitlement
+     */
+    omit?: WalletCashbackEntitlementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletCashbackEntitlementInclude<ExtArgs> | null
   }
 
 
@@ -27138,6 +32407,10 @@ export namespace Prisma {
     goldRedeemed: number | null
     goldDiscountCents: number | null
     cashAmountCents: number | null
+    walletAmountCents: number | null
+    walletPurchasedCents: number | null
+    walletPromotionalCents: number | null
+    cashbackPercent: number | null
     currentMasterLp: number | null
     desiredMasterLp: number | null
     desiredWins: number | null
@@ -27146,6 +32419,7 @@ export namespace Prisma {
     basePrice: number | null
     addonPrice: number | null
     referralDiscount: number | null
+    promotionPercent: Decimal | null
     totalPrice: number | null
     matchHistoryRevision: number | null
   }
@@ -27158,6 +32432,10 @@ export namespace Prisma {
     goldRedeemed: number | null
     goldDiscountCents: number | null
     cashAmountCents: number | null
+    walletAmountCents: number | null
+    walletPurchasedCents: number | null
+    walletPromotionalCents: number | null
+    cashbackPercent: number | null
     currentMasterLp: number | null
     desiredMasterLp: number | null
     desiredWins: number | null
@@ -27166,6 +32444,7 @@ export namespace Prisma {
     basePrice: number | null
     addonPrice: number | null
     referralDiscount: number | null
+    promotionPercent: Decimal | null
     totalPrice: number | null
     matchHistoryRevision: number | null
   }
@@ -27194,6 +32473,10 @@ export namespace Prisma {
     goldRedeemed: number | null
     goldDiscountCents: number | null
     cashAmountCents: number | null
+    walletAmountCents: number | null
+    walletPurchasedCents: number | null
+    walletPromotionalCents: number | null
+    cashbackPercent: number | null
     boostType: string | null
     playMode: string | null
     region: string | null
@@ -27228,6 +32511,9 @@ export namespace Prisma {
     basePrice: number | null
     addonPrice: number | null
     referralDiscount: number | null
+    promotionTitle: string | null
+    promotionPercent: Decimal | null
+    promotionAppliesTo: string | null
     totalPrice: number | null
     matchHistoryEnabled: boolean | null
     matchHistoryRevision: number | null
@@ -27260,6 +32546,10 @@ export namespace Prisma {
     goldRedeemed: number | null
     goldDiscountCents: number | null
     cashAmountCents: number | null
+    walletAmountCents: number | null
+    walletPurchasedCents: number | null
+    walletPromotionalCents: number | null
+    cashbackPercent: number | null
     boostType: string | null
     playMode: string | null
     region: string | null
@@ -27294,6 +32584,9 @@ export namespace Prisma {
     basePrice: number | null
     addonPrice: number | null
     referralDiscount: number | null
+    promotionTitle: string | null
+    promotionPercent: Decimal | null
+    promotionAppliesTo: string | null
     totalPrice: number | null
     matchHistoryEnabled: boolean | null
     matchHistoryRevision: number | null
@@ -27326,6 +32619,10 @@ export namespace Prisma {
     goldRedeemed: number
     goldDiscountCents: number
     cashAmountCents: number
+    walletAmountCents: number
+    walletPurchasedCents: number
+    walletPromotionalCents: number
+    cashbackPercent: number
     boostType: number
     playMode: number
     region: number
@@ -27361,6 +32658,9 @@ export namespace Prisma {
     basePrice: number
     addonPrice: number
     referralDiscount: number
+    promotionTitle: number
+    promotionPercent: number
+    promotionAppliesTo: number
     totalPrice: number
     matchHistoryEnabled: number
     matchHistoryRevision: number
@@ -27379,6 +32679,10 @@ export namespace Prisma {
     goldRedeemed?: true
     goldDiscountCents?: true
     cashAmountCents?: true
+    walletAmountCents?: true
+    walletPurchasedCents?: true
+    walletPromotionalCents?: true
+    cashbackPercent?: true
     currentMasterLp?: true
     desiredMasterLp?: true
     desiredWins?: true
@@ -27387,6 +32691,7 @@ export namespace Prisma {
     basePrice?: true
     addonPrice?: true
     referralDiscount?: true
+    promotionPercent?: true
     totalPrice?: true
     matchHistoryRevision?: true
   }
@@ -27399,6 +32704,10 @@ export namespace Prisma {
     goldRedeemed?: true
     goldDiscountCents?: true
     cashAmountCents?: true
+    walletAmountCents?: true
+    walletPurchasedCents?: true
+    walletPromotionalCents?: true
+    cashbackPercent?: true
     currentMasterLp?: true
     desiredMasterLp?: true
     desiredWins?: true
@@ -27407,6 +32716,7 @@ export namespace Prisma {
     basePrice?: true
     addonPrice?: true
     referralDiscount?: true
+    promotionPercent?: true
     totalPrice?: true
     matchHistoryRevision?: true
   }
@@ -27435,6 +32745,10 @@ export namespace Prisma {
     goldRedeemed?: true
     goldDiscountCents?: true
     cashAmountCents?: true
+    walletAmountCents?: true
+    walletPurchasedCents?: true
+    walletPromotionalCents?: true
+    cashbackPercent?: true
     boostType?: true
     playMode?: true
     region?: true
@@ -27469,6 +32783,9 @@ export namespace Prisma {
     basePrice?: true
     addonPrice?: true
     referralDiscount?: true
+    promotionTitle?: true
+    promotionPercent?: true
+    promotionAppliesTo?: true
     totalPrice?: true
     matchHistoryEnabled?: true
     matchHistoryRevision?: true
@@ -27501,6 +32818,10 @@ export namespace Prisma {
     goldRedeemed?: true
     goldDiscountCents?: true
     cashAmountCents?: true
+    walletAmountCents?: true
+    walletPurchasedCents?: true
+    walletPromotionalCents?: true
+    cashbackPercent?: true
     boostType?: true
     playMode?: true
     region?: true
@@ -27535,6 +32856,9 @@ export namespace Prisma {
     basePrice?: true
     addonPrice?: true
     referralDiscount?: true
+    promotionTitle?: true
+    promotionPercent?: true
+    promotionAppliesTo?: true
     totalPrice?: true
     matchHistoryEnabled?: true
     matchHistoryRevision?: true
@@ -27567,6 +32891,10 @@ export namespace Prisma {
     goldRedeemed?: true
     goldDiscountCents?: true
     cashAmountCents?: true
+    walletAmountCents?: true
+    walletPurchasedCents?: true
+    walletPromotionalCents?: true
+    cashbackPercent?: true
     boostType?: true
     playMode?: true
     region?: true
@@ -27602,6 +32930,9 @@ export namespace Prisma {
     basePrice?: true
     addonPrice?: true
     referralDiscount?: true
+    promotionTitle?: true
+    promotionPercent?: true
+    promotionAppliesTo?: true
     totalPrice?: true
     matchHistoryEnabled?: true
     matchHistoryRevision?: true
@@ -27721,6 +33052,10 @@ export namespace Prisma {
     goldRedeemed: number
     goldDiscountCents: number
     cashAmountCents: number | null
+    walletAmountCents: number
+    walletPurchasedCents: number
+    walletPromotionalCents: number
+    cashbackPercent: number | null
     boostType: string
     playMode: string | null
     region: string | null
@@ -27756,6 +33091,9 @@ export namespace Prisma {
     basePrice: number
     addonPrice: number
     referralDiscount: number
+    promotionTitle: string | null
+    promotionPercent: Decimal | null
+    promotionAppliesTo: string | null
     totalPrice: number
     matchHistoryEnabled: boolean
     matchHistoryRevision: number
@@ -27807,6 +33145,10 @@ export namespace Prisma {
     goldRedeemed?: boolean
     goldDiscountCents?: boolean
     cashAmountCents?: boolean
+    walletAmountCents?: boolean
+    walletPurchasedCents?: boolean
+    walletPromotionalCents?: boolean
+    cashbackPercent?: boolean
     boostType?: boolean
     playMode?: boolean
     region?: boolean
@@ -27842,6 +33184,9 @@ export namespace Prisma {
     basePrice?: boolean
     addonPrice?: boolean
     referralDiscount?: boolean
+    promotionTitle?: boolean
+    promotionPercent?: boolean
+    promotionAppliesTo?: boolean
     totalPrice?: boolean
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: boolean
@@ -27888,6 +33233,10 @@ export namespace Prisma {
     goldRedeemed?: boolean
     goldDiscountCents?: boolean
     cashAmountCents?: boolean
+    walletAmountCents?: boolean
+    walletPurchasedCents?: boolean
+    walletPromotionalCents?: boolean
+    cashbackPercent?: boolean
     boostType?: boolean
     playMode?: boolean
     region?: boolean
@@ -27923,6 +33272,9 @@ export namespace Prisma {
     basePrice?: boolean
     addonPrice?: boolean
     referralDiscount?: boolean
+    promotionTitle?: boolean
+    promotionPercent?: boolean
+    promotionAppliesTo?: boolean
     totalPrice?: boolean
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: boolean
@@ -27958,6 +33310,10 @@ export namespace Prisma {
     goldRedeemed?: boolean
     goldDiscountCents?: boolean
     cashAmountCents?: boolean
+    walletAmountCents?: boolean
+    walletPurchasedCents?: boolean
+    walletPromotionalCents?: boolean
+    cashbackPercent?: boolean
     boostType?: boolean
     playMode?: boolean
     region?: boolean
@@ -27993,6 +33349,9 @@ export namespace Prisma {
     basePrice?: boolean
     addonPrice?: boolean
     referralDiscount?: boolean
+    promotionTitle?: boolean
+    promotionPercent?: boolean
+    promotionAppliesTo?: boolean
     totalPrice?: boolean
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: boolean
@@ -28028,6 +33387,10 @@ export namespace Prisma {
     goldRedeemed?: boolean
     goldDiscountCents?: boolean
     cashAmountCents?: boolean
+    walletAmountCents?: boolean
+    walletPurchasedCents?: boolean
+    walletPromotionalCents?: boolean
+    cashbackPercent?: boolean
     boostType?: boolean
     playMode?: boolean
     region?: boolean
@@ -28063,6 +33426,9 @@ export namespace Prisma {
     basePrice?: boolean
     addonPrice?: boolean
     referralDiscount?: boolean
+    promotionTitle?: boolean
+    promotionPercent?: boolean
+    promotionAppliesTo?: boolean
     totalPrice?: boolean
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: boolean
@@ -28071,7 +33437,7 @@ export namespace Prisma {
     matchHistorySyncedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"couponSaleId" | "couponCode" | "couponTitle" | "couponDiscountCents" | "couponOriginalAmountCents" | "couponOriginalReferralDiscount" | "id" | "orderNumber" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "totalPrice" | "matchHistoryEnabled" | "matchHistoryRevision" | "matchHistoryConfirmedAt" | "matchHistoryConfirmedBy" | "matchHistorySyncedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"couponSaleId" | "couponCode" | "couponTitle" | "couponDiscountCents" | "couponOriginalAmountCents" | "couponOriginalReferralDiscount" | "id" | "orderNumber" | "customerId" | "serviceId" | "status" | "createdAt" | "updatedAt" | "paymentStatus" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "paidAt" | "trustpilotReviewSentAt" | "currency" | "amountCents" | "goldRedeemed" | "goldDiscountCents" | "cashAmountCents" | "walletAmountCents" | "walletPurchasedCents" | "walletPromotionalCents" | "cashbackPercent" | "boostType" | "playMode" | "region" | "queueType" | "inGameName" | "accountPasswordCiphertext" | "accountPasswordEncryptedKey" | "accountPasswordIv" | "accountPasswordAuthTag" | "accountPasswordUpdatedAt" | "currentRank" | "currentLP" | "currentMasterLp" | "desiredRank" | "desiredMasterLp" | "lpGain" | "peakRank" | "desiredWins" | "placementGames" | "numberOfGames" | "firstRole" | "secondRole" | "selectedChampions" | "priorityOrder" | "premiumCoaching" | "liveStream" | "appearOffline" | "untrackableDuo" | "bonusWin" | "soloOnly" | "highMMRDuo" | "championPreferenceTier" | "basePrice" | "addonPrice" | "referralDiscount" | "promotionTitle" | "promotionPercent" | "promotionAppliesTo" | "totalPrice" | "matchHistoryEnabled" | "matchHistoryRevision" | "matchHistoryConfirmedAt" | "matchHistoryConfirmedBy" | "matchHistorySyncedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     couponSale?: boolean | Order$couponSaleArgs<ExtArgs>
     couponUse?: boolean | Order$couponUseArgs<ExtArgs>
@@ -28140,6 +33506,10 @@ export namespace Prisma {
       goldRedeemed: number
       goldDiscountCents: number
       cashAmountCents: number | null
+      walletAmountCents: number
+      walletPurchasedCents: number
+      walletPromotionalCents: number
+      cashbackPercent: number | null
       boostType: string
       playMode: string | null
       region: string | null
@@ -28175,6 +33545,9 @@ export namespace Prisma {
       basePrice: number
       addonPrice: number
       referralDiscount: number
+      promotionTitle: string | null
+      promotionPercent: Prisma.Decimal | null
+      promotionAppliesTo: string | null
       totalPrice: number
       matchHistoryEnabled: boolean
       matchHistoryRevision: number
@@ -28640,6 +34013,10 @@ export namespace Prisma {
     readonly goldRedeemed: FieldRef<"Order", 'Int'>
     readonly goldDiscountCents: FieldRef<"Order", 'Int'>
     readonly cashAmountCents: FieldRef<"Order", 'Int'>
+    readonly walletAmountCents: FieldRef<"Order", 'Int'>
+    readonly walletPurchasedCents: FieldRef<"Order", 'Int'>
+    readonly walletPromotionalCents: FieldRef<"Order", 'Int'>
+    readonly cashbackPercent: FieldRef<"Order", 'Int'>
     readonly boostType: FieldRef<"Order", 'String'>
     readonly playMode: FieldRef<"Order", 'String'>
     readonly region: FieldRef<"Order", 'String'>
@@ -28675,6 +34052,9 @@ export namespace Prisma {
     readonly basePrice: FieldRef<"Order", 'Float'>
     readonly addonPrice: FieldRef<"Order", 'Float'>
     readonly referralDiscount: FieldRef<"Order", 'Float'>
+    readonly promotionTitle: FieldRef<"Order", 'String'>
+    readonly promotionPercent: FieldRef<"Order", 'Decimal'>
+    readonly promotionAppliesTo: FieldRef<"Order", 'String'>
     readonly totalPrice: FieldRef<"Order", 'Float'>
     readonly matchHistoryEnabled: FieldRef<"Order", 'Boolean'>
     readonly matchHistoryRevision: FieldRef<"Order", 'Int'>
@@ -50546,6 +55926,69 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const WalletAccountScalarFieldEnum: {
+    userId: 'userId',
+    purchasedBalanceCents: 'purchasedBalanceCents',
+    promotionalBalanceCents: 'promotionalBalanceCents',
+    frozenAt: 'frozenAt',
+    freezeReason: 'freezeReason',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WalletAccountScalarFieldEnum = (typeof WalletAccountScalarFieldEnum)[keyof typeof WalletAccountScalarFieldEnum]
+
+
+  export const WalletTopUpScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    packageId: 'packageId',
+    amountCents: 'amountCents',
+    bonusPercent: 'bonusPercent',
+    bonusCents: 'bonusCents',
+    currency: 'currency',
+    status: 'status',
+    clientUrl: 'clientUrl',
+    stripeCheckoutSessionId: 'stripeCheckoutSessionId',
+    stripePaymentIntentId: 'stripePaymentIntentId',
+    paidAt: 'paidAt',
+    reversedAt: 'reversedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WalletTopUpScalarFieldEnum = (typeof WalletTopUpScalarFieldEnum)[keyof typeof WalletTopUpScalarFieldEnum]
+
+
+  export const WalletEntryScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    topUpId: 'topUpId',
+    orderId: 'orderId',
+    key: 'key',
+    type: 'type',
+    amountCents: 'amountCents',
+    purchasedCents: 'purchasedCents',
+    promotionalCents: 'promotionalCents',
+    description: 'description',
+    createdAt: 'createdAt'
+  };
+
+  export type WalletEntryScalarFieldEnum = (typeof WalletEntryScalarFieldEnum)[keyof typeof WalletEntryScalarFieldEnum]
+
+
+  export const WalletCashbackEntitlementScalarFieldEnum: {
+    orderId: 'orderId',
+    userId: 'userId',
+    entitledCents: 'entitledCents',
+    revision: 'revision',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WalletCashbackEntitlementScalarFieldEnum = (typeof WalletCashbackEntitlementScalarFieldEnum)[keyof typeof WalletCashbackEntitlementScalarFieldEnum]
+
+
   export const ManagementAuditLogScalarFieldEnum: {
     id: 'id',
     actorId: 'actorId',
@@ -50816,6 +56259,10 @@ export namespace Prisma {
     goldRedeemed: 'goldRedeemed',
     goldDiscountCents: 'goldDiscountCents',
     cashAmountCents: 'cashAmountCents',
+    walletAmountCents: 'walletAmountCents',
+    walletPurchasedCents: 'walletPurchasedCents',
+    walletPromotionalCents: 'walletPromotionalCents',
+    cashbackPercent: 'cashbackPercent',
     boostType: 'boostType',
     playMode: 'playMode',
     region: 'region',
@@ -50851,6 +56298,9 @@ export namespace Prisma {
     basePrice: 'basePrice',
     addonPrice: 'addonPrice',
     referralDiscount: 'referralDiscount',
+    promotionTitle: 'promotionTitle',
+    promotionPercent: 'promotionPercent',
+    promotionAppliesTo: 'promotionAppliesTo',
     totalPrice: 'totalPrice',
     matchHistoryEnabled: 'matchHistoryEnabled',
     matchHistoryRevision: 'matchHistoryRevision',
@@ -51452,6 +56902,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     rewardHistory?: RewardHistoryListRelationFilter
+    walletAccount?: XOR<WalletAccountNullableScalarRelationFilter, WalletAccountWhereInput> | null
     referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
@@ -51500,6 +56951,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenOrderByRelationAggregateInput
     profile?: ProfileOrderByWithRelationInput
     rewardHistory?: RewardHistoryOrderByRelationAggregateInput
+    walletAccount?: WalletAccountOrderByWithRelationInput
     referredBy?: UserOrderByWithRelationInput
     referrals?: UserOrderByRelationAggregateInput
     providedAssignments?: OrderAssignmentOrderByRelationAggregateInput
@@ -51551,6 +57003,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenListRelationFilter
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     rewardHistory?: RewardHistoryListRelationFilter
+    walletAccount?: XOR<WalletAccountNullableScalarRelationFilter, WalletAccountWhereInput> | null
     referredBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referrals?: UserListRelationFilter
     providedAssignments?: OrderAssignmentListRelationFilter
@@ -51599,6 +57052,344 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     referralCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     referredById?: StringNullableWithAggregatesFilter<"User"> | string | null
+  }
+
+  export type WalletAccountWhereInput = {
+    AND?: WalletAccountWhereInput | WalletAccountWhereInput[]
+    OR?: WalletAccountWhereInput[]
+    NOT?: WalletAccountWhereInput | WalletAccountWhereInput[]
+    userId?: StringFilter<"WalletAccount"> | string
+    purchasedBalanceCents?: IntFilter<"WalletAccount"> | number
+    promotionalBalanceCents?: IntFilter<"WalletAccount"> | number
+    frozenAt?: DateTimeNullableFilter<"WalletAccount"> | Date | string | null
+    freezeReason?: StringNullableFilter<"WalletAccount"> | string | null
+    createdAt?: DateTimeFilter<"WalletAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletAccount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    topUps?: WalletTopUpListRelationFilter
+    entries?: WalletEntryListRelationFilter
+    cashbackEntitlements?: WalletCashbackEntitlementListRelationFilter
+  }
+
+  export type WalletAccountOrderByWithRelationInput = {
+    userId?: SortOrder
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+    frozenAt?: SortOrderInput | SortOrder
+    freezeReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    topUps?: WalletTopUpOrderByRelationAggregateInput
+    entries?: WalletEntryOrderByRelationAggregateInput
+    cashbackEntitlements?: WalletCashbackEntitlementOrderByRelationAggregateInput
+  }
+
+  export type WalletAccountWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: WalletAccountWhereInput | WalletAccountWhereInput[]
+    OR?: WalletAccountWhereInput[]
+    NOT?: WalletAccountWhereInput | WalletAccountWhereInput[]
+    purchasedBalanceCents?: IntFilter<"WalletAccount"> | number
+    promotionalBalanceCents?: IntFilter<"WalletAccount"> | number
+    frozenAt?: DateTimeNullableFilter<"WalletAccount"> | Date | string | null
+    freezeReason?: StringNullableFilter<"WalletAccount"> | string | null
+    createdAt?: DateTimeFilter<"WalletAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletAccount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    topUps?: WalletTopUpListRelationFilter
+    entries?: WalletEntryListRelationFilter
+    cashbackEntitlements?: WalletCashbackEntitlementListRelationFilter
+  }, "userId">
+
+  export type WalletAccountOrderByWithAggregationInput = {
+    userId?: SortOrder
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+    frozenAt?: SortOrderInput | SortOrder
+    freezeReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WalletAccountCountOrderByAggregateInput
+    _avg?: WalletAccountAvgOrderByAggregateInput
+    _max?: WalletAccountMaxOrderByAggregateInput
+    _min?: WalletAccountMinOrderByAggregateInput
+    _sum?: WalletAccountSumOrderByAggregateInput
+  }
+
+  export type WalletAccountScalarWhereWithAggregatesInput = {
+    AND?: WalletAccountScalarWhereWithAggregatesInput | WalletAccountScalarWhereWithAggregatesInput[]
+    OR?: WalletAccountScalarWhereWithAggregatesInput[]
+    NOT?: WalletAccountScalarWhereWithAggregatesInput | WalletAccountScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"WalletAccount"> | string
+    purchasedBalanceCents?: IntWithAggregatesFilter<"WalletAccount"> | number
+    promotionalBalanceCents?: IntWithAggregatesFilter<"WalletAccount"> | number
+    frozenAt?: DateTimeNullableWithAggregatesFilter<"WalletAccount"> | Date | string | null
+    freezeReason?: StringNullableWithAggregatesFilter<"WalletAccount"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"WalletAccount"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"WalletAccount"> | Date | string
+  }
+
+  export type WalletTopUpWhereInput = {
+    AND?: WalletTopUpWhereInput | WalletTopUpWhereInput[]
+    OR?: WalletTopUpWhereInput[]
+    NOT?: WalletTopUpWhereInput | WalletTopUpWhereInput[]
+    id?: StringFilter<"WalletTopUp"> | string
+    userId?: StringFilter<"WalletTopUp"> | string
+    packageId?: StringFilter<"WalletTopUp"> | string
+    amountCents?: IntFilter<"WalletTopUp"> | number
+    bonusPercent?: IntFilter<"WalletTopUp"> | number
+    bonusCents?: IntFilter<"WalletTopUp"> | number
+    currency?: StringFilter<"WalletTopUp"> | string
+    status?: StringFilter<"WalletTopUp"> | string
+    clientUrl?: StringFilter<"WalletTopUp"> | string
+    stripeCheckoutSessionId?: StringNullableFilter<"WalletTopUp"> | string | null
+    stripePaymentIntentId?: StringNullableFilter<"WalletTopUp"> | string | null
+    paidAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    reversedAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    createdAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+    entries?: WalletEntryListRelationFilter
+  }
+
+  export type WalletTopUpOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    packageId?: SortOrder
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientUrl?: SortOrder
+    stripeCheckoutSessionId?: SortOrderInput | SortOrder
+    stripePaymentIntentId?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    reversedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    account?: WalletAccountOrderByWithRelationInput
+    entries?: WalletEntryOrderByRelationAggregateInput
+  }
+
+  export type WalletTopUpWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    stripeCheckoutSessionId?: string
+    stripePaymentIntentId?: string
+    AND?: WalletTopUpWhereInput | WalletTopUpWhereInput[]
+    OR?: WalletTopUpWhereInput[]
+    NOT?: WalletTopUpWhereInput | WalletTopUpWhereInput[]
+    userId?: StringFilter<"WalletTopUp"> | string
+    packageId?: StringFilter<"WalletTopUp"> | string
+    amountCents?: IntFilter<"WalletTopUp"> | number
+    bonusPercent?: IntFilter<"WalletTopUp"> | number
+    bonusCents?: IntFilter<"WalletTopUp"> | number
+    currency?: StringFilter<"WalletTopUp"> | string
+    status?: StringFilter<"WalletTopUp"> | string
+    clientUrl?: StringFilter<"WalletTopUp"> | string
+    paidAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    reversedAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    createdAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+    entries?: WalletEntryListRelationFilter
+  }, "id" | "stripeCheckoutSessionId" | "stripePaymentIntentId">
+
+  export type WalletTopUpOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    packageId?: SortOrder
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientUrl?: SortOrder
+    stripeCheckoutSessionId?: SortOrderInput | SortOrder
+    stripePaymentIntentId?: SortOrderInput | SortOrder
+    paidAt?: SortOrderInput | SortOrder
+    reversedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WalletTopUpCountOrderByAggregateInput
+    _avg?: WalletTopUpAvgOrderByAggregateInput
+    _max?: WalletTopUpMaxOrderByAggregateInput
+    _min?: WalletTopUpMinOrderByAggregateInput
+    _sum?: WalletTopUpSumOrderByAggregateInput
+  }
+
+  export type WalletTopUpScalarWhereWithAggregatesInput = {
+    AND?: WalletTopUpScalarWhereWithAggregatesInput | WalletTopUpScalarWhereWithAggregatesInput[]
+    OR?: WalletTopUpScalarWhereWithAggregatesInput[]
+    NOT?: WalletTopUpScalarWhereWithAggregatesInput | WalletTopUpScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    userId?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    packageId?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    amountCents?: IntWithAggregatesFilter<"WalletTopUp"> | number
+    bonusPercent?: IntWithAggregatesFilter<"WalletTopUp"> | number
+    bonusCents?: IntWithAggregatesFilter<"WalletTopUp"> | number
+    currency?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    status?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    clientUrl?: StringWithAggregatesFilter<"WalletTopUp"> | string
+    stripeCheckoutSessionId?: StringNullableWithAggregatesFilter<"WalletTopUp"> | string | null
+    stripePaymentIntentId?: StringNullableWithAggregatesFilter<"WalletTopUp"> | string | null
+    paidAt?: DateTimeNullableWithAggregatesFilter<"WalletTopUp"> | Date | string | null
+    reversedAt?: DateTimeNullableWithAggregatesFilter<"WalletTopUp"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"WalletTopUp"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"WalletTopUp"> | Date | string
+  }
+
+  export type WalletEntryWhereInput = {
+    AND?: WalletEntryWhereInput | WalletEntryWhereInput[]
+    OR?: WalletEntryWhereInput[]
+    NOT?: WalletEntryWhereInput | WalletEntryWhereInput[]
+    id?: StringFilter<"WalletEntry"> | string
+    userId?: StringFilter<"WalletEntry"> | string
+    topUpId?: StringNullableFilter<"WalletEntry"> | string | null
+    orderId?: StringNullableFilter<"WalletEntry"> | string | null
+    key?: StringFilter<"WalletEntry"> | string
+    type?: StringFilter<"WalletEntry"> | string
+    amountCents?: IntFilter<"WalletEntry"> | number
+    purchasedCents?: IntFilter<"WalletEntry"> | number
+    promotionalCents?: IntFilter<"WalletEntry"> | number
+    description?: StringFilter<"WalletEntry"> | string
+    createdAt?: DateTimeFilter<"WalletEntry"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+    topUp?: XOR<WalletTopUpNullableScalarRelationFilter, WalletTopUpWhereInput> | null
+  }
+
+  export type WalletEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    topUpId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    key?: SortOrder
+    type?: SortOrder
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    account?: WalletAccountOrderByWithRelationInput
+    topUp?: WalletTopUpOrderByWithRelationInput
+  }
+
+  export type WalletEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: WalletEntryWhereInput | WalletEntryWhereInput[]
+    OR?: WalletEntryWhereInput[]
+    NOT?: WalletEntryWhereInput | WalletEntryWhereInput[]
+    userId?: StringFilter<"WalletEntry"> | string
+    topUpId?: StringNullableFilter<"WalletEntry"> | string | null
+    orderId?: StringNullableFilter<"WalletEntry"> | string | null
+    type?: StringFilter<"WalletEntry"> | string
+    amountCents?: IntFilter<"WalletEntry"> | number
+    purchasedCents?: IntFilter<"WalletEntry"> | number
+    promotionalCents?: IntFilter<"WalletEntry"> | number
+    description?: StringFilter<"WalletEntry"> | string
+    createdAt?: DateTimeFilter<"WalletEntry"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+    topUp?: XOR<WalletTopUpNullableScalarRelationFilter, WalletTopUpWhereInput> | null
+  }, "id" | "key">
+
+  export type WalletEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    topUpId?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    key?: SortOrder
+    type?: SortOrder
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    _count?: WalletEntryCountOrderByAggregateInput
+    _avg?: WalletEntryAvgOrderByAggregateInput
+    _max?: WalletEntryMaxOrderByAggregateInput
+    _min?: WalletEntryMinOrderByAggregateInput
+    _sum?: WalletEntrySumOrderByAggregateInput
+  }
+
+  export type WalletEntryScalarWhereWithAggregatesInput = {
+    AND?: WalletEntryScalarWhereWithAggregatesInput | WalletEntryScalarWhereWithAggregatesInput[]
+    OR?: WalletEntryScalarWhereWithAggregatesInput[]
+    NOT?: WalletEntryScalarWhereWithAggregatesInput | WalletEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WalletEntry"> | string
+    userId?: StringWithAggregatesFilter<"WalletEntry"> | string
+    topUpId?: StringNullableWithAggregatesFilter<"WalletEntry"> | string | null
+    orderId?: StringNullableWithAggregatesFilter<"WalletEntry"> | string | null
+    key?: StringWithAggregatesFilter<"WalletEntry"> | string
+    type?: StringWithAggregatesFilter<"WalletEntry"> | string
+    amountCents?: IntWithAggregatesFilter<"WalletEntry"> | number
+    purchasedCents?: IntWithAggregatesFilter<"WalletEntry"> | number
+    promotionalCents?: IntWithAggregatesFilter<"WalletEntry"> | number
+    description?: StringWithAggregatesFilter<"WalletEntry"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"WalletEntry"> | Date | string
+  }
+
+  export type WalletCashbackEntitlementWhereInput = {
+    AND?: WalletCashbackEntitlementWhereInput | WalletCashbackEntitlementWhereInput[]
+    OR?: WalletCashbackEntitlementWhereInput[]
+    NOT?: WalletCashbackEntitlementWhereInput | WalletCashbackEntitlementWhereInput[]
+    orderId?: StringFilter<"WalletCashbackEntitlement"> | string
+    userId?: StringFilter<"WalletCashbackEntitlement"> | string
+    entitledCents?: IntFilter<"WalletCashbackEntitlement"> | number
+    revision?: IntFilter<"WalletCashbackEntitlement"> | number
+    createdAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+  }
+
+  export type WalletCashbackEntitlementOrderByWithRelationInput = {
+    orderId?: SortOrder
+    userId?: SortOrder
+    entitledCents?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    account?: WalletAccountOrderByWithRelationInput
+  }
+
+  export type WalletCashbackEntitlementWhereUniqueInput = Prisma.AtLeast<{
+    orderId?: string
+    AND?: WalletCashbackEntitlementWhereInput | WalletCashbackEntitlementWhereInput[]
+    OR?: WalletCashbackEntitlementWhereInput[]
+    NOT?: WalletCashbackEntitlementWhereInput | WalletCashbackEntitlementWhereInput[]
+    userId?: StringFilter<"WalletCashbackEntitlement"> | string
+    entitledCents?: IntFilter<"WalletCashbackEntitlement"> | number
+    revision?: IntFilter<"WalletCashbackEntitlement"> | number
+    createdAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+    account?: XOR<WalletAccountScalarRelationFilter, WalletAccountWhereInput>
+  }, "orderId">
+
+  export type WalletCashbackEntitlementOrderByWithAggregationInput = {
+    orderId?: SortOrder
+    userId?: SortOrder
+    entitledCents?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WalletCashbackEntitlementCountOrderByAggregateInput
+    _avg?: WalletCashbackEntitlementAvgOrderByAggregateInput
+    _max?: WalletCashbackEntitlementMaxOrderByAggregateInput
+    _min?: WalletCashbackEntitlementMinOrderByAggregateInput
+    _sum?: WalletCashbackEntitlementSumOrderByAggregateInput
+  }
+
+  export type WalletCashbackEntitlementScalarWhereWithAggregatesInput = {
+    AND?: WalletCashbackEntitlementScalarWhereWithAggregatesInput | WalletCashbackEntitlementScalarWhereWithAggregatesInput[]
+    OR?: WalletCashbackEntitlementScalarWhereWithAggregatesInput[]
+    NOT?: WalletCashbackEntitlementScalarWhereWithAggregatesInput | WalletCashbackEntitlementScalarWhereWithAggregatesInput[]
+    orderId?: StringWithAggregatesFilter<"WalletCashbackEntitlement"> | string
+    userId?: StringWithAggregatesFilter<"WalletCashbackEntitlement"> | string
+    entitledCents?: IntWithAggregatesFilter<"WalletCashbackEntitlement"> | number
+    revision?: IntWithAggregatesFilter<"WalletCashbackEntitlement"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"WalletCashbackEntitlement"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"WalletCashbackEntitlement"> | Date | string
   }
 
   export type ManagementAuditLogWhereInput = {
@@ -52895,6 +58686,10 @@ export namespace Prisma {
     goldRedeemed?: IntFilter<"Order"> | number
     goldDiscountCents?: IntFilter<"Order"> | number
     cashAmountCents?: IntNullableFilter<"Order"> | number | null
+    walletAmountCents?: IntFilter<"Order"> | number
+    walletPurchasedCents?: IntFilter<"Order"> | number
+    walletPromotionalCents?: IntFilter<"Order"> | number
+    cashbackPercent?: IntNullableFilter<"Order"> | number | null
     boostType?: StringFilter<"Order"> | string
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
@@ -52930,6 +58725,9 @@ export namespace Prisma {
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     referralDiscount?: FloatFilter<"Order"> | number
+    promotionTitle?: StringNullableFilter<"Order"> | string | null
+    promotionPercent?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: StringNullableFilter<"Order"> | string | null
     totalPrice?: FloatFilter<"Order"> | number
     matchHistoryEnabled?: BoolFilter<"Order"> | boolean
     matchHistoryRevision?: IntFilter<"Order"> | number
@@ -52975,6 +58773,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrderInput | SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrderInput | SortOrder
     boostType?: SortOrder
     playMode?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
@@ -53010,6 +58812,9 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionTitle?: SortOrderInput | SortOrder
+    promotionPercent?: SortOrderInput | SortOrder
+    promotionAppliesTo?: SortOrderInput | SortOrder
     totalPrice?: SortOrder
     matchHistoryEnabled?: SortOrder
     matchHistoryRevision?: SortOrder
@@ -53058,6 +58863,10 @@ export namespace Prisma {
     goldRedeemed?: IntFilter<"Order"> | number
     goldDiscountCents?: IntFilter<"Order"> | number
     cashAmountCents?: IntNullableFilter<"Order"> | number | null
+    walletAmountCents?: IntFilter<"Order"> | number
+    walletPurchasedCents?: IntFilter<"Order"> | number
+    walletPromotionalCents?: IntFilter<"Order"> | number
+    cashbackPercent?: IntNullableFilter<"Order"> | number | null
     boostType?: StringFilter<"Order"> | string
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
@@ -53093,6 +58902,9 @@ export namespace Prisma {
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     referralDiscount?: FloatFilter<"Order"> | number
+    promotionTitle?: StringNullableFilter<"Order"> | string | null
+    promotionPercent?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: StringNullableFilter<"Order"> | string | null
     totalPrice?: FloatFilter<"Order"> | number
     matchHistoryEnabled?: BoolFilter<"Order"> | boolean
     matchHistoryRevision?: IntFilter<"Order"> | number
@@ -53138,6 +58950,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrderInput | SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrderInput | SortOrder
     boostType?: SortOrder
     playMode?: SortOrderInput | SortOrder
     region?: SortOrderInput | SortOrder
@@ -53173,6 +58989,9 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionTitle?: SortOrderInput | SortOrder
+    promotionPercent?: SortOrderInput | SortOrder
+    promotionAppliesTo?: SortOrderInput | SortOrder
     totalPrice?: SortOrder
     matchHistoryEnabled?: SortOrder
     matchHistoryRevision?: SortOrder
@@ -53213,6 +59032,10 @@ export namespace Prisma {
     goldRedeemed?: IntWithAggregatesFilter<"Order"> | number
     goldDiscountCents?: IntWithAggregatesFilter<"Order"> | number
     cashAmountCents?: IntNullableWithAggregatesFilter<"Order"> | number | null
+    walletAmountCents?: IntWithAggregatesFilter<"Order"> | number
+    walletPurchasedCents?: IntWithAggregatesFilter<"Order"> | number
+    walletPromotionalCents?: IntWithAggregatesFilter<"Order"> | number
+    cashbackPercent?: IntNullableWithAggregatesFilter<"Order"> | number | null
     boostType?: StringWithAggregatesFilter<"Order"> | string
     playMode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     region?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -53248,6 +59071,9 @@ export namespace Prisma {
     basePrice?: FloatWithAggregatesFilter<"Order"> | number
     addonPrice?: FloatWithAggregatesFilter<"Order"> | number
     referralDiscount?: FloatWithAggregatesFilter<"Order"> | number
+    promotionTitle?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    promotionPercent?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: StringNullableWithAggregatesFilter<"Order"> | string | null
     totalPrice?: FloatWithAggregatesFilter<"Order"> | number
     matchHistoryEnabled?: BoolWithAggregatesFilter<"Order"> | boolean
     matchHistoryRevision?: IntWithAggregatesFilter<"Order"> | number
@@ -54638,6 +60464,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -54686,6 +60513,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -54732,6 +60560,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -54780,6 +60609,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -54837,6 +60667,374 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referralCode?: NullableStringFieldUpdateOperationsInput | string | null
     referredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type WalletAccountCreateInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWalletAccountInput
+    topUps?: WalletTopUpCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUncheckedCreateInput = {
+    userId: string
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topUps?: WalletTopUpUncheckedCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUpdateInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWalletAccountNestedInput
+    topUps?: WalletTopUpUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUps?: WalletTopUpUncheckedUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUncheckedUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountCreateManyInput = {
+    userId: string
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletAccountUpdateManyMutationInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletAccountUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletTopUpCreateInput = {
+    id?: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: WalletAccountCreateNestedOneWithoutTopUpsInput
+    entries?: WalletEntryCreateNestedManyWithoutTopUpInput
+  }
+
+  export type WalletTopUpUncheckedCreateInput = {
+    id?: string
+    userId: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutTopUpInput
+  }
+
+  export type WalletTopUpUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: WalletAccountUpdateOneRequiredWithoutTopUpsNestedInput
+    entries?: WalletEntryUpdateManyWithoutTopUpNestedInput
+  }
+
+  export type WalletTopUpUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: WalletEntryUncheckedUpdateManyWithoutTopUpNestedInput
+  }
+
+  export type WalletTopUpCreateManyInput = {
+    id?: string
+    userId: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletTopUpUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletTopUpUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryCreateInput = {
+    id?: string
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+    account: WalletAccountCreateNestedOneWithoutEntriesInput
+    topUp?: WalletTopUpCreateNestedOneWithoutEntriesInput
+  }
+
+  export type WalletEntryUncheckedCreateInput = {
+    id?: string
+    userId: string
+    topUpId?: string | null
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: WalletAccountUpdateOneRequiredWithoutEntriesNestedInput
+    topUp?: WalletTopUpUpdateOneWithoutEntriesNestedInput
+  }
+
+  export type WalletEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    topUpId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryCreateManyInput = {
+    id?: string
+    userId: string
+    topUpId?: string | null
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    topUpId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementCreateInput = {
+    orderId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: WalletAccountCreateNestedOneWithoutCashbackEntitlementsInput
+  }
+
+  export type WalletCashbackEntitlementUncheckedCreateInput = {
+    orderId: string
+    userId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletCashbackEntitlementUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: WalletAccountUpdateOneRequiredWithoutCashbackEntitlementsNestedInput
+  }
+
+  export type WalletCashbackEntitlementUncheckedUpdateInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementCreateManyInput = {
+    orderId: string
+    userId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletCashbackEntitlementUpdateManyMutationInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementUncheckedUpdateManyInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ManagementAuditLogCreateInput = {
@@ -56237,6 +62435,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -56272,6 +62474,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -56317,6 +62522,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -56352,6 +62561,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -56391,6 +62603,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56426,6 +62642,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -56471,6 +62690,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56506,6 +62729,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -56548,6 +62774,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -56583,6 +62813,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -56612,6 +62845,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56647,6 +62884,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -56679,6 +62919,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56714,6 +62958,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -58307,6 +64554,11 @@ export namespace Prisma {
     none?: RewardHistoryWhereInput
   }
 
+  export type WalletAccountNullableScalarRelationFilter = {
+    is?: WalletAccountWhereInput | null
+    isNot?: WalletAccountWhereInput | null
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -58545,6 +64797,248 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type WalletTopUpListRelationFilter = {
+    every?: WalletTopUpWhereInput
+    some?: WalletTopUpWhereInput
+    none?: WalletTopUpWhereInput
+  }
+
+  export type WalletEntryListRelationFilter = {
+    every?: WalletEntryWhereInput
+    some?: WalletEntryWhereInput
+    none?: WalletEntryWhereInput
+  }
+
+  export type WalletCashbackEntitlementListRelationFilter = {
+    every?: WalletCashbackEntitlementWhereInput
+    some?: WalletCashbackEntitlementWhereInput
+    none?: WalletCashbackEntitlementWhereInput
+  }
+
+  export type WalletTopUpOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WalletEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type WalletAccountCountOrderByAggregateInput = {
+    userId?: SortOrder
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+    frozenAt?: SortOrder
+    freezeReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletAccountAvgOrderByAggregateInput = {
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+  }
+
+  export type WalletAccountMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+    frozenAt?: SortOrder
+    freezeReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletAccountMinOrderByAggregateInput = {
+    userId?: SortOrder
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+    frozenAt?: SortOrder
+    freezeReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletAccountSumOrderByAggregateInput = {
+    purchasedBalanceCents?: SortOrder
+    promotionalBalanceCents?: SortOrder
+  }
+
+  export type WalletAccountScalarRelationFilter = {
+    is?: WalletAccountWhereInput
+    isNot?: WalletAccountWhereInput
+  }
+
+  export type WalletTopUpCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    packageId?: SortOrder
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientUrl?: SortOrder
+    stripeCheckoutSessionId?: SortOrder
+    stripePaymentIntentId?: SortOrder
+    paidAt?: SortOrder
+    reversedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletTopUpAvgOrderByAggregateInput = {
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+  }
+
+  export type WalletTopUpMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    packageId?: SortOrder
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientUrl?: SortOrder
+    stripeCheckoutSessionId?: SortOrder
+    stripePaymentIntentId?: SortOrder
+    paidAt?: SortOrder
+    reversedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletTopUpMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    packageId?: SortOrder
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientUrl?: SortOrder
+    stripeCheckoutSessionId?: SortOrder
+    stripePaymentIntentId?: SortOrder
+    paidAt?: SortOrder
+    reversedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletTopUpSumOrderByAggregateInput = {
+    amountCents?: SortOrder
+    bonusPercent?: SortOrder
+    bonusCents?: SortOrder
+  }
+
+  export type WalletTopUpNullableScalarRelationFilter = {
+    is?: WalletTopUpWhereInput | null
+    isNot?: WalletTopUpWhereInput | null
+  }
+
+  export type WalletEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    topUpId?: SortOrder
+    orderId?: SortOrder
+    key?: SortOrder
+    type?: SortOrder
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WalletEntryAvgOrderByAggregateInput = {
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+  }
+
+  export type WalletEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    topUpId?: SortOrder
+    orderId?: SortOrder
+    key?: SortOrder
+    type?: SortOrder
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WalletEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    topUpId?: SortOrder
+    orderId?: SortOrder
+    key?: SortOrder
+    type?: SortOrder
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type WalletEntrySumOrderByAggregateInput = {
+    amountCents?: SortOrder
+    purchasedCents?: SortOrder
+    promotionalCents?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementCountOrderByAggregateInput = {
+    orderId?: SortOrder
+    userId?: SortOrder
+    entitledCents?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementAvgOrderByAggregateInput = {
+    entitledCents?: SortOrder
+    revision?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementMaxOrderByAggregateInput = {
+    orderId?: SortOrder
+    userId?: SortOrder
+    entitledCents?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementMinOrderByAggregateInput = {
+    orderId?: SortOrder
+    userId?: SortOrder
+    entitledCents?: SortOrder
+    revision?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WalletCashbackEntitlementSumOrderByAggregateInput = {
+    entitledCents?: SortOrder
+    revision?: SortOrder
+  }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -58682,11 +65176,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
   }
 
   export type RegistrationConsentCountOrderByAggregateInput = {
@@ -59479,6 +65968,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrder
     boostType?: SortOrder
     playMode?: SortOrder
     region?: SortOrder
@@ -59514,6 +66007,9 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionTitle?: SortOrder
+    promotionPercent?: SortOrder
+    promotionAppliesTo?: SortOrder
     totalPrice?: SortOrder
     matchHistoryEnabled?: SortOrder
     matchHistoryRevision?: SortOrder
@@ -59530,6 +66026,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrder
     currentMasterLp?: SortOrder
     desiredMasterLp?: SortOrder
     desiredWins?: SortOrder
@@ -59538,6 +66038,7 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionPercent?: SortOrder
     totalPrice?: SortOrder
     matchHistoryRevision?: SortOrder
   }
@@ -59566,6 +66067,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrder
     boostType?: SortOrder
     playMode?: SortOrder
     region?: SortOrder
@@ -59600,6 +66105,9 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionTitle?: SortOrder
+    promotionPercent?: SortOrder
+    promotionAppliesTo?: SortOrder
     totalPrice?: SortOrder
     matchHistoryEnabled?: SortOrder
     matchHistoryRevision?: SortOrder
@@ -59632,6 +66140,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrder
     boostType?: SortOrder
     playMode?: SortOrder
     region?: SortOrder
@@ -59666,6 +66178,9 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionTitle?: SortOrder
+    promotionPercent?: SortOrder
+    promotionAppliesTo?: SortOrder
     totalPrice?: SortOrder
     matchHistoryEnabled?: SortOrder
     matchHistoryRevision?: SortOrder
@@ -59682,6 +66197,10 @@ export namespace Prisma {
     goldRedeemed?: SortOrder
     goldDiscountCents?: SortOrder
     cashAmountCents?: SortOrder
+    walletAmountCents?: SortOrder
+    walletPurchasedCents?: SortOrder
+    walletPromotionalCents?: SortOrder
+    cashbackPercent?: SortOrder
     currentMasterLp?: SortOrder
     desiredMasterLp?: SortOrder
     desiredWins?: SortOrder
@@ -59690,6 +66209,7 @@ export namespace Prisma {
     basePrice?: SortOrder
     addonPrice?: SortOrder
     referralDiscount?: SortOrder
+    promotionPercent?: SortOrder
     totalPrice?: SortOrder
     matchHistoryRevision?: SortOrder
   }
@@ -60736,6 +67256,12 @@ export namespace Prisma {
     connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
   }
 
+  export type WalletAccountCreateNestedOneWithoutUserInput = {
+    create?: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutUserInput
+    connect?: WalletAccountWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutReferralsInput = {
     create?: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
     connectOrCreate?: UserCreateOrConnectWithoutReferralsInput
@@ -60945,6 +67471,12 @@ export namespace Prisma {
     connectOrCreate?: RewardHistoryCreateOrConnectWithoutUserInput | RewardHistoryCreateOrConnectWithoutUserInput[]
     createMany?: RewardHistoryCreateManyUserInputEnvelope
     connect?: RewardHistoryWhereUniqueInput | RewardHistoryWhereUniqueInput[]
+  }
+
+  export type WalletAccountUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutUserInput
+    connect?: WalletAccountWhereUniqueInput
   }
 
   export type UserUncheckedCreateNestedManyWithoutReferredByInput = {
@@ -61312,6 +67844,16 @@ export namespace Prisma {
     update?: RewardHistoryUpdateWithWhereUniqueWithoutUserInput | RewardHistoryUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: RewardHistoryUpdateManyWithWhereWithoutUserInput | RewardHistoryUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
+  }
+
+  export type WalletAccountUpdateOneWithoutUserNestedInput = {
+    create?: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutUserInput
+    upsert?: WalletAccountUpsertWithoutUserInput
+    disconnect?: WalletAccountWhereInput | boolean
+    delete?: WalletAccountWhereInput | boolean
+    connect?: WalletAccountWhereUniqueInput
+    update?: XOR<XOR<WalletAccountUpdateToOneWithWhereWithoutUserInput, WalletAccountUpdateWithoutUserInput>, WalletAccountUncheckedUpdateWithoutUserInput>
   }
 
   export type UserUpdateOneWithoutReferralsNestedInput = {
@@ -61724,6 +68266,16 @@ export namespace Prisma {
     deleteMany?: RewardHistoryScalarWhereInput | RewardHistoryScalarWhereInput[]
   }
 
+  export type WalletAccountUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutUserInput
+    upsert?: WalletAccountUpsertWithoutUserInput
+    disconnect?: WalletAccountWhereInput | boolean
+    delete?: WalletAccountWhereInput | boolean
+    connect?: WalletAccountWhereUniqueInput
+    update?: XOR<XOR<WalletAccountUpdateToOneWithWhereWithoutUserInput, WalletAccountUpdateWithoutUserInput>, WalletAccountUncheckedUpdateWithoutUserInput>
+  }
+
   export type UserUncheckedUpdateManyWithoutReferredByNestedInput = {
     create?: XOR<UserCreateWithoutReferredByInput, UserUncheckedCreateWithoutReferredByInput> | UserCreateWithoutReferredByInput[] | UserUncheckedCreateWithoutReferredByInput[]
     connectOrCreate?: UserCreateOrConnectWithoutReferredByInput | UserCreateOrConnectWithoutReferredByInput[]
@@ -61820,6 +68372,246 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutWalletAccountInput = {
+    create?: XOR<UserCreateWithoutWalletAccountInput, UserUncheckedCreateWithoutWalletAccountInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWalletAccountInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type WalletTopUpCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput> | WalletTopUpCreateWithoutAccountInput[] | WalletTopUpUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutAccountInput | WalletTopUpCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletTopUpCreateManyAccountInputEnvelope
+    connect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+  }
+
+  export type WalletEntryCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput> | WalletEntryCreateWithoutAccountInput[] | WalletEntryUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutAccountInput | WalletEntryCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletEntryCreateManyAccountInputEnvelope
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+  }
+
+  export type WalletCashbackEntitlementCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput> | WalletCashbackEntitlementCreateWithoutAccountInput[] | WalletCashbackEntitlementUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletCashbackEntitlementCreateOrConnectWithoutAccountInput | WalletCashbackEntitlementCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletCashbackEntitlementCreateManyAccountInputEnvelope
+    connect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+  }
+
+  export type WalletTopUpUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput> | WalletTopUpCreateWithoutAccountInput[] | WalletTopUpUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutAccountInput | WalletTopUpCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletTopUpCreateManyAccountInputEnvelope
+    connect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+  }
+
+  export type WalletEntryUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput> | WalletEntryCreateWithoutAccountInput[] | WalletEntryUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutAccountInput | WalletEntryCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletEntryCreateManyAccountInputEnvelope
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+  }
+
+  export type WalletCashbackEntitlementUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput> | WalletCashbackEntitlementCreateWithoutAccountInput[] | WalletCashbackEntitlementUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletCashbackEntitlementCreateOrConnectWithoutAccountInput | WalletCashbackEntitlementCreateOrConnectWithoutAccountInput[]
+    createMany?: WalletCashbackEntitlementCreateManyAccountInputEnvelope
+    connect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutWalletAccountNestedInput = {
+    create?: XOR<UserCreateWithoutWalletAccountInput, UserUncheckedCreateWithoutWalletAccountInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWalletAccountInput
+    upsert?: UserUpsertWithoutWalletAccountInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWalletAccountInput, UserUpdateWithoutWalletAccountInput>, UserUncheckedUpdateWithoutWalletAccountInput>
+  }
+
+  export type WalletTopUpUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput> | WalletTopUpCreateWithoutAccountInput[] | WalletTopUpUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutAccountInput | WalletTopUpCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletTopUpUpsertWithWhereUniqueWithoutAccountInput | WalletTopUpUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletTopUpCreateManyAccountInputEnvelope
+    set?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    disconnect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    delete?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    connect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    update?: WalletTopUpUpdateWithWhereUniqueWithoutAccountInput | WalletTopUpUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletTopUpUpdateManyWithWhereWithoutAccountInput | WalletTopUpUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletTopUpScalarWhereInput | WalletTopUpScalarWhereInput[]
+  }
+
+  export type WalletEntryUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput> | WalletEntryCreateWithoutAccountInput[] | WalletEntryUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutAccountInput | WalletEntryCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletEntryUpsertWithWhereUniqueWithoutAccountInput | WalletEntryUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletEntryCreateManyAccountInputEnvelope
+    set?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    disconnect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    delete?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    update?: WalletEntryUpdateWithWhereUniqueWithoutAccountInput | WalletEntryUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletEntryUpdateManyWithWhereWithoutAccountInput | WalletEntryUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+  }
+
+  export type WalletCashbackEntitlementUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput> | WalletCashbackEntitlementCreateWithoutAccountInput[] | WalletCashbackEntitlementUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletCashbackEntitlementCreateOrConnectWithoutAccountInput | WalletCashbackEntitlementCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletCashbackEntitlementUpsertWithWhereUniqueWithoutAccountInput | WalletCashbackEntitlementUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletCashbackEntitlementCreateManyAccountInputEnvelope
+    set?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    disconnect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    delete?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    connect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    update?: WalletCashbackEntitlementUpdateWithWhereUniqueWithoutAccountInput | WalletCashbackEntitlementUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletCashbackEntitlementUpdateManyWithWhereWithoutAccountInput | WalletCashbackEntitlementUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletCashbackEntitlementScalarWhereInput | WalletCashbackEntitlementScalarWhereInput[]
+  }
+
+  export type WalletTopUpUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput> | WalletTopUpCreateWithoutAccountInput[] | WalletTopUpUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutAccountInput | WalletTopUpCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletTopUpUpsertWithWhereUniqueWithoutAccountInput | WalletTopUpUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletTopUpCreateManyAccountInputEnvelope
+    set?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    disconnect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    delete?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    connect?: WalletTopUpWhereUniqueInput | WalletTopUpWhereUniqueInput[]
+    update?: WalletTopUpUpdateWithWhereUniqueWithoutAccountInput | WalletTopUpUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletTopUpUpdateManyWithWhereWithoutAccountInput | WalletTopUpUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletTopUpScalarWhereInput | WalletTopUpScalarWhereInput[]
+  }
+
+  export type WalletEntryUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput> | WalletEntryCreateWithoutAccountInput[] | WalletEntryUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutAccountInput | WalletEntryCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletEntryUpsertWithWhereUniqueWithoutAccountInput | WalletEntryUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletEntryCreateManyAccountInputEnvelope
+    set?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    disconnect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    delete?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    update?: WalletEntryUpdateWithWhereUniqueWithoutAccountInput | WalletEntryUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletEntryUpdateManyWithWhereWithoutAccountInput | WalletEntryUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+  }
+
+  export type WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput> | WalletCashbackEntitlementCreateWithoutAccountInput[] | WalletCashbackEntitlementUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: WalletCashbackEntitlementCreateOrConnectWithoutAccountInput | WalletCashbackEntitlementCreateOrConnectWithoutAccountInput[]
+    upsert?: WalletCashbackEntitlementUpsertWithWhereUniqueWithoutAccountInput | WalletCashbackEntitlementUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: WalletCashbackEntitlementCreateManyAccountInputEnvelope
+    set?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    disconnect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    delete?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    connect?: WalletCashbackEntitlementWhereUniqueInput | WalletCashbackEntitlementWhereUniqueInput[]
+    update?: WalletCashbackEntitlementUpdateWithWhereUniqueWithoutAccountInput | WalletCashbackEntitlementUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: WalletCashbackEntitlementUpdateManyWithWhereWithoutAccountInput | WalletCashbackEntitlementUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: WalletCashbackEntitlementScalarWhereInput | WalletCashbackEntitlementScalarWhereInput[]
+  }
+
+  export type WalletAccountCreateNestedOneWithoutTopUpsInput = {
+    create?: XOR<WalletAccountCreateWithoutTopUpsInput, WalletAccountUncheckedCreateWithoutTopUpsInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutTopUpsInput
+    connect?: WalletAccountWhereUniqueInput
+  }
+
+  export type WalletEntryCreateNestedManyWithoutTopUpInput = {
+    create?: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput> | WalletEntryCreateWithoutTopUpInput[] | WalletEntryUncheckedCreateWithoutTopUpInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutTopUpInput | WalletEntryCreateOrConnectWithoutTopUpInput[]
+    createMany?: WalletEntryCreateManyTopUpInputEnvelope
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+  }
+
+  export type WalletEntryUncheckedCreateNestedManyWithoutTopUpInput = {
+    create?: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput> | WalletEntryCreateWithoutTopUpInput[] | WalletEntryUncheckedCreateWithoutTopUpInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutTopUpInput | WalletEntryCreateOrConnectWithoutTopUpInput[]
+    createMany?: WalletEntryCreateManyTopUpInputEnvelope
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+  }
+
+  export type WalletAccountUpdateOneRequiredWithoutTopUpsNestedInput = {
+    create?: XOR<WalletAccountCreateWithoutTopUpsInput, WalletAccountUncheckedCreateWithoutTopUpsInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutTopUpsInput
+    upsert?: WalletAccountUpsertWithoutTopUpsInput
+    connect?: WalletAccountWhereUniqueInput
+    update?: XOR<XOR<WalletAccountUpdateToOneWithWhereWithoutTopUpsInput, WalletAccountUpdateWithoutTopUpsInput>, WalletAccountUncheckedUpdateWithoutTopUpsInput>
+  }
+
+  export type WalletEntryUpdateManyWithoutTopUpNestedInput = {
+    create?: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput> | WalletEntryCreateWithoutTopUpInput[] | WalletEntryUncheckedCreateWithoutTopUpInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutTopUpInput | WalletEntryCreateOrConnectWithoutTopUpInput[]
+    upsert?: WalletEntryUpsertWithWhereUniqueWithoutTopUpInput | WalletEntryUpsertWithWhereUniqueWithoutTopUpInput[]
+    createMany?: WalletEntryCreateManyTopUpInputEnvelope
+    set?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    disconnect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    delete?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    update?: WalletEntryUpdateWithWhereUniqueWithoutTopUpInput | WalletEntryUpdateWithWhereUniqueWithoutTopUpInput[]
+    updateMany?: WalletEntryUpdateManyWithWhereWithoutTopUpInput | WalletEntryUpdateManyWithWhereWithoutTopUpInput[]
+    deleteMany?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+  }
+
+  export type WalletEntryUncheckedUpdateManyWithoutTopUpNestedInput = {
+    create?: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput> | WalletEntryCreateWithoutTopUpInput[] | WalletEntryUncheckedCreateWithoutTopUpInput[]
+    connectOrCreate?: WalletEntryCreateOrConnectWithoutTopUpInput | WalletEntryCreateOrConnectWithoutTopUpInput[]
+    upsert?: WalletEntryUpsertWithWhereUniqueWithoutTopUpInput | WalletEntryUpsertWithWhereUniqueWithoutTopUpInput[]
+    createMany?: WalletEntryCreateManyTopUpInputEnvelope
+    set?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    disconnect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    delete?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    connect?: WalletEntryWhereUniqueInput | WalletEntryWhereUniqueInput[]
+    update?: WalletEntryUpdateWithWhereUniqueWithoutTopUpInput | WalletEntryUpdateWithWhereUniqueWithoutTopUpInput[]
+    updateMany?: WalletEntryUpdateManyWithWhereWithoutTopUpInput | WalletEntryUpdateManyWithWhereWithoutTopUpInput[]
+    deleteMany?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+  }
+
+  export type WalletAccountCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<WalletAccountCreateWithoutEntriesInput, WalletAccountUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutEntriesInput
+    connect?: WalletAccountWhereUniqueInput
+  }
+
+  export type WalletTopUpCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<WalletTopUpCreateWithoutEntriesInput, WalletTopUpUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutEntriesInput
+    connect?: WalletTopUpWhereUniqueInput
+  }
+
+  export type WalletAccountUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<WalletAccountCreateWithoutEntriesInput, WalletAccountUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutEntriesInput
+    upsert?: WalletAccountUpsertWithoutEntriesInput
+    connect?: WalletAccountWhereUniqueInput
+    update?: XOR<XOR<WalletAccountUpdateToOneWithWhereWithoutEntriesInput, WalletAccountUpdateWithoutEntriesInput>, WalletAccountUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type WalletTopUpUpdateOneWithoutEntriesNestedInput = {
+    create?: XOR<WalletTopUpCreateWithoutEntriesInput, WalletTopUpUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WalletTopUpCreateOrConnectWithoutEntriesInput
+    upsert?: WalletTopUpUpsertWithoutEntriesInput
+    disconnect?: WalletTopUpWhereInput | boolean
+    delete?: WalletTopUpWhereInput | boolean
+    connect?: WalletTopUpWhereUniqueInput
+    update?: XOR<XOR<WalletTopUpUpdateToOneWithWhereWithoutEntriesInput, WalletTopUpUpdateWithoutEntriesInput>, WalletTopUpUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type WalletAccountCreateNestedOneWithoutCashbackEntitlementsInput = {
+    create?: XOR<WalletAccountCreateWithoutCashbackEntitlementsInput, WalletAccountUncheckedCreateWithoutCashbackEntitlementsInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutCashbackEntitlementsInput
+    connect?: WalletAccountWhereUniqueInput
+  }
+
+  export type WalletAccountUpdateOneRequiredWithoutCashbackEntitlementsNestedInput = {
+    create?: XOR<WalletAccountCreateWithoutCashbackEntitlementsInput, WalletAccountUncheckedCreateWithoutCashbackEntitlementsInput>
+    connectOrCreate?: WalletAccountCreateOrConnectWithoutCashbackEntitlementsInput
+    upsert?: WalletAccountUpsertWithoutCashbackEntitlementsInput
+    connect?: WalletAccountWhereUniqueInput
+    update?: XOR<XOR<WalletAccountUpdateToOneWithWhereWithoutCashbackEntitlementsInput, WalletAccountUpdateWithoutCashbackEntitlementsInput>, WalletAccountUncheckedUpdateWithoutCashbackEntitlementsInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -64517,6 +71309,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -64552,6 +71348,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -64595,6 +71394,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -64630,6 +71433,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -64773,6 +71579,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type WalletAccountCreateWithoutUserInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topUps?: WalletTopUpCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUncheckedCreateWithoutUserInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topUps?: WalletTopUpUncheckedCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountCreateOrConnectWithoutUserInput = {
+    where: WalletAccountWhereUniqueInput
+    create: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+  }
+
   export type UserCreateWithoutReferralsInput = {
     id?: string
     email: string
@@ -64810,6 +71645,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -64857,6 +71693,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -64907,6 +71744,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -64953,6 +71791,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -65705,6 +72544,10 @@ export namespace Prisma {
     goldRedeemed?: IntFilter<"Order"> | number
     goldDiscountCents?: IntFilter<"Order"> | number
     cashAmountCents?: IntNullableFilter<"Order"> | number | null
+    walletAmountCents?: IntFilter<"Order"> | number
+    walletPurchasedCents?: IntFilter<"Order"> | number
+    walletPromotionalCents?: IntFilter<"Order"> | number
+    cashbackPercent?: IntNullableFilter<"Order"> | number | null
     boostType?: StringFilter<"Order"> | string
     playMode?: StringNullableFilter<"Order"> | string | null
     region?: StringNullableFilter<"Order"> | string | null
@@ -65740,6 +72583,9 @@ export namespace Prisma {
     basePrice?: FloatFilter<"Order"> | number
     addonPrice?: FloatFilter<"Order"> | number
     referralDiscount?: FloatFilter<"Order"> | number
+    promotionTitle?: StringNullableFilter<"Order"> | string | null
+    promotionPercent?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: StringNullableFilter<"Order"> | string | null
     totalPrice?: FloatFilter<"Order"> | number
     matchHistoryEnabled?: BoolFilter<"Order"> | boolean
     matchHistoryRevision?: IntFilter<"Order"> | number
@@ -65871,6 +72717,41 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"RewardHistory"> | Date | string
   }
 
+  export type WalletAccountUpsertWithoutUserInput = {
+    update: XOR<WalletAccountUpdateWithoutUserInput, WalletAccountUncheckedUpdateWithoutUserInput>
+    create: XOR<WalletAccountCreateWithoutUserInput, WalletAccountUncheckedCreateWithoutUserInput>
+    where?: WalletAccountWhereInput
+  }
+
+  export type WalletAccountUpdateToOneWithWhereWithoutUserInput = {
+    where?: WalletAccountWhereInput
+    data: XOR<WalletAccountUpdateWithoutUserInput, WalletAccountUncheckedUpdateWithoutUserInput>
+  }
+
+  export type WalletAccountUpdateWithoutUserInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUps?: WalletTopUpUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountUncheckedUpdateWithoutUserInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUps?: WalletTopUpUncheckedUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUncheckedUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
   export type UserUpsertWithoutReferralsInput = {
     update: XOR<UserUpdateWithoutReferralsInput, UserUncheckedUpdateWithoutReferralsInput>
     create: XOR<UserCreateWithoutReferralsInput, UserUncheckedCreateWithoutReferralsInput>
@@ -65919,6 +72800,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -65966,6 +72848,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -66172,6 +73055,748 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
+  export type UserCreateWithoutWalletAccountInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
+    boosterOrderEmails?: BoosterOrderEmailCreateNestedManyWithoutBoosterInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWalletAccountInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
+    boosterOrderEmails?: BoosterOrderEmailUncheckedCreateNestedManyWithoutBoosterInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWalletAccountInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWalletAccountInput, UserUncheckedCreateWithoutWalletAccountInput>
+  }
+
+  export type WalletTopUpCreateWithoutAccountInput = {
+    id?: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: WalletEntryCreateNestedManyWithoutTopUpInput
+  }
+
+  export type WalletTopUpUncheckedCreateWithoutAccountInput = {
+    id?: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutTopUpInput
+  }
+
+  export type WalletTopUpCreateOrConnectWithoutAccountInput = {
+    where: WalletTopUpWhereUniqueInput
+    create: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletTopUpCreateManyAccountInputEnvelope = {
+    data: WalletTopUpCreateManyAccountInput | WalletTopUpCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WalletEntryCreateWithoutAccountInput = {
+    id?: string
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+    topUp?: WalletTopUpCreateNestedOneWithoutEntriesInput
+  }
+
+  export type WalletEntryUncheckedCreateWithoutAccountInput = {
+    id?: string
+    topUpId?: string | null
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletEntryCreateOrConnectWithoutAccountInput = {
+    where: WalletEntryWhereUniqueInput
+    create: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletEntryCreateManyAccountInputEnvelope = {
+    data: WalletEntryCreateManyAccountInput | WalletEntryCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WalletCashbackEntitlementCreateWithoutAccountInput = {
+    orderId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletCashbackEntitlementUncheckedCreateWithoutAccountInput = {
+    orderId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletCashbackEntitlementCreateOrConnectWithoutAccountInput = {
+    where: WalletCashbackEntitlementWhereUniqueInput
+    create: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletCashbackEntitlementCreateManyAccountInputEnvelope = {
+    data: WalletCashbackEntitlementCreateManyAccountInput | WalletCashbackEntitlementCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutWalletAccountInput = {
+    update: XOR<UserUpdateWithoutWalletAccountInput, UserUncheckedUpdateWithoutWalletAccountInput>
+    create: XOR<UserCreateWithoutWalletAccountInput, UserUncheckedCreateWithoutWalletAccountInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWalletAccountInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWalletAccountInput, UserUncheckedUpdateWithoutWalletAccountInput>
+  }
+
+  export type UserUpdateWithoutWalletAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
+    boosterOrderEmails?: BoosterOrderEmailUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWalletAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterOrderEmails?: BoosterOrderEmailUncheckedUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type WalletTopUpUpsertWithWhereUniqueWithoutAccountInput = {
+    where: WalletTopUpWhereUniqueInput
+    update: XOR<WalletTopUpUpdateWithoutAccountInput, WalletTopUpUncheckedUpdateWithoutAccountInput>
+    create: XOR<WalletTopUpCreateWithoutAccountInput, WalletTopUpUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletTopUpUpdateWithWhereUniqueWithoutAccountInput = {
+    where: WalletTopUpWhereUniqueInput
+    data: XOR<WalletTopUpUpdateWithoutAccountInput, WalletTopUpUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type WalletTopUpUpdateManyWithWhereWithoutAccountInput = {
+    where: WalletTopUpScalarWhereInput
+    data: XOR<WalletTopUpUpdateManyMutationInput, WalletTopUpUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type WalletTopUpScalarWhereInput = {
+    AND?: WalletTopUpScalarWhereInput | WalletTopUpScalarWhereInput[]
+    OR?: WalletTopUpScalarWhereInput[]
+    NOT?: WalletTopUpScalarWhereInput | WalletTopUpScalarWhereInput[]
+    id?: StringFilter<"WalletTopUp"> | string
+    userId?: StringFilter<"WalletTopUp"> | string
+    packageId?: StringFilter<"WalletTopUp"> | string
+    amountCents?: IntFilter<"WalletTopUp"> | number
+    bonusPercent?: IntFilter<"WalletTopUp"> | number
+    bonusCents?: IntFilter<"WalletTopUp"> | number
+    currency?: StringFilter<"WalletTopUp"> | string
+    status?: StringFilter<"WalletTopUp"> | string
+    clientUrl?: StringFilter<"WalletTopUp"> | string
+    stripeCheckoutSessionId?: StringNullableFilter<"WalletTopUp"> | string | null
+    stripePaymentIntentId?: StringNullableFilter<"WalletTopUp"> | string | null
+    paidAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    reversedAt?: DateTimeNullableFilter<"WalletTopUp"> | Date | string | null
+    createdAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletTopUp"> | Date | string
+  }
+
+  export type WalletEntryUpsertWithWhereUniqueWithoutAccountInput = {
+    where: WalletEntryWhereUniqueInput
+    update: XOR<WalletEntryUpdateWithoutAccountInput, WalletEntryUncheckedUpdateWithoutAccountInput>
+    create: XOR<WalletEntryCreateWithoutAccountInput, WalletEntryUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletEntryUpdateWithWhereUniqueWithoutAccountInput = {
+    where: WalletEntryWhereUniqueInput
+    data: XOR<WalletEntryUpdateWithoutAccountInput, WalletEntryUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type WalletEntryUpdateManyWithWhereWithoutAccountInput = {
+    where: WalletEntryScalarWhereInput
+    data: XOR<WalletEntryUpdateManyMutationInput, WalletEntryUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type WalletEntryScalarWhereInput = {
+    AND?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+    OR?: WalletEntryScalarWhereInput[]
+    NOT?: WalletEntryScalarWhereInput | WalletEntryScalarWhereInput[]
+    id?: StringFilter<"WalletEntry"> | string
+    userId?: StringFilter<"WalletEntry"> | string
+    topUpId?: StringNullableFilter<"WalletEntry"> | string | null
+    orderId?: StringNullableFilter<"WalletEntry"> | string | null
+    key?: StringFilter<"WalletEntry"> | string
+    type?: StringFilter<"WalletEntry"> | string
+    amountCents?: IntFilter<"WalletEntry"> | number
+    purchasedCents?: IntFilter<"WalletEntry"> | number
+    promotionalCents?: IntFilter<"WalletEntry"> | number
+    description?: StringFilter<"WalletEntry"> | string
+    createdAt?: DateTimeFilter<"WalletEntry"> | Date | string
+  }
+
+  export type WalletCashbackEntitlementUpsertWithWhereUniqueWithoutAccountInput = {
+    where: WalletCashbackEntitlementWhereUniqueInput
+    update: XOR<WalletCashbackEntitlementUpdateWithoutAccountInput, WalletCashbackEntitlementUncheckedUpdateWithoutAccountInput>
+    create: XOR<WalletCashbackEntitlementCreateWithoutAccountInput, WalletCashbackEntitlementUncheckedCreateWithoutAccountInput>
+  }
+
+  export type WalletCashbackEntitlementUpdateWithWhereUniqueWithoutAccountInput = {
+    where: WalletCashbackEntitlementWhereUniqueInput
+    data: XOR<WalletCashbackEntitlementUpdateWithoutAccountInput, WalletCashbackEntitlementUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type WalletCashbackEntitlementUpdateManyWithWhereWithoutAccountInput = {
+    where: WalletCashbackEntitlementScalarWhereInput
+    data: XOR<WalletCashbackEntitlementUpdateManyMutationInput, WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type WalletCashbackEntitlementScalarWhereInput = {
+    AND?: WalletCashbackEntitlementScalarWhereInput | WalletCashbackEntitlementScalarWhereInput[]
+    OR?: WalletCashbackEntitlementScalarWhereInput[]
+    NOT?: WalletCashbackEntitlementScalarWhereInput | WalletCashbackEntitlementScalarWhereInput[]
+    orderId?: StringFilter<"WalletCashbackEntitlement"> | string
+    userId?: StringFilter<"WalletCashbackEntitlement"> | string
+    entitledCents?: IntFilter<"WalletCashbackEntitlement"> | number
+    revision?: IntFilter<"WalletCashbackEntitlement"> | number
+    createdAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+    updatedAt?: DateTimeFilter<"WalletCashbackEntitlement"> | Date | string
+  }
+
+  export type WalletAccountCreateWithoutTopUpsInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWalletAccountInput
+    entries?: WalletEntryCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUncheckedCreateWithoutTopUpsInput = {
+    userId: string
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountCreateOrConnectWithoutTopUpsInput = {
+    where: WalletAccountWhereUniqueInput
+    create: XOR<WalletAccountCreateWithoutTopUpsInput, WalletAccountUncheckedCreateWithoutTopUpsInput>
+  }
+
+  export type WalletEntryCreateWithoutTopUpInput = {
+    id?: string
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+    account: WalletAccountCreateNestedOneWithoutEntriesInput
+  }
+
+  export type WalletEntryUncheckedCreateWithoutTopUpInput = {
+    id?: string
+    userId: string
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletEntryCreateOrConnectWithoutTopUpInput = {
+    where: WalletEntryWhereUniqueInput
+    create: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput>
+  }
+
+  export type WalletEntryCreateManyTopUpInputEnvelope = {
+    data: WalletEntryCreateManyTopUpInput | WalletEntryCreateManyTopUpInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WalletAccountUpsertWithoutTopUpsInput = {
+    update: XOR<WalletAccountUpdateWithoutTopUpsInput, WalletAccountUncheckedUpdateWithoutTopUpsInput>
+    create: XOR<WalletAccountCreateWithoutTopUpsInput, WalletAccountUncheckedCreateWithoutTopUpsInput>
+    where?: WalletAccountWhereInput
+  }
+
+  export type WalletAccountUpdateToOneWithWhereWithoutTopUpsInput = {
+    where?: WalletAccountWhereInput
+    data: XOR<WalletAccountUpdateWithoutTopUpsInput, WalletAccountUncheckedUpdateWithoutTopUpsInput>
+  }
+
+  export type WalletAccountUpdateWithoutTopUpsInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWalletAccountNestedInput
+    entries?: WalletEntryUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountUncheckedUpdateWithoutTopUpsInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: WalletEntryUncheckedUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletEntryUpsertWithWhereUniqueWithoutTopUpInput = {
+    where: WalletEntryWhereUniqueInput
+    update: XOR<WalletEntryUpdateWithoutTopUpInput, WalletEntryUncheckedUpdateWithoutTopUpInput>
+    create: XOR<WalletEntryCreateWithoutTopUpInput, WalletEntryUncheckedCreateWithoutTopUpInput>
+  }
+
+  export type WalletEntryUpdateWithWhereUniqueWithoutTopUpInput = {
+    where: WalletEntryWhereUniqueInput
+    data: XOR<WalletEntryUpdateWithoutTopUpInput, WalletEntryUncheckedUpdateWithoutTopUpInput>
+  }
+
+  export type WalletEntryUpdateManyWithWhereWithoutTopUpInput = {
+    where: WalletEntryScalarWhereInput
+    data: XOR<WalletEntryUpdateManyMutationInput, WalletEntryUncheckedUpdateManyWithoutTopUpInput>
+  }
+
+  export type WalletAccountCreateWithoutEntriesInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWalletAccountInput
+    topUps?: WalletTopUpCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUncheckedCreateWithoutEntriesInput = {
+    userId: string
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topUps?: WalletTopUpUncheckedCreateNestedManyWithoutAccountInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountCreateOrConnectWithoutEntriesInput = {
+    where: WalletAccountWhereUniqueInput
+    create: XOR<WalletAccountCreateWithoutEntriesInput, WalletAccountUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type WalletTopUpCreateWithoutEntriesInput = {
+    id?: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: WalletAccountCreateNestedOneWithoutTopUpsInput
+  }
+
+  export type WalletTopUpUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    userId: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletTopUpCreateOrConnectWithoutEntriesInput = {
+    where: WalletTopUpWhereUniqueInput
+    create: XOR<WalletTopUpCreateWithoutEntriesInput, WalletTopUpUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type WalletAccountUpsertWithoutEntriesInput = {
+    update: XOR<WalletAccountUpdateWithoutEntriesInput, WalletAccountUncheckedUpdateWithoutEntriesInput>
+    create: XOR<WalletAccountCreateWithoutEntriesInput, WalletAccountUncheckedCreateWithoutEntriesInput>
+    where?: WalletAccountWhereInput
+  }
+
+  export type WalletAccountUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: WalletAccountWhereInput
+    data: XOR<WalletAccountUpdateWithoutEntriesInput, WalletAccountUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type WalletAccountUpdateWithoutEntriesInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWalletAccountNestedInput
+    topUps?: WalletTopUpUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountUncheckedUpdateWithoutEntriesInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUps?: WalletTopUpUncheckedUpdateManyWithoutAccountNestedInput
+    cashbackEntitlements?: WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletTopUpUpsertWithoutEntriesInput = {
+    update: XOR<WalletTopUpUpdateWithoutEntriesInput, WalletTopUpUncheckedUpdateWithoutEntriesInput>
+    create: XOR<WalletTopUpCreateWithoutEntriesInput, WalletTopUpUncheckedCreateWithoutEntriesInput>
+    where?: WalletTopUpWhereInput
+  }
+
+  export type WalletTopUpUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: WalletTopUpWhereInput
+    data: XOR<WalletTopUpUpdateWithoutEntriesInput, WalletTopUpUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type WalletTopUpUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: WalletAccountUpdateOneRequiredWithoutTopUpsNestedInput
+  }
+
+  export type WalletTopUpUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletAccountCreateWithoutCashbackEntitlementsInput = {
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWalletAccountInput
+    topUps?: WalletTopUpCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountUncheckedCreateWithoutCashbackEntitlementsInput = {
+    userId: string
+    purchasedBalanceCents?: number
+    promotionalBalanceCents?: number
+    frozenAt?: Date | string | null
+    freezeReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topUps?: WalletTopUpUncheckedCreateNestedManyWithoutAccountInput
+    entries?: WalletEntryUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type WalletAccountCreateOrConnectWithoutCashbackEntitlementsInput = {
+    where: WalletAccountWhereUniqueInput
+    create: XOR<WalletAccountCreateWithoutCashbackEntitlementsInput, WalletAccountUncheckedCreateWithoutCashbackEntitlementsInput>
+  }
+
+  export type WalletAccountUpsertWithoutCashbackEntitlementsInput = {
+    update: XOR<WalletAccountUpdateWithoutCashbackEntitlementsInput, WalletAccountUncheckedUpdateWithoutCashbackEntitlementsInput>
+    create: XOR<WalletAccountCreateWithoutCashbackEntitlementsInput, WalletAccountUncheckedCreateWithoutCashbackEntitlementsInput>
+    where?: WalletAccountWhereInput
+  }
+
+  export type WalletAccountUpdateToOneWithWhereWithoutCashbackEntitlementsInput = {
+    where?: WalletAccountWhereInput
+    data: XOR<WalletAccountUpdateWithoutCashbackEntitlementsInput, WalletAccountUncheckedUpdateWithoutCashbackEntitlementsInput>
+  }
+
+  export type WalletAccountUpdateWithoutCashbackEntitlementsInput = {
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWalletAccountNestedInput
+    topUps?: WalletTopUpUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUpdateManyWithoutAccountNestedInput
+  }
+
+  export type WalletAccountUncheckedUpdateWithoutCashbackEntitlementsInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    purchasedBalanceCents?: IntFieldUpdateOperationsInput | number
+    promotionalBalanceCents?: IntFieldUpdateOperationsInput | number
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    freezeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUps?: WalletTopUpUncheckedUpdateManyWithoutAccountNestedInput
+    entries?: WalletEntryUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
   export type UserCreateWithoutRegistrationConsentInput = {
     id?: string
     email: string
@@ -66208,6 +73833,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -66255,6 +73881,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -66316,6 +73943,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -66363,6 +73991,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -66408,6 +74037,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -66455,6 +74085,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -66516,6 +74147,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -66563,6 +74195,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -66608,6 +74241,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -66655,6 +74289,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -66716,6 +74351,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -66763,6 +74399,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -66808,6 +74445,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -66855,6 +74493,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -66905,6 +74544,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -66952,6 +74592,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -67013,6 +74654,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -67060,6 +74702,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -67116,6 +74759,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -67163,6 +74807,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -67208,6 +74853,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -67255,6 +74901,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -67352,6 +74999,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -67399,6 +75047,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -67483,6 +75132,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -67530,6 +75180,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -67650,6 +75301,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -67697,6 +75349,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -67758,6 +75411,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -67805,6 +75459,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -67866,6 +75521,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -67913,6 +75569,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -67989,6 +75646,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -68036,6 +75694,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -68134,6 +75793,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -68181,6 +75841,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -68226,6 +75887,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -68273,6 +75935,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -68334,6 +75997,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -68381,6 +76045,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -68426,6 +76091,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -68473,6 +76139,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -68534,6 +76201,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -68581,6 +76249,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -68611,6 +76280,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -68646,6 +76319,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -68689,6 +76365,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -68724,6 +76404,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -68993,6 +76676,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -69040,6 +76724,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -69075,6 +76760,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -69110,6 +76799,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -69153,6 +76845,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -69188,6 +76884,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -69314,6 +77013,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -69361,6 +77061,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -69627,6 +77328,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -69674,6 +77376,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -70082,6 +77785,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -70129,6 +77833,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -70308,6 +78013,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -70343,6 +78052,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -70387,6 +78099,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -70422,6 +78138,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -70480,6 +78199,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -70527,6 +78247,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -70591,6 +78312,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70626,6 +78351,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -70670,6 +78398,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70705,6 +78437,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -70769,6 +78504,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -70816,6 +78552,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -70896,6 +78633,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -70943,6 +78681,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -71029,6 +78768,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -71076,6 +78816,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -71106,6 +78847,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71141,6 +78886,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71185,6 +78933,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71220,6 +78972,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71274,6 +79029,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71309,6 +79068,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -71353,6 +79115,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71388,6 +79154,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -71426,6 +79195,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71461,6 +79234,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71505,6 +79281,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71540,6 +79320,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71594,6 +79377,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71629,6 +79416,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -71673,6 +79463,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71708,6 +79502,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -71746,6 +79543,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71781,6 +79582,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71825,6 +79629,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -71860,6 +79668,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -71918,6 +79729,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -71965,6 +79777,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -72011,6 +79824,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72046,6 +79863,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -72090,6 +79910,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72125,6 +79949,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -72189,6 +80016,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -72236,6 +80064,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -72281,6 +80110,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -72328,6 +80158,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -72412,6 +80243,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -72447,6 +80282,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -72491,6 +80329,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -72526,6 +80368,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -72595,6 +80440,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -72642,6 +80488,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -72738,6 +80585,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72773,6 +80624,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -72817,6 +80671,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72852,6 +80710,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -72890,6 +80751,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -72925,6 +80790,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -72969,6 +80837,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -73004,6 +80876,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -73063,6 +80938,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -73110,6 +80986,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -73155,6 +81032,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73190,6 +81071,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -73234,6 +81118,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73269,6 +81157,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -73334,6 +81225,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -73381,6 +81273,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -73410,6 +81303,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -73445,6 +81342,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -73489,6 +81389,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -73524,6 +81428,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -73582,6 +81489,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -73629,6 +81537,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -73675,6 +81584,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73710,6 +81623,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -73754,6 +81670,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73789,6 +81709,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -73853,6 +81776,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -73900,6 +81824,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -73930,6 +81855,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -73965,6 +81894,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -74009,6 +81941,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -74044,6 +81980,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -74102,6 +82041,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -74149,6 +82089,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -74225,6 +82166,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74260,6 +82205,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -74304,6 +82252,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74339,6 +82291,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -74403,6 +82358,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -74450,6 +82406,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -74544,6 +82501,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -74591,6 +82549,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -74691,6 +82650,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -74738,6 +82698,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -74783,6 +82744,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -74830,6 +82792,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -74891,6 +82854,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -74938,6 +82902,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -74968,6 +82933,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -75003,6 +82972,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -75047,6 +83019,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -75082,6 +83058,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -75141,6 +83120,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -75188,6 +83168,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -75238,6 +83219,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -75285,6 +83267,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -75330,6 +83313,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75365,6 +83352,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -75409,6 +83399,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75444,6 +83438,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -75509,6 +83506,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -75556,6 +83554,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -75612,6 +83611,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -75659,6 +83659,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -75688,6 +83689,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -75723,6 +83728,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -75767,6 +83775,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -75802,6 +83814,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -75916,6 +83931,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75951,6 +83970,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -75995,6 +84017,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76030,6 +84056,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -76139,6 +84168,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -76186,6 +84216,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -76276,6 +84307,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -76323,6 +84355,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -76391,6 +84424,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -76438,6 +84472,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -76528,6 +84563,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -76575,6 +84611,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -76619,6 +84656,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -76666,6 +84704,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -76727,6 +84766,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -76774,6 +84814,7 @@ export namespace Prisma {
     verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -76819,6 +84860,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -76866,6 +84908,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -76927,6 +84970,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -76974,6 +85018,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -77020,6 +85065,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
     profile?: ProfileCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
     referredBy?: UserCreateNestedOneWithoutReferralsInput
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
@@ -77067,6 +85113,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
     rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -77128,6 +85175,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referredBy?: UserUpdateOneWithoutReferralsNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
@@ -77175,6 +85223,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -77378,6 +85427,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -77413,6 +85466,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -78067,6 +86123,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78102,6 +86162,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -78145,6 +86208,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78180,6 +86247,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -78221,6 +86291,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78256,6 +86330,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -78385,6 +86462,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
     profile?: ProfileUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -78431,6 +86509,7 @@ export namespace Prisma {
     passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
     rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -78621,6 +86700,212 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type WalletTopUpCreateManyAccountInput = {
+    id?: string
+    packageId: string
+    amountCents: number
+    bonusPercent: number
+    bonusCents: number
+    currency?: string
+    status?: string
+    clientUrl: string
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    reversedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletEntryCreateManyAccountInput = {
+    id?: string
+    topUpId?: string | null
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletCashbackEntitlementCreateManyAccountInput = {
+    orderId: string
+    entitledCents?: number
+    revision?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WalletTopUpUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: WalletEntryUpdateManyWithoutTopUpNestedInput
+  }
+
+  export type WalletTopUpUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: WalletEntryUncheckedUpdateManyWithoutTopUpNestedInput
+  }
+
+  export type WalletTopUpUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    bonusPercent?: IntFieldUpdateOperationsInput | number
+    bonusCents?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    clientUrl?: StringFieldUpdateOperationsInput | string
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reversedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topUp?: WalletTopUpUpdateOneWithoutEntriesNestedInput
+  }
+
+  export type WalletEntryUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topUpId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topUpId?: NullableStringFieldUpdateOperationsInput | string | null
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementUpdateWithoutAccountInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementUncheckedUpdateWithoutAccountInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletCashbackEntitlementUncheckedUpdateManyWithoutAccountInput = {
+    orderId?: StringFieldUpdateOperationsInput | string
+    entitledCents?: IntFieldUpdateOperationsInput | number
+    revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryCreateManyTopUpInput = {
+    id?: string
+    userId: string
+    orderId?: string | null
+    key: string
+    type: string
+    amountCents: number
+    purchasedCents: number
+    promotionalCents: number
+    description: string
+    createdAt?: Date | string
+  }
+
+  export type WalletEntryUpdateWithoutTopUpInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: WalletAccountUpdateOneRequiredWithoutEntriesNestedInput
+  }
+
+  export type WalletEntryUncheckedUpdateWithoutTopUpInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WalletEntryUncheckedUpdateManyWithoutTopUpInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    key?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amountCents?: IntFieldUpdateOperationsInput | number
+    purchasedCents?: IntFieldUpdateOperationsInput | number
+    promotionalCents?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SupportMessageCreateManyThreadInput = {
     id?: string
     senderId: string
@@ -78734,6 +87019,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -78769,6 +87058,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -78829,6 +87121,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78864,6 +87160,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -78907,6 +87206,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78942,6 +87245,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -78983,6 +87289,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79018,6 +87328,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -79146,6 +87459,10 @@ export namespace Prisma {
     goldRedeemed?: number
     goldDiscountCents?: number
     cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
     boostType: string
     playMode?: string | null
     region?: string | null
@@ -79181,6 +87498,9 @@ export namespace Prisma {
     basePrice?: number
     addonPrice?: number
     referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
     totalPrice?: number
     matchHistoryEnabled?: boolean
     matchHistoryRevision?: number
@@ -79218,6 +87538,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79253,6 +87577,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -79296,6 +87623,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79331,6 +87662,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number
@@ -79372,6 +87706,10 @@ export namespace Prisma {
     goldRedeemed?: IntFieldUpdateOperationsInput | number
     goldDiscountCents?: IntFieldUpdateOperationsInput | number
     cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
     boostType?: StringFieldUpdateOperationsInput | string
     playMode?: NullableStringFieldUpdateOperationsInput | string | null
     region?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79407,6 +87745,9 @@ export namespace Prisma {
     basePrice?: FloatFieldUpdateOperationsInput | number
     addonPrice?: FloatFieldUpdateOperationsInput | number
     referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
     totalPrice?: FloatFieldUpdateOperationsInput | number
     matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
     matchHistoryRevision?: IntFieldUpdateOperationsInput | number

@@ -143,6 +143,57 @@ exports.Prisma.UserScalarFieldEnum = {
   referredById: 'referredById'
 };
 
+exports.Prisma.WalletAccountScalarFieldEnum = {
+  userId: 'userId',
+  purchasedBalanceCents: 'purchasedBalanceCents',
+  promotionalBalanceCents: 'promotionalBalanceCents',
+  frozenAt: 'frozenAt',
+  freezeReason: 'freezeReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WalletTopUpScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  packageId: 'packageId',
+  amountCents: 'amountCents',
+  bonusPercent: 'bonusPercent',
+  bonusCents: 'bonusCents',
+  currency: 'currency',
+  status: 'status',
+  clientUrl: 'clientUrl',
+  stripeCheckoutSessionId: 'stripeCheckoutSessionId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  paidAt: 'paidAt',
+  reversedAt: 'reversedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WalletEntryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  topUpId: 'topUpId',
+  orderId: 'orderId',
+  key: 'key',
+  type: 'type',
+  amountCents: 'amountCents',
+  purchasedCents: 'purchasedCents',
+  promotionalCents: 'promotionalCents',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.WalletCashbackEntitlementScalarFieldEnum = {
+  orderId: 'orderId',
+  userId: 'userId',
+  entitledCents: 'entitledCents',
+  revision: 'revision',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ManagementAuditLogScalarFieldEnum = {
   id: 'id',
   actorId: 'actorId',
@@ -362,6 +413,10 @@ exports.Prisma.OrderScalarFieldEnum = {
   goldRedeemed: 'goldRedeemed',
   goldDiscountCents: 'goldDiscountCents',
   cashAmountCents: 'cashAmountCents',
+  walletAmountCents: 'walletAmountCents',
+  walletPurchasedCents: 'walletPurchasedCents',
+  walletPromotionalCents: 'walletPromotionalCents',
+  cashbackPercent: 'cashbackPercent',
   boostType: 'boostType',
   playMode: 'playMode',
   region: 'region',
@@ -397,6 +452,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   basePrice: 'basePrice',
   addonPrice: 'addonPrice',
   referralDiscount: 'referralDiscount',
+  promotionTitle: 'promotionTitle',
+  promotionPercent: 'promotionPercent',
+  promotionAppliesTo: 'promotionAppliesTo',
   totalPrice: 'totalPrice',
   matchHistoryEnabled: 'matchHistoryEnabled',
   matchHistoryRevision: 'matchHistoryRevision',
@@ -689,6 +747,10 @@ exports.NotificationType = exports.$Enums.NotificationType = {
 exports.Prisma.ModelName = {
   RateLimitBucket: 'RateLimitBucket',
   User: 'User',
+  WalletAccount: 'WalletAccount',
+  WalletTopUp: 'WalletTopUp',
+  WalletEntry: 'WalletEntry',
+  WalletCashbackEntitlement: 'WalletCashbackEntitlement',
   ManagementAuditLog: 'ManagementAuditLog',
   RegistrationConsent: 'RegistrationConsent',
   BoosterProfile: 'BoosterProfile',

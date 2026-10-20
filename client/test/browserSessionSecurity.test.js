@@ -62,6 +62,11 @@ async function componentFixture(name, bindings, initialStates = [], directory = 
         state(index) { return states[index]; },
         unmount() { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); },
         runEffect(index) { return effects[index](); },
+        runEffectMatching(text) {
+            const effect = effects.find(callback => callback.toString().includes(text));
+            assert.ok(effect, `component effect containing ${text} exists`);
+            return effect();
+        },
         async runEffects() { for (const effect of effects.splice(0)) effect(); await Promise.resolve(); },
     };
 }
@@ -267,19 +272,34 @@ test('an outage during the service check never submits a charge, and unmounted c
     assert.equal(waiting.verifications.length, 0);
 });
 
-async function checkoutViewFixture(createCheckoutSession, initialStates = [], search = 'gold=100') {
+async function checkoutViewFixture(createCheckoutSession, initialStates = [], search = 'gold=100', overrides = {}) {
     const fixture = await componentFixture('CheckoutPage', {
         loadStripe: () => Promise.resolve(null), useSearchParams: () => [new URLSearchParams(search), () => {}], useNavigate: () => () => {},
         checkoutPriceDisplay: () => null, createCheckoutSession, paymentErrorMessage: () => 'Payment request was rejected.',
         Navbar: 'navbar', CheckoutPaymentForm: 'payment-form', CheckoutSkeleton: 'skeleton', PaymentFormSkeleton: 'payment-skeleton',
         PaymentResultPage: 'verification', PaymentErrorDialog: 'payment-error', LiveSaleFooter: 'sale',
+        AbortController, DOMException, Event, document: { hidden: false },
+        window: { addEventListener() {}, removeEventListener() {}, dispatchEvent() {}, scrollTo() {} },
+        getWallet: async () => ({ currency: 'usd', balanceCents: 5000, frozen: false }),
+        ...overrides,
     }, initialStates, 'pages', { entry: 'OrderCheckout' });
     return fixture;
 }
 
+const checkoutStates = overrides => {
+    const values = { data: { sessionId: 'synthetic-session', clientSecret: 'synthetic-secret',
+        summary: { serviceId: 'synthetic-service', email: 'customer@example.test', currency: 'usd', totalCents: 1000,
+            priceSummary: { goldRedeemed: 0, totalCents: 1000 } } }, displaySession: null, error: '', paid: false,
+        verification: null, celebratePaid: false, attempt: 0, paymentBusy: false,
+        wallet: { currency: 'usd', balanceCents: 5000, frozen: false }, walletLoading: false, walletProcessing: false,
+        walletConfirmation: null, walletError: '', walletReload: 0, updatingPrice: false, priceUpdateError: null,
+        goldConfirmation: null, goldError: '', contactEmail: null, couponNotice: null, ...overrides };
+    return Object.values(values);
+};
+
 async function goldPaymentFixture(createCheckoutSession) {
     const fixture = await checkoutViewFixture(createCheckoutSession,
-        [{ sessionId: 'synthetic-session', clientSecret: 'synthetic-secret', summary: { serviceId: 'synthetic-service', email: 'customer@example.test', priceSummary: { goldRedeemed: 0, totalCents: 1000 } } }, null, '', false, null, false, 0, false, false, null, 100, '', null, null]);
+        checkoutStates({ goldConfirmation: 100 }));
     const submit = findElement(fixture.render({ orderId: 'synthetic-order' }), node => node.type?.name === 'GoldConfirmation').props.onConfirm;
     return { fixture, submit };
 }
@@ -289,12 +309,12 @@ test('lost Gold settlement response verifies the same order and explicit server 
     await uncertain.submit();
     assert.equal(uncertain.fixture.state(4).orderId, 'synthetic-order');
     assert.equal(uncertain.fixture.state(4).gold, '1');
-    assert.equal(uncertain.fixture.state(11), '');
+    assert.equal(uncertain.fixture.state(17), '');
     assert.equal(uncertain.fixture.state(0).summary.priceSummary, undefined, 'a lost Gold receipt cannot display the old cash quote as its paid receipt');
     const rejected = await goldPaymentFixture(async () => { throw Object.assign(new Error('Balance changed'), { status: 409 }); });
     await rejected.submit();
     assert.equal(rejected.fixture.state(4), null);
-    assert.equal(rejected.fixture.state(11), 'Payment request was rejected.');
+    assert.equal(rejected.fixture.state(17), 'Payment request was rejected.');
 });
 
 test('double-clicking Gold confirmation sends one request and a late response after unmount is ignored', async () => {
@@ -308,6 +328,45 @@ test('double-clicking Gold confirmation sends one request and a late response af
     const retired = await goldPaymentFixture(() => new Promise(resolve => { late = resolve; }));
     const attempt = retired.submit(); retired.fixture.unmount();
     late({ paidWithGoldOnly: true, orderId: 'synthetic-order' }); await attempt;
+    assert.equal(retired.fixture.state(4), null);
+});
+
+async function walletPaymentFixture(payOrderWithWallet) {
+    const fixture = await checkoutViewFixture(() => assert.fail('wallet confirmation must not create a new card checkout'),
+        checkoutStates({ walletConfirmation: 1000 }), '', { payOrderWithWallet });
+    const submit = findElement(fixture.render({ orderId: 'synthetic-order' }), node => node.type?.name === 'WalletConfirmation').props.onConfirm;
+    return { fixture, submit };
+}
+
+test('lost wallet settlement responses verify the same order while quote and balance rejections stay unpaid', async () => {
+    const requests = [];
+    const uncertain = await walletPaymentFixture(async (...args) => { requests.push(args); throw new TypeError('Wallet commit response lost'); });
+    await uncertain.submit();
+    assert.deepEqual(requests, [['synthetic-order', 'customer@example.test', 1000]], 'the confirmed USD quote accompanies the payment request');
+    assert.equal(uncertain.fixture.state(4).orderId, 'synthetic-order');
+    assert.equal(uncertain.fixture.state(4).wallet, '1');
+    assert.equal(uncertain.fixture.state(0).summary.priceSummary, undefined, 'an ambiguous wallet outcome cannot show the previous quote as a paid receipt');
+    assert.equal(uncertain.fixture.state(12), '', 'an uncertain wallet commit offers verification rather than another payment');
+    for (const code of ['WALLET_INSUFFICIENT', 'WALLET_QUOTE_CHANGED']) {
+        const rejected = await walletPaymentFixture(async () => { throw Object.assign(new Error('Review payment'), { status: 409, code }); });
+        await rejected.submit();
+        assert.equal(rejected.fixture.state(4), null);
+        assert.notEqual(rejected.fixture.state(12), '');
+        assert.equal(rejected.fixture.state(3), false);
+    }
+});
+
+test('wallet confirmation serializes repeated clicks and ignores a committed response after unmount', async () => {
+    let respond, writes = 0;
+    const current = await walletPaymentFixture(() => { writes++; return new Promise(resolve => { respond = resolve; }); });
+    const first = current.submit(); await current.submit();
+    assert.equal(writes, 1);
+    respond({ paidWithWallet: true, orderId: 'synthetic-order' }); await first;
+    assert.equal(current.fixture.state(4).wallet, '1');
+    let late;
+    const retired = await walletPaymentFixture(() => new Promise(resolve => { late = resolve; }));
+    const attempt = retired.submit(); retired.fixture.unmount();
+    late({ paidWithWallet: true, orderId: 'synthetic-order' }); await attempt;
     assert.equal(retired.fixture.state(4), null);
 });
 
@@ -333,8 +392,8 @@ test('Strict Mode remounting reuses an in-flight checkout request instead of cre
     const response = new Promise(resolve => { respond = resolve; });
     const fixture = await checkoutViewFixture(() => { reads++; return response; });
     fixture.render({ orderId: 'existing-order' });
-    const cleanup = fixture.runEffect(0); cleanup();
-    fixture.runEffect(0);
+    const cleanup = fixture.runEffectMatching('createCheckoutSession'); cleanup();
+    fixture.runEffectMatching('createCheckoutSession');
     assert.equal(reads, 1);
     respond({ paid: true, orderId: 'existing-order', summary: { serviceId: 'synthetic-service' } });
     await response; await nextTurn();
@@ -435,4 +494,28 @@ test('a timed-out Gold request enters same-order verification and never resends 
     assert.equal(writes, 1);
     assert.equal(current.fixture.state(4).orderId, 'synthetic-order');
     assert.equal(current.fixture.state(4).gold, '1');
+});
+
+test('wallet API timeout verifies the original order without replaying its debit', async () => {
+    const timers = [], requests = [];
+    const source = await readFile(new URL('../src/api/wallet.js', import.meta.url), 'utf8');
+    const pay = vm.runInNewContext(`${source.replace(/^import[^\n]*\n/gm, '').replace(/^export /gm, '')}\npayOrderWithWallet;`, {
+        API_BASE_URL: 'https://synthetic.invalid/api', authStorage: { getItem: () => 'synthetic-token' },
+        AbortController, DOMException,
+        setTimeout(callback, delay) { const timer = { callback, delay, active: true }; timers.push(timer); return timer; },
+        clearTimeout(timer) { timer.active = false; },
+        fetch: async (url, options) => {
+            requests.push({ url, body: JSON.parse(options.body) });
+            return { ok: true, status: 200, json: () => new Promise((resolve, reject) => options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true })) };
+        },
+    });
+    const current = await walletPaymentFixture(pay);
+    const attempt = current.submit(); await nextTurn();
+    assert.equal(timers[0].delay, 20000);
+    timers[0].callback(); await attempt;
+    assert.equal(timers[0].active, false);
+    assert.deepEqual(requests, [{ url: 'https://synthetic.invalid/api/payments/wallet',
+        body: { orderId: 'synthetic-order', contactEmail: 'customer@example.test', expectedTotalCents: 1000 } }]);
+    assert.equal(current.fixture.state(4).orderId, 'synthetic-order');
+    assert.equal(current.fixture.state(4).wallet, '1');
 });

@@ -56,7 +56,7 @@ function pendingEstimate(order) {
         .map(contribution => ({ ...contribution, approvedMatches: contribution.submittedMatches })) })?.shares || [];
 }
 
-/** Completed, paid orders only. All monetary amounts are service revenue before tax. */
+/** Completed, paid orders only. The earnings pool is 70% of each saved order Total. */
 function buildEarningsReport(orders) {
     const totals = new Map();
     const boosters = {};

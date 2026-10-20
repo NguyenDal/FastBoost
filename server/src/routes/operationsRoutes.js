@@ -23,7 +23,7 @@ router.use(require('./matchHistoryRoutes'));
 async function earnings() {
     const boosterIdentity = { id: true, username: true, profile: { select: { displayName: true } } };
     const orders = await db.order.findMany({ where: { paymentStatus: 'PAID', status: 'COMPLETED' },
-        select: { id: true, orderNumber: true, boostType: true, queueType: true, amountCents: true, goldDiscountCents: true, currency: true, paidAt: true, updatedAt: true,
+        select: { id: true, orderNumber: true, boostType: true, queueType: true, amountCents: true, goldDiscountCents: true, cashAmountCents: true, currency: true, paidAt: true, updatedAt: true,
             matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
             matches: { select: { game: true, details: true, status: true, boosterId: true, booster: { select: boosterIdentity } } },
             assignments: { select: { boosterId: true, booster: { select: boosterIdentity } } },

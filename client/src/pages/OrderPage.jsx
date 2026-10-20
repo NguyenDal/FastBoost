@@ -2388,7 +2388,7 @@ function OrderPage() {
                 </div>
                 <div className="order-summary-total-inline">
                   <div className="order-summary-total-inline-main">
-                    <span>Subtotal</span>
+                    <span>Total</span>
                     {!priceBreakdownReady && priceQuoteError ? (
                       <strong>—</strong>
                     ) : !priceBreakdownReady ? (

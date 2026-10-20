@@ -63,6 +63,7 @@ app.use("/api/admin", adminUserRoutes);
 app.use('/api/operations/me/monthly-earnings', require('./routes/monthlyEarningsRoutes').createMonthlyEarningsRouter());
 app.use('/api/operations', require('./routes/operationsRoutes'));
 app.use("/api/payments", paymentRoutes);
+app.use('/api/wallet', require('./routes/walletRoutes'));
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin/prices", priceRoutes);
 app.use("/api/pricing", pricingRoutes);

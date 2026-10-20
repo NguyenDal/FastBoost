@@ -63,6 +63,19 @@
 .checkout-pay { display: block; width: 100%; padding: 16px; margin-top: 24px; border: 0; border-radius: 10px; background: linear-gradient(110deg,#a333ef,#493cff); box-shadow: 0 5px 20px #7838ef33; color: white; font: inherit; font-weight: 700; cursor: pointer; }
 .checkout-pay:disabled { opacity: .6; cursor: wait; }
 .checkout-wallet-slot { min-height: 44px; }
+.checkout-account-wallet { padding: 16px; margin: 0 0 14px; border: 1px solid #70509c; border-radius: 12px; background: linear-gradient(125deg,#37224960,#191b302e); }
+.checkout-account-wallet-heading { display: flex; align-items: center; gap: 12px; }
+.checkout-account-wallet-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; background: #9f64e52b; border: 1px solid #9c6cda44; border-radius: 10px; color: #d6b7ff; font-size: 24px; }
+.checkout-account-wallet-heading > div { min-width: 0; flex: 1; }
+.checkout-account-wallet-heading strong { display: block; font-size: 14px; }
+.checkout-account-wallet-heading > div > span { display: block; font-size: 12px; color: #baafcc; margin-top: 5px; }
+.checkout-account-wallet-heading a { flex-shrink: 0; }
+.checkout-account-wallet p { color: #b9b6ce; font-size: 12px; line-height: 1.6; margin: 13px 0; }
+.checkout-wallet-pay { width: 100%; display: flex; justify-content: center; align-items: center; gap: 16px; min-height: 44px; padding: 12px; border: 1px solid #9c6ce2; border-radius: 8px; background: #6f3dbc; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.checkout-wallet-pay > span { margin-left: auto; }
+.checkout-wallet-pay:disabled { background: #322b45; border-color: #4b3f60; color: #a89dbb; cursor: default; }
+.checkout-wallet-retry { margin-top: 12px; border: 0; padding: 0; color: #c89bff; background: transparent; font: inherit; font-size: 12px; cursor: pointer; }
+.checkout-wallet-pay:focus-visible,.checkout-wallet-retry:focus-visible { outline: 2px solid #d9b7ff; outline-offset: 3px; }
 .checkout-currency-selector { margin-bottom: 22px; }
 .checkout-currency-selector h3 { margin-top: 0; }
 .checkout-price-error { padding: 12px; margin-top: 16px; border: 1px solid #fb718566; border-radius: 10px; color: #fecdd3; font-size: .85rem; }

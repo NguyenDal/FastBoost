@@ -7,7 +7,7 @@ const { withEarningsLedgerMutation } = require('../utils/boosterEarningsLedger')
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const orderSelect = { id: true, orderNumber: true, customerId: true, boostType: true, queueType: true, inGameName: true, region: true,
-    createdAt: true, paidAt: true, paymentStatus: true, status: true, amountCents: true, goldDiscountCents: true, currency: true,
+    createdAt: true, paidAt: true, paymentStatus: true, status: true, amountCents: true, goldDiscountCents: true, cashAmountCents: true, currency: true,
     matchHistoryEnabled: true, matchHistoryRevision: true, matchHistoryConfirmedAt: true, matchHistorySyncedAt: true,
     assignments: { select: { boosterId: true, booster: { select: { username: true } } } },
     contributions: { include: { booster: { select: { username: true } } } } };

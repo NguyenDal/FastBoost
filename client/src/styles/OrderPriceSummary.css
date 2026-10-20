@@ -15,7 +15,6 @@
 .price-summary--admin dd { flex-shrink: 0; margin: 0; color: #f0edf8; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .price-summary--admin .price-discount,
 .price-summary--admin .price-discount dd { color: #8ed6b5; }
-.price-summary--admin .price-subtotal { margin-top: 12px; padding-top: 17px; border-top: 2px solid #ffffff20; color: #e5e7ef; font-weight: 650; }
 .price-summary--admin .price-row.total { margin-top: 12px; padding: 14px 16px; border-radius: 12px; background: #a78bfa0d; }
 .price-summary--admin .total dt { color: #e9e0fc; font-size: 16px; font-weight: 700; }
 .price-summary--admin .total dd { color: #fff; font-size: 22px; line-height: 1.3; font-weight: 750; letter-spacing: -.35px; }

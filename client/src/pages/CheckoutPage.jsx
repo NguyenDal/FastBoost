@@ -13,6 +13,8 @@ import { LiveSaleFooter } from "../components/SaleFooter";
 import CleanIcon from "../components/CleanIcon";
 import OrderPriceSummary from '../components/OrderPriceSummary';
 import { createCheckoutSession, verifyCheckoutSession, checkServiceAvailability } from "../api/orders";
+import { getWallet, payOrderWithWallet } from "../api/wallet";
+import { walletMoney, walletPaymentState } from "../utils/wallet";
 import "../styles/Checkout.css";
 
 const publishableKey = import.meta.env.STRIPE_PUBLISHABLE_KEY?.trim();
@@ -62,6 +64,13 @@ function OrderCheckout({ orderId }) {
     const priceDisplay = checkoutPriceDisplay(data?.summary?.priceSummary, data?.sessionId, displaySession);
     const [attempt, setAttempt] = useState(0);
     const [paymentBusy, setPaymentBusy] = useState(false);
+    const [wallet, setWallet] = useState(null);
+    const [walletLoading, setWalletLoading] = useState(true);
+    const [walletProcessing, setWalletProcessing] = useState(false);
+    const [walletConfirmation, setWalletConfirmation] = useState(null);
+    const [walletError, setWalletError] = useState('');
+    const [walletReload, setWalletReload] = useState(0);
+    const walletSubmitting = useRef(false);
     const [updatingPrice, setUpdatingPrice] = useState(false);
     const [priceUpdateError, setPriceUpdateError] = useState(null);
     const priceRequest = useRef(false);
@@ -81,6 +90,23 @@ function OrderCheckout({ orderId }) {
         setGoldConfirmation(null);
         setVerification({ orderId: result.orderId || orderId, gold: "1" });
     }, [orderId]);
+
+    useEffect(() => {
+        let cancelled = false;
+        const controller = new AbortController();
+        setWalletLoading(true);
+        getWallet({ signal: controller.signal }).then(result => {
+            if (!cancelled) setWallet(result);
+        }).catch(() => { if (!cancelled) setWallet(null); })
+            .finally(() => { if (!cancelled) setWalletLoading(false); });
+        return () => { cancelled = true; controller.abort(); };
+    }, [walletReload]);
+    useEffect(() => {
+        const refresh = () => { if (!document.hidden && !walletSubmitting.current) setWalletReload(value => value + 1); };
+        window.addEventListener('focus', refresh);
+        window.addEventListener('wallet:updated', refresh);
+        return () => { window.removeEventListener('focus', refresh); window.removeEventListener('wallet:updated', refresh); };
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -105,11 +131,9 @@ function OrderCheckout({ orderId }) {
                 const cardCheckout = await createCheckoutSession(orderId, 0);
                 if (cancelled || !active.current) return;
                 if (!cardCheckout.clientSecret) throw new Error("Unable to load card payment.");
-                if (!stripePromise) throw new Error("Payment form is unavailable.");
                 setData(cardCheckout);
                 setGoldConfirmation(result.summary.goldRedeemed);
             } else if (result.clientSecret) {
-                if (!stripePromise) throw new Error("Payment form is unavailable.");
                 setData(result);
             } else setError("Unable to start payment. Please try again.");
         }).catch(async (failure) => {
@@ -221,6 +245,50 @@ function OrderCheckout({ orderId }) {
         await checkServiceAvailability(data.summary.serviceId);
         if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
     };
+    const payWithWallet = async () => {
+        if (!active.current || walletSubmitting.current || paymentBusy || updatingPrice || priceRequest.current || priceUpdateError || walletConfirmation === null) return;
+        walletSubmitting.current = true;
+        setWalletProcessing(true);
+        setPaymentBusy(true);
+        setWalletError('');
+        let settlementStarted = false;
+        try {
+            const email = (contactEmail ?? data?.summary.email ?? '').trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: 'email_required' });
+            settlementStarted = true;
+            const result = await payOrderWithWallet(orderId, email, walletConfirmation);
+            if (!active.current) return;
+            setWalletConfirmation(null);
+            if (result.paidWithWallet || result.paid) {
+                if (result.summary) setData(previous => ({ ...previous, ...result }));
+                setVerification({ orderId: result.orderId || orderId, wallet: '1' });
+                window.dispatchEvent(new Event('wallet:updated'));
+            } else if (result.completed && result.sessionId) {
+                setVerification({ session_id: result.sessionId });
+            } else throw new Error('Payment status needs verification.');
+        } catch (failure) {
+            if (!active.current) return;
+            setWalletConfirmation(null);
+            if (settlementStarted && (!Number.isInteger(failure?.status) || failure.status >= 500 || failure.code === 'WALLET_CARD_IN_PROGRESS')) {
+                setData(previous => previous?.summary ? { ...previous, summary: { ...previous.summary, priceSummary: undefined } } : previous);
+                setVerification(failure.code === 'WALLET_CARD_IN_PROGRESS' && data?.sessionId ? { session_id: data.sessionId, orderId } : { orderId, wallet: '1' });
+            } else {
+                const messages = {
+                    WALLET_INSUFFICIENT: 'Your wallet balance changed and no longer covers this order. Top up your wallet or choose another payment method.',
+                    WALLET_FROZEN: 'Your wallet is temporarily restricted. Please contact support.',
+                    WALLET_QUOTE_CHANGED: 'Your order total changed. Review the refreshed total before paying.',
+                    WALLET_EMAIL: 'Please enter a valid email address so we can send your payment confirmation.',
+                };
+                setWalletError(messages[failure.code] || paymentErrorMessage(failure));
+                setWalletReload(value => value + 1);
+                if (failure.code === 'WALLET_QUOTE_CHANGED') setAttempt(value => value + 1);
+            }
+        } finally {
+            walletSubmitting.current = false;
+            if (active.current) { setWalletProcessing(false); setPaymentBusy(false); }
+        }
+    };
+    const walletContent = <WalletPaymentOption wallet={wallet} loading={walletLoading} summary={data?.summary} orderId={orderId} busy={paymentBusy || updatingPrice || Boolean(verification) || paid || walletConfirmation !== null || goldConfirmation !== null || Boolean(priceUpdateError)} onRetry={() => setWalletReload(value => value + 1)} onPay={() => { setWalletError(''); setWalletConfirmation(data.summary.totalCents); }} />;
 
     return <div className={"checkout-shell checkout-" + (data?.summary?.game || "lol")}>
         <Navbar />
@@ -235,7 +303,7 @@ function OrderCheckout({ orderId }) {
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError)} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <p role="alert">Payment is temporarily unavailable. Please reload this page or contact support.</p>)}
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError) || walletProcessing || walletConfirmation !== null} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} walletContent={walletContent} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <><h3>Express Checkout</h3>{walletContent}<p role="alert">Card payment is temporarily unavailable. Please reload this page or contact support.</p></>)}
                     </section>
                     <OrderSummary summary={data?.summary || { orderId }} priceDisplay={priceDisplay} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification)} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
@@ -244,9 +312,42 @@ function OrderCheckout({ orderId }) {
         {verification && <PaymentResultPage type="success" overlayOnly verification={verification} onVerified={markPaid} onComplete={completeConfirmation} />}
         {error && !paid && <PaymentErrorDialog message={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? error : "We couldn’t load checkout. Please try again. If this continues, contact support."} action={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? "Back to Services" : "Retry Checkout"} onClose={() => { if (error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" })) navigate("/"); else { setError(""); setAttempt(value => value + 1); } }} />}
         {goldError && <PaymentErrorDialog message={goldError} onClose={() => setGoldError("")} />}
+        {walletError && <PaymentErrorDialog message={walletError} onClose={() => setWalletError('')} />}
+        {walletConfirmation !== null && <WalletConfirmation totalCents={walletConfirmation} busy={walletProcessing} onConfirm={payWithWallet} onBack={() => { if (!walletProcessing) setWalletConfirmation(null); }} />}
         {couponNotice && <PaymentErrorDialog informational title={couponNotice.title} message={couponNotice.message} action="Got it" onClose={() => setCouponNotice(null)} />}
         {goldConfirmation !== null && <GoldConfirmation gold={goldConfirmation} busy={paymentBusy} onConfirm={payWithGold} onBack={() => { if (!paymentBusy) setGoldConfirmation(null); }} />}
     </div>;
+}
+
+function WalletPaymentOption({ wallet, loading, summary, orderId, busy, onRetry, onPay }) {
+    const state = walletPaymentState(wallet, summary?.totalCents, summary?.currency);
+    const help = state === 'frozen' ? 'Your wallet is temporarily restricted. Contact support.'
+        : state === 'currency' ? 'Wallet payments are available for USD orders.'
+        : state === 'insufficient' ? `Add ${walletMoney(summary.totalCents - wallet.balanceCents)} or more to cover this order.`
+        : state === 'ready' ? `Pay ${walletMoney(summary.totalCents)} from your FastBoost balance.`
+        : 'We couldn’t load your wallet. You can still pay by card.';
+    return <div className="checkout-account-wallet">
+        <div className="checkout-account-wallet-heading"><span className="checkout-account-wallet-icon" aria-hidden="true">▣</span><div><strong>FastBoost Wallet</strong><span>{loading ? 'Loading balance…' : wallet ? `${walletMoney(wallet.balanceCents)} available · USD` : 'Balance unavailable'}</span></div><Link to={`/account/wallet?returnTo=${encodeURIComponent(`/checkout/${orderId}`)}`} aria-label="Top up your wallet and return to checkout" tabIndex={busy ? -1 : undefined} onClick={event => { if (busy) event.preventDefault(); }}>Top up <span aria-hidden="true">↗</span></Link></div>
+        <p id="checkout-wallet-help" role="status">{loading ? 'Checking your available balance.' : help}</p>
+        <button type="button" className="checkout-wallet-pay" disabled={busy || loading || state !== 'ready'} onClick={onPay} aria-describedby="checkout-wallet-help">{state === 'insufficient' ? 'Insufficient wallet balance' : 'Pay with Wallet'}{state === 'ready' && <span>{walletMoney(summary.totalCents)} <span aria-hidden="true">→</span></span>}</button>
+        {!loading && state === 'unavailable' && <button type="button" className="checkout-wallet-retry" disabled={busy} onClick={onRetry}>Refresh balance</button>}
+    </div>;
+}
+
+function WalletConfirmation({ totalCents, busy, onConfirm, onBack }) {
+    const dialog = useRef(null);
+    useEffect(() => {
+        const element = dialog.current;
+        element.showModal();
+        return () => element.close();
+    }, []);
+    return <dialog ref={dialog} className="checkout-gold-dialog" aria-labelledby="wallet-confirm-title" aria-describedby="wallet-confirm-description" onCancel={event => { event.preventDefault(); if (!busy) onBack(); }}>
+        <h2 id="wallet-confirm-title">Pay with your wallet?</h2>
+        <p id="wallet-confirm-description">We’ll deduct <strong>{walletMoney(totalCents)} USD</strong> from your FastBoost Wallet to pay for this order in full.</p>
+        <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
+        <button className="checkout-pay" disabled={busy} onClick={onConfirm}>{busy ? 'Processing wallet payment…' : `Confirm payment · ${walletMoney(totalCents)}`}</button>
+        <button className="checkout-gold-back" autoFocus disabled={busy} onClick={onBack}>Back to payment methods</button>
+    </dialog>;
 }
 
 function GoldConfirmation({ gold, busy, onConfirm, onBack }) {

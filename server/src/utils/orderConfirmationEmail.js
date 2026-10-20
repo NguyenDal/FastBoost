@@ -16,19 +16,22 @@ function buildConfirmation(order, email, paymentMethod = null) {
     if (local && process.env.NODE_ENV === "production") throw new Error("Production email links cannot use localhost");
     const summary = checkoutSummary(order);
     const pricing = summary.priceSummary;
+    const promotionPercent = Number(pricing.promotion?.discountPercent);
+    const promotionLabel = `${pricing.promotion?.title || 'Promotional discount'}${Number.isFinite(promotionPercent) && promotionPercent > 0 && promotionPercent <= 100
+        ? ` (${promotionPercent}% off${pricing.promotion.appliesTo === 'BASE_PRICE' ? ' base price' : ''})` : ''}`;
     const money = cents => new Intl.NumberFormat("en-US", { style: "currency", currency: summary.currency.toUpperCase(), currencyDisplay: "symbol" }).format(cents / 100);
     const rows = [
         ["Game", summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"],
         ["Service", summary.serviceType], ...summary.details,
-        ["Subtotal", money(pricing.subtotalCents)],
-        ...[["Promotion", pricing.promotionCents], [`Coupon${pricing.coupon?.code ? ` (${pricing.coupon.code})` : ''}`, pricing.coupon?.amountCents],
+        ...(pricing.subtotalCents !== pricing.totalCents ? [["Subtotal", money(pricing.subtotalCents)]] : []),
+        ...[[promotionLabel, pricing.promotionCents], [`Coupon${pricing.coupon?.code ? ` (${pricing.coupon.code})` : ''}`, pricing.coupon?.amountCents],
             ["Referral discount", pricing.referralCents], [`Gold used${pricing.goldRedeemed ? ` (${pricing.goldRedeemed.toLocaleString()} Gold)` : ''}`, pricing.goldDiscountCents]]
             .filter(([, amount]) => amount > 0).map(([label, amount]) => [label, `−${money(amount)}`]),
         ["Total", money(pricing.totalCents)],
     ];
     const paymentRows = [
         ...(pricing.goldDiscountCents > 0 ? [[`Gold (${Number(pricing.goldRedeemed).toLocaleString("en-US")})`, `−${money(pricing.goldDiscountCents)}`]] : []),
-        ...(pricing.totalCents > 0 ? [[paymentMethodLabel(paymentMethod), money(pricing.totalCents)]] : []),
+        ...(pricing.totalCents > 0 ? [[Number.isSafeInteger(order.walletAmountCents) && order.walletAmountCents === pricing.totalCents ? "FastBoost Wallet" : paymentMethodLabel(paymentMethod), money(pricing.totalCents)]] : []),
     ];
     if (!paymentRows.length) paymentRows.push(["Payment", "No charge"]);
     const url = new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;

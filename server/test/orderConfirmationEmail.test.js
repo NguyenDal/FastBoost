@@ -17,6 +17,8 @@ test("confirmation contains actual service, cash and gold; escapes content and r
     assert.match(mail.text, /Placement Matches: 5/);
     assert.doesNotMatch(mail.text, /Target Rank/);
     assert.match(mail.text, /Subtotal: \$30\.00/);
+    assert.equal((mail.text.match(/^Subtotal:/gm) || []).length, 1);
+    assert.doesNotMatch(mail.text + mail.html, /Original price|before tax|after tax/i);
     assert.match(mail.text, /Gold used \(100 Gold\): −\$10\.00/);
     assert.match(mail.text, /Total: \$17\.00/);
     assert.doesNotMatch(mail.text, /US\$|USD|CAD/);
@@ -31,6 +33,30 @@ test("confirmation contains actual service, cash and gold; escapes content and r
     process.env.NODE_ENV = "production";
     process.env.CLIENT_URL = "http://localhost:5173";
     assert.throws(() => buildConfirmation(order, "a@example.com"));
+});
+
+test("receipt names saved discounts and identifies wallet payments without card details", t => {
+    configure(t);
+    const coupon = buildConfirmation({ ...order, basePrice: 10, amountCents: 850, cashAmountCents: 850,
+        referralDiscount: 0, goldRedeemed: 0, goldDiscountCents: 0, couponSaleId: 'saved-coupon',
+        couponCode: 'FALL15', couponDiscountCents: 150, walletAmountCents: 850 }, 'customer@example.test');
+    assert.match(coupon.text, /Subtotal: \$10\.00/);
+    assert.match(coupon.text, /Coupon \(FALL15\): −\$1\.50/);
+    assert.match(coupon.text, /Total: \$8\.50/);
+    assert.match(coupon.text, /FastBoost Wallet: \$8\.50/);
+    assert.doesNotMatch(coupon.text + coupon.html, /Online payment|Original price|before tax|after tax/i);
+    const promotion = buildConfirmation({ ...order, basePrice: 10, amountCents: 850, cashAmountCents: 850,
+        referralDiscount: 0, goldRedeemed: 0, goldDiscountCents: 0 }, 'customer@example.test');
+    assert.match(promotion.text, /Promotional discount: −\$1\.50/);
+    const savedPromotion = buildConfirmation({ ...order, basePrice: 10, amountCents: 850, cashAmountCents: 850,
+        referralDiscount: 0, goldRedeemed: 0, goldDiscountCents: 0,
+        promotionTitle: 'Fall promotion', promotionPercent: 15, promotionAppliesTo: 'BASE_PRICE' }, 'customer@example.test');
+    assert.match(savedPromotion.text, /Fall promotion \(15% off base price\): −\$1\.50/);
+    assert.match(savedPromotion.html, /Fall promotion \(15% off base price\)/);
+    const fullPrice = buildConfirmation({ ...order, basePrice: 10, amountCents: 1000, cashAmountCents: 1000,
+        referralDiscount: 0, goldRedeemed: 0, goldDiscountCents: 0 }, 'customer@example.test');
+    assert.doesNotMatch(fullPrice.text, /Original price|discount|Subtotal/);
+    assert.match(fullPrice.text, /Total: \$10\.00/);
 });
 
 test("queue stores one immutable confirmation per paid order", async t => {

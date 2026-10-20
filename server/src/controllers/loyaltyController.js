@@ -88,6 +88,7 @@ const LOYALTY_TIERS = [
         nextTier: "Silver",
         bonusCoins: 0,
         topUpBonusPercent: 0,
+        cashBackPercent: 0,
         benefits: ["No bonus"],
     },
     {
@@ -98,7 +99,8 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
-        benefits: ["200 bonus coins", "3% cash back"],
+        cashBackPercent: 3,
+        benefits: ["200 bonus coins", "3% cash back to wallet"],
     },
     {
         key: "gold",
@@ -108,7 +110,8 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
-        benefits: ["500 bonus coins", "5% cash back"],
+        cashBackPercent: 5,
+        benefits: ["500 bonus coins", "5% cash back to wallet"],
     },
     {
         key: "platinum",
@@ -118,7 +121,8 @@ const LOYALTY_TIERS = [
         nextTier: "Diamond",
         bonusCoins: 1000,
         topUpBonusPercent: 10,
-        benefits: ["1000 bonus coins", "10% cash back"],
+        cashBackPercent: 10,
+        benefits: ["1000 bonus coins", "10% cash back to wallet"],
     },
     {
         key: "diamond",
@@ -128,7 +132,8 @@ const LOYALTY_TIERS = [
         nextTier: null,
         bonusCoins: 1500,
         topUpBonusPercent: 15,
-        benefits: ["1500 bonus coins", "15% cash back"],
+        cashBackPercent: 15,
+        benefits: ["1500 bonus coins", "15% cash back to wallet"],
     },
 ];
 
@@ -268,6 +273,7 @@ exports.getMyLoyalty = async (req, res) => {
                 icon: tierInfo.icon,
                 bonusCoins: tierInfo.bonusCoins,
                 topUpBonusPercent: tierInfo.topUpBonusPercent,
+                cashBackPercent: tierInfo.cashBackPercent,
                 benefits: tierInfo.benefits,
 
                 // Keep this for stats only, not tier calculation.

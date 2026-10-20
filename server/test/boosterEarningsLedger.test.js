@@ -10,7 +10,7 @@ const mutate = (f, id, action, now = october) => f.db.$transaction(tx => withEar
 
 test('disabled ledger bypasses schema and activation is explicit', async t => {
     enable(t); process.env.BOOSTER_MONTHLY_EARNINGS_ENABLED = 'false';
-    assert.equal(await withEarningsLedgerMutation({}, 'order', async () => 42), 42);
+    assert.equal(await withEarningsLedgerMutation({ order: { findUnique: async () => null } }, 'order', async () => 42), 42);
     await assert.rejects(initializeEarningsLedger({}), /Enable BOOSTER_MONTHLY/);
 });
 

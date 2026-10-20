@@ -5,6 +5,8 @@ import { listMyNotifications, markNotificationRead } from "../api/notifications"
 import { getMyLoyalty } from "../api/loyalty";
 import { getMyAccount } from "../api/accountSettings";
 import { customerListMyOrders } from "../api/customerOrders";
+import { getWallet } from "../api/wallet";
+import { walletMoney } from "../utils/wallet";
 import { DashboardOrders, DashboardAccount, DashboardQuickActions } from "../components/DashboardOverview";
 import {
     Skeleton,
@@ -21,9 +23,26 @@ export default function DashboardPage() {
     const [loyalty, setLoyalty] = useState(null);
     const [account, setAccount] = useState(null);
     const [orders, setOrders] = useState([]);
+    const [wallet, setWallet] = useState(null);
+    const [walletFailed, setWalletFailed] = useState(false);
     const [loading, setLoading] = useState(true);
     const [copiedReferral, setCopiedReferral] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        let cancelled = false;
+        const controller = new AbortController();
+        const refresh = () => {
+            if (document.hidden) return;
+            getWallet({ signal: controller.signal }).then(result => {
+                if (!cancelled) { setWallet(result); setWalletFailed(false); }
+            }).catch(() => { if (!cancelled) setWalletFailed(true); });
+        };
+        refresh();
+        window.addEventListener('focus', refresh);
+        window.addEventListener('wallet:updated', refresh);
+        return () => { cancelled = true; controller.abort(); window.removeEventListener('focus', refresh); window.removeEventListener('wallet:updated', refresh); };
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -136,6 +155,7 @@ export default function DashboardPage() {
 
     const progressPercent = Number(loyalty?.progressPercent || 0);
     const benefitTier = loyalty?.tiers?.find((tier) => tier.name === (tierInfo.nextTier || tierInfo.name));
+    const benefitCashBackPercent = Number(benefitTier?.cashBackPercent ?? benefitTier?.topUpBonusPercent ?? ({ bronze: 0, silver: 3, gold: 5, platinum: 10, diamond: 15 }[benefitTier?.key] || 0));
     const completedSpend = Number(loyalty?.totalCompletedSpend || 0);
 
     const handleCopyReferralLink = async () => {
@@ -211,7 +231,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="dashboard-wallet-amount">
                                     <p className="dashboard-wallet-label">Available balance</p>
-                                    <strong className="dashboard-wallet-balance">$0.00</strong>
+                                    <strong className="dashboard-wallet-balance" aria-live="polite">{wallet ? walletMoney(wallet.balanceCents) : walletFailed ? 'Unavailable' : '…'}</strong>
                                 </div>
                                 <Link to="/account/loyalty" className="dashboard-wallet-gold">
                                     <span className="dashboard-wallet-coin" aria-hidden="true">🪙</span>
@@ -220,7 +240,7 @@ export default function DashboardPage() {
                                     <span className="dashboard-wallet-chevron" aria-hidden="true">›</span>
                                 </Link>
                                 <div className="dashboard-wallet-actions">
-                                    <button type="button" className="dashboard-wallet-topup" disabled title="Wallet top-ups are not available yet">Top Up</button>
+                                    <Link to="/account/wallet" className="dashboard-wallet-topup">Top Up</Link>
                                     <Link to="/" className="dashboard-wallet-redeem" title="Choose a service to redeem gold at checkout">Redeem Gold</Link>
                                 </div>
                             </section>
@@ -252,7 +272,7 @@ export default function DashboardPage() {
                                         {tierInfo.nextTier ? `Next tier: ${tierInfo.nextTier}` : `${tierInfo.name} benefits`}
                                     </p>
                                     <div><span className="dashboard-benefit-icon gold" aria-hidden="true">🪙</span><div><strong>+{benefitTier.bonusCoins} Gold</strong><small>{tierInfo.nextTier ? `On reaching ${tierInfo.nextTier}` : "Tier reward"}</small></div></div>
-                                    <div><span className="dashboard-benefit-icon blue" aria-hidden="true">↩</span><div><strong>{benefitTier.topUpBonusPercent}% Cash Back</strong><small>{tierInfo.nextTier ? `At ${tierInfo.nextTier}` : "Current tier"}</small></div></div>
+                                    <div><span className="dashboard-benefit-icon blue" aria-hidden="true">↩</span><div><strong>{benefitCashBackPercent}% Cash Back</strong><small>{tierInfo.nextTier ? `To your wallet at ${tierInfo.nextTier}` : 'To your wallet on completed orders'}</small></div></div>
                                 </div>}
                             </Link>
 

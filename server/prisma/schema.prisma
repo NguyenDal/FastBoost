@@ -51,6 +51,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   profile             Profile?
   rewardHistory       RewardHistory[]
+  walletAccount       WalletAccount?
 
   referralCode String? @unique
   referredById String?
@@ -67,6 +68,77 @@ model User {
   boosterAssignmentRequests AssignmentRequest[] @relation("BoosterAssignmentRequests")
   adminAssignmentRequests   AssignmentRequest[] @relation("AdminAssignmentRequests")
   notifications             Notification[]
+}
+
+// Customer store credit, denominated in USD cents. A reversal may create a
+// negative balance when already-spent credit is charged back; frozen accounts
+// cannot spend or top up until an operator resolves the liability.
+model WalletAccount {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  purchasedBalanceCents Int @default(0)
+  promotionalBalanceCents Int @default(0)
+  frozenAt DateTime?
+  freezeReason String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  topUps WalletTopUp[]
+  entries WalletEntry[]
+  cashbackEntitlements WalletCashbackEntitlement[]
+}
+
+model WalletTopUp {
+  id String @id @default(cuid())
+  userId String
+  account WalletAccount @relation(fields: [userId], references: [userId], onDelete: Restrict)
+  packageId String
+  amountCents Int
+  bonusPercent Int
+  bonusCents Int
+  currency String @default("usd")
+  status String @default("CREATING")
+  clientUrl String
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId String? @unique
+  paidAt DateTime?
+  reversedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  entries WalletEntry[]
+
+  @@index([userId, status, createdAt])
+}
+
+// Append-only ledger; the migration also rejects UPDATE and DELETE at DB level.
+// orderId deliberately has no cascading FK so order deletion preserves history.
+model WalletEntry {
+  id String @id @default(cuid())
+  userId String
+  account WalletAccount @relation(fields: [userId], references: [userId], onDelete: Restrict)
+  topUpId String?
+  topUp WalletTopUp? @relation(fields: [topUpId], references: [id], onDelete: Restrict)
+  orderId String?
+  key String @unique
+  type String
+  amountCents Int
+  purchasedCents Int
+  promotionalCents Int
+  description String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt, id])
+}
+
+model WalletCashbackEntitlement {
+  orderId String @id
+  userId String
+  account WalletAccount @relation(fields: [userId], references: [userId], onDelete: Restrict)
+  entitledCents Int @default(0)
+  revision Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 // Deliberately independent of account/order foreign keys: deleting a target must
@@ -377,6 +449,10 @@ model Order {
   goldRedeemed            Int           @default(0)
   goldDiscountCents       Int           @default(0)
   cashAmountCents         Int?
+  walletAmountCents       Int           @default(0)
+  walletPurchasedCents    Int           @default(0)
+  walletPromotionalCents  Int           @default(0)
+  cashbackPercent        Int?
 
   boostType         String
   playMode          String?
@@ -418,6 +494,9 @@ model Order {
   basePrice         Float       @default(0)
   addonPrice        Float       @default(0)
   referralDiscount  Float       @default(0)
+  promotionTitle    String?
+  promotionPercent Decimal?     @db.Decimal(5, 2)
+  promotionAppliesTo String?
   totalPrice        Float       @default(0)
 
   customer          User        @relation(fields: [customerId], references: [id], onDelete: Cascade)

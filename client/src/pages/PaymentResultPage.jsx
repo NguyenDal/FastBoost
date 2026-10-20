@@ -108,6 +108,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
 
   const isSuccess = type === "success";
   const isGoldPayment = params.get("gold") === "1";
+  const isWalletPayment = params.get("wallet") === "1";
   const confirmedSuccess = isSuccess && state.paid && !state.error;
   const showNeedsReview = isSuccess && !state.loading && !state.paid;
 
@@ -196,11 +197,11 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
             {state.loading
               ? isGoldPayment
                 ? "Please wait while FastBoost confirms your gold payment."
-                : "Please wait while FastBoost confirms your payment with Stripe."
+                : isWalletPayment ? "Please wait while FastBoost confirms your wallet payment." : "Please wait while FastBoost confirms your payment with Stripe."
               : confirmedSuccess
                 ? isGoldPayment
                   ? "Your gold payment is complete. Your order is ready."
-                  : "Your payment is complete. Your order is ready."
+                  : isWalletPayment ? "Your wallet payment is complete. Your order is ready." : "Your payment is complete. Your order is ready."
                 : showNeedsReview
                   ? state.error ||
                   "The payment was not confirmed. Review your order and try again."

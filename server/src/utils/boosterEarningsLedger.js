@@ -1,11 +1,12 @@
 const { orderEarnings } = require('./earnings');
 const { earningsMonth } = require('./monthlyEarningsPeriod');
+const { prepareCashbackMutation, reconcileCashbackMutation } = require('./customerCashback');
 
 const enabled = () => process.env.BOOSTER_MONTHLY_EARNINGS_ENABLED === 'true';
 const unavailable = () => Object.assign(new Error('Monthly earnings are not available yet. Please try again later.'), { status: 503, available: false });
 const orderSelect = {
     id: true, orderNumber: true, boostType: true, queueType: true, status: true, paymentStatus: true,
-    amountCents: true, goldDiscountCents: true, currency: true, matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
+    amountCents: true, goldDiscountCents: true, cashAmountCents: true, currency: true, matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
     service: { select: { title: true } }, assignments: { select: { boosterId: true } },
     contributions: { select: { boosterId: true, submittedMatches: true, approvedMatches: true } },
     matches: { select: { game: true, details: true, status: true, boosterId: true } },
@@ -36,10 +37,13 @@ async function withEarningsLedgerRead(prisma, read, { now } = {}) {
 }
 
 async function withEarningsLedgerMutation(tx, orderId, mutation, { clock = () => new Date() } = {}) {
-    if (!enabled()) return mutation();
-    await ledgerLock(tx);
-    const state = await tx.boosterEarningsLedgerState.findUnique({ where: { id: 'global' } });
+    const trackEarnings = enabled();
+    if (trackEarnings) await ledgerLock(tx);
+    const before = await prepareCashbackMutation(tx, orderId);
+    const state = trackEarnings ? await tx.boosterEarningsLedgerState.findUnique({ where: { id: 'global' } }) : null;
     const result = await mutation();
+    // Customer cashback remains active independently of monthly booster reports.
+    await reconcileCashbackMutation(tx, orderId, before);
     if (state) await recognizeOrderEarnings(tx, orderId, clock());
     return result;
 }

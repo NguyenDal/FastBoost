@@ -1,3 +1,13 @@
+// Only persisted campaign metadata may label receipts; current promotions must
+// never rewrite the description of a customer's historical purchase.
+function savedPromotion(order, amountCents) {
+    const title = typeof order.promotionTitle === 'string' ? order.promotionTitle.trim() : '';
+    const discountPercent = order.promotionPercent == null ? null : Number(order.promotionPercent);
+    if (!title || !Number.isSafeInteger(amountCents) || amountCents <= 0 || order.couponSaleId ||
+        !Number.isFinite(discountPercent) || discountPercent <= 0 || discountPercent > 100) return null;
+    return { title, discountPercent, ...(order.promotionAppliesTo ? { appliesTo: order.promotionAppliesTo } : {}) };
+}
+
 function checkoutSummary(order, goldRedeemed = order.goldRedeemed || 0, goldDiscountCents = order.goldDiscountCents || 0,
     cashAmountCents = order.cashAmountCents ?? Math.max(0, (order.amountCents ?? Math.round(Number(order.totalPrice || 0) * 100)) - goldDiscountCents)) {
     const cents = (value) => Math.round(Number(value || 0) * 100);
@@ -48,6 +58,15 @@ function checkoutSummary(order, goldRedeemed = order.goldRedeemed || 0, goldDisc
         goldDiscountCents: summary.goldDiscountCents,
         totalCents: summary.totalCents,
     };
+    const promotion = savedPromotion(order, summary.saleDiscountCents);
+    if (promotion) summary.priceSummary.promotion = promotion;
+    if (order.walletAmountCents > 0) {
+        summary.walletAmountCents = order.walletAmountCents;
+        summary.walletPurchasedCents = order.walletPurchasedCents || 0;
+        summary.walletPromotionalCents = order.walletPromotionalCents || 0;
+        summary.paymentMethod = 'account_balance';
+        summary.priceSummary.walletAmountCents = order.walletAmountCents;
+    }
     return summary;
 }
 
@@ -84,8 +103,10 @@ function savedAdminPriceBreakdown(order) {
     const promotionCents = coupon ? 0 : remainingDiscount !== null && remainingDiscount >= 0 ? remainingDiscount : null;
     const itemizedSubtotal = grossCents !== null && promotionCents !== null && (!coupon || coupon.amountCents !== null)
         ? grossCents - promotionCents - (coupon?.amountCents || 0) - referralCents - goldDiscountCents : null;
+    const promotion = savedPromotion(order, promotionCents);
     return {
         basePriceCents, addonPriceCents, promotionCents, coupon, referralCents,
+        ...(promotion ? { promotion } : {}),
         goldRedeemed: integerCents(order.goldRedeemed) ?? 0, goldDiscountCents,
         subtotalCents,
         // No tax amount is persisted today. Do not classify the difference

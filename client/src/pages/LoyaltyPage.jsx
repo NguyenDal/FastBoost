@@ -210,14 +210,11 @@ export default function LoyaltyPage() {
 
                                         <div className="loyalty-tier-benefits">
                                             {tier.bonusCoins > 0 ? (
-                                                <em aria-label={`+${tier.bonusCoins} gold`}>+{tier.bonusCoins} <span role="img" aria-label="gold">🪙</span></em>
+                                                <em className="loyalty-tier-benefit-row"><span className="loyalty-tier-gold">+{tier.bonusCoins} Gold</span><span className="loyalty-tier-benefit-dot" aria-hidden="true">·</span><span className="loyalty-tier-cashback">{Number(tier.cashBackPercent ?? tier.topUpBonusPercent ?? LOYALTY_TIERS.find(item => item.key === tier.key)?.cashBackPercent ?? 0)}% Cash Back</span></em>
                                             ) : (
                                                 <em>No bonus</em>
                                             )}
 
-                                            {tier.topUpBonusPercent > 0 && (
-                                                <em>{tier.topUpBonusPercent}% cash back</em>
-                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -347,6 +344,7 @@ const LOYALTY_TIERS = [
         nextTier: "Silver",
         bonusCoins: 0,
         topUpBonusPercent: 0,
+        cashBackPercent: 0,
         benefits: ["No bonus"],
     },
     {
@@ -357,6 +355,7 @@ const LOYALTY_TIERS = [
         nextTier: "Gold",
         bonusCoins: 200,
         topUpBonusPercent: 3,
+        cashBackPercent: 3,
         benefits: ["200 bonus gold", "3% cash back"],
     },
     {
@@ -367,6 +366,7 @@ const LOYALTY_TIERS = [
         nextTier: "Platinum",
         bonusCoins: 500,
         topUpBonusPercent: 5,
+        cashBackPercent: 5,
         benefits: ["500 bonus gold", "5% cash back"],
     },
     {
@@ -377,6 +377,7 @@ const LOYALTY_TIERS = [
         nextTier: "Diamond",
         bonusCoins: 1000,
         topUpBonusPercent: 10,
+        cashBackPercent: 10,
         benefits: ["1000 bonus gold", "10% cash back"],
     },
     {
@@ -387,6 +388,7 @@ const LOYALTY_TIERS = [
         nextTier: null,
         bonusCoins: 1500,
         topUpBonusPercent: 15,
+        cashBackPercent: 15,
         benefits: ["1500 bonus gold", "15% cash back"],
     },
 ];

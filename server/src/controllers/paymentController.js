@@ -9,7 +9,11 @@ const stripe = require("../utils/stripeClient");
 const { checkoutSummary } = require("../utils/checkoutSummary");
 const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
 const { releaseOtherGoldCheckouts } = require("../utils/checkoutGold");
+const { snapshotCashbackPercent } = require('../utils/customerCashback');
 const { enforceCheckoutReferral } = require("../utils/checkoutReferral");
+const { createWalletService } = require('../utils/customerWallet');
+const customerWallet = createWalletService({ prisma, stripe });
+const walletPaymentRequest = Symbol('walletPaymentRequest');
 const {
     grantReferralCompletionRewards,
 } = require("../utils/referralProgram");
@@ -158,6 +162,7 @@ async function completeCheckoutSessionPayment(order, session) {
             throw Object.assign(new Error("Paid Stripe session does not match the saved order quote."), { code: "PAYMENT_QUOTE_MISMATCH" });
         }
         return withBoosterOrderEmails(transaction, order.id, async () => {
+            const cashbackPercent = await snapshotCashbackPercent(transaction, current);
             const updateResult = await transaction.order.updateMany({
                 where: {
                     id: order.id,
@@ -171,6 +176,7 @@ async function completeCheckoutSessionPayment(order, session) {
                     paidAt: new Date(),
                     amountCents,
                     cashAmountCents: session.amount_total,
+                    cashbackPercent,
                     currency: current.currency || "usd",
                 },
             });
@@ -241,7 +247,11 @@ async function createRecoverableCheckoutSession(parameters, originalKey, created
 const buildCheckoutSession = async (req, res, db, createdSessions) => {
     try {
         const userId = getUserId(req);
-        const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode } = req.body || {};
+        const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode, expectedTotalCents } = req.body || {};
+        const useWallet = req[walletPaymentRequest] === true;
+        if (useWallet && (!Number.isSafeInteger(expectedTotalCents) || expectedTotalCents < 0)) {
+            return res.status(400).json({ ok: false, code: 'WALLET_QUOTE_CHANGED', message: 'Refresh your order total before paying from your wallet.' });
+        }
         if (goldToUse != null && (!Number.isSafeInteger(Number(goldToUse)) || Number(goldToUse) < 0 || (Number(goldToUse) > 0 && Number(goldToUse) < 100))) {
             return res.status(400).json({ ok: false, message: "Redeem at least 100 Gold, or enter 0 to remove Gold." });
         }
@@ -297,6 +307,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         }
 
         const checkoutCurrency = (order.currency || "usd").toLowerCase();
+        if (useWallet && checkoutCurrency !== 'usd') return res.status(400).json({ ok: false, code: 'WALLET_CURRENCY', message: 'Wallet payments are available for USD orders only.' });
         // Local-currency presentment keeps new USD orders denominated in USD.
         // Historical orders retain their original currency and checkout behavior.
         const adaptivePricingEnabled = checkoutCurrency === "usd";
@@ -325,7 +336,11 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             goldRedeemed,
             goldDiscountCents,
             cashAmountCents,
-        } = normalizeGoldToUse(goldToUse, availableGold, amountCents);
+        } = normalizeGoldToUse(useWallet && goldToUse === undefined ? order.goldRedeemed : goldToUse, availableGold, amountCents);
+
+        if (useWallet && cashAmountCents !== expectedTotalCents) {
+            return res.status(409).json({ ok: false, code: 'WALLET_QUOTE_CHANGED', message: 'Your order total changed. Please review the refreshed amount before paying.' });
+        }
 
         if (!amountCents || amountCents < 50) {
             return res.status(400).json({
@@ -346,11 +361,15 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         if (order.stripeCheckoutSessionId) {
             const existingSession = previousCoupon === order.couponCode && previousAmount === order.amountCents
                 ? previousSession : await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
+            if (useWallet && (existingSession.id !== order.stripeCheckoutSessionId || existingSession.object !== 'checkout.session' || existingSession.mode !== 'payment' ||
+                existingSession.metadata?.orderId !== order.id || existingSession.metadata?.customerId !== order.customerId || existingSession.currency !== checkoutCurrency)) {
+                throw Object.assign(new Error('The existing card payment could not be verified. Please contact support.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
+            }
             if (existingSession.status === "complete") {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (existingSession.ui_mode === "elements" &&
+                if (!useWallet && existingSession.ui_mode === "elements" &&
                     existingSession.adaptive_pricing?.enabled === adaptivePricingEnabled &&
                     (!existingSession.currency || existingSession.currency === checkoutCurrency) &&
                     existingSession.metadata?.editableEmail === "1" &&
@@ -360,8 +379,32 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                     Number(existingSession.metadata?.goldRedeemed || 0) === goldRedeemed) {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
-                await stripe.checkout.sessions.expire(existingSession.id, {}, stripeOptions);
+                const expired = await stripe.checkout.sessions.expire(existingSession.id, {}, stripeOptions);
+                if (useWallet && expired?.status !== 'expired') throw Object.assign(new Error('The card payment could not be safely closed. Please verify payment before retrying.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
             }
+            if (useWallet && (existingSession.payment_status === 'paid' || !['open', 'expired'].includes(existingSession.status))) {
+                throw Object.assign(new Error('A card payment is being confirmed. Please verify payment before using your wallet.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
+            }
+        }
+
+        if (useWallet && cashAmountCents > 0) {
+            if (!validEmail(contactEmail)) return res.status(400).json({ ok: false, code: 'WALLET_EMAIL', message: 'Please enter a valid receipt email before paying from your wallet.' });
+            // Other payable Gold sessions must be closed before consuming Gold,
+            // including the case where the wallet pays the entire cash remainder.
+            if (goldRedeemed > 0) await releaseOtherGoldCheckouts(db, order, stripe);
+            const walletFields = await customerWallet.spend(db, userId, order, cashAmountCents);
+            const cashbackPercent = await snapshotCashbackPercent(db, order);
+            const result = await db.order.updateMany({ where: { id: order.id, customerId: userId, paymentStatus: { not: 'PAID' }, status: { not: 'CANCELLED' } },
+                data: { paymentStatus: 'PAID', paidAt: new Date(), amountCents, cashAmountCents, goldRedeemed, goldDiscountCents,
+                    currency: 'usd', stripeCheckoutSessionId: null, stripePaymentIntentId: null, cashbackPercent, ...walletFields } });
+            if (result.count !== 1) throw Object.assign(new Error('The order changed while paying. Please verify payment.'), { status: 409, code: 'WALLET_ORDER_CHANGED' });
+            if (goldRedeemed > 0) await db.rewardHistory.create({ data: { userId, type: 'ORDER_REDEMPTION', goldAmount: -goldRedeemed,
+                title: 'Gold redeemed for order', description: `Used ${goldRedeemed} gold for order #${order.orderNumber}.`, sourceUserId: order.id } });
+            await queueOrderConfirmation(db, order.id, contactEmail, { type: 'account_balance' });
+            await grantReferralCompletionRewards(order.id, db);
+            return res.json({ ok: true, paidWithWallet: true, orderId: order.id,
+                summary: { ...checkoutSummary({ ...order, ...walletFields }, goldRedeemed, goldDiscountCents, cashAmountCents), availableGold: Math.max(0, availableGold - goldRedeemed) },
+                redirectUrl: `${clientUrl}/payment/success/${order.serviceId}?orderId=${order.id}&wallet=1` });
         }
 
         if (cashAmountCents <= 0) {
@@ -380,6 +423,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                         paidAt: new Date(),
                         amountCents,
                         cashAmountCents: 0,
+                        cashbackPercent: 0,
                         goldRedeemed,
                         goldDiscountCents,
                         currency: order.currency || "usd",
@@ -472,7 +516,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         });
     } catch (error) {
         if (error.checkoutRecovery) res.checkoutRecovery = error.checkoutRecovery;
-        if (["COUPON_UNAVAILABLE", "GOLD_CHECKOUT_IN_PROGRESS", "GOLD_CHECKOUT_UNAVAILABLE", "CHECKOUT_SESSION_UNAVAILABLE"].includes(error.code)) {
+        if (error.code?.startsWith('WALLET_') || ["COUPON_UNAVAILABLE", "GOLD_CHECKOUT_IN_PROGRESS", "GOLD_CHECKOUT_UNAVAILABLE", "CHECKOUT_SESSION_UNAVAILABLE"].includes(error.code)) {
             return res.status(error.status).json({ ok: false, code: error.code, message: error.message });
         }
         console.error("createCheckoutSession error:", error);
@@ -601,6 +645,7 @@ const handleStripeWebhook = async (req, res) => {
     }
 
     try {
+        if (await customerWallet.handleWebhook(event)) return res.json({ received: true });
         if (
             event.type === "checkout.session.completed" ||
             event.type === "checkout.session.async_payment_succeeded"
@@ -712,5 +757,10 @@ const createCheckoutSession = async (req, res) => {
     return res.status(response.code).json({ ...response.body, ...(response.couponNotice ? { couponNotice: response.couponNotice } : {}) });
 };
 
-module.exports = { createCheckoutSession, verifyCheckoutSession, handleStripeWebhook };
+const payWithWallet = (req, res) => {
+    req[walletPaymentRequest] = true;
+    return createCheckoutSession(req, res);
+};
+
+module.exports = { createCheckoutSession, verifyCheckoutSession, handleStripeWebhook, payWithWallet };
 

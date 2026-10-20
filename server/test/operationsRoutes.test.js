@@ -9,6 +9,7 @@ test('contribution submissions, revision approvals, contract ownership and curre
     let documentCalls = 0, sentContract;
     const contract = { id: 'contract', boosterId: 'booster', envelopeId: 'envelope', status: 'sent', companySignerEmail: 'owner@example.test' };
     const db = { user: { findUnique: async ({ where }) => ({ id: where.id, username: 'LolBoost', email: `${where.id}@example.test`, role: ['admin', 'owner'].includes(where.id) ? 'ADMIN' : 'PROVIDER', suspendedAt: suspended ? new Date() : null }) },
+        order: { findUnique: async () => null },
         orderAssignment: { findUnique: async () => assigned ? { orderId: 'order', order: { paymentStatus: 'PAID', status: 'COMPLETED', matchHistoryEnabled: historyEnabled } } : null },
         boosterContribution: {
             upsert: async ({ create, update }) => { submission = submission ? { ...submission, ...update, revision: submission.revision + 1 } : { ...create, revision: 1 }; },

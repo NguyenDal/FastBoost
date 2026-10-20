@@ -110,8 +110,9 @@ test('completion and cancellation create once-only entitlement deltas under ledg
     assert.equal((await f.invoke('updateOrderStatus')).code, 200);
     assert.deepEqual(f.ledger.entries.map(row => row.amountCents), [7000]);
     assert.match(f.state.locks[0], /pg_advisory_xact_lock/);
-    assert.match(f.state.locks[1], /User.*FOR UPDATE/);
-    assert.match(f.state.locks[2], /Order.*FOR UPDATE/);
+    const firstOrderLock = f.state.locks.findIndex(sql => /Order.*FOR UPDATE/.test(sql));
+    assert.ok(firstOrderLock > 1, 'customer locks follow the ledger barrier and precede the order lock');
+    assert.ok(f.state.locks.slice(1, firstOrderLock).every(sql => /User.*FOR UPDATE/.test(sql)));
     await f.invoke('providerCompleteAssignedOrder');
     assert.equal(f.ledger.entries.length, 1);
     assert.equal((await f.invoke('updateOrderStatus', { status: 'CANCELLED' })).code, 200);

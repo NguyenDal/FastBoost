@@ -2,7 +2,10 @@ const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': 
 const table = 'role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"';
 
 function renderBoosterOrderEmail({ copy, orderNumber, rows, url, earningsNote }) {
-    const details = rows.map(([label, value], index) => `<tr style="background:${index % 2 ? '#f8f9fd' : '#ffffff'}"><td style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;color:#69658b">${escape(label)}</td><td align="right" style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;font-weight:bold;color:#17123b">${escape(value)}</td></tr>`).join('');
+    const details = rows.map(([label, value], index) => {
+        const total = label === 'Total';
+        return `<tr style="background:${total ? '#f2ecff' : index % 2 ? '#f8f9fd' : '#ffffff'}"><td style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;color:${total ? '#17123b' : '#69658b'};${total ? 'font-weight:bold;' : ''}">${escape(label)}</td><td align="right" style="padding:12px 10px;border-bottom:1px solid #eeeefa;font-size:14px;line-height:21px;font-weight:bold;color:#17123b;white-space:nowrap">${escape(value)}</td></tr>`;
+    }).join('');
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(copy.title)}</title><style>@media only screen and (max-width:620px){.email-pad{padding:22px!important}.email-title{font-size:25px!important}.email-outer{padding:12px 6px!important}.email-button{padding:16px 24px!important}}</style></head>
     <body style="margin:0;padding:0;background:#f2f5fb;font-family:Arial,Helvetica,sans-serif;color:#17123b">
     <div style="display:none;font-size:1px;color:#f2f5fb;max-height:0;overflow:hidden">${escape(copy.subject)} #${escape(orderNumber)}. Check your Booster Portal for details.</div>

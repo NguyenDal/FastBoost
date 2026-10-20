@@ -21,6 +21,7 @@ function paymentMethodSnapshot(details) {
 }
 
 function paymentMethodLabel(method) {
+    if (method?.type === 'account_balance') return 'Account balance';
     if (method?.type !== "card") return known(methodNames, method?.type) ? methodNames[method.type] : "Online payment";
     const brand = known(cardBrands, method.brand) ? cardBrands[method.brand] : "Card";
     const wallet = known(walletNames, method.wallet) ? walletNames[method.wallet] : null;

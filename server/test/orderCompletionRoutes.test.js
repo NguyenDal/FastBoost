@@ -76,7 +76,11 @@ for (const method of ['updateOrderStatus', 'providerCompleteAssignedOrder']) {
         assert.equal(f.state.outbox.size, 1);
         assert.equal(f.state.enqueueCalls, 1, 'a concurrent repeat sees the locked completed state');
         assert.match(f.state.outbox.get('order').payload.text, /\/match\/order#order-rating/);
-        assert.deepEqual(f.state.locks, ['customer', 'order', 'customer', 'order']);
+        assert.equal(f.state.locks.filter(id => id === 'order').length, 2, 'each completion attempt locks the order');
+        for (let index = 0; index < f.state.locks.length; index++) {
+            if (f.state.locks[index] === 'order') assert.equal(f.state.locks[index - 1], 'customer', 'customer must be locked before its order');
+            else assert.equal(f.state.locks[index], 'customer');
+        }
         assert.ok(f.state.trustpilotCalls > 0, 'existing Trustpilot integration still runs');
         assert.equal((await f.invoke(method)).code, 200);
         assert.equal(f.state.enqueueCalls, 1);

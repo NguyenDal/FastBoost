@@ -29,6 +29,14 @@ export default function DashboardLayout() {
                         </Link>
 
                         <Link
+                            to="/account/wallet"
+                            className={location.pathname === "/account/wallet" ? "active" : ""}
+                        >
+                            <WalletIcon />
+                            <span>Wallet</span>
+                        </Link>
+
+                        <Link
                             to="/account/change-password"
                             className={location.pathname === "/account/change-password" ? "active" : ""}
                         >
@@ -91,6 +99,10 @@ function LockIcon() {
             />
         </svg>
     );
+}
+
+function WalletIcon() {
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6V4h14v3M4 6h16v14H4V6Zm11 5h5v5h-5v-5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /></svg>;
 }
 
 function HomeIcon() {

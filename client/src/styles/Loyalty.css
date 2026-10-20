@@ -204,6 +204,7 @@
 }
 
 .loyalty-tier-step {
+    min-width: 0;
     padding: 14px;
     border-radius: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -274,6 +275,24 @@
     font-size: 12px;
     font-style: normal;
     line-height: 1.35;
+}
+
+.loyalty-tier-benefits .loyalty-tier-benefit-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.loyalty-tier-benefit-row .loyalty-tier-gold { color: #f7ce71; }
+.loyalty-tier-benefit-row .loyalty-tier-cashback { color: #7edac4; }
+.loyalty-tier-benefit-row .loyalty-tier-benefit-dot { color: #75839b; }
+
+@media (min-width: 901px) and (max-width: 1120px) {
+    .loyalty-tier-row { gap: 8px; }
+    .loyalty-tier-step { padding: 12px 9px; }
+    .loyalty-tier-benefits .loyalty-tier-benefit-row { gap: 4px; font-size: 10px; }
 }
 
 .loyalty-stats-grid {

@@ -43,15 +43,12 @@ function buildBoosterOrderEmail(order, event) {
     // out of email. The signed-in workspace remains the source of order access.
     const rows = [['Order', `#${order.orderNumber}`], ['Game', summary.game === 'tft' ? 'Teamfight Tactics' : 'League of Legends'], ['Service', summary.serviceType], ...summary.details];
     const earningsNote = 'Potential earnings are shared by approved matches.';
-    // Every event retains the same order snapshot. The saved customer total may
-    // include tax, but only discounted service revenue after Gold funds earnings.
-    // Do not infer a tax charge or rate from the difference between these totals.
+    // Every event retains the same saved order total and earnings basis.
     const earnings = orderEarnings(order);
     const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: summary.currency.toUpperCase() }).format(cents / 100);
     const totalKnown = Number.isInteger(order.cashAmountCents) || Number.isInteger(order.amountCents) || Number.isFinite(order.totalPrice);
-    rows.push(['Subtotal (before tax)', earnings ? money(earnings.revenueCents) : 'Not available'],
-        ['Total (after tax)', totalKnown ? money(summary.totalCents) : 'Not available'],
-        ['Potential earnings (70% of subtotal)', earnings ? `Up to ${money(earnings.boosterCents)}` : 'Not available']);
+    rows.push(['Total', totalKnown ? money(summary.totalCents) : 'Not available'],
+        ['Potential earnings (70% of total)', earnings ? `Up to ${money(earnings.boosterCents)}` : 'Not available']);
     const subject = `FastBoost · ${copy.subject} #${order.orderNumber}`;
     return { subject,
         text: [subject, '', copy.text, '', ...rows.map(([label, value]) => `${label}: ${value}`), ...(earningsNote ? ['', earningsNote] : []), '', `${copy.action}: ${url}`].join('\n'),

@@ -63,6 +63,8 @@ export default function DynamicTitle() {
       title = "Assigned Order | FastBoost";
     } else if (path === "/account/dashboard") {
       title = "Dashboard | FastBoost";
+    } else if (path === "/account/wallet") {
+      title = "Wallet | FastBoost";
     } else if (path === "/faq" || path === "/account/faq") {
       title = "Frequently Asked Questions | FastBoost";
     } else if (path === "/account/orders") {

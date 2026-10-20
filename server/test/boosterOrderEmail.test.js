@@ -6,9 +6,8 @@ const booster = id => ({ boosterId: id, booster: { id, role: 'PROVIDER', hasBoos
 const order = { id: 'synthetic/order', orderNumber: 'LOL-RNK-PREVIEW', status: 'IN_PROGRESS', paymentStatus: 'PAID', boostType: 'Rank Boost',
     currentRank: 'Silver I', desiredRank: 'Gold IV', queueType: 'Solo/Duo', region: 'North America', assignments: [booster('a'), booster('b')] };
 const allEvents = ['ASSIGNED', 'UNASSIGNED', 'COMPLETED', 'CANCELLED', 'PAYMENT_CONFIRMED', 'ASSIGNMENT_REQUEST', 'ASSIGNMENT_REQUEST_CANCELLED'];
-const subtotalLabel = 'Subtotal (before tax)';
-const totalLabel = 'Total (after tax)';
-const earningsLabel = 'Potential earnings (70% of subtotal)';
+const totalLabel = 'Total';
+const earningsLabel = 'Potential earnings (70% of total)';
 
 function configure(t) {
     const keys = ['CLIENT_URL', 'BOOSTER_ORDER_EMAILS_ENABLED', 'NODE_ENV'];
@@ -120,18 +119,17 @@ function moneyRow(mail, label, expected, potential = false) {
     assert.equal(value.replace(/^Up to /, '').replace(/USD|\$|\s/g, ''), expected.toFixed(2), `${label} matches its monetary basis`);
 }
 
-test('all events show pre-tax subtotal, saved total and potential earnings on the same discounted basis', t => {
+test('all events show one total and potential earnings on that saved total', t => {
     configure(t);
     for (const event of allEvents) {
         const mail = buildBoosterOrderEmail({ ...order, amountCents: 10000, goldDiscountCents: 0, cashAmountCents: 11300,
             totalPrice: 100, currency: 'usd', couponDiscountCents: 2000, referralDiscount: 10 }, event);
-        moneyRow(mail, subtotalLabel, 100);
         moneyRow(mail, totalLabel, 113);
-        moneyRow(mail, earningsLabel, 70, true);
-        assert.equal((mail.text.match(/^(Subtotal|Total|Potential earnings) \([^)]+\):/gm) || []).length, 3);
+        moneyRow(mail, earningsLabel, 79.10, true);
+        assert.equal((mail.text.match(/^(Total|Potential earnings \([^)]+\)):/gm) || []).length, 2);
+        assert.doesNotMatch(mail.text + mail.html, /Subtotal|before tax|after tax/i);
         assert.match(mail.text, /Potential earnings are shared by approved matches\./);
         assert.match(mail.html, /Potential earnings are shared by approved matches\./);
-        assert.doesNotMatch(mail.text + mail.html, /79\.10/, 'tax is excluded from the earnings pool');
         assert.doesNotMatch(mail.text, /^Tax:|tax rate|guaranteed|payable now/im, 'no inferred tax or promised payout');
     }
 });
@@ -139,34 +137,34 @@ test('all events show pre-tax subtotal, saved total and potential earnings on th
 test('all event financial rows account for Gold redemption, actual cash totals, zero and cent rounding', t => {
     configure(t);
     for (const event of allEvents) {
-        for (const [amountCents, goldDiscountCents, cashAmountCents, subtotal, total, potential] of [
-            [10000, 2000, 9040, 80, 90.40, 56],
-            [10000, 2000, 8000, 80, 80, 56],
-            [10000, 10000, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [10001, 0, 11301, 100.01, 113.01, 70.01],
+        for (const [amountCents, goldDiscountCents, cashAmountCents, total, potential] of [
+            [10000, 2000, 9040, 90.40, 63.28],
+            [10000, 2000, 8000, 80, 56],
+            [10000, 10000, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [10001, 0, 11301, 113.01, 79.11],
         ]) {
             const mail = buildBoosterOrderEmail({ ...order, amountCents, goldDiscountCents, cashAmountCents, totalPrice: amountCents / 100, currency: 'usd' }, event);
-            moneyRow(mail, subtotalLabel, subtotal);
             moneyRow(mail, totalLabel, total);
             moneyRow(mail, earningsLabel, potential, true);
         }
     }
 });
 
-test('missing canonical service amounts stay unavailable while independently saved totals remain visible', t => {
+test('saved totals fund earnings while unknown canonical amounts remain unavailable', t => {
     configure(t);
     for (const event of allEvents) {
-        for (const [fields, total] of [
-            [{ amountCents: null, cashAmountCents: 11300, totalPrice: 100 }, 113],
-            [{ amountCents: null, cashAmountCents: null, totalPrice: 100, goldDiscountCents: 2000 }, 80],
-            [{ amountCents: null, cashAmountCents: 0 }, 0],
-            [{}, null],
-            [{ amountCents: null, cashAmountCents: null, totalPrice: null }, null],
+        for (const [fields, total, earnings] of [
+            [{ amountCents: null, cashAmountCents: 11300, totalPrice: 100 }, 113, 79.10],
+            [{ amountCents: null, cashAmountCents: null, totalPrice: 100, goldDiscountCents: 2000 }, 80, null],
+            [{ amountCents: null, cashAmountCents: 0 }, 0, 0],
+            [{}, null, null],
+            [{ amountCents: null, cashAmountCents: null, totalPrice: null }, null, null],
         ]) {
             const mail = buildBoosterOrderEmail({ ...order, ...fields, currency: 'usd' }, event);
-            assert.equal(financialRow(mail, subtotalLabel), 'Not available');
-            assert.equal(financialRow(mail, earningsLabel), 'Not available');
+            assert.doesNotMatch(mail.text + mail.html, /Subtotal|before tax|after tax/i);
+            if (earnings === null) assert.equal(financialRow(mail, earningsLabel), 'Not available');
+            else moneyRow(mail, earningsLabel, earnings, true);
             if (total === null) {
                 assert.equal(financialRow(mail, totalLabel), 'Not available');
                 assert.doesNotMatch(mail.text + mail.html, /\$0\.00|USD\s*0\.00/, 'unknown money must not become zero');

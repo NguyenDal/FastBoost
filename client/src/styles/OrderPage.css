@@ -44,7 +44,11 @@
       rgba(3, 7, 18, 0.86) 100%);
 }
 
-.order-page-shell .topbar,
+.order-page-shell .topbar {
+  position: sticky;
+  z-index: 1000;
+}
+
 .order-page-container {
   position: relative;
   z-index: 2;

@@ -1,9 +1,13 @@
 const { matchesOrder } = require('./orderMatchScope');
 function orderEarnings(order) {
-    // amountCents is the discounted service subtotal before gold redemption;
-    // Stripe settlement adds redeemed gold back to amount_subtotal when saving it.
-    if (!Number.isInteger(order.amountCents)) return null;
-    const revenueCents = Math.max(0, order.amountCents - (order.goldDiscountCents || 0));
+    // The earnings pool follows the saved order Total, regardless of whether
+    // Stripe or the customer's wallet supplied that payment. Legacy snapshots
+    // without a saved tender total retain their amount less Gold calculation.
+    const validCents = value => Number.isSafeInteger(value) && value >= 0;
+    const revenueCents = validCents(order.cashAmountCents) ? order.cashAmountCents
+        : validCents(order.amountCents) && (order.goldDiscountCents == null || validCents(order.goldDiscountCents))
+            ? Math.max(0, order.amountCents - (order.goldDiscountCents || 0)) : null;
+    if (revenueCents === null) return null;
     const boosterCents = Math.round(revenueCents * 70 / 100);
     const records = new Map();
     if (order.matchHistoryEnabled) {

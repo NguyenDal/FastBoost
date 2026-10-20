@@ -37,15 +37,13 @@ function CheckoutSession({ sessionId, onStateChange, onConfirm, onWalletsChange,
             <h3>Payment currency</h3>
             <CurrencySelectorElement onReady={() => setCurrencySelectorStatus("ready")} onLoaderStart={() => setCurrencySelectorStatus("loading")} onLoadError={() => setCurrencySelectorStatus("error")} />
         </div>}
-        {wallets && <h3>Express Checkout</h3>}
         <div className={wallets ? "checkout-wallet-slot" : undefined} inert={hasCurrencyOptions && currencySelectorStatus !== "ready"}>
             <ExpressCheckoutElement options={{ paymentMethods: { applePay: "always" }, buttonTheme: { applePay: "black" }, paymentMethodOrder: ["apple_pay", "link"] }} onConfirm={onConfirm} onReady={({ availablePaymentMethods }) => { onWalletsChange(Boolean(availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean))); }} />
         </div>
-        {wallets && <p className="checkout-or">OR</p>}
     </>;
 }
 
-export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, clientSecret, appearance, stripePromise, updatingPrice, paymentBlocked, onBusyChange, onSuccess, onBeforeConfirm, onCheckoutChange }) {
+export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, clientSecret, appearance, stripePromise, updatingPrice, paymentBlocked, onBusyChange, onSuccess, onBeforeConfirm, onCheckoutChange, walletContent }) {
     const [session, setSession] = useState(null);
     const state = session?.sessionId === sessionId ? session.state : { type: "loading" };
     const currencySelectorLoading = session?.sessionId === sessionId && session.currencySelectorStatus === "loading";
@@ -148,10 +146,15 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
     return <>
         {state.type === "error" && <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
         {currencySelectorError && <PaymentErrorDialog message="We couldn’t load the payment currency options. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
-        <div id="checkout-express" className={wallets ? "checkout-express" : "checkout-express-empty"} inert={updatingPrice || state.type === "loading" || paymentBlocked || currencySelectorError || busy}>
+        <div id="checkout-express" className={wallets || walletContent ? "checkout-express" : "checkout-express-empty"}>
+            {(wallets || walletContent) && <h3>Express Checkout</h3>}
+            {walletContent}
+            <div inert={updatingPrice || state.type === "loading" || paymentBlocked || currencySelectorError || busy}>
             <CheckoutElementsProvider key={sessionId} stripe={stripePromise} options={{ clientSecret, adaptivePricing: { allowed: true }, elementsOptions: { appearance } }}>
                 <CheckoutSession sessionId={sessionId} onStateChange={handleSessionState} onConfirm={confirm} onWalletsChange={setWallets} wallets={wallets} />
             </CheckoutElementsProvider>
+            </div>
+            {(wallets || walletContent) && <p className="checkout-or">OR</p>}
         </div>
         <form noValidate onSubmit={event => { event.preventDefault(); confirm(); }}>
             <h3>Contact Information</h3>

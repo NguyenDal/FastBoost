@@ -74,6 +74,7 @@ function formatOrderForListResponse(order) {
 }
 
 async function addAdminPromotionMetadata(order, safeOrder) {
+    if (safeOrder.priceSummary.adminBreakdown.promotion) return safeOrder;
     safeOrder.priceSummary.adminBreakdown.promotion = await historicalOrderPromotion(
         prisma, order, safeOrder.priceSummary.adminBreakdown
     );
@@ -363,6 +364,9 @@ const createOrder = async (req, res) => {
                  */
                 basePrice: calculatedPrice.basePrice,
                 addonPrice: calculatedPrice.addonPrice,
+                promotionTitle: calculatedPrice.promotion?.title || null,
+                promotionPercent: calculatedPrice.promotion?.discountPercent ?? null,
+                promotionAppliesTo: calculatedPrice.promotion ? String(activeSale?.appliesTo || 'BASE_PRICE') : null,
                 referralDiscount: orderPricing.referralDiscount,
                 totalPrice: orderPricing.totalPrice,
 

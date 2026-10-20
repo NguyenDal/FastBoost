@@ -21,7 +21,7 @@ async function boosterEarnings(db, boosterId) {
             },
             select: {
                 id: true, boostType: true, queueType: true, amountCents: true,
-                goldDiscountCents: true, currency: true,
+                goldDiscountCents: true, cashAmountCents: true, currency: true,
                 matchHistoryEnabled: true, matchHistoryConfirmedAt: true,
                 assignments: { select: { boosterId: true } },
                 contributions: { select: { boosterId: true, submittedMatches: true, approvedMatches: true } },
