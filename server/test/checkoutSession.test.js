@@ -7,6 +7,8 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     const queued = [];
     const order = {id:'order-test',orderNumber:'LOL-RNK-CXBE6',customerId:'customer-test',serviceId:'service-test',paymentStatus:'PENDING',status:'PENDING',basePrice:30,addonPrice:0,referralDiscount:3,totalPrice:27,amountCents:2700,currency:'usd',customer:{email:'test@example.com'},service:{title:'Rank Boost'}};
     const prisma = {
+        walletAccount: { findUnique: async () => null },
+        walletCheckoutHold: { findUnique: async () => null, findMany: async () => [] },
         servicePriceRule: { findFirst: async () => ({ id: 'active-rule' }) },
         $queryRaw: async () => [],
         order: {findUnique:async()=>order,findFirst:async()=>null,findMany:async()=>[],aggregate:async()=>({_sum:{totalPrice:0}}),update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},
@@ -62,7 +64,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
     assert.equal(res.code,200);
     assert.equal(res.body.summary.totalCents,1700);
     assert.equal(res.body.summary.referralDiscountCents,300);
-    assert.deepEqual(res.body.summary.priceSummary, {currency:'usd',subtotalCents:3000,promotionCents:0,coupon:null,referralCents:300,goldRedeemed:100,goldDiscountCents:1000,totalCents:1700});
+    assert.deepEqual(res.body.summary.priceSummary, {currency:'usd',subtotalCents:3000,promotionCents:0,coupon:null,referralCents:300,goldRedeemed:100,goldDiscountCents:1000,totalCents:1700,walletAppliedCents:0,cardAmountCents:1700});
     assert.equal(res.body.checkoutUrl,undefined);
     await createCheckoutSession(req,res);
     assert.equal(creates,1);

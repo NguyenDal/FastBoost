@@ -50,6 +50,18 @@ test('switching back to USD uses the same quote with no conversion', () => {
     assert.equal(price.formatPrice(1700, 'total'), 'US$17.00');
 });
 
+test('split wallet subtotal reconciles the original discounts and wallet deduction to the card remainder', () => {
+    const input = { ...summary, walletAppliedCents: 1200, cardAmountCents: 500 };
+    const price = checkoutPriceDisplay(input, 'cs_current', display('usd', 100, 500));
+    assert.equal(price.formatPrice(input.subtotalCents, 'subtotal'), 'US$30.00');
+    assert.equal(price.formatPrice(input.walletAppliedCents), 'US$12.00');
+    assert.equal(price.formatPrice(input.cardAmountCents, 'total'), 'US$5.00');
+    const state = display('cad', 100, 750); delete state.state.checkout.currencyOptions;
+    const localized = checkoutPriceDisplay(input, 'cs_current', state);
+    assert.equal(localized.formatPrice(input.walletAppliedCents), 'CA$18.00');
+    assert.equal(localized.formatPrice(input.subtotalCents, 'subtotal'), 'CA$45.00');
+});
+
 test('stale, loading, erroneous and invalid quotes cannot replace the current order summary', () => {
     assert.equal(checkoutPriceDisplay(summary, 'cs_replaced', display()), null);
     const stale = display(); stale.state.checkout.id = 'cs_old';

@@ -1,0 +1,19 @@
+.wallet-topup-checkout.checkout-container { width: 100%; max-width: 1180px; padding: 0; color: #f3f4ff; }
+.wallet-payment-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+.wallet-payment-heading p { margin: 0 0 6px; color: #c4a1f6; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.wallet-payment-heading h1 { margin: 0; outline: none; }
+.wallet-payment-back { display: inline-flex; align-items: center; min-height: 42px; padding: 10px 15px; border: 1px solid #514363; border-radius: 10px; background: #211c30; color: #e9d9ff; font: inherit; font-size: 13px; white-space: nowrap; cursor: pointer; }
+.wallet-payment-back:disabled { opacity: .45; cursor: wait; }
+.wallet-payment-package { padding: 22px 18px; margin-bottom: 24px; border: 1px solid #68458c; border-radius: 12px; background: linear-gradient(135deg,#4b28784a,#1b213536); }
+.wallet-payment-package > span { display: block; color: #c5b4de; font-size: 12px; }
+.wallet-payment-package > strong { display: block; margin: 8px 0; font-size: 34px; letter-spacing: -.03em; }
+.wallet-payment-package > p { margin: 0; color: #65e0bd; font-size: 12px; }
+.wallet-payment-bonus { color: #65e0bd; }
+.wallet-package-summary .wallet-payment-credit { border-top: 1px solid #33334a; margin-top: 18px; padding-top: 18px; }
+.wallet-payment-credit dd { color: #e7d3ff; font-weight: 700; }
+.wallet-payment-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 22px; border-top: 1px solid #33334a; font-size: 20px; }
+.wallet-payment-total > strong:last-child { color: #bd80ff; }
+.wallet-payment-error { color: #fecdd3; font-size: 14px; line-height: 1.6; }
+.wallet-payment-error .wallet-primary { margin-top: 12px; }
+.wallet-payment-back:focus-visible { outline: 2px solid #d9b7ff; outline-offset: 4px; }
+@media (max-width: 760px) { .wallet-payment-heading { flex-direction: column; align-items: flex-start; } .wallet-topup-checkout .checkout-grid { grid-template-columns: minmax(0,1fr); } .wallet-package-summary { grid-row: 1; } .wallet-topup-checkout .checkout-card { padding: 20px 16px; } .wallet-payment-package { padding: 16px; } }

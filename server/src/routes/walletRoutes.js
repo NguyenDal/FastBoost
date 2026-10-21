@@ -1,11 +1,12 @@
 const express = require('express');
 const { protect } = require('../middleware/authMiddleware');
-const { getWallet, createTopUp, verifyTopUp } = require('../controllers/walletController');
+const { getWallet, createTopUp, verifyTopUp, cancelTopUp } = require('../controllers/walletController');
 const { createRateLimit } = require('../middleware/rateLimit');
 const budget = limit => createRateLimit({ limit, windowMs: 60 * 1000, key: req => req.user.id || req.user.userId });
 const router = express.Router();
 router.use(protect);
 router.get('/', budget(60), getWallet);
 router.post('/top-ups', budget(12), createTopUp);
+router.post('/top-ups/cancel', budget(12), cancelTopUp);
 router.get('/top-ups/verify', budget(30), verifyTopUp);
 module.exports = router;

@@ -7,6 +7,7 @@ import { Skeleton } from "../components/Skeleton";
 import { API_BASE_URL } from "../api/config";
 import { loadChampions } from "../api/champions";
 import { orderEstimateBreakdown } from "../utils/orderEstimateBreakdown";
+import { orderCashbackEstimate } from "../utils/orderCashbackEstimate";
 import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRoles";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
@@ -169,6 +170,7 @@ function OrderPage() {
 
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [referralOffer, setReferralOffer] = useState(null);
+  const [cashbackLoyalty, setCashbackLoyalty] = useState(null);
 
   const [serverQuote, setServerQuote] = useState(null);
   const [priceQuoteLoading, setPriceQuoteLoading] = useState(false);
@@ -179,8 +181,13 @@ function OrderPage() {
   const priceQuoteCacheRef = useRef(new Map());
 
   useEffect(() => {
-    const loadGold = async () => {
+    let controller;
+    const loadLoyalty = async () => {
+      controller?.abort();
+      controller = new AbortController();
+      const signal = controller.signal;
       const token = authStorage.getItem("token");
+      setCashbackLoyalty(null);
 
       if (!token) {
         setReferralOffer(null);
@@ -189,21 +196,29 @@ function OrderPage() {
 
       try {
         const response = await fetch(`${API_BASE_URL}/loyalty/me`, {
+          signal,
+          cache: "no-store",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await response.json();
+        if (signal.aborted || authStorage.getItem("token") !== token) return;
+        if (!response.ok || data.ok === false) throw new Error("Could not load loyalty benefits.");
         const loyalty = data?.loyalty || data || {};
 
         setReferralOffer(loyalty?.referralOffer || null);
+        setCashbackLoyalty({ token, loyalty });
       } catch (error) {
-        console.error("Failed to load available gold:", error);
+        if (!signal.aborted) console.error("Failed to load loyalty benefits:", error);
       }
     };
 
-    loadGold();
+    loadLoyalty();
+    const refreshLoyalty = () => { if (!document.hidden) void loadLoyalty(); };
+    window.addEventListener("focus", refreshLoyalty);
+    return () => { controller?.abort(); window.removeEventListener("focus", refreshLoyalty); };
   }, [currentUser]);
 
   const [isChampionPanelOpen, setIsChampionPanelOpen] = useState(false);
@@ -615,6 +630,13 @@ function OrderPage() {
   const priceBreakdownReady = Boolean(priceBreakdown)
     && serverQuote?._pricingRequestKey === pricingRequestKey
     && !priceQuoteLoading;
+  const cashbackPercent = Number(cashbackLoyalty?.loyalty?.cashBackPercent ?? cashbackLoyalty?.loyalty?.topUpBonusPercent ?? 0);
+  const estimatedCashbackCents = orderCashbackEstimate({
+    totalCents: priceBreakdown?.subtotalCents,
+    cashbackPercent,
+    eligible: Boolean(cashbackLoyalty?.token && cashbackLoyalty.token === authStorage.getItem("token")
+      && priceBreakdownReady && !priceQuoteError),
+  });
   const coinCount = Math.floor(referralAdjustedTotal);
   const coinValue = (coinCount * 0.1).toFixed(2);
 
@@ -2397,6 +2419,9 @@ function OrderPage() {
                       <strong>${totalPrice}</strong>
                     )}
                   </div>
+                  {estimatedCashbackCents !== null && <p className="order-summary-cashback" title={`Estimated at your current ${cashbackPercent}% rate, credited to your wallet after payment and completion. Discounts or Gold used at checkout may reduce the amount.`}>
+                    +USD{(estimatedCashbackCents / 100).toFixed(2)} cashback
+                  </p>}
                 </div>
 
                 {submitError && <p className="error-message">{submitError}</p>}

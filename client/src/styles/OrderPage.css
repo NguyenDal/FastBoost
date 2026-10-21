@@ -44,11 +44,6 @@
       rgba(3, 7, 18, 0.86) 100%);
 }
 
-.order-page-shell .topbar {
-  position: sticky;
-  z-index: 1000;
-}
-
 .order-page-container {
   position: relative;
   z-index: 2;
@@ -1115,6 +1110,15 @@
   font-size: 1.55rem;
   line-height: 1;
   font-weight: 800;
+}
+
+.order-summary-cashback {
+  margin: 9px 0 0;
+  color: #65e0bd;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: right;
 }
 
 .order-page-shell .order-submit-btn {

@@ -13,6 +13,7 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
         goldRedeemed: 0, goldDiscountCents: 0, stripeCheckoutSessionId: sessionId };
 
     const prisma = {
+        walletCheckoutHold: { findUnique: async () => null },
         order: {
             findFirst: async () => ({
                 ...savedQuote,

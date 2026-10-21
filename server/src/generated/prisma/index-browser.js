@@ -153,6 +153,34 @@ exports.Prisma.WalletAccountScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.WalletCheckoutHoldScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  orderId: 'orderId',
+  amountCents: 'amountCents',
+  purchasedCents: 'purchasedCents',
+  promotionalCents: 'promotionalCents',
+  cashAmountCents: 'cashAmountCents',
+  orderAmountCents: 'orderAmountCents',
+  goldRedeemed: 'goldRedeemed',
+  goldDiscountCents: 'goldDiscountCents',
+  stripeParametersJson: 'stripeParametersJson',
+  stripeCheckoutSessionId: 'stripeCheckoutSessionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WalletCheckoutPresenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  orderId: 'orderId',
+  expiresAt: 'expiresAt',
+  closedAt: 'closedAt',
+  paymentProtectedUntil: 'paymentProtectedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.WalletTopUpScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -657,12 +685,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -748,6 +776,8 @@ exports.Prisma.ModelName = {
   RateLimitBucket: 'RateLimitBucket',
   User: 'User',
   WalletAccount: 'WalletAccount',
+  WalletCheckoutHold: 'WalletCheckoutHold',
+  WalletCheckoutPresence: 'WalletCheckoutPresence',
   WalletTopUp: 'WalletTopUp',
   WalletEntry: 'WalletEntry',
   WalletCashbackEntitlement: 'WalletCashbackEntitlement',

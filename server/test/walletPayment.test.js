@@ -8,7 +8,8 @@ test('full wallet payment atomically spends purchased and promotional credit and
     assert.equal(result.code, 200);
     assert.equal(result.body.paidWithWallet, true);
     assert.equal(result.body.summary.walletAmountCents, 2000);
-    assert.equal(result.body.summary.totalCents, 2000);
+    assert.equal(result.body.summary.totalCents, 0);
+    assert.equal(result.body.summary.orderTotalCents, 2000);
     assert.equal(f.state.orders[0].cashAmountCents, 2000, 'wallet remains payment tender, not a price discount');
     assert.equal(f.state.orders[0].walletPurchasedCents, 1500);
     assert.equal(f.state.orders[0].walletPromotionalCents, 500);

@@ -1,7 +1,10 @@
+const { randomUUID } = require('node:crypto');
+const { releaseExpiredWalletHolds } = require('./checkoutWallet');
+const { abandonOwnedWalletHolds } = require('./abandonedWalletCheckout');
 const WALLET_PACKAGES = Object.freeze([
-    [5, 10], [10, 10], [25, 12], [50, 13], [100, 15],
-].map(([dollars, bonusPercent]) => Object.freeze({
-    id: `usd-${dollars}`, amountCents: dollars * 100, bonusPercent,
+    [5, 8, 'usd-5-v2'], [10, 10], [25, 12], [50, 13], [100, 15],
+].map(([dollars, bonusPercent, id = `usd-${dollars}`]) => Object.freeze({
+    id, amountCents: dollars * 100, bonusPercent,
     bonusCents: dollars * bonusPercent,
     creditCents: dollars * 100 + dollars * bonusPercent,
 })));
@@ -9,8 +12,17 @@ const stripeOptions = { timeout: 8000, maxNetworkRetries: 0 };
 const transactionOptions = { maxWait: 15000, timeout: 30000 };
 const error = (code, message, status = 409) => Object.assign(new Error(message), { code, status });
 const paymentIntentId = session => typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
-const packageFor = id => WALLET_PACKAGES.find(item => item.id === id);
+// Old paid/pending intents retain the exact credit promised when they started.
+const retiredPackages = [{ id: 'usd-5', amountCents: 500, bonusPercent: 10, bonusCents: 50, creditCents: 550 }];
+const packageFor = id => WALLET_PACKAGES.find(item => item.id === id) || retiredPackages.find(item => item.id === id);
 const integer = value => Number.isSafeInteger(value) && Math.abs(value) <= 2147483647;
+// The durable ID namespace versions checkout creation without a schema change.
+// Legacy intents always recreate the original hosted payload/idempotency key,
+// even if their first Stripe response was lost before a session ID was saved.
+const checkoutUiMode = topUp => topUp.id.startsWith('wte_') ? 'elements' : 'hosted';
+const sessionUiMode = session => ['hosted', 'hosted_page', null, undefined].includes(session.ui_mode) ? 'hosted' : session.ui_mode;
+const topUpSummary = offer => ({ packageId: offer.id, currency: 'usd', amountCents: offer.amountCents,
+    bonusPercent: offer.bonusPercent, bonusCents: offer.bonusCents, creditCents: offer.creditCents });
 
 function assertUsable(account) {
     if (account?.frozenAt) throw error('WALLET_FROZEN', 'Your wallet is on hold. Please contact support before using it.');
@@ -21,7 +33,7 @@ function validateSessionQuote(topUp, session) {
     const metadata = session.metadata || {};
     const mode = /^(?:sk|rk)_(live|test)_/.exec(process.env.STRIPE_SECRET_KEY || '')?.[1];
     if (!offer || topUp.currency !== 'usd' || topUp.amountCents !== offer.amountCents || topUp.bonusCents !== offer.bonusCents || topUp.bonusPercent !== offer.bonusPercent ||
-        session.object !== 'checkout.session' || session.mode !== 'payment' ||
+        session.object !== 'checkout.session' || session.mode !== 'payment' || sessionUiMode(session) !== checkoutUiMode(topUp) ||
         typeof session.livemode !== 'boolean' || (mode && session.livemode !== (mode === 'live')) ||
         session.currency !== 'usd' || session.amount_subtotal !== offer.amountCents || session.amount_total !== offer.amountCents ||
         metadata.kind !== 'wallet_topup' || metadata.walletTopUpId !== topUp.id || metadata.customerId !== topUp.userId ||
@@ -53,7 +65,7 @@ function validateIntent(topUp, session, intent) {
     return charge.amount_refunded > 0 || charge.refunded === true || charge.disputed === true;
 }
 
-function createWalletService({ prisma, stripe }) {
+function createWalletService({ prisma, stripe, settleOrderPayment }) {
     async function lockAccount(db, userId) {
         const users = await db.$queryRaw`SELECT id FROM "User" WHERE id = ${userId} FOR UPDATE`;
         // Account deletion must not turn a late webhook into orphan credit.
@@ -62,14 +74,52 @@ function createWalletService({ prisma, stripe }) {
     }
 
     async function snapshot(userId, db = prisma) {
+        if (db === prisma && stripe) {
+            const result = await prisma.$transaction(async tx => {
+                await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${userId} FOR UPDATE`;
+                await releaseExpiredWalletHolds(tx, userId, stripe);
+                const paid = await abandonOwnedWalletHolds(tx, userId, stripe);
+                return { wallet: await snapshotValues(userId, tx), paid };
+            }, transactionOptions);
+            if (result.paid.length && settleOrderPayment) {
+                for (const paid of result.paid) {
+                    const order = await prisma.order.findUnique({ where: { id: paid.orderId } });
+                    if (order) await settleOrderPayment(order, paid.session);
+                }
+                return prisma.$transaction(async tx => {
+                    await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${userId} FOR UPDATE`;
+                    return snapshotValues(userId, tx);
+                }, transactionOptions);
+            }
+            return result.wallet;
+        }
+        return snapshotValues(userId, db);
+    }
+
+    async function snapshotValues(userId, db) {
         const account = await db.walletAccount.findUnique({ where: { userId } });
+        const available = await spendable(db, userId, account);
         const transactions = await db.walletEntry.findMany({ where: { userId }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 50,
             select: { id: true, type: true, amountCents: true, purchasedCents: true, promotionalCents: true, createdAt: true, orderId: true, description: true } });
         const purchased = account?.purchasedBalanceCents || 0;
         const promotional = account?.promotionalBalanceCents || 0;
         return { currency: 'usd', balanceCents: Math.max(0, purchased + promotional), purchasedBalanceCents: purchased,
             promotionalBalanceCents: promotional, debtCents: Math.max(0, -purchased) + Math.max(0, -promotional),
-            frozen: Boolean(account?.frozenAt), packages: WALLET_PACKAGES, transactions };
+            frozen: available.frozen, availableBalanceCents: available.availableBalanceCents,
+            reservedBalanceCents: available.reservedBalanceCents, packages: WALLET_PACKAGES, transactions };
+    }
+
+    async function spendable(db, userId, savedAccount, excludeOrderId) {
+        const account = savedAccount || await db.walletAccount.findUnique({ where: { userId } });
+        const holds = await db.walletCheckoutHold.findMany({ where: { userId }, select: { orderId: true, purchasedCents: true, promotionalCents: true } });
+        const reserved = holds.filter(hold => hold.orderId !== excludeOrderId).reduce((sum, hold) => ({
+            purchased: sum.purchased + hold.purchasedCents, promotional: sum.promotional + hold.promotionalCents,
+        }), { purchased: 0, promotional: 0 });
+        const availablePurchasedCents = Math.max(0, (account?.purchasedBalanceCents || 0) - reserved.purchased);
+        const availablePromotionalCents = Math.max(0, (account?.promotionalBalanceCents || 0) - reserved.promotional);
+        return { availablePurchasedCents, availablePromotionalCents, availableBalanceCents: availablePurchasedCents + availablePromotionalCents,
+            reservedBalanceCents: reserved.purchased + reserved.promotional,
+            frozen: Boolean(account?.frozenAt) || (account?.purchasedBalanceCents || 0) < 0 || (account?.promotionalBalanceCents || 0) < 0 };
     }
 
     async function postEntry(db, account, { key, type, purchasedCents, promotionalCents, topUpId, orderId, description }) {
@@ -90,15 +140,42 @@ function createWalletService({ prisma, stripe }) {
         }
         const account = await lockAccount(db, userId);
         assertUsable(account);
-        if (account.purchasedBalanceCents < 0 || account.promotionalBalanceCents < 0 || account.purchasedBalanceCents + account.promotionalBalanceCents < amountCents) {
+        const available = await spendable(db, userId, account);
+        if (account.purchasedBalanceCents < 0 || account.promotionalBalanceCents < 0 || available.availableBalanceCents < amountCents) {
             throw error('WALLET_INSUFFICIENT', 'Your wallet balance does not cover this order. Please top up or pay by card.');
         }
         // Purchased funds are consumed first; promotional credit remains separate.
-        const purchasedCents = Math.min(account.purchasedBalanceCents, amountCents);
+        const purchasedCents = Math.min(available.availablePurchasedCents, amountCents);
         const promotionalCents = amountCents - purchasedCents;
         await postEntry(db, account, { key: `order:${order.id}`, type: 'ORDER_PAYMENT', purchasedCents: -purchasedCents,
             promotionalCents: -promotionalCents, orderId: order.id, description: `Payment for order #${order.orderNumber}.` });
         return { walletAmountCents: amountCents, walletPurchasedCents: purchasedCents, walletPromotionalCents: promotionalCents };
+    }
+
+    async function spendReserved(db, userId, order, hold, { requireUsable = false } = {}) {
+        if (hold.userId !== userId || hold.orderId !== order.id || !integer(hold.amountCents) || hold.amountCents <= 0 ||
+            !integer(hold.purchasedCents) || !integer(hold.promotionalCents) || hold.purchasedCents < 0 || hold.promotionalCents < 0 ||
+            hold.purchasedCents + hold.promotionalCents !== hold.amountCents) {
+            throw error('WALLET_QUOTE_CHANGED', 'The saved wallet payment does not match this order.', 400);
+        }
+        const account = await lockAccount(db, userId);
+        if (requireUsable) {
+            assertUsable(account);
+            const available = await spendable(db, userId, account, order.id);
+            if (available.frozen || available.availablePurchasedCents < hold.purchasedCents || available.availablePromotionalCents < hold.promotionalCents) {
+                throw error('WALLET_INSUFFICIENT', 'Your reserved wallet funds are no longer available. Please refresh your balance or contact support.');
+            }
+        }
+        // A later top-up dispute can freeze/reverse reserved funds after Stripe
+        // has charged the card remainder. Record the actual paid purchase and
+        // resulting debt, instead of losing the customer's verified card payment.
+        const updated = await postEntry(db, account, { key: `order:${order.id}`, type: 'ORDER_PAYMENT',
+            purchasedCents: -hold.purchasedCents, promotionalCents: -hold.promotionalCents, orderId: order.id,
+            description: `Wallet payment toward order #${order.orderNumber}.` });
+        if (updated.purchasedBalanceCents < 0 || updated.promotionalBalanceCents < 0) await db.walletAccount.update({ where: { userId }, data: {
+            frozenAt: account.frozenAt || new Date(), freezeReason: account.freezeReason || 'A reserved wallet payment requires support review.',
+        } });
+        return { walletAmountCents: hold.amountCents, walletPurchasedCents: hold.purchasedCents, walletPromotionalCents: hold.promotionalCents };
     }
 
     // The caller owns the order lifecycle transaction and computes eligibility
@@ -161,17 +238,21 @@ function createWalletService({ prisma, stripe }) {
         }, transactionOptions);
     }
 
-    async function createTopUp(userId, packageId, clientUrl) {
+    async function createTopUp(userId, packageId, clientUrl, { uiMode = 'hosted' } = {}) {
         const offer = packageFor(packageId);
         if (!offer) throw error('WALLET_PACKAGE', 'Choose one of the available top-up packages.', 400);
+        if (!['hosted', 'elements'].includes(uiMode)) throw error('WALLET_CHECKOUT_MODE', 'Choose a supported top-up checkout.', 400);
         for (let attempt = 0; attempt < 3; attempt++) {
             // Persist the intent BEFORE contacting Stripe. A lost network reply
             // retries the same durable ID/idempotency key, including after restart.
             const topUp = await prisma.$transaction(async db => {
                 const account = await lockAccount(db, userId);
                 assertUsable(account);
-                return await db.walletTopUp.findFirst({ where: { userId, packageId, status: { in: ['CREATING', 'PENDING'] } }, orderBy: { createdAt: 'desc' } }) ||
-                    db.walletTopUp.create({ data: { userId, packageId, amountCents: offer.amountCents, bonusPercent: offer.bonusPercent,
+                const pending = await db.walletTopUp.findFirst({ where: { userId, packageId, status: { in: ['CREATING', 'PENDING'] } }, orderBy: { createdAt: 'desc' } });
+                if (pending) return pending;
+                if (!WALLET_PACKAGES.some(item => item.id === packageId)) throw error('WALLET_PACKAGE', 'This package has changed. Refresh your wallet to choose a current package.', 400);
+                return db.walletTopUp.create({ data: { ...(uiMode === 'elements' ? { id: `wte_${randomUUID()}` } : {}),
+                        userId, packageId, amountCents: offer.amountCents, bonusPercent: offer.bonusPercent,
                         bonusCents: offer.bonusCents, currency: 'usd', clientUrl } });
             }, transactionOptions);
             // Stripe may prune an idempotency key after 24h. An ambiguous old
@@ -181,6 +262,7 @@ function createWalletService({ prisma, stripe }) {
             }
             const metadata = { kind: 'wallet_topup', walletTopUpId: topUp.id, customerId: userId, packageId,
                 amountCents: String(offer.amountCents), bonusCents: String(offer.bonusCents) };
+            const savedUiMode = checkoutUiMode(topUp);
             let session;
             if (topUp.stripeCheckoutSessionId) session = await stripe.checkout.sessions.retrieve(topUp.stripeCheckoutSessionId, {}, stripeOptions);
             else {
@@ -189,9 +271,14 @@ function createWalletService({ prisma, stripe }) {
                     line_items: [{ quantity: 1, price_data: { currency: 'usd', unit_amount: offer.amountCents,
                         product_data: { name: 'FastBoost wallet top-up', description: `$${(offer.creditCents / 100).toFixed(2)} store credit, including ${offer.bonusPercent}% bonus` } } }],
                     metadata, payment_intent_data: { metadata },
-                    success_url: `${topUp.clientUrl}/account/wallet?wallet_session_id={CHECKOUT_SESSION_ID}`,
-                    cancel_url: `${topUp.clientUrl}/account/wallet?wallet_cancelled=1`,
-                }, { ...stripeOptions, idempotencyKey: `wallet-topup-v1-${topUp.id}` });
+                    ...(savedUiMode === 'elements' ? {
+                        ui_mode: 'elements',
+                        return_url: `${topUp.clientUrl}/account/wallet?wallet_session_id={CHECKOUT_SESSION_ID}`,
+                    } : {
+                        success_url: `${topUp.clientUrl}/account/wallet?wallet_session_id={CHECKOUT_SESSION_ID}`,
+                        cancel_url: `${topUp.clientUrl}/account/wallet?wallet_cancelled=1`,
+                    }),
+                }, { ...stripeOptions, idempotencyKey: `${savedUiMode === 'elements' ? 'wallet-topup-elements-v1' : 'wallet-topup-v1'}-${topUp.id}` });
                 session = await stripe.checkout.sessions.retrieve(created.id, {}, stripeOptions);
             }
             validateSessionQuote(topUp, session);
@@ -209,12 +296,40 @@ function createWalletService({ prisma, stripe }) {
                 const verified = await prisma.walletTopUp.findUnique({ where: { id: topUp.id } });
                 return { topUpId: topUp.id, sessionId: session.id, status: verified.status === 'PAID' ? 'paid' : 'reversed', paid: verified.status === 'PAID' };
             }
-            if (session.status !== 'open' || typeof session.url !== 'string' || !session.url.startsWith('https://checkout.stripe.com/')) {
-                throw error('WALLET_CHECKOUT_UNAVAILABLE', 'Top-up checkout is not available. Please retry shortly.', 503);
-            }
             const currentAccount = await prisma.walletAccount.findUnique({ where: { userId } });
             assertUsable(currentAccount);
-            return { topUpId: topUp.id, sessionId: session.id, url: session.url, status: 'pending' };
+            if (session.status !== 'open' || session.payment_status !== 'unpaid') {
+                throw error('WALLET_TOPUP_PENDING', 'An earlier top-up is awaiting payment confirmation. Please check it before starting another top-up.');
+            }
+            if (savedUiMode !== uiMode) {
+                // Switching presentation must never leave two payable sessions.
+                // Stripe can complete the old payment while expiration races it.
+                let closed;
+                try { closed = await stripe.checkout.sessions.expire(session.id, {}, stripeOptions); }
+                catch { closed = await stripe.checkout.sessions.retrieve(session.id, {}, stripeOptions); }
+                validateSessionQuote(topUp, closed);
+                if (closed.status === 'complete' && closed.payment_status === 'paid') {
+                    await settle(closed);
+                    const verified = await prisma.walletTopUp.findUnique({ where: { id: topUp.id } });
+                    return { topUpId: topUp.id, sessionId: closed.id, status: verified.status === 'PAID' ? 'paid' : 'reversed', paid: verified.status === 'PAID' };
+                }
+                if (closed.status !== 'expired' || closed.payment_status === 'paid') {
+                    throw error('WALLET_TOPUP_PENDING', 'The existing top-up could not be safely closed. Please check its payment before retrying.');
+                }
+                await expire(closed);
+                continue;
+            }
+            const details = { topUpId: topUp.id, sessionId: session.id, status: 'pending', uiMode: savedUiMode, summary: topUpSummary(offer) };
+            if (savedUiMode === 'elements') {
+                if (typeof session.client_secret !== 'string' || !session.client_secret) {
+                    throw error('WALLET_CHECKOUT_UNAVAILABLE', 'Top-up checkout is not available. Please retry shortly.', 503);
+                }
+                return { ...details, clientSecret: session.client_secret };
+            }
+            if (typeof session.url !== 'string' || !session.url.startsWith('https://checkout.stripe.com/')) {
+                throw error('WALLET_CHECKOUT_UNAVAILABLE', 'Top-up checkout is not available. Please retry shortly.', 503);
+            }
+            return { ...details, url: session.url };
         }
         throw error('WALLET_CHECKOUT_UNAVAILABLE', 'Top-up checkout could not be prepared. Please retry shortly.', 503);
     }
@@ -232,6 +347,35 @@ function createWalletService({ prisma, stripe }) {
         const current = await prisma.walletTopUp.findUnique({ where: { id: topUp.id } });
         return { topUpId: topUp.id, status: current.status === 'PAID' ? 'paid' : current.status === 'REVERSED' ? 'reversed' : current.status === 'EXPIRED' ? 'expired' : 'pending',
             paid: current.status === 'PAID', ...await snapshot(userId) };
+    }
+
+    async function cancel(userId, sessionId) {
+        if (typeof sessionId !== 'string' || !/^cs_[A-Za-z0-9_]+$/.test(sessionId)) {
+            throw error('WALLET_TOPUP_ID', 'A valid top-up reference is required.', 400);
+        }
+        // Resolve the signed-in owner's saved intent before any Stripe access.
+        const topUp = await prisma.walletTopUp.findFirst({ where: { userId, stripeCheckoutSessionId: sessionId } });
+        if (!topUp) throw error('WALLET_TOPUP_UNAVAILABLE', 'Top-up not found.', 404);
+        let expired = false;
+        if (!['PAID', 'REVERSED'].includes(topUp.status)) {
+            let session = await stripe.checkout.sessions.retrieve(sessionId, {}, stripeOptions);
+            validateSessionQuote(topUp, session);
+            if (session.status === 'open' && session.payment_status === 'unpaid') {
+                try { session = await stripe.checkout.sessions.expire(sessionId, {}, stripeOptions); }
+                catch { session = await stripe.checkout.sessions.retrieve(sessionId, {}, stripeOptions); }
+                validateSessionQuote(topUp, session);
+            }
+            if (session.status === 'complete' && session.payment_status === 'paid') await settle(session);
+            else if (session.status === 'expired' && session.payment_status === 'unpaid') {
+                await expire(session);
+                expired = true;
+            }
+        }
+        const current = await prisma.walletTopUp.findUnique({ where: { id: topUp.id } });
+        const cancelled = expired && current.status === 'EXPIRED';
+        return { topUpId: topUp.id, sessionId, cancelled, paid: current.status === 'PAID',
+            status: current.status === 'PAID' ? 'paid' : current.status === 'REVERSED' ? 'reversed' : cancelled ? 'cancelled' : 'pending',
+            ...await snapshot(userId) };
     }
 
     async function expire(session) {
@@ -282,7 +426,7 @@ function createWalletService({ prisma, stripe }) {
         return false;
     }
 
-    return { snapshot, createTopUp, verify, spend, settle, handleWebhook, adjustCashback };
+    return { snapshot, createTopUp, verify, cancel, spend, spendable, spendReserved, settle, handleWebhook, adjustCashback };
 }
 
 module.exports = { WALLET_PACKAGES, createWalletService, validateQuote, validateIntent };

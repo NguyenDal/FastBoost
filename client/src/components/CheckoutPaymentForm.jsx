@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { CheckoutElementsProvider, CurrencySelectorElement, ExpressCheckoutElement, useCheckoutElements } from "@stripe/react-stripe-js/checkout";
+import CheckoutSessionTransition from './CheckoutSessionTransition';
 import { COUNTRIES } from "../utils/countries";
 import PaymentErrorDialog from "./PaymentErrorDialog";
 import LegalAgreement from "./LegalAgreement";
@@ -23,27 +23,7 @@ export function CheckoutIcon({ type }) {
     return <svg className="checkout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
 
-// Only session-bound controls restart when a discount replaces the Stripe session.
-// Card Elements belong to their own Elements instance and stay mounted below.
-function CheckoutSession({ sessionId, onStateChange, onConfirm, onWalletsChange, wallets }) {
-    const state = useCheckoutElements();
-    const [currencySelectorStatus, setCurrencySelectorStatus] = useState("loading");
-    const hasCurrencyOptions = state.type === "success" && Boolean(state.checkout.currencyOptions?.length);
-    useEffect(() => {
-        onStateChange({ sessionId, state, currencySelectorStatus: hasCurrencyOptions ? currencySelectorStatus : "not-needed" });
-    }, [sessionId, state, hasCurrencyOptions, currencySelectorStatus, onStateChange]);
-    return state.type === "success" && <>
-        {hasCurrencyOptions && <div className="checkout-currency-selector">
-            <h3>Payment currency</h3>
-            <CurrencySelectorElement onReady={() => setCurrencySelectorStatus("ready")} onLoaderStart={() => setCurrencySelectorStatus("loading")} onLoadError={() => setCurrencySelectorStatus("error")} />
-        </div>}
-        <div className={wallets ? "checkout-wallet-slot" : undefined} inert={hasCurrencyOptions && currencySelectorStatus !== "ready"}>
-            <ExpressCheckoutElement options={{ paymentMethods: { applePay: "always" }, buttonTheme: { applePay: "black" }, paymentMethodOrder: ["apple_pay", "link"] }} onConfirm={onConfirm} onReady={({ availablePaymentMethods }) => { onWalletsChange(Boolean(availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean))); }} />
-        </div>
-    </>;
-}
-
-export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, clientSecret, appearance, stripePromise, updatingPrice, paymentBlocked, onBusyChange, onSuccess, onBeforeConfirm, onCheckoutChange, walletContent }) {
+export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, clientSecret, appearance, stripePromise, updatingPrice, paymentBlocked, suspended = false, onBusyChange, onSuccess, onBeforeConfirm, onDefinitiveFailure, onCheckoutChange, walletContent, showExpressCheckout = true, allowAdaptivePricing = true, contactHelp = 'We’ll use this email to send your order confirmation.', agreementAction = 'placing this order' }) {
     const [session, setSession] = useState(null);
     const state = session?.sessionId === sessionId ? session.state : { type: "loading" };
     const currencySelectorLoading = session?.sessionId === sessionId && session.currencySelectorStatus === "loading";
@@ -55,10 +35,10 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
     }, [sessionId]);
     const handleSessionState = useCallback(next => {
         // A retired session can still emit while Stripe tears down its Elements.
-        if (next.sessionId !== activeSessionId.current || (next.state.type === "success" && next.state.checkout.id !== next.sessionId)) return;
+        if (suspended || next.sessionId !== activeSessionId.current || (next.state.type === "success" && next.state.checkout.id !== next.sessionId)) return;
         setSession(next);
         onCheckoutChange?.({ sessionId: next.sessionId, state: next.state });
-    }, [onCheckoutChange]);
+    }, [onCheckoutChange, suspended]);
     const cardFields = useRef(null);
     const numberNode = useRef(null);
     const expiryNode = useRef(null);
@@ -91,7 +71,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
         return () => { cancelled = true; mounted.forEach(element => element.destroy()); cardFields.current = null; };
     }, [stripePromise]);
     const confirm = async (expressEvent) => {
-        if (submitting.current || updatingPrice || paymentBlocked || currencySelectorLoading || currencySelectorError || state.type !== "success" || !cardFields.current) return;
+        if (submitting.current || suspended || updatingPrice || paymentBlocked || currencySelectorLoading || currencySelectorError || state.type !== "success" || !cardFields.current) return;
         submitting.current = true;
         setBusy(true);
         onBusyChange?.(true);
@@ -136,7 +116,10 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
             // Verify this exact session before exposing another payment attempt.
             if (confirmationStarted && !["card_error", "validation_error"].includes(failure?.type)) {
                 onSuccess({ session_id: sessionId });
-            } else setError(paymentErrorMessage(failure));
+            } else {
+                try { await onDefinitiveFailure?.(sessionId); } catch { /* Preserve the original decline if recovery acknowledgement fails. */ }
+                if (activeSessionId.current === sessionId) setError(paymentErrorMessage(failure));
+            }
         }
         finally { submitting.current = false; setBusy(false); onBusyChange?.(false); }
     };
@@ -144,21 +127,17 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
     const total = state.type === "success" ? state.checkout.total.total.amount : null;
     const refreshing = updatingPrice || state.type === "loading" || currencySelectorLoading;
     return <>
-        {state.type === "error" && <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
-        {currencySelectorError && <PaymentErrorDialog message="We couldn’t load the payment currency options. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
+        {!suspended && !updatingPrice && !paymentBlocked && state.type === "error" && <PaymentErrorDialog message="We couldn’t load the payment form. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
+        {!suspended && !updatingPrice && !paymentBlocked && currencySelectorError && <PaymentErrorDialog message="We couldn’t load the payment currency options. Please reload checkout and try again." action="Reload Checkout" onClose={() => window.location.reload()} />}
         <div id="checkout-express" className={wallets || walletContent ? "checkout-express" : "checkout-express-empty"}>
             {(wallets || walletContent) && <h3>Express Checkout</h3>}
             {walletContent}
-            <div inert={updatingPrice || state.type === "loading" || paymentBlocked || currencySelectorError || busy}>
-            <CheckoutElementsProvider key={sessionId} stripe={stripePromise} options={{ clientSecret, adaptivePricing: { allowed: true }, elementsOptions: { appearance } }}>
-                <CheckoutSession sessionId={sessionId} onStateChange={handleSessionState} onConfirm={confirm} onWalletsChange={setWallets} wallets={wallets} />
-            </CheckoutElementsProvider>
-            </div>
+            <CheckoutSessionTransition sessionId={sessionId} clientSecret={clientSecret} stripePromise={stripePromise} appearance={appearance} allowAdaptivePricing={allowAdaptivePricing} blocked={suspended || updatingPrice || state.type === 'loading' || paymentBlocked || currencySelectorError || busy} onStateChange={handleSessionState} onConfirm={confirm} onWalletsChange={setWallets} showExpressCheckout={showExpressCheckout} />
             {(wallets || walletContent) && <p className="checkout-or">OR</p>}
         </div>
         <form noValidate onSubmit={event => { event.preventDefault(); confirm(); }}>
             <h3>Contact Information</h3>
-            <p className="checkout-help">We’ll use this email to send your order confirmation.</p>
+            <p className="checkout-help">{contactHelp}</p>
             <label className="checkout-sr-only" htmlFor="checkout-email">Email address</label>
             <div className="checkout-input checkout-contact"><CheckoutIcon type="mail"/><input ref={emailNode} id="checkout-email" type="email" inputMode="email" autoComplete="email" placeholder="Enter your email address" value={email} onChange={event => onEmailChange(event.target.value)} required maxLength={254} disabled={busy} /></div>
             <h3>Card Information</h3>
@@ -174,7 +153,7 @@ export default function CheckoutPaymentForm({ email, onEmailChange, sessionId, c
             <div className="checkout-input"><CheckoutIcon type="globe"/><select id="checkout-country" autoComplete="country" required value={country} onChange={event=>setCountry(event.target.value)}><option value="">Select country</option>{COUNTRIES.map(item=><option key={item.code} value={item.code}>{item.name}</option>)}</select></div>
             {error && <PaymentErrorDialog message={error} action={ready ? "Back to Payment" : "Reload Checkout"} onClose={() => { if (ready) setError(""); else window.location.reload(); }} />}
             <button className="checkout-pay" disabled={busy || !ready || refreshing || paymentBlocked || currencySelectorError || state.type !== "success"} type="submit"><CheckoutIcon type="lock"/><span aria-live="polite">{busy ? "Processing…" : refreshing ? "Updating total…" : paymentBlocked ? "Review total before paying" : `Pay Securely — ${total ?? "…"}`}</span><CheckoutIcon type="arrow"/></button>
-            <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
+            <p className="checkout-agreement"><LegalAgreement action={agreementAction} /></p>
         </form>
     </>;
 }

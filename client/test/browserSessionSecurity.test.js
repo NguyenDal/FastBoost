@@ -6,6 +6,9 @@ import { setImmediate as nextTurn } from 'node:timers/promises';
 import { transformWithOxc } from 'vite';
 import { authStorage, storeAuthSession, replaceAuthToken } from '../src/utils/authStorage.js';
 import { pollPaymentVerification } from '../src/utils/paymentVerification.js';
+import { walletCardQuote, walletCheckoutAmounts, walletQuoteMatches } from '../src/utils/walletCheckout.js';
+import { checkoutPresenceLost } from '../src/utils/checkoutPresence.js';
+const checkoutPresence = { checkoutViewId: 'synthetic-view', protect: async () => true, clearProtection() {}, recover() {} };
 
 const storage = () => {
     const values = new Map();
@@ -218,12 +221,12 @@ async function cardPaymentFixture(confirm, createPaymentMethod = async () => ({ 
     const props = { email: 'customer@example.test', onEmailChange() {}, sessionId: 'synthetic-session', clientSecret: 'synthetic-secret', stripePromise: Promise.resolve(null), onSuccess: query => verifications.push(query), onBeforeConfirm: async () => {} };
     const checkout = { id: props.sessionId, confirm, total: { total: { amount: 'US$10.00' } } };
     const fixture = await componentFixture('CheckoutPaymentForm', {
-        COUNTRIES: [], PaymentErrorDialog: 'payment-error', LegalAgreement: 'legal', CheckoutElementsProvider: 'stripe-provider',
+        COUNTRIES: [], PaymentErrorDialog: 'payment-error', LegalAgreement: 'legal', CheckoutSessionTransition: 'checkout-transition',
         paymentErrorMessage: error => error?.code === 'card_declined' ? 'Your card was declined.' : 'Unable to complete payment.',
     }, [{ sessionId: props.sessionId, state: { type: 'success', checkout }, currencySelectorStatus: 'not-needed' }, true, false, '', false, 'Preview Customer', 'CA'], 'components', {
         refs: [props.sessionId, { stripe: { createPaymentMethod }, number: {} }, null, null, null, { validity: { valid: true } }, false],
     });
-    const submit = findElement(fixture.render(props), node => node.type?.name === 'CheckoutSession').props.onConfirm;
+    const submit = findElement(fixture.render(props), node => node.type === 'checkout-transition').props.onConfirm;
     return { fixture, props, submit, verifications };
 }
 
@@ -263,7 +266,7 @@ test('an outage during the service check never submits a charge, and unmounted c
     let confirmations = 0;
     const blocked = await cardPaymentFixture(async () => { confirmations++; return { type: 'success' }; });
     const tree = blocked.fixture.render({ ...blocked.props, onBeforeConfirm: async () => { throw new TypeError('Offline before submission'); } });
-    await findElement(tree, node => node.type?.name === 'CheckoutSession').props.onConfirm();
+    await findElement(tree, node => node.type === 'checkout-transition').props.onConfirm();
     assert.equal(confirmations, 0); assert.equal(blocked.verifications.length, 0);
     let finish;
     const waiting = await cardPaymentFixture(() => new Promise(resolve => { finish = resolve; }));
@@ -272,10 +275,39 @@ test('an outage during the service check never submits a charge, and unmounted c
     assert.equal(waiting.verifications.length, 0);
 });
 
+test('a full-wallet popup suspends old card confirmations and expired-session errors without changing the visible card controls', async () => {
+    let confirmations = 0;
+    const current = await cardPaymentFixture(async () => { confirmations++; return { type: 'success' }; });
+    const before = current.fixture.render(current.props);
+    const beforeButton = findElement(before, node => node.type === 'button' && node.props.className === 'checkout-pay');
+    let tree = current.fixture.render({ ...current.props, suspended: true });
+    const transition = findElement(tree, node => node.type === 'checkout-transition');
+    transition.props.onStateChange({ sessionId: current.props.sessionId, state: { type: 'error' }, currencySelectorStatus: 'error' });
+    await transition.props.onConfirm(); tree = current.fixture.render({ ...current.props, suspended: true });
+    assert.equal(confirmations, 0); assert.equal(current.verifications.length, 0);
+    assert.equal(findElement(tree, node => node.type === 'payment-error'), null);
+    const afterButton = findElement(tree, node => node.type === 'button' && node.props.className === 'checkout-pay');
+    assert.equal(afterButton.props.disabled, beforeButton.props.disabled);
+    assert.equal(findElement(afterButton, node => node.type === 'span').props.children, findElement(beforeButton, node => node.type === 'span').props.children);
+});
+
+test('retired card-session and currency errors stay behind a quote update while genuine current loading errors remain visible', async () => {
+    for (const state of [{ type: 'error' }, { type: 'success', checkout: { id: 'session', total: { total: { amount: '$10.00' } } } }]) {
+        const fixture = await componentFixture('CheckoutPaymentForm', {
+            COUNTRIES: [], PaymentErrorDialog: 'payment-error', LegalAgreement: 'legal', CheckoutSessionTransition: 'checkout-transition',
+        }, [{ sessionId: 'session', state, currencySelectorStatus: 'error' }, true, false, '', false, 'Customer', 'CA'], 'components');
+        const props = { sessionId: 'session', clientSecret: 'secret', email: 'customer@example.test', stripePromise: Promise.resolve(null) };
+        assert.ok(findElement(fixture.render(props), node => node.type === 'payment-error'));
+        for (const blocked of [{ updatingPrice: true }, { paymentBlocked: true }, { suspended: true }]) {
+            assert.equal(findElement(fixture.render({ ...props, ...blocked }), node => node.type === 'payment-error'), null);
+        }
+    }
+});
+
 async function checkoutViewFixture(createCheckoutSession, initialStates = [], search = 'gold=100', overrides = {}) {
     const fixture = await componentFixture('CheckoutPage', {
         loadStripe: () => Promise.resolve(null), useSearchParams: () => [new URLSearchParams(search), () => {}], useNavigate: () => () => {},
-        checkoutPriceDisplay: () => null, createCheckoutSession, paymentErrorMessage: () => 'Payment request was rejected.',
+        checkoutPriceDisplay: () => null, walletCardQuote, walletCheckoutAmounts, walletQuoteMatches, checkoutPresenceLost, useCheckoutPresence: () => checkoutPresence, WalletCheckoutOption: 'wallet-option', createCheckoutSession, paymentErrorMessage: () => 'Payment request was rejected.',
         Navbar: 'navbar', CheckoutPaymentForm: 'payment-form', CheckoutSkeleton: 'skeleton', PaymentFormSkeleton: 'payment-skeleton',
         PaymentResultPage: 'verification', PaymentErrorDialog: 'payment-error', LiveSaleFooter: 'sale',
         AbortController, DOMException, Event, document: { hidden: false },
@@ -326,7 +358,7 @@ test('double-clicking Gold confirmation sends one request and a late response af
     assert.equal(current.fixture.state(4).orderId, 'synthetic-order');
     let late;
     const retired = await goldPaymentFixture(() => new Promise(resolve => { late = resolve; }));
-    const attempt = retired.submit(); retired.fixture.unmount();
+    const attempt = retired.submit(); await nextTurn(); retired.fixture.unmount();
     late({ paidWithGoldOnly: true, orderId: 'synthetic-order' }); await attempt;
     assert.equal(retired.fixture.state(4), null);
 });
@@ -342,7 +374,7 @@ test('lost wallet settlement responses verify the same order while quote and bal
     const requests = [];
     const uncertain = await walletPaymentFixture(async (...args) => { requests.push(args); throw new TypeError('Wallet commit response lost'); });
     await uncertain.submit();
-    assert.deepEqual(requests, [['synthetic-order', 'customer@example.test', 1000]], 'the confirmed USD quote accompanies the payment request');
+    assert.deepEqual(JSON.parse(JSON.stringify(requests)), [['synthetic-order', 'customer@example.test', 1000, { checkoutViewId: 'synthetic-view' }]], 'the confirmed USD quote and originating checkout view accompany the payment request');
     assert.equal(uncertain.fixture.state(4).orderId, 'synthetic-order');
     assert.equal(uncertain.fixture.state(4).wallet, '1');
     assert.equal(uncertain.fixture.state(0).summary.priceSummary, undefined, 'an ambiguous wallet outcome cannot show the previous quote as a paid receipt');
@@ -365,9 +397,24 @@ test('wallet confirmation serializes repeated clicks and ignores a committed res
     assert.equal(current.fixture.state(4).wallet, '1');
     let late;
     const retired = await walletPaymentFixture(() => new Promise(resolve => { late = resolve; }));
-    const attempt = retired.submit(); retired.fixture.unmount();
+    const attempt = retired.submit(); await nextTurn(); retired.fixture.unmount();
     late({ paidWithWallet: true, orderId: 'synthetic-order' }); await attempt;
     assert.equal(retired.fixture.state(4), null);
+});
+
+test('a late presence acknowledgement cannot start Gold or wallet settlement after leaving that order', async () => {
+    for (const method of ['gold', 'wallet']) {
+        let finishPresence, writes = 0;
+        const fixture = await checkoutViewFixture(async () => { writes++; }, checkoutStates(method === 'gold' ? { goldConfirmation: 100 } : { walletConfirmation: 1000 }), '', {
+            useCheckoutPresence: () => ({ ...checkoutPresence, protect: () => new Promise(resolve => { finishPresence = resolve; }) }),
+            payOrderWithWallet: async () => { writes++; },
+        });
+        const tree = fixture.render({ orderId: 'synthetic-order' });
+        const confirmation = findElement(tree, node => node.type?.name === (method === 'gold' ? 'GoldConfirmation' : 'WalletConfirmation'));
+        const submit = confirmation.props.onConfirm(); fixture.unmount();
+        finishPresence(true); await submit;
+        assert.equal(writes, 0); assert.equal(fixture.state(4), null);
+    }
 });
 
 test('reload after a power interruption restores the same paid order or verifies its completed Stripe session', async () => {
@@ -489,7 +536,7 @@ test('a timed-out Gold request enters same-order verification and never resends 
         return new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(signal.reason), { once: true }));
     });
     const current = await goldPaymentFixture((...args) => payment.api.createCheckoutSession(...args));
-    const attempt = current.submit();
+    const attempt = current.submit(); await nextTurn();
     payment.timers[0].callback(); await attempt;
     assert.equal(writes, 1);
     assert.equal(current.fixture.state(4).orderId, 'synthetic-order');
@@ -515,7 +562,7 @@ test('wallet API timeout verifies the original order without replaying its debit
     timers[0].callback(); await attempt;
     assert.equal(timers[0].active, false);
     assert.deepEqual(requests, [{ url: 'https://synthetic.invalid/api/payments/wallet',
-        body: { orderId: 'synthetic-order', contactEmail: 'customer@example.test', expectedTotalCents: 1000 } }]);
+        body: { orderId: 'synthetic-order', contactEmail: 'customer@example.test', expectedTotalCents: 1000, checkoutViewId: 'synthetic-view' } }]);
     assert.equal(current.fixture.state(4).orderId, 'synthetic-order');
     assert.equal(current.fixture.state(4).wallet, '1');
 });

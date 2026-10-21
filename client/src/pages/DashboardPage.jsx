@@ -31,17 +31,38 @@ export default function DashboardPage() {
 
     useEffect(() => {
         let cancelled = false;
+        let inFlight = false;
+        let refreshPending = false;
+        let hasReservation = false;
+        let loaded = false;
         const controller = new AbortController();
-        const refresh = () => {
+        const refresh = event => {
             if (document.hidden) return;
+            if (inFlight) { if (event) refreshPending = true; return; }
+            inFlight = true;
             getWallet({ signal: controller.signal }).then(result => {
-                if (!cancelled) { setWallet(result); setWalletFailed(false); }
-            }).catch(() => { if (!cancelled) setWalletFailed(true); });
+                if (!cancelled) {
+                    loaded = true;
+                    hasReservation = result.reservedBalanceCents > 0;
+                    setWallet(result); setWalletFailed(false);
+                }
+            }).catch(() => { if (!cancelled && !loaded) setWalletFailed(true); })
+                .finally(() => {
+                    inFlight = false;
+                    if (!cancelled && refreshPending) { refreshPending = false; refresh(); }
+                });
         };
         refresh();
         window.addEventListener('focus', refresh);
         window.addEventListener('wallet:updated', refresh);
-        return () => { cancelled = true; controller.abort(); window.removeEventListener('focus', refresh); window.removeEventListener('wallet:updated', refresh); };
+        window.addEventListener('online', refresh);
+        const timer = setInterval(() => { if (hasReservation) refresh(); }, 2000);
+        return () => {
+            cancelled = true; controller.abort(); clearInterval(timer);
+            window.removeEventListener('focus', refresh);
+            window.removeEventListener('wallet:updated', refresh);
+            window.removeEventListener('online', refresh);
+        };
     }, []);
 
     useEffect(() => {
@@ -231,7 +252,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="dashboard-wallet-amount">
                                     <p className="dashboard-wallet-label">Available balance</p>
-                                    <strong className="dashboard-wallet-balance" aria-live="polite">{wallet ? walletMoney(wallet.balanceCents) : walletFailed ? 'Unavailable' : '…'}</strong>
+                                    <strong className="dashboard-wallet-balance" aria-live="polite">{wallet ? walletMoney(Number.isSafeInteger(wallet.availableBalanceCents) ? wallet.availableBalanceCents : wallet.balanceCents) : walletFailed ? 'Unavailable' : '…'}</strong>
                                 </div>
                                 <Link to="/account/loyalty" className="dashboard-wallet-gold">
                                     <span className="dashboard-wallet-coin" aria-hidden="true">🪙</span>

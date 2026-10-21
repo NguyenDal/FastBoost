@@ -6,6 +6,8 @@ const matches = (row, where = {}) => Object.entries(where).every(([key, conditio
     if (condition && typeof condition === 'object' && !Array.isArray(condition)) return Object.entries(condition).every(([operator, value]) => {
         if (operator === 'in') return value.includes(row[key]);
         if (operator === 'not') return row[key] !== value;
+        if (operator === 'gt') return row[key] > value;
+        if (operator === 'lt') return row[key] < value;
         throw new Error(`Unsupported wallet fixture condition ${operator}`);
     });
     return row[key] === condition;
@@ -14,7 +16,7 @@ const matches = (row, where = {}) => Object.entries(where).every(([key, conditio
 function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...options } = {}) {
     const f = paymentFixture(t, options);
     const ledger = { accounts: [{ userId: 'customer', purchasedBalanceCents: purchased, promotionalBalanceCents: promotional,
-        frozenAt: frozen ? new Date() : null }], topUps: [], entries: [], entitlements: [] };
+        frozenAt: frozen ? new Date() : null }], topUps: [], entries: [], entitlements: [], holds: [], presences: [] };
     const transaction = f.db.$transaction;
     f.db.$transaction = (callback, config) => transaction(async db => {
         const before = clone(ledger);
@@ -41,6 +43,10 @@ function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...o
             const records = ledger[rows].filter(row => matches(row, where)); records.forEach(row => Object.assign(row, clone(data)));
             return { count: records.length };
         },
+        deleteMany: async ({ where }) => {
+            const records = ledger[rows].filter(row => !matches(row, where));
+            const count = ledger[rows].length - records.length; ledger[rows] = records; return { count };
+        },
     });
     f.db.walletAccount = model('accounts');
     f.db.walletAccount.upsert = async ({ where, create }) => {
@@ -50,6 +56,8 @@ function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...o
     };
     f.db.walletTopUp = model('topUps', { status: 'CREATING', stripeCheckoutSessionId: null, stripePaymentIntentId: null });
     f.db.walletEntry = model('entries');
+    f.db.walletCheckoutHold = model('holds', { stripeCheckoutSessionId: null });
+    f.db.walletCheckoutPresence = model('presences', { closedAt: null, paymentProtectedUntil: null });
     f.db.walletCashbackEntitlement = model('entitlements', { entitledCents: 0, revision: 0 });
     f.db.walletCashbackEntitlement.upsert = async ({ where, create }) => {
         let entitlement = ledger.entitlements.find(row => matches(row, where));
@@ -58,15 +66,23 @@ function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...o
     };
     const createSession = f.stripe.checkout.sessions.create;
     const idempotency = new Map();
+    const createCalls = [];
     const intents = new Map();
     let failAfterCreate = false;
     f.stripe.checkout.sessions.create = async (parameters, config = {}) => {
-        if (idempotency.has(config.idempotencyKey)) return clone(f.sessions.get(idempotency.get(config.idempotencyKey)));
+        createCalls.push(clone({ parameters, config }));
+        if (idempotency.has(config.idempotencyKey)) {
+            const previous = idempotency.get(config.idempotencyKey);
+            assert.deepEqual(parameters, previous.parameters, 'a durable intent must replay identical Stripe creation parameters');
+            return clone(f.sessions.get(previous.id));
+        }
         const session = await createSession(parameters);
-        if (parameters.metadata?.kind === 'wallet_topup') {
+        if (parameters.metadata?.kind === 'wallet_topup' || parameters.metadata?.walletHoldId) {
             const stored = f.sessions.get(session.id);
-            stored.url = `https://checkout.stripe.com/c/pay/${session.id}`;
-            idempotency.set(config.idempotencyKey, session.id);
+            stored.ui_mode = parameters.ui_mode || 'hosted_page';
+            stored.client_secret = stored.ui_mode === 'elements' ? `${session.id}_secret_offline` : null;
+            stored.url = stored.ui_mode === 'hosted_page' ? `https://checkout.stripe.com/c/pay/${session.id}` : null;
+            idempotency.set(config.idempotencyKey, { id: session.id, parameters: clone(parameters) });
         }
         if (failAfterCreate) { failAfterCreate = false; throw new Error('Stripe accepted request but response was lost'); }
         return clone(f.sessions.get(session.id));
@@ -75,7 +91,8 @@ function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...o
     f.stripe.charges = { retrieve: async id => {
         const intent = [...intents.values()].find(row => row.latest_charge.id === id); assert.ok(intent); return clone(intent.latest_charge);
     } };
-    const service = () => createWalletService({ prisma: f.db, stripe: f.stripe });
+    const service = () => createWalletService({ prisma: f.db, stripe: f.stripe,
+        settleOrderPayment: (order, session) => f.controller.completeCheckoutSessionPayment(order, session) });
     async function payOrder(id, body = {}, user = 'customer') {
         const res = f.response();
         await f.controller.payWithWallet({ user: { id: user }, body: { orderId: id, contactEmail: 'receipt@example.test', expectedTotalCents: 2000, ...body },
@@ -92,7 +109,7 @@ function walletFixture(t, { purchased = 0, promotional = 0, frozen = false, ...o
         intents.set(intent.id, intent);
         return clone(session);
     }
-    return { ...f, ledger, service, payOrder, paidTopUp, intents, loseCreateResponse() { failAfterCreate = true; } };
+    return { ...f, ledger, service, payOrder, paidTopUp, intents, createCalls, loseCreateResponse() { failAfterCreate = true; } };
 }
 
 module.exports = { walletFixture };

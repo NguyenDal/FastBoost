@@ -4,25 +4,14 @@ import { activityLogs } from '../api/activityLogs';
 import { ActivityIcon } from '../components/AdminIcons';
 import { Skeleton } from '../components/Skeleton';
 import OrderPagination from '../components/OrderPagination';
+import { activityLogFields } from '../utils/activityLogDetails';
 import '../styles/ActivityLogs.css';
 
 const emptyFilters = { q: '', actor: '', category: '', outcome: '', from: '', to: '' };
 const outcomes = { SUCCEEDED: 'Succeeded', FAILED: 'Failed', STARTED: 'Unconfirmed' };
-const titleCase = value => value.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]/g, ' ').replace(/^./, char => char.toUpperCase());
 const dateTime = value => value ? new Date(value).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-function fields(value, prefix = '') {
-    if (value == null) return [];
-    return Object.entries(value).flatMap(([key, item]) => {
-        const label = prefix ? `${prefix} · ${titleCase(key)}` : titleCase(key);
-        if (item && typeof item === 'object' && !Array.isArray(item)) return fields(item, label);
-        const display = item == null ? 'Not set' : typeof item === 'boolean' ? (item ? 'Yes' : 'No') : Array.isArray(item)
-            ? (item.length ? item.map(entry => typeof entry === 'object' ? fields(entry).map(([name, text]) => `${name}: ${text}`).join(', ') : String(entry)).join('\n') : 'None')
-            : String(item);
-        return [[label, display]];
-    });
-}
 function DetailValues({ title, value }) {
-    const entries = fields(value);
+    const entries = activityLogFields(value);
     return <section className="audit-values"><h4>{title}</h4>{entries.length ? <dl>{entries.map(([label, text]) => <div key={label}><dt>{label}</dt><dd>{text}</dd></div>)}</dl> : <p>Not recorded</p>}</section>;
 }
 function targetLink(item) {

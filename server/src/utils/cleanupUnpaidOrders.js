@@ -15,6 +15,7 @@ async function cleanupOldUnpaidOrders() {
             // claim can be moved safely by the next redemption; never cascade it
             // away merely because the draft was created over a day ago.
             couponSaleId: null,
+            walletCheckoutHold: { is: null },
             createdAt: {
                 lt: cutoff,
             },

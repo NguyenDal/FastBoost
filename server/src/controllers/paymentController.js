@@ -6,13 +6,17 @@ const { retrieveReceiptPaymentMethod } = require("../utils/receiptPaymentMethod"
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const stripe = require("../utils/stripeClient");
-const { checkoutSummary } = require("../utils/checkoutSummary");
-const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, stripeOptions } = require("../utils/checkoutCoupon");
+const { checkoutSummary, checkoutTenderSummary } = require("../utils/checkoutSummary");
+const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, expireUnpaidSession, stripeOptions } = require("../utils/checkoutCoupon");
+const { validateHeldSession, recoverHeldSession, releaseHold, closeHeldCheckout, releaseExpiredWalletHolds,
+    reserveWalletCheckout, walletError, isWalletOnlyHold } = require('../utils/checkoutWallet');
+const { renewCheckoutPresence, closeCheckoutPresence } = require('../utils/checkoutPresence');
+const { abandonWalletHold, reconcileFailedWalletCheckout } = require('../utils/abandonedWalletCheckout');
 const { releaseOtherGoldCheckouts } = require("../utils/checkoutGold");
 const { snapshotCashbackPercent } = require('../utils/customerCashback');
 const { enforceCheckoutReferral } = require("../utils/checkoutReferral");
 const { createWalletService } = require('../utils/customerWallet');
-const customerWallet = createWalletService({ prisma, stripe });
+const customerWallet = createWalletService({ prisma, stripe, settleOrderPayment: completeCheckoutSessionPayment });
 const walletPaymentRequest = Symbol('walletPaymentRequest');
 const {
     grantReferralCompletionRewards,
@@ -137,11 +141,22 @@ async function completeCheckoutSessionPayment(order, session) {
     const paymentApplied = await prisma.$transaction(async (transaction) => withEarningsLedgerMutation(transaction, order.id, async () => {
         await lockCheckout(transaction, order.customerId, order.id);
         const current = await transaction.order.findUnique({ where: { id: order.id } });
-        if (!current || current.paymentStatus === "PAID" || current.status === "CANCELLED" || current.stripeCheckoutSessionId !== session.id) return false;
+        if (!current || current.paymentStatus === "PAID" || current.status === "CANCELLED") return false;
+        const hold = session.metadata?.walletHoldId ? await transaction.walletCheckoutHold.findUnique({ where: { id: session.metadata.walletHoldId } }) : null;
+        if (session.metadata?.walletHoldId) {
+            if (!hold || hold.orderId !== current.id || hold.userId !== current.customerId ||
+                hold.orderAmountCents !== current.amountCents || hold.cashAmountCents !== current.cashAmountCents ||
+                hold.goldRedeemed !== current.goldRedeemed || hold.goldDiscountCents !== current.goldDiscountCents) {
+                throw walletError('WALLET_QUOTE_CHANGED', 'The paid wallet checkout does not match its saved order.', 400);
+            }
+            validateHeldSession(hold, session);
+        } else if (current.stripeCheckoutSessionId !== session.id) return false;
         const amountCents = Number(current.amountCents ?? Math.round(Number(current.totalPrice || 0) * 100));
         const goldRedeemed = Number(current.goldRedeemed || 0);
         const goldDiscountCents = Number(current.goldDiscountCents || 0);
         const cashAmountCents = Number(current.cashAmountCents ?? amountCents - goldDiscountCents);
+        const walletAppliedCents = hold?.amountCents || 0;
+        const cardAmountCents = cashAmountCents - walletAppliedCents;
         const metadata = session.metadata || {};
         const configuredMode = /^(?:sk|rk)_(live|test)_/.exec(process.env.STRIPE_SECRET_KEY || "")?.[1];
         // Stripe's API amounts stay in the integration currency even when
@@ -152,38 +167,44 @@ async function completeCheckoutSessionPayment(order, session) {
             typeof session.livemode !== "boolean" || (configuredMode && session.livemode !== (configuredMode === "live")) ||
             typeof paymentIntentId !== "string" || !/^pi_[A-Za-z0-9_]+$/.test(paymentIntentId) ||
             session.currency !== (current.currency || "usd").toLowerCase() ||
-            !Number.isSafeInteger(session.amount_subtotal) || session.amount_subtotal !== cashAmountCents ||
+            !Number.isSafeInteger(session.amount_subtotal) || session.amount_subtotal !== cardAmountCents ||
             !Number.isSafeInteger(session.amount_total) || session.amount_total < session.amount_subtotal ||
             metadata.orderId !== current.id || metadata.customerId !== current.customerId ||
             Number(metadata.goldRedeemed) !== goldRedeemed || Number(metadata.goldDiscountCents) !== goldDiscountCents ||
-            Number(metadata.cashAmountCents) !== cashAmountCents || !Number.isSafeInteger(amountCents) || amountCents <= 0 ||
+            Number(metadata.cashAmountCents) !== cardAmountCents ||
+            Number(metadata.walletAppliedCents || 0) !== walletAppliedCents || !Number.isSafeInteger(amountCents) || amountCents <= 0 ||
             !Number.isSafeInteger(goldRedeemed) || !Number.isSafeInteger(goldDiscountCents) || goldDiscountCents !== goldRedeemed * 10 ||
-            goldDiscountCents < 0 || (goldRedeemed !== 0 && goldRedeemed < 100) || cashAmountCents < 50 || amountCents - goldDiscountCents !== cashAmountCents) {
+            goldDiscountCents < 0 || (goldRedeemed !== 0 && goldRedeemed < 100) || cardAmountCents < 50 || amountCents - goldDiscountCents !== cashAmountCents) {
             throw Object.assign(new Error("Paid Stripe session does not match the saved order quote."), { code: "PAYMENT_QUOTE_MISMATCH" });
         }
         return withBoosterOrderEmails(transaction, order.id, async () => {
             const cashbackPercent = await snapshotCashbackPercent(transaction, current);
+            const walletFields = hold ? await customerWallet.spendReserved(transaction, current.customerId, current, hold) : {};
             const updateResult = await transaction.order.updateMany({
                 where: {
                     id: order.id,
-                    stripeCheckoutSessionId: session.id,
+                    ...(!hold ? { stripeCheckoutSessionId: session.id } : {}),
                     paymentStatus: { not: "PAID" },
                     status: { not: "CANCELLED" },
                 },
                 data: {
                     paymentStatus: "PAID",
                     stripePaymentIntentId: paymentIntentId,
+                    stripeCheckoutSessionId: session.id,
                     paidAt: new Date(),
                     amountCents,
-                    cashAmountCents: session.amount_total,
+                    cashAmountCents: session.amount_total + walletAppliedCents,
+                    ...walletFields,
                     cashbackPercent,
                     currency: current.currency || "usd",
                 },
             });
 
             if (updateResult.count === 0) {
+                if (hold) throw walletError('WALLET_QUOTE_CHANGED', 'The order changed while its wallet payment was settling.');
                 return false;
             }
+            if (hold) await transaction.walletCheckoutHold.deleteMany({ where: { id: hold.id } });
 
             if (goldRedeemed > 0) {
                 await transaction.rewardHistory.createMany({
@@ -247,10 +268,13 @@ async function createRecoverableCheckoutSession(parameters, originalKey, created
 const buildCheckoutSession = async (req, res, db, createdSessions) => {
     try {
         const userId = getUserId(req);
-        const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode, expectedTotalCents } = req.body || {};
+        const { orderId, goldToUse, deferGoldOnly, contactEmail, couponCode, expectedTotalCents, walletToUseCents, checkoutViewId } = req.body || {};
         const useWallet = req[walletPaymentRequest] === true;
         if (useWallet && (!Number.isSafeInteger(expectedTotalCents) || expectedTotalCents < 0)) {
             return res.status(400).json({ ok: false, code: 'WALLET_QUOTE_CHANGED', message: 'Refresh your order total before paying from your wallet.' });
+        }
+        if (walletToUseCents !== undefined && (!Number.isSafeInteger(walletToUseCents) || walletToUseCents < 0 || walletToUseCents > 2147483647)) {
+            return res.status(400).json({ ok: false, code: 'WALLET_AMOUNT', message: 'Choose a valid wallet amount in cents.' });
         }
         if (goldToUse != null && (!Number.isSafeInteger(Number(goldToUse)) || Number(goldToUse) < 0 || (Number(goldToUse) > 0 && Number(goldToUse) < 100))) {
             return res.status(400).json({ ok: false, message: "Redeem at least 100 Gold, or enter 0 to remove Gold." });
@@ -298,19 +322,38 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         }
 
         if (order.paymentStatus === "PAID") {
+            const savedSummary = checkoutSummary(order);
             return res.json({ ok: true, paid: true, orderId: order.id,
-                summary: checkoutSummary(order) });
+                summary: checkoutTenderSummary(order, savedSummary.goldRedeemed, savedSummary.goldDiscountCents, savedSummary.totalCents, order.walletAmountCents || 0) });
         }
 
         if (order.status === "CANCELLED") {
             return res.status(400).json({ ok: false, message: "This order has been cancelled" });
         }
+        if (checkoutViewId !== undefined) await renewCheckoutPresence(db, userId, order.id, checkoutViewId, { create: !useWallet });
 
         const checkoutCurrency = (order.currency || "usd").toLowerCase();
         if (useWallet && checkoutCurrency !== 'usd') return res.status(400).json({ ok: false, code: 'WALLET_CURRENCY', message: 'Wallet payments are available for USD orders only.' });
         // Local-currency presentment keeps new USD orders denominated in USD.
         // Historical orders retain their original currency and checkout behavior.
-        const adaptivePricingEnabled = checkoutCurrency === "usd";
+        let adaptivePricingEnabled = checkoutCurrency === "usd";
+
+        let currentHold = await db.walletCheckoutHold.findUnique({ where: { orderId: order.id } });
+        const previousWalletCents = currentHold?.amountCents || 0;
+        if (currentHold && !isWalletOnlyHold(currentHold)) {
+            const heldSession = await recoverHeldSession(currentHold, stripe);
+            if (heldSession.status === 'expired' && heldSession.payment_status === 'unpaid') {
+                await releaseHold(db, currentHold, heldSession);
+                currentHold = null;
+            } else {
+                await db.walletCheckoutHold.update({ where: { id: currentHold.id }, data: { stripeCheckoutSessionId: heldSession.id } });
+                await db.order.update({ where: { id: order.id }, data: { stripeCheckoutSessionId: heldSession.id } });
+                order.stripeCheckoutSessionId = heldSession.id;
+                if (heldSession.status === 'complete') return res.json({ ok: true, completed: true, sessionId: heldSession.id,
+                    summary: checkoutTenderSummary(order, order.goldRedeemed, order.goldDiscountCents, currentHold.cashAmountCents, currentHold.amountCents) });
+            }
+        }
+        await releaseExpiredWalletHolds(db, userId, stripe);
 
         // Check for a payment already in flight before changing its price snapshot.
         const previousCoupon = order.couponCode;
@@ -318,8 +361,11 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         let previousSession;
         if (order.stripeCheckoutSessionId) {
             previousSession = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
-            if (previousSession.status === "complete") return res.json({ ok: true, completed: true, sessionId: previousSession.id,
-                summary: checkoutSummary(order) });
+            if (previousSession.status === "complete") {
+                const saved = checkoutSummary(order);
+                return res.json({ ok: true, completed: true, sessionId: previousSession.id,
+                    summary: checkoutTenderSummary(order, saved.goldRedeemed, saved.goldDiscountCents, saved.totalCents, order.walletAmountCents || 0) });
+            }
         }
         const availableRule = await db.servicePriceRule.findFirst({ where: { serviceId: order.serviceId, active: true }, select: { id: true } });
         if (!availableRule) return res.status(409).json({ ok: false, code: "SERVICE_UNAVAILABLE", message: "This service is currently unavailable. Please choose another service or check back later." });
@@ -336,7 +382,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             goldRedeemed,
             goldDiscountCents,
             cashAmountCents,
-        } = normalizeGoldToUse(useWallet && goldToUse === undefined ? order.goldRedeemed : goldToUse, availableGold, amountCents);
+        } = normalizeGoldToUse((useWallet || previousWalletCents > 0) && goldToUse === undefined ? order.goldRedeemed : goldToUse, availableGold, amountCents);
 
         if (useWallet && cashAmountCents !== expectedTotalCents) {
             return res.status(409).json({ ok: false, code: 'WALLET_QUOTE_CHANGED', message: 'Your order total changed. Please review the refreshed amount before paying.' });
@@ -349,19 +395,47 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             });
         }
 
+        let walletAppliedCents = useWallet ? 0 : Math.min(walletToUseCents ?? previousWalletCents, cashAmountCents);
+        if (walletAppliedCents > 0 && checkoutCurrency !== 'usd') throw walletError('WALLET_CURRENCY', 'Wallet payments are available for USD orders only.', 400);
+        if (walletAppliedCents > 0 && cashAmountCents - walletAppliedCents > 0 && cashAmountCents - walletAppliedCents < 50) walletAppliedCents = Math.max(0, cashAmountCents - 50);
+        if (walletAppliedCents > 0) adaptivePricingEnabled = false;
+
         if (goldRedeemed > 0 && cashAmountCents > 0) {
             await releaseOtherGoldCheckouts(db, order, stripe);
         }
 
         const clientUrl = getClientUrl(req);
-        const summary = checkoutSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents);
+        const availableWallet = await customerWallet.spendable(db, userId, undefined, order.id);
+        if (walletAppliedCents > 0 && availableWallet.frozen) throw walletError('WALLET_FROZEN', 'Your wallet is on hold. Please contact support before using it.');
+        if (walletAppliedCents > availableWallet.availableBalanceCents) throw walletError('WALLET_INSUFFICIENT', 'Your available wallet balance does not cover this amount. Please review your balance.');
+        const summary = checkoutTenderSummary(order, goldRedeemed, goldDiscountCents, cashAmountCents, walletAppliedCents, availableWallet.availableBalanceCents);
         summary.availableGold = availableGold;
+
+        currentHold = await db.walletCheckoutHold.findUnique({ where: { orderId: order.id } });
+        const walletOnlyPaymentHold = useWallet && isWalletOnlyHold(currentHold) && currentHold.amountCents === cashAmountCents &&
+            currentHold.orderAmountCents === amountCents && currentHold.goldRedeemed === goldRedeemed && currentHold.goldDiscountCents === goldDiscountCents &&
+            currentHold.stripeParametersJson.metadata.couponCode === (order.couponCode || '') ? currentHold : null;
+        if (currentHold && !useWallet && currentHold.amountCents === walletAppliedCents && currentHold.cashAmountCents === cashAmountCents &&
+            currentHold.orderAmountCents === amountCents && currentHold.goldRedeemed === goldRedeemed &&
+            currentHold.stripeParametersJson.metadata.couponCode === (order.couponCode || '')) {
+            if (isWalletOnlyHold(currentHold)) return res.json({ ok: true, walletOnlyReady: true, summary });
+            res.walletCheckoutHoldId = currentHold.id;
+            return res.json({ ok: true, summary });
+        }
+        if (currentHold && !walletOnlyPaymentHold) {
+            const closed = await closeHeldCheckout(db, currentHold, stripe);
+            if (closed) {
+                order.stripeCheckoutSessionId = closed.id;
+                previousSession = closed;
+                await db.order.update({ where: { id: order.id }, data: { stripeCheckoutSessionId: closed.id } });
+            }
+        }
 
         // Reuse an open session on refresh. Expire it before changing the amount.
         if (order.stripeCheckoutSessionId) {
             const existingSession = previousCoupon === order.couponCode && previousAmount === order.amountCents
                 ? previousSession : await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
-            if (useWallet && (existingSession.id !== order.stripeCheckoutSessionId || existingSession.object !== 'checkout.session' || existingSession.mode !== 'payment' ||
+            if ((useWallet || walletAppliedCents > 0) && (existingSession.id !== order.stripeCheckoutSessionId || existingSession.object !== 'checkout.session' || existingSession.mode !== 'payment' ||
                 existingSession.metadata?.orderId !== order.id || existingSession.metadata?.customerId !== order.customerId || existingSession.currency !== checkoutCurrency)) {
                 throw Object.assign(new Error('The existing card payment could not be verified. Please contact support.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
             }
@@ -369,7 +443,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                 return res.json({ ok: true, completed: true, sessionId: existingSession.id, summary });
             }
             if (existingSession.status === "open") {
-                if (!useWallet && existingSession.ui_mode === "elements" &&
+                if (!useWallet && walletAppliedCents === 0 && !existingSession.metadata?.walletHoldId && existingSession.ui_mode === "elements" &&
                     existingSession.adaptive_pricing?.enabled === adaptivePricingEnabled &&
                     (!existingSession.currency || existingSession.currency === checkoutCurrency) &&
                     existingSession.metadata?.editableEmail === "1" &&
@@ -380,11 +454,25 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                     return res.json({ ok: true, clientSecret: existingSession.client_secret, sessionId: existingSession.id, summary });
                 }
                 const expired = await stripe.checkout.sessions.expire(existingSession.id, {}, stripeOptions);
-                if (useWallet && expired?.status !== 'expired') throw Object.assign(new Error('The card payment could not be safely closed. Please verify payment before retrying.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
+                if ((useWallet || walletAppliedCents > 0) && (expired?.id !== existingSession.id || expired?.status !== 'expired' || expired?.payment_status !== 'unpaid')) {
+                    throw Object.assign(new Error('The card payment could not be safely closed. Please verify payment before retrying.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
+                }
             }
-            if (useWallet && (existingSession.payment_status === 'paid' || !['open', 'expired'].includes(existingSession.status))) {
+            if ((useWallet || walletAppliedCents > 0) && (existingSession.payment_status === 'paid' || !['open', 'expired'].includes(existingSession.status))) {
                 throw Object.assign(new Error('A card payment is being confirmed. Please verify payment before using your wallet.'), { status: 409, code: 'WALLET_CARD_IN_PROGRESS' });
             }
+        }
+
+        if (!useWallet && walletAppliedCents > 0) {
+            await db.order.update({ where: { id: order.id }, data: { amountCents, cashAmountCents, goldRedeemed, goldDiscountCents, paymentStatus: 'PENDING' } });
+            const hold = await reserveWalletCheckout(db, customerWallet, order,
+                { amountCents: walletAppliedCents, cashAmountCents, goldRedeemed, goldDiscountCents, clientUrl });
+            if (isWalletOnlyHold(hold)) {
+                await db.order.update({ where: { id: order.id }, data: { stripeCheckoutSessionId: null } });
+                return res.json({ ok: true, walletOnlyReady: true, summary });
+            }
+            res.walletCheckoutHoldId = hold.id;
+            return res.json({ ok: true, summary });
         }
 
         if (useWallet && cashAmountCents > 0) {
@@ -392,18 +480,21 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             // Other payable Gold sessions must be closed before consuming Gold,
             // including the case where the wallet pays the entire cash remainder.
             if (goldRedeemed > 0) await releaseOtherGoldCheckouts(db, order, stripe);
-            const walletFields = await customerWallet.spend(db, userId, order, cashAmountCents);
+            const walletFields = walletOnlyPaymentHold
+                ? await customerWallet.spendReserved(db, userId, order, walletOnlyPaymentHold, { requireUsable: true })
+                : await customerWallet.spend(db, userId, order, cashAmountCents);
             const cashbackPercent = await snapshotCashbackPercent(db, order);
             const result = await db.order.updateMany({ where: { id: order.id, customerId: userId, paymentStatus: { not: 'PAID' }, status: { not: 'CANCELLED' } },
                 data: { paymentStatus: 'PAID', paidAt: new Date(), amountCents, cashAmountCents, goldRedeemed, goldDiscountCents,
                     currency: 'usd', stripeCheckoutSessionId: null, stripePaymentIntentId: null, cashbackPercent, ...walletFields } });
             if (result.count !== 1) throw Object.assign(new Error('The order changed while paying. Please verify payment.'), { status: 409, code: 'WALLET_ORDER_CHANGED' });
+            if (walletOnlyPaymentHold) await db.walletCheckoutHold.deleteMany({ where: { id: walletOnlyPaymentHold.id } });
             if (goldRedeemed > 0) await db.rewardHistory.create({ data: { userId, type: 'ORDER_REDEMPTION', goldAmount: -goldRedeemed,
                 title: 'Gold redeemed for order', description: `Used ${goldRedeemed} gold for order #${order.orderNumber}.`, sourceUserId: order.id } });
             await queueOrderConfirmation(db, order.id, contactEmail, { type: 'account_balance' });
             await grantReferralCompletionRewards(order.id, db);
             return res.json({ ok: true, paidWithWallet: true, orderId: order.id,
-                summary: { ...checkoutSummary({ ...order, ...walletFields }, goldRedeemed, goldDiscountCents, cashAmountCents), availableGold: Math.max(0, availableGold - goldRedeemed) },
+                summary: { ...checkoutTenderSummary({ ...order, ...walletFields }, goldRedeemed, goldDiscountCents, cashAmountCents, cashAmountCents), availableGold: Math.max(0, availableGold - goldRedeemed) },
                 redirectUrl: `${clientUrl}/payment/success/${order.serviceId}?orderId=${order.id}&wallet=1` });
         }
 
@@ -551,9 +642,7 @@ const verifyCheckoutSession = async (req, res) => {
         const order = await prisma.order.findFirst({
             where: {
                 customerId: userId,
-                ...(sessionId
-                    ? { stripeCheckoutSessionId: sessionId }
-                    : { id: orderId }),
+                ...(orderId ? { id: orderId } : { stripeCheckoutSessionId: sessionId }),
             },
             select: {
                 id: true,
@@ -577,10 +666,14 @@ const verifyCheckoutSession = async (req, res) => {
 
         // A power/network interruption may prevent the Stripe return URL from
         // reaching the browser. Recover its durable session from the owned order.
+        const held = order.paymentStatus !== 'PAID' ? await prisma.walletCheckoutHold.findUnique({ where: { orderId: order.id } }) : null;
+        if (held && isWalletOnlyHold(held) && sessionId) return res.status(404).json({ ok: false, message: 'This wallet checkout has no card session.' });
+        if (sessionId && !held && sessionId !== order.stripeCheckoutSessionId) return res.status(404).json({ ok: false, message: 'Checkout session not found for this order.' });
         const savedSessionId = sessionId || order.stripeCheckoutSessionId;
-        if (savedSessionId && order.paymentStatus !== "PAID") {
+        if ((savedSessionId || held) && !isWalletOnlyHold(held) && order.paymentStatus !== "PAID") {
             try {
-                const session = await stripe.checkout.sessions.retrieve(savedSessionId, {}, stripeOptions);
+                const session = held ? await recoverHeldSession(held, stripe) : await stripe.checkout.sessions.retrieve(savedSessionId, {}, stripeOptions);
+                if (sessionId && session.id !== sessionId) return res.status(404).json({ ok: false, message: 'Checkout session not found for this order.' });
                 const sessionOrderId = session.metadata?.orderId;
 
                 if (
@@ -666,7 +759,7 @@ const handleStripeWebhook = async (req, res) => {
             const order = await prisma.order.findFirst({
                 where: {
                     id: orderId,
-                    stripeCheckoutSessionId: session.id,
+                    ...(session.metadata?.walletHoldId ? {} : { stripeCheckoutSessionId: session.id }),
                 },
                 select: {
                     id: true,
@@ -685,13 +778,45 @@ const handleStripeWebhook = async (req, res) => {
             await completeCheckoutSessionPayment(order, session);
         }
 
+        if (event.type === 'checkout.session.async_payment_failed' && event.data.object.metadata?.walletHoldId) {
+            const eventSession = event.data.object;
+            let failedOrder, outcome;
+            await prisma.$transaction(async db => {
+                const initial = await db.walletCheckoutHold.findUnique({ where: { id: eventSession.metadata.walletHoldId } });
+                if (!initial) return;
+                await lockCheckout(db, initial.userId, initial.orderId);
+                const hold = await db.walletCheckoutHold.findUnique({ where: { id: initial.id } });
+                if (!hold) return;
+                validateHeldSession(hold, eventSession);
+                failedOrder = await db.order.findUnique({ where: { id: hold.orderId } });
+                if (failedOrder?.paymentStatus !== 'PAID') outcome = await reconcileFailedWalletCheckout(db, hold, stripe);
+            }, { maxWait: 15000, timeout: 30000 });
+            if (outcome?.paidSession) await completeCheckoutSessionPayment(failedOrder, outcome.paidSession);
+        }
+
         if (event.type === "checkout.session.expired") {
             const session = event.data.object;
             const orderId = session.metadata?.orderId;
 
+            if (session.metadata?.walletHoldId) {
+                await prisma.$transaction(async db => {
+                    const hold = await db.walletCheckoutHold.findUnique({ where: { id: session.metadata.walletHoldId } });
+                    if (!hold) return;
+                    await lockCheckout(db, hold.userId, hold.orderId);
+                    const current = await db.walletCheckoutHold.findUnique({ where: { id: hold.id } });
+                    if (current) await releaseHold(db, current, session);
+                });
+                return res.json({ received: true });
+            }
+
             if (orderId) {
                 const expiringOrder = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, customerId: true } });
-                if (expiringOrder) await mutateCheckoutOrder(prisma, expiringOrder, stripe, db => db.order.updateMany({
+                if (expiringOrder) await mutateCheckoutOrder(prisma, expiringOrder, stripe, async db => {
+                    // Recheck under the same customer/order locks as creation:
+                    // a newer hold may have committed while this event waited.
+                    const activeHold = await db.walletCheckoutHold.findUnique({ where: { orderId } });
+                    if (activeHold) return;
+                    return db.order.updateMany({
                     where: {
                         id: orderId,
                         stripeCheckoutSessionId: session.id,
@@ -700,7 +825,8 @@ const handleStripeWebhook = async (req, res) => {
                     data: {
                         paymentStatus: "CANCELLED",
                     },
-                }), false);
+                    });
+                }, false);
 
                 console.log(`Stripe checkout expired for order ${orderId}`);
             }
@@ -754,6 +880,33 @@ const createCheckoutSession = async (req, res) => {
         }
         return res.status(response.code).json(response.body);
     }
+    if (response.walletCheckoutHoldId) {
+        try {
+            const hold = await prisma.walletCheckoutHold.findUnique({ where: { id: response.walletCheckoutHoldId } });
+            if (!hold || hold.userId !== userId || hold.orderId !== orderId) throw walletError('WALLET_QUOTE_CHANGED', 'This wallet checkout changed. Please review it again.');
+            const session = await recoverHeldSession(hold, stripe);
+            await prisma.$transaction(async db => {
+                await lockCheckout(db, userId, orderId);
+                const current = await db.walletCheckoutHold.findUnique({ where: { id: hold.id } });
+                const order = await db.order.findUnique({ where: { id: orderId } });
+                if (!current || !order || order.paymentStatus === 'PAID' || order.status === 'CANCELLED') throw walletError('WALLET_QUOTE_CHANGED', 'This wallet checkout changed. Please verify its payment status.');
+                validateHeldSession(current, session);
+                if (session.status === 'expired') {
+                    await releaseHold(db, current, session);
+                    return;
+                }
+                await db.walletCheckoutHold.update({ where: { id: hold.id }, data: { stripeCheckoutSessionId: session.id } });
+                await db.order.update({ where: { id: orderId }, data: { stripeCheckoutSessionId: session.id } });
+            });
+            if (session.status === 'complete') return res.json({ ...response.body, completed: true, sessionId: session.id });
+            if (session.status !== 'open' || session.payment_status !== 'unpaid' || !session.client_secret) throw walletError('WALLET_CHECKOUT_PENDING', 'This wallet checkout is not available. Please review the payment before retrying.');
+            return res.json({ ...response.body, sessionId: session.id, clientSecret: session.client_secret,
+                ...(response.couponNotice ? { couponNotice: response.couponNotice } : {}) });
+        } catch (error) {
+            return res.status(error.status || 503).json({ ok: false, code: error.code || 'WALLET_CHECKOUT_UNAVAILABLE',
+                message: error.status ? error.message : 'Wallet checkout could not be opened. Retry the same order to recover your payment.' });
+        }
+    }
     return res.status(response.code).json({ ...response.body, ...(response.couponNotice ? { couponNotice: response.couponNotice } : {}) });
 };
 
@@ -762,5 +915,91 @@ const payWithWallet = (req, res) => {
     return createCheckoutSession(req, res);
 };
 
-module.exports = { createCheckoutSession, verifyCheckoutSession, handleStripeWebhook, payWithWallet };
+const cancelCheckoutSession = async (req, res) => {
+    const userId = getUserId(req);
+    const { orderId, sessionId } = req.body || {};
+    if (!userId || typeof orderId !== 'string' || !orderId || (sessionId !== undefined && (typeof sessionId !== 'string' || !/^cs_[A-Za-z0-9_]+$/.test(sessionId)))) {
+        return res.status(400).json({ ok: false, message: 'A valid order and checkout reference are required.' });
+    }
+    let paidSession, ownedOrder;
+    try {
+        const result = await prisma.$transaction(async db => {
+            await lockCheckout(db, userId, orderId);
+            const order = await db.order.findFirst({ where: { id: orderId, customerId: userId } });
+            if (!order) throw walletError('WALLET_ORDER_UNAVAILABLE', 'Order not found.', 404);
+            ownedOrder = order;
+            if (order.paymentStatus === 'PAID') return { paid: true, cancelled: false, orderId };
+            const hold = await db.walletCheckoutHold.findUnique({ where: { orderId } });
+            let session = hold ? await recoverHeldSession(hold, stripe) : order.stripeCheckoutSessionId
+                ? await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions) : null;
+            if (sessionId && session?.id !== sessionId) throw walletError('WALLET_ORDER_UNAVAILABLE', 'Checkout not found for this order.', 404);
+            if (session && !hold && (session.object !== 'checkout.session' || session.mode !== 'payment' || session.metadata?.orderId !== orderId || session.metadata?.customerId !== userId)) {
+                throw walletError('WALLET_QUOTE_CHANGED', 'This checkout could not be verified.', 400);
+            }
+            if (session?.status === 'open' && session.payment_status === 'unpaid') {
+                try { session = await stripe.checkout.sessions.expire(session.id, {}, stripeOptions); }
+                catch { session = await stripe.checkout.sessions.retrieve(session.id, {}, stripeOptions); }
+                if (hold) validateHeldSession(hold, session);
+            }
+            if (session?.status === 'complete' || session?.payment_status === 'paid') {
+                if (session.status === 'complete' && session.payment_status === 'paid') paidSession = session;
+                return { paid: false, cancelled: false, completed: true, pending: true, sessionId: session.id, orderId };
+            }
+            if (session && (session.status !== 'expired' || session.payment_status !== 'unpaid')) return { paid: false, cancelled: false, pending: true, orderId };
+            if (hold) await releaseHold(db, hold, session);
+            return { paid: false, cancelled: true, orderId, ...(session ? { sessionId: session.id } : {}) };
+        }, { maxWait: 15000, timeout: 60000 });
+        if (paidSession) {
+            await completeCheckoutSessionPayment(ownedOrder, paidSession);
+            const current = await prisma.order.findUnique({ where: { id: orderId }, select: { paymentStatus: true } });
+            return res.json({ ok: true, ...result, paid: current.paymentStatus === 'PAID', pending: current.paymentStatus !== 'PAID' });
+        }
+        return res.json({ ok: true, ...result });
+    } catch (error) {
+        return res.status(error.status || 503).json({ ok: false, code: error.code || 'WALLET_CHECKOUT_UNAVAILABLE',
+            message: error.status ? error.message : 'Checkout could not be safely cancelled. Please verify its payment status.' });
+    }
+};
+
+const checkoutPresenceAction = leaving => async (req, res) => {
+    const userId = getUserId(req);
+    const { orderId, checkoutViewId, paymentInProgress = false } = req.body || {};
+    if (!userId || typeof orderId !== 'string' || !orderId || typeof paymentInProgress !== 'boolean') {
+        return res.status(400).json({ ok: false, message: 'A valid checkout view and order are required.' });
+    }
+    let ownedOrder, paidSession;
+    try {
+        const result = await prisma.$transaction(async db => {
+            await lockCheckout(db, userId, orderId);
+            const order = await db.order.findFirst({ where: { id: orderId, customerId: userId } });
+            if (!order) throw walletError('WALLET_ORDER_UNAVAILABLE', 'Order not found.', 404);
+            ownedOrder = order;
+            if (leaving) await closeCheckoutPresence(db, userId, orderId, checkoutViewId, { paymentInProgress });
+            else if (order.paymentStatus !== 'PAID') await renewCheckoutPresence(db, userId, orderId, checkoutViewId, { paymentInProgress });
+            const hold = await db.walletCheckoutHold.findUnique({ where: { orderId } });
+            const outcome = leaving && hold && order.paymentStatus !== 'PAID' ? await abandonWalletHold(db, hold, stripe)
+                : { released: leaving && !hold && order.paymentStatus !== 'PAID', pending: Boolean(hold), paid: order.paymentStatus === 'PAID' };
+            paidSession = outcome.paidSession;
+            const available = await customerWallet.spendable(db, userId);
+            return { orderId, released: Boolean(outcome.released), paid: order.paymentStatus === 'PAID', pending: Boolean(outcome.pending),
+                availableBalanceCents: available.availableBalanceCents, reservedBalanceCents: available.reservedBalanceCents };
+        }, { maxWait: 15000, timeout: 60000 });
+        if (paidSession) {
+            await completeCheckoutSessionPayment(ownedOrder, paidSession);
+            const current = await prisma.order.findUnique({ where: { id: orderId }, select: { paymentStatus: true } });
+            const wallet = await customerWallet.snapshot(userId);
+            return res.json({ ok: true, ...result, paid: current.paymentStatus === 'PAID', pending: current.paymentStatus !== 'PAID',
+                availableBalanceCents: wallet.availableBalanceCents, reservedBalanceCents: wallet.reservedBalanceCents });
+        }
+        return res.json({ ok: true, ...result });
+    } catch (error) {
+        return res.status(error.status || 503).json({ ok: false, code: error.code || 'WALLET_CHECKOUT_UNAVAILABLE',
+            message: error.status ? error.message : 'Checkout presence could not be updated. Your reserved funds will be checked again shortly.' });
+    }
+};
+const heartbeatCheckoutPresence = checkoutPresenceAction(false);
+const leaveCheckoutPresence = checkoutPresenceAction(true);
+
+module.exports = { createCheckoutSession, verifyCheckoutSession, handleStripeWebhook, payWithWallet, cancelCheckoutSession,
+    heartbeatCheckoutPresence, leaveCheckoutPresence, completeCheckoutSessionPayment };
 

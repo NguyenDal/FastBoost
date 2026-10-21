@@ -1,6 +1,7 @@
 const stripeOptions = { timeout: 8000, maxNetworkRetries: 0 };
 const { withEarningsLedgerMutation } = require('./boosterEarningsLedger');
 const { withBoosterOrderEmails } = require('./boosterOrderEmail');
+const { closeHeldCheckout } = require('./checkoutWallet');
 const cents = value => Math.round(Number(value || 0) * 100);
 const couponError = message => Object.assign(new Error(message), { status: 400, code: "COUPON_UNAVAILABLE" });
 
@@ -16,13 +17,23 @@ async function mutateCheckoutOrder(prisma, order, stripe, mutation, expire = tru
         await lockCheckout(db, order.customerId, order.id);
         const current = await db.order.findUnique({ where: { id: order.id } });
         if (!current) return null;
-        if (expire) await expireUnpaidSession(current, stripe);
+        if (expire) await expireUnpaidSession(current, stripe, db);
         return withBoosterOrderEmails(db, order.id, () => mutation(db, current));
     }), { maxWait: 15000, timeout: 30000 });
 }
 
-async function expireUnpaidSession(order, stripe) {
-    if (!order.stripeCheckoutSessionId || order.paymentStatus === "PAID") return;
+async function expireUnpaidSession(order, stripe, db) {
+    if (order.paymentStatus === "PAID") return;
+    const hold = db && await db.walletCheckoutHold.findUnique({ where: { orderId: order.id } });
+    if (hold) {
+        const closed = await closeHeldCheckout(db, hold, stripe);
+        if (closed) {
+            await db.order.updateMany({ where: { id: order.id, paymentStatus: { not: 'PAID' } }, data: { stripeCheckoutSessionId: closed.id } });
+            order.stripeCheckoutSessionId = closed.id;
+        }
+        return;
+    }
+    if (!order.stripeCheckoutSessionId) return;
     const session = await stripe.checkout.sessions.retrieve(order.stripeCheckoutSessionId, {}, stripeOptions);
     if (session.status === "complete") throw couponError("A payment is already being confirmed for this order. Please wait for confirmation before making changes.");
     if (session.status === "open") await stripe.checkout.sessions.expire(session.id, {}, stripeOptions);
@@ -60,7 +71,7 @@ async function claimCoupon(db, order, sale, stripe) {
     if (claim?.usedAt) throw couponError("You have already used this coupon. It becomes available again if that order is cancelled.");
     let moved = false;
     if (claim && claim.orderId !== order.id) {
-        await expireUnpaidSession(claim.order, stripe);
+        await expireUnpaidSession(claim.order, stripe, db);
         await db.order.update({ where: { id: claim.orderId }, data: restoredCouponFields(claim.order) });
         await db.couponUse.delete({ where: { id: claim.id } });
         moved = true;
@@ -96,7 +107,7 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
         if (unavailable && explicit) throw couponError(unavailable);
     }
     if (!code || unavailable) {
-        await expireUnpaidSession(order, stripe);
+        await expireUnpaidSession(order, stripe, db);
         await db.couponUse.deleteMany({ where: { orderId: order.id, usedAt: null } });
         Object.assign(order, await db.order.update({ where: { id: order.id }, data: restoredCouponFields(order) }));
         return { title: unavailable ? "Coupon no longer available" : "Coupon removed", message: unavailable ? `${unavailable} We have restored your original price. Please review your total.` : "Your original price has been restored. The coupon has not been used." };
@@ -111,7 +122,7 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
     }
     if (pricing.discount <= pricing.sale) {
         if (order.couponSaleId && !previousAvailable) {
-            await expireUnpaidSession(order, stripe);
+            await expireUnpaidSession(order, stripe, db);
             await db.couponUse.deleteMany({ where: { orderId: order.id, usedAt: null } });
             Object.assign(order, await db.order.update({ where: { id: order.id }, data: restoredCouponFields(order) }));
         }
@@ -120,7 +131,7 @@ async function applyCheckoutCoupon(db, order, input, stripe, now = new Date()) {
     if (pricing.total < 50) throw couponError("This coupon cannot be applied to this order total. Please try another coupon.");
     if (order.couponSaleId && order.couponSaleId !== sale.id) await db.couponUse.deleteMany({ where: { orderId: order.id, usedAt: null } });
     const moved = await claimCoupon(db, order, sale, stripe);
-    if (order.couponSaleId !== sale.id || order.couponDiscountCents !== pricing.discount) await expireUnpaidSession(order, stripe);
+    if (order.couponSaleId !== sale.id || order.couponDiscountCents !== pricing.discount) await expireUnpaidSession(order, stripe, db);
     Object.assign(order, await db.order.update({ where: { id: order.id }, data: {
         couponSaleId: sale.id, couponCode: sale.couponCode, couponTitle: sale.title,
         couponDiscountCents: pricing.discount, couponOriginalAmountCents: pricing.amount,

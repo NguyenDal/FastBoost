@@ -1,4 +1,5 @@
-/* Navbar and profile menu styles */
+/* Keep navbar stacking here so page styles cannot lower its dropdowns
+   beneath their content. */
 .topbar {
   --nav-pill-width: 118px;
   position: sticky;
@@ -391,6 +392,16 @@
 .profile-menu-expanded {
   display: grid;
   gap: 4px;
+}
+
+.profile-menu.profile-menu-portal {
+  position: fixed;
+  right: auto;
+  min-width: 0;
+  box-sizing: border-box;
+  z-index: 1250;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .profile-menu-item {

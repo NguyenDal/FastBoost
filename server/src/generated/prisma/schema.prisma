@@ -16,42 +16,43 @@ model RateLimitBucket {
 }
 
 model User {
-  boosterProfile         BoosterProfile?
-  boosterPreferences     BoosterPreferences?
-  contributions          BoosterContribution[]
-  playedMatches          OrderMatch[]           @relation("MatchBooster")
-  matchReviews           OrderMatchReview[]
-  boosterContracts       BoosterContract[]      @relation("BoosterContracts")
-  issuedBoosterContracts BoosterContract[]      @relation("IssuedBoosterContracts")
-  supportThread          SupportThread?
-  supportMessages        SupportMessage[]
-  supportPresence        SupportPresence[]
-  supportAlerts          SupportEmailAlert[]
-  registrationConsent    RegistrationConsent?
-  socialIdentities       SocialIdentity[]
-  personalCoupons        ServiceSale[]          @relation("PersonalCouponRecipient")
-  couponUses             CouponUse[]
-  submittedOrderRatings  OrderRating[]
-  receivedOrderRatings   OrderRatingRecipient[]
-  boosterOrderEmails     BoosterOrderEmail[]
-  id                     String                 @id @default(cuid())
-  email                  String                 @unique
-  username               String?                @unique
-  emailVerifiedAt        DateTime?
-  passwordHash           String
-  role                   UserRole               @default(CUSTOMER)
-  isOwner                Boolean                @default(false)
-  hasBoosterAccess       Boolean                @default(false)
-  suspendedAt            DateTime?
-  suspendedReason        String?
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  orders                 Order[]
-  verificationCodes      VerificationCode[]
-  passwordResetTokens    PasswordResetToken[]
-  profile                Profile?
-  rewardHistory          RewardHistory[]
-  walletAccount          WalletAccount?
+  boosterProfile          BoosterProfile?
+  boosterPreferences      BoosterPreferences?
+  contributions           BoosterContribution[]
+  playedMatches           OrderMatch[]             @relation("MatchBooster")
+  matchReviews            OrderMatchReview[]
+  boosterContracts        BoosterContract[]        @relation("BoosterContracts")
+  issuedBoosterContracts  BoosterContract[]        @relation("IssuedBoosterContracts")
+  supportThread           SupportThread?
+  supportMessages         SupportMessage[]
+  supportPresence         SupportPresence[]
+  supportAlerts           SupportEmailAlert[]
+  registrationConsent     RegistrationConsent?
+  socialIdentities        SocialIdentity[]
+  personalCoupons         ServiceSale[]            @relation("PersonalCouponRecipient")
+  couponUses              CouponUse[]
+  submittedOrderRatings   OrderRating[]
+  receivedOrderRatings    OrderRatingRecipient[]
+  boosterOrderEmails      BoosterOrderEmail[]
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  username                String?                  @unique
+  emailVerifiedAt         DateTime?
+  passwordHash            String
+  role                    UserRole                 @default(CUSTOMER)
+  isOwner                 Boolean                  @default(false)
+  hasBoosterAccess        Boolean                  @default(false)
+  suspendedAt             DateTime?
+  suspendedReason         String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  orders                  Order[]
+  verificationCodes       VerificationCode[]
+  passwordResetTokens     PasswordResetToken[]
+  profile                 Profile?
+  rewardHistory           RewardHistory[]
+  walletAccount           WalletAccount?
+  walletCheckoutPresences WalletCheckoutPresence[]
 
   referralCode String? @unique
   referredById String?
@@ -85,6 +86,48 @@ model WalletAccount {
   topUps                  WalletTopUp[]
   entries                 WalletEntry[]
   cashbackEntitlements    WalletCashbackEntitlement[]
+  checkoutHolds           WalletCheckoutHold[]
+}
+
+// Active reservations protect wallet funds while the remaining card payment
+// can still succeed. Selection alone never debits the immutable wallet ledger.
+model WalletCheckoutHold {
+  id                      String        @id @default(uuid())
+  userId                  String
+  account                 WalletAccount @relation(fields: [userId], references: [userId], onDelete: Restrict)
+  orderId                 String        @unique
+  order                   Order         @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  amountCents             Int
+  purchasedCents          Int
+  promotionalCents        Int
+  cashAmountCents         Int
+  orderAmountCents        Int
+  goldRedeemed            Int
+  goldDiscountCents       Int
+  stripeParametersJson    Json
+  stripeCheckoutSessionId String?       @unique
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  @@index([userId, createdAt])
+}
+
+// Per-view leases let abandoned checkout reservations expire without treating
+// another open tab as absent. Closed rows retain their ID to reject late pings.
+model WalletCheckoutPresence {
+  id                    String    @id
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId               String
+  order                 Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  expiresAt             DateTime
+  closedAt              DateTime?
+  paymentProtectedUntil DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([orderId, expiresAt])
+  @@index([expiresAt])
 }
 
 model WalletTopUp {
@@ -452,13 +495,15 @@ model Order {
   currency                String        @default("usd")
   amountCents             Int?
 
-  goldRedeemed           Int  @default(0)
-  goldDiscountCents      Int  @default(0)
-  cashAmountCents        Int?
-  walletAmountCents      Int  @default(0)
-  walletPurchasedCents   Int  @default(0)
-  walletPromotionalCents Int  @default(0)
-  cashbackPercent        Int?
+  goldRedeemed            Int                      @default(0)
+  goldDiscountCents       Int                      @default(0)
+  cashAmountCents         Int?
+  walletAmountCents       Int                      @default(0)
+  walletPurchasedCents    Int                      @default(0)
+  walletPromotionalCents  Int                      @default(0)
+  cashbackPercent         Int?
+  walletCheckoutHold      WalletCheckoutHold?
+  walletCheckoutPresences WalletCheckoutPresence[]
 
   boostType String
   playMode  String?

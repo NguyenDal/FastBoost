@@ -8,6 +8,8 @@ test('checkout charges the winning coupon price; card and gold previews never co
     const sessions=new Map();
     const queued=[];
     const prisma={
+        walletAccount: { findUnique: async () => null },
+        walletCheckoutHold: { findUnique: async () => null, findMany: async () => [] },
         servicePriceRule: { findFirst: async () => ({ id:'active-rule' }) },
         $queryRaw:async()=>[],
         order:{findUnique:async()=>order,findMany:async()=>[],aggregate:async()=>({_sum:{totalPrice:0}}),update:async({data})=>Object.assign(order,data),updateMany:async({data})=>{Object.assign(order,data);return {count:1};}},

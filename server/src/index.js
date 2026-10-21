@@ -20,6 +20,8 @@ server.listen(PORT, () => {
   require("./utils/orderCompletionEmail").startCompletionWorker(require("./prisma"));
   require("./utils/boosterOrderEmail").startBoosterOrderEmailWorker(require("./prisma"));
   require("./utils/supportEmail").startSupportEmailWorker(require("./prisma"));
+  require('./utils/abandonedWalletCheckout').startCheckoutPresenceWorker(require('./prisma'), require('./utils/stripeClient'),
+    require('./controllers/paymentController').completeCheckoutSessionPayment);
 
   cleanupOldUnpaidOrders().catch((error) => {
     console.error("[Cleanup] Failed initial unpaid order cleanup:", error);

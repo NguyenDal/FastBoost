@@ -5,6 +5,7 @@ const matches = (row, where = {}) => Object.entries(where).every(([key, conditio
     if (condition && typeof condition === 'object') return Object.entries(condition).every(([operator, value]) => {
         if (operator === 'not') return row[key] !== value;
         if (operator === 'gt') return row[key] > value;
+        if (operator === 'lt') return row[key] < value;
         assert.fail(`Unsupported payment fixture condition: ${operator}`);
     });
     return row[key] === condition;
@@ -19,14 +20,14 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         serviceId: 'service', status: 'PENDING', paymentStatus: 'PENDING', currency: 'usd',
         amountCents: 2000, totalPrice: 20, basePrice: 20, goldRedeemed: 0, goldDiscountCents: 0, cashbackPercent: null,
         stripeCheckoutSessionId: null, customer: { email: 'unused@example.test' }, service: { title: 'Test service' }, ...order })),
-    redemptions: [], queued: [], referrals: [], expired: [], created: [], failRetrieve: false, failExpire: false, failQueue: false, failReferral: false };
+    redemptions: [], queued: [], referrals: [], expired: [], created: [], walletHolds: [], walletPresences: [], failRetrieve: false, failExpire: false, failQueue: false, failReferral: false };
     const sessions = new Map();
     let transactions = Promise.resolve();
     const db = {
         $queryRaw: async () => [],
         $transaction: callback => {
             const result = transactions.then(async () => {
-                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued, referrals: state.referrals });
+                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued, referrals: state.referrals, walletHolds: state.walletHolds, walletPresences: state.walletPresences });
                 try { return await callback(db); }
                 catch (error) { Object.assign(state, snapshot); throw error; }
             });
@@ -34,6 +35,22 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
             return result;
         },
         servicePriceRule: { findFirst: async () => ({ id: 'active-rule' }) },
+        walletAccount: { findUnique: async () => null },
+        walletCheckoutPresence: {
+            findUnique: async ({ where }) => selected(state.walletPresences.find(row => matches(row, where))),
+            findMany: async ({ where }) => state.walletPresences.filter(row => matches(row, where)).map(row => selected(row)),
+            create: async ({ data }) => { assert.ok(!state.walletPresences.some(row => row.id === data.id)); const row = { createdAt: new Date(), closedAt: null, ...structuredClone(data) }; state.walletPresences.push(row); return selected(row); },
+            update: async ({ where, data }) => { const row = state.walletPresences.find(row => matches(row, where)); assert.ok(row); Object.assign(row, structuredClone(data)); return selected(row); },
+            updateMany: async ({ where, data }) => { const rows = state.walletPresences.filter(row => matches(row, where)); rows.forEach(row => Object.assign(row, structuredClone(data))); return { count: rows.length }; },
+            deleteMany: async ({ where }) => { const remaining = state.walletPresences.filter(row => !matches(row, where)); const count = state.walletPresences.length - remaining.length; state.walletPresences = remaining; return { count }; },
+        },
+        walletCheckoutHold: {
+            findUnique: async ({ where }) => selected(state.walletHolds.find(row => matches(row, where))),
+            findMany: async ({ where }) => state.walletHolds.filter(row => matches(row, where)).map(row => selected(row)),
+            create: async ({ data }) => { const row = { createdAt: new Date(), stripeCheckoutSessionId: null, ...structuredClone(data) }; state.walletHolds.push(row); return selected(row); },
+            update: async ({ where, data }) => { const row = state.walletHolds.find(row => matches(row, where)); assert.ok(row); Object.assign(row, structuredClone(data)); return selected(row); },
+            deleteMany: async ({ where }) => { const rows = state.walletHolds.filter(row => !matches(row, where)); const count = state.walletHolds.length - rows.length; state.walletHolds = rows; return { count }; },
+        },
         order: {
             aggregate: async ({ where }) => ({ _sum: { totalPrice: state.orders.filter(row => matches(row, where))
                 .reduce((sum, row) => sum + Number(row.totalPrice || 0), 0) } }),

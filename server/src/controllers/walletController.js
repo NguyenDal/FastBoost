@@ -1,7 +1,8 @@
 const prisma = require('../prisma');
 const stripe = require('../utils/stripeClient');
 const { createWalletService } = require('../utils/customerWallet');
-const wallet = createWalletService({ prisma, stripe });
+const wallet = createWalletService({ prisma, stripe,
+    settleOrderPayment: (order, session) => require('./paymentController').completeCheckoutSessionPayment(order, session) });
 const userId = req => req.user?.id || req.user?.userId;
 
 function clientUrl(req) {
@@ -31,6 +32,7 @@ const handle = action => async (req, res) => {
 
 module.exports = {
     getWallet: handle((req, id) => wallet.snapshot(id)),
-    createTopUp: handle((req, id) => wallet.createTopUp(id, req.body?.packageId, clientUrl(req))),
+    createTopUp: handle((req, id) => wallet.createTopUp(id, req.body?.packageId, clientUrl(req), { uiMode: req.body?.uiMode })),
     verifyTopUp: handle((req, id) => wallet.verify(id, req.query || {})),
+    cancelTopUp: handle((req, id) => wallet.cancel(id, req.body?.sessionId)),
 };

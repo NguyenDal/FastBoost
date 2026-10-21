@@ -1,4 +1,5 @@
-const { stripeOptions } = require('./checkoutCoupon');
+const { stripeOptions, expireUnpaidSession } = require('./checkoutCoupon');
+const { recoverHeldSession, isWalletOnlyHold } = require('./checkoutWallet');
 
 const unavailable = () => Object.assign(new Error('Could not safely move Gold from another checkout. Please try again shortly.'), {
     status: 503, code: 'GOLD_CHECKOUT_UNAVAILABLE',
@@ -21,16 +22,21 @@ async function releaseOtherGoldCheckouts(db, order, stripe) {
     // settle its existing Gold allocation, even if its webhook has not arrived.
     for (const other of others) {
         let session;
-        if (other.stripeCheckoutSessionId) {
-            try { session = await stripe.checkout.sessions.retrieve(other.stripeCheckoutSessionId, {}, stripeOptions); }
-            catch { throw unavailable(); }
+        const hold = await db.walletCheckoutHold.findUnique({ where: { orderId: other.id } });
+        if ((hold && !isWalletOnlyHold(hold)) || other.stripeCheckoutSessionId) {
+            if (hold) session = await recoverHeldSession(hold, stripe);
+            else {
+                try { session = await stripe.checkout.sessions.retrieve(other.stripeCheckoutSessionId, {}, stripeOptions); }
+                catch { throw unavailable(); }
+            }
             if (session?.status === 'complete' || session?.payment_status === 'paid') throw confirming();
             if (!session || !['open', 'expired'].includes(session.status)) throw unavailable();
         }
-        sessions.push({ other, session });
+        sessions.push({ other, session, hold });
     }
-    for (const { other, session } of sessions) {
-        if (session?.status === 'open') {
+    for (const { other, session, hold } of sessions) {
+        if (hold) await expireUnpaidSession(other, stripe, db);
+        else if (session?.status === 'open') {
             // If confirmation wins the race, Stripe rejects expiration. Keep
             // the old allocation and fail this transaction instead of reusing it.
             try { await stripe.checkout.sessions.expire(other.stripeCheckoutSessionId, {}, stripeOptions); }

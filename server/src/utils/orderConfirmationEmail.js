@@ -31,7 +31,8 @@ function buildConfirmation(order, email, paymentMethod = null) {
     ];
     const paymentRows = [
         ...(pricing.goldDiscountCents > 0 ? [[`Gold (${Number(pricing.goldRedeemed).toLocaleString("en-US")})`, `−${money(pricing.goldDiscountCents)}`]] : []),
-        ...(pricing.totalCents > 0 ? [[Number.isSafeInteger(order.walletAmountCents) && order.walletAmountCents === pricing.totalCents ? "FastBoost Wallet" : paymentMethodLabel(paymentMethod), money(pricing.totalCents)]] : []),
+        ...(order.walletAmountCents > 0 ? [['FastBoost Wallet', money(order.walletAmountCents)]] : []),
+        ...(pricing.totalCents - (order.walletAmountCents || 0) > 0 ? [[paymentMethodLabel(paymentMethod), money(pricing.totalCents - (order.walletAmountCents || 0))]] : []),
     ];
     if (!paymentRows.length) paymentRows.push(["Payment", "No charge"]);
     const url = new URL(`/match/${encodeURIComponent(order.id)}`, origin.origin).href;

@@ -2,6 +2,7 @@
 export function paymentErrorMessage(error) {
     const messages = {
         SERVICE_UNAVAILABLE: "This service is currently unavailable. Please choose another service or check back later.",
+        WALLET_QUOTE_CHANGED: "Your payment total changed. Refresh your checkout total before paying.",
         email_required: "Please enter a valid email address so we can send your payment confirmation.",
         incomplete_number: "Please enter your full card number.",
         incorrect_number: "Please check your card number and try again.",

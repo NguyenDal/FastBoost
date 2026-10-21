@@ -64,10 +64,17 @@ function checkoutSummary(order, goldRedeemed = order.goldRedeemed || 0, goldDisc
         summary.walletAmountCents = order.walletAmountCents;
         summary.walletPurchasedCents = order.walletPurchasedCents || 0;
         summary.walletPromotionalCents = order.walletPromotionalCents || 0;
-        summary.paymentMethod = 'account_balance';
+        summary.paymentMethod = order.walletAmountCents === cashAmountCents ? 'account_balance' : 'wallet_and_card';
         summary.priceSummary.walletAmountCents = order.walletAmountCents;
     }
     return summary;
+}
+
+function checkoutTenderSummary(order, goldRedeemed, goldDiscountCents, orderTotalCents, walletAppliedCents = 0, walletAvailableCents = 0) {
+    const summary = checkoutSummary(order, goldRedeemed, goldDiscountCents, orderTotalCents);
+    const cardAmountCents = Math.max(0, orderTotalCents - walletAppliedCents);
+    return { ...summary, orderTotalCents, walletAppliedCents, walletAvailableCents, cardAmountCents, totalCents: cardAmountCents,
+        priceSummary: { ...summary.priceSummary, walletAppliedCents, cardAmountCents } };
 }
 
 function savedOrderPriceSummary(order) {
@@ -118,4 +125,4 @@ function savedAdminPriceBreakdown(order) {
     };
 }
 
-module.exports = { checkoutSummary, savedOrderPriceSummary };
+module.exports = { checkoutSummary, checkoutTenderSummary, savedOrderPriceSummary };

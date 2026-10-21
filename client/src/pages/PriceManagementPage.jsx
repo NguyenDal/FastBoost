@@ -3,6 +3,7 @@ import { authStorage } from "../utils/authStorage";
 import { useEffect, useRef, useState } from "react";
 import { SaleBanner } from "../components/SaleFooter";
 import { API_BASE_URL } from "../api/config";
+import { getSaleDisplayStatus, isCurrentSale } from "../utils/saleStatus";
 import "../styles/Admin.css";
 import "../styles/PriceManagement.css";
 
@@ -833,28 +834,6 @@ const EMPTY_SALE_FORM = {
     footerTimer: true,
 };
 
-function getSaleDisplayStatus(sale, nowMs = Date.now()) {
-    if (!sale || !sale.active) return "NONE";
-
-    const startsAt = sale.startsAt
-        ? new Date(sale.startsAt).getTime()
-        : null;
-
-    const endsAt = sale.endsAt
-        ? new Date(sale.endsAt).getTime()
-        : null;
-
-    if (startsAt && startsAt > nowMs) {
-        return "SCHEDULED";
-    }
-
-    if (endsAt && endsAt < nowMs) {
-        return "EXPIRED";
-    }
-
-    return "ACTIVE";
-}
-
 function formatTimeRemaining(targetDate, nowMs = Date.now()) {
     if (!targetDate) return "No expiration";
 
@@ -1502,22 +1481,24 @@ export default function PriceManagementPage() {
         setSaleModalOpen(true);
     };
 
+    const currentCoupons = coupons.filter(coupon => isCurrentSale(coupon, saleClock));
+    const personalCoupons = currentCoupons.filter(coupon => coupon.recipientAccountId);
     const publicCampaigns = [...new Map([
         ...(globalSale ? [{ ...globalSale, scope: "GLOBAL" }] : []),
         ...pricingServices.filter(item => item.sale).map(item => ({ ...item.sale, scope: "SERVICE", serviceTitle: item.service?.title })),
-        ...coupons.filter(coupon => !coupon.recipientAccountId),
-    ].map(sale => [sale.id, sale])).values()];
+        ...currentCoupons.filter(coupon => !coupon.recipientAccountId),
+    ].filter(sale => isCurrentSale(sale, saleClock)).map(sale => [sale.id, sale])).values()];
     const globalSaleStatus = getSaleDisplayStatus(globalSale, saleClock);
     const hasCurrentGlobalSale =
         globalSaleStatus === "ACTIVE" || globalSaleStatus === "SCHEDULED";
 
     const activeServices = pricingServices.filter((item) => item.active).length;
     const activeSales =
-        pricingServices.filter((item) => item.sale?.status === "ACTIVE").length +
-        (globalSaleStatus === "ACTIVE" ? 1 : 0) + coupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "ACTIVE").length;
+        pricingServices.filter((item) => getSaleDisplayStatus(item.sale, saleClock) === "ACTIVE").length +
+        (globalSaleStatus === "ACTIVE" ? 1 : 0) + currentCoupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "ACTIVE").length;
     const upcomingSales =
-        pricingServices.filter((item) => item.sale?.status === "SCHEDULED").length +
-        (globalSaleStatus === "SCHEDULED" ? 1 : 0) + coupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "SCHEDULED").length;
+        pricingServices.filter((item) => getSaleDisplayStatus(item.sale, saleClock) === "SCHEDULED").length +
+        (globalSaleStatus === "SCHEDULED" ? 1 : 0) + currentCoupons.filter(coupon => getSaleDisplayStatus(coupon, saleClock) === "SCHEDULED").length;
 
     const filteredPricingServices = pricingServices.filter((item) => {
         const matchesGame =
@@ -1537,11 +1518,11 @@ export default function PriceManagementPage() {
         }
 
         if (statusFilter === "ON_SALE") {
-            matchesStatus = item.sale?.status === "ACTIVE";
+            matchesStatus = getSaleDisplayStatus(item.sale, saleClock) === "ACTIVE";
         }
 
         if (statusFilter === "SCHEDULED") {
-            matchesStatus = item.sale?.status === "SCHEDULED";
+            matchesStatus = getSaleDisplayStatus(item.sale, saleClock) === "SCHEDULED";
         }
 
         if (statusFilter === "INACTIVE") {
@@ -1662,6 +1643,7 @@ export default function PriceManagementPage() {
                                     <div className="price-rule-card-list">
                                         {filteredPricingServices.map((item) => {
                                             const expanded = expandedRuleIds.has(item.id);
+                                            const sale = isCurrentSale(item.sale, saleClock) ? item.sale : null;
 
                                             return (
                                                 <article
@@ -1697,10 +1679,10 @@ export default function PriceManagementPage() {
                                                         </div>
 
                                                         <div className="price-rule-card-status">
-                                                            {item.sale && (
+                                                            {sale && (
                                                                 <span className="price-sale-badge">
                                                                     {Number(
-                                                                        item.sale.discountPercent
+                                                                        sale.discountPercent
                                                                     ).toFixed(0)}
                                                                     % OFF
                                                                 </span>
@@ -1716,14 +1698,14 @@ export default function PriceManagementPage() {
                                                         </div>
                                                     </div>
 
-                                                    {item.sale && (
+                                                    {sale && (
                                                         <div className="price-rule-sale-row">
                                                             <span>
                                                                 Sale:{" "}
                                                                 <strong>
-                                                                    {item.sale.title ||
+                                                                    {sale.title ||
                                                                         `${Number(
-                                                                            item.sale.discountPercent
+                                                                            sale.discountPercent
                                                                         ).toFixed(0)}% OFF`}
                                                                 </strong>
                                                             </span>
@@ -1731,9 +1713,9 @@ export default function PriceManagementPage() {
                                                             <span>
                                                                 Ends:{" "}
                                                                 <strong>
-                                                                    {item.sale.endsAt
+                                                                    {sale.endsAt
                                                                         ? new Date(
-                                                                            item.sale.endsAt
+                                                                            sale.endsAt
                                                                         ).toLocaleDateString()
                                                                         : "No end date"}
                                                                 </strong>
@@ -1773,13 +1755,13 @@ export default function PriceManagementPage() {
                                                             Create Sale
                                                         </button>
 
-                                                        {item.sale && (
+                                                        {sale && (
                                                             <button
                                                                 type="button"
                                                                 className="price-row-btn price-end-sale-row-btn"
                                                                 onClick={() =>
                                                                     requestEndSale({
-                                                                        sale: item.sale,
+                                                                        sale,
                                                                         scope: "SERVICE",
                                                                         serviceName:
                                                                             item.service?.title ||
@@ -1872,7 +1854,7 @@ export default function PriceManagementPage() {
 
                         <section className="price-side-card">
                             <h3>Sale Control</h3>
-                            {!publicCampaigns.length && <p className="price-sale-empty-text">No sale created yet.</p>}
+                            {!publicCampaigns.length && <p className="price-sale-empty-text">No active or scheduled campaigns.</p>}
                             {publicCampaigns.map(sale => <CampaignCard key={sale.id} sale={sale} now={saleClock} onEnd={requestEndSale} />)}
                         </section>
                         <section className="price-side-card">
@@ -1883,8 +1865,8 @@ export default function PriceManagementPage() {
                         <section className="price-side-card">
                             <h3>Personal Coupons</h3>
                             <p>Birthday and account anniversary coupons will be automated later.</p>
-                            {!coupons.some(coupon => coupon.recipientAccountId) && <p className="price-sale-empty-copy">No personal coupons created yet.</p>}
-                            {coupons.filter(coupon => coupon.recipientAccountId).map(coupon => <div className="price-sale-preview" key={coupon.id}>
+                            {!personalCoupons.length && <p className="price-sale-empty-copy">No active or scheduled personal coupons.</p>}
+                            {personalCoupons.map(coupon => <div className="price-sale-preview" key={coupon.id}>
                                 <strong>{coupon.title}</strong>
                                 <p><code>{coupon.couponCode}</code></p>
                                 <p>{coupon.recipientAccountIds?.length > 1 ? `${coupon.recipientAccountIds.length} selected accounts` : coupon.recipientAccount?.email}</p>

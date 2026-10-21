@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ActivityClearRow, { BinIcon } from "./ActivityClearRow";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CleanIcon from "./CleanIcon";
+import ProfileMenuLayer from './ProfileMenuLayer';
 import {
     listMyNotifications,
     clearNotifications,
@@ -65,6 +66,7 @@ function Navbar({
     const [clearError, setClearError] = useState("");
     const [removingIds, setRemovingIds] = useState([]);
     const clearPending = useRef(false);
+    const profileAnchor = useRef(null);
 
     const clearPanelItems = async (id) => {
         if (clearPending.current) return;
@@ -632,6 +634,7 @@ function Navbar({
                         <div className="profile-identity" title={displayName || effectiveCurrentUser?.email || "Profile"}>
                             <span className="profile-username-ellipsis">{displayName}</span>
                             <button
+                                ref={profileAnchor}
                                 className={`profile-avatar-btn ${profileImageLoading ? "avatar-loading" : ""}`}
                                 onClick={() => effectiveSetShowProfileMenu((prev) => !prev)}
                                 aria-haspopup="menu"
@@ -651,7 +654,7 @@ function Navbar({
                         </div>
 
                         {effectiveShowProfileMenu && (
-                            <div className="profile-menu profile-menu-expanded" role="menu">
+                            <ProfileMenuLayer anchorRef={profileAnchor} onClose={() => effectiveSetShowProfileMenu(false)}>
                                 <div className="profile-quick-grid">
                                     <button
                                         className={`quick-tile notification-tile ${unreadNotifications > 0 ? "has-notifications" : ""}`}
@@ -782,7 +785,7 @@ function Navbar({
                                     <ProfileMenuIcon type="logout" />
                                     <span>Logout</span>
                                 </button>
-                            </div>
+                            </ProfileMenuLayer>
                         )}
                     </div>
                 )}

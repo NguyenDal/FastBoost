@@ -12,9 +12,14 @@ import Navbar from "../components/Navbar";
 import { LiveSaleFooter } from "../components/SaleFooter";
 import CleanIcon from "../components/CleanIcon";
 import OrderPriceSummary from '../components/OrderPriceSummary';
+import CheckoutSecurity from '../components/CheckoutSecurity';
+import WalletCheckoutOption from '../components/WalletCheckoutOption';
 import { createCheckoutSession, verifyCheckoutSession, checkServiceAvailability } from "../api/orders";
 import { getWallet, payOrderWithWallet } from "../api/wallet";
-import { walletMoney, walletPaymentState } from "../utils/wallet";
+import { walletMoney } from "../utils/wallet";
+import { walletCardQuote, walletCheckoutAmounts, walletQuoteMatches } from '../utils/walletCheckout';
+import useCheckoutPresence from '../hooks/useCheckoutPresence';
+import { checkoutPresenceLost } from '../utils/checkoutPresence';
 import "../styles/Checkout.css";
 
 const publishableKey = import.meta.env.STRIPE_PUBLISHABLE_KEY?.trim();
@@ -50,7 +55,7 @@ function OrderCheckout({ orderId }) {
         if (!active.current) return;
         setPaid(true);
         // Reload the saved receipt after verification, including the final Gold/cash split.
-        createCheckoutSession(orderId).then(result => {
+        createCheckoutSession(orderId, 0, true, undefined, undefined, { checkoutViewId: checkoutViewRef.current }).then(result => {
             if (active.current && result.paid && result.summary) setData(result);
         }).catch(() => { /* Keep the confirmed checkout quote if the receipt read fails. */ });
     }, [orderId]);
@@ -80,7 +85,27 @@ function OrderCheckout({ orderId }) {
     const [contactEmail, setContactEmail] = useState(null);
     const [couponNotice, setCouponNotice] = useState(null);
     const request = useRef(null);
+    const [fullWallet, setFullWallet] = useState(null);
+    const fullWalletRef = useRef(null);
+    const checkoutBusy = useRef(false);
+    const checkoutViewRef = useRef(null);
+    useLayoutEffect(() => { checkoutBusy.current = paymentBusy; }, [paymentBusy]);
+    const presence = useCheckoutPresence(orderId, { ready: Boolean(data?.summary) && !paid,
+        onLost: () => {
+            setData(null); setError(''); setPriceUpdateError(null); setWalletConfirmation(null); setGoldConfirmation(null);
+            fullWalletRef.current = null; setFullWallet(null); request.current = null;
+        },
+        onPaid: result => {
+            setData(previous => previous ? { ...previous, clientSecret: undefined } : previous);
+            setVerification({ orderId: result.orderId || orderId, wallet: '1' });
+            fullWalletRef.current = null; setFullWallet(null); setWalletConfirmation(null);
+        },
+    });
+    const { checkoutViewId } = presence;
+    useLayoutEffect(() => { checkoutViewRef.current = checkoutViewId; }, [checkoutViewId]);
     const gold = Math.max(0, Math.floor(Number(params.get("gold")) || 0));
+    const walletQuery = Number(params.get('wallet'));
+    const requestedWallet = params.has('wallet') ? (Number.isSafeInteger(walletQuery) && walletQuery >= 0 ? walletQuery : 0) : undefined;
     const confirmGoldPayment = useCallback(result => {
         if (!active.current) return;
         // Older servers omit the receipt on Gold success. Keep the order visible
@@ -90,6 +115,71 @@ function OrderCheckout({ orderId }) {
         setGoldConfirmation(null);
         setVerification({ orderId: result.orderId || orderId, gold: "1" });
     }, [orderId]);
+    const syncQuote = useCallback(result => {
+        const appliedGold = result.summary.goldRedeemed || 0;
+        const appliedWallet = result.summary.walletAppliedCents || 0;
+        request.current = { key: `${checkoutViewId}:${orderId}:${appliedGold}:${appliedWallet}:${attempt}`, handled: true };
+        setParams(previous => {
+            const next = new URLSearchParams(previous);
+            next.set('gold', String(appliedGold)); next.set('wallet', String(appliedWallet));
+            return next;
+        }, { replace: true });
+    }, [checkoutViewId, orderId, attempt, setParams]);
+    const prepareFullWallet = useCallback(async ({ amountCents, priorWalletCents = 0, goldToUse = 0, couponCode, quote }) => {
+        if (!active.current || checkoutBusy.current || priceRequest.current || walletSubmitting.current
+            || ['preparing', 'ready', 'restoring'].includes(fullWalletRef.current?.stage)) return;
+        const context = { amountCents, priorWalletCents, goldToUse, couponCode, stage: 'preparing', quote: null, error: '' };
+        fullWalletRef.current = context; setFullWallet(context); setWalletConfirmation(amountCents);
+        priceRequest.current = true;
+        try {
+            const result = quote || await createCheckoutSession(orderId, goldToUse, true, undefined, couponCode, { walletToUseCents: amountCents, checkoutViewId });
+            if (!active.current || fullWalletRef.current !== context) return;
+            if (result.paid || result.paidWithGoldOnly || result.completed) {
+                fullWalletRef.current = null; setFullWallet(null); setWalletConfirmation(null);
+                setData(result);
+                setVerification(result.completed && result.sessionId ? { session_id: result.sessionId } : { orderId: result.orderId || orderId, wallet: '1' });
+                return;
+            }
+            const summary = result.summary;
+            if (!result.walletOnlyReady || !Number.isSafeInteger(summary?.orderTotalCents) || summary.orderTotalCents <= 0
+                || String(summary.currency).toLowerCase() !== 'usd' || summary.walletAppliedCents !== summary.orderTotalCents
+                || summary.totalCents !== 0 || summary.cardAmountCents !== 0) throw new Error('Unable to prepare a full wallet payment.');
+            const ready = { ...context, amountCents: summary.orderTotalCents, goldToUse: summary.goldRedeemed || 0, stage: 'ready', quote: result };
+            fullWalletRef.current = ready; setFullWallet(ready); setWalletConfirmation(summary.orderTotalCents);
+            setPriceUpdateError(null); syncQuote(result);
+        } catch (failure) {
+            if (!active.current || fullWalletRef.current !== context) return;
+            if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
+            const failed = { ...context, stage: 'error', error: 'We couldn’t prepare your wallet payment. Try again or return to payment methods.' };
+            fullWalletRef.current = failed; setFullWallet(failed);
+        } finally { priceRequest.current = false; }
+    }, [checkoutViewId, orderId, presence, syncQuote]);
+    const restoreCardPayment = async () => {
+        if (!active.current || priceRequest.current || walletSubmitting.current || paymentBusy) return;
+        const context = fullWalletRef.current;
+        if (!context) { setWalletConfirmation(null); return; }
+        const restoring = { ...context, stage: 'restoring', error: '' };
+        fullWalletRef.current = restoring; setFullWallet(restoring); priceRequest.current = true;
+        try {
+            const total = context.quote?.summary.orderTotalCents ?? context.amountCents;
+            const walletToUseCents = Math.min(context.priorWalletCents, Math.max(0, total - 50));
+            const result = await createCheckoutSession(orderId, context.goldToUse, true, undefined, undefined, { walletToUseCents, checkoutViewId });
+            if (!active.current || fullWalletRef.current !== restoring) return;
+            if (result.paid || result.paidWithGoldOnly || result.completed) {
+                setData(result);
+                setVerification(result.completed && result.sessionId ? { session_id: result.sessionId } : { orderId: result.orderId || orderId, wallet: '1' });
+            } else {
+                if (!walletCardQuote(result)) throw new Error('A current card quote is required.');
+                setData(result); syncQuote(result); setPriceUpdateError(null); setWalletReload(value => value + 1);
+            }
+            fullWalletRef.current = null; setFullWallet(null); setWalletConfirmation(null);
+        } catch (failure) {
+            if (!active.current || fullWalletRef.current !== restoring) return;
+            if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
+            const failed = { ...context, stage: 'restore-error', error: 'We couldn’t restore your payment methods. Try returning again before paying.' };
+            fullWalletRef.current = failed; setFullWallet(failed);
+        } finally { priceRequest.current = false; }
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -110,8 +200,8 @@ function OrderCheckout({ orderId }) {
 
     useEffect(() => {
         let cancelled = false;
-        const key = `${orderId}:${gold}:${attempt}`;
-        if (request.current?.key !== key) request.current = { key, promise: createCheckoutSession(orderId, gold) };
+        const key = `${checkoutViewId}:${orderId}:${gold}:${requestedWallet ?? ''}:${attempt}`;
+        if (request.current?.key !== key) request.current = { key, promise: createCheckoutSession(orderId, gold, true, undefined, undefined, { walletToUseCents: requestedWallet, checkoutViewId }) };
         // Applying a discount already refreshed the quote. Syncing its URL must
         // not send another request or replay the checkout loading state.
         if (request.current.handled) return;
@@ -128,16 +218,28 @@ function OrderCheckout({ orderId }) {
                 setData(result);
                 setVerification({ session_id: result.sessionId });
             } else if (result.goldOnlyReady) {
-                const cardCheckout = await createCheckoutSession(orderId, 0);
+                const cardCheckout = await createCheckoutSession(orderId, 0, true, undefined, undefined, { checkoutViewId });
                 if (cancelled || !active.current) return;
                 if (!cardCheckout.clientSecret) throw new Error("Unable to load card payment.");
                 setData(cardCheckout);
                 setGoldConfirmation(result.summary.goldRedeemed);
+            } else if (result.walletOnlyReady) {
+                const cardCheckout = await createCheckoutSession(orderId, result.summary.goldRedeemed || 0, true, undefined, undefined, { walletToUseCents: 0, checkoutViewId });
+                if (cancelled || !active.current) return;
+                if (cardCheckout.paid || cardCheckout.completed) {
+                    setData(cardCheckout);
+                    setVerification(cardCheckout.completed && cardCheckout.sessionId ? { session_id: cardCheckout.sessionId } : { orderId, wallet: '1' });
+                    return;
+                }
+                if (!walletCardQuote(cardCheckout)) throw new Error('Unable to load card payment.');
+                setData(cardCheckout);
+                await prepareFullWallet({ amountCents: result.summary.orderTotalCents, goldToUse: result.summary.goldRedeemed || 0 });
             } else if (result.clientSecret) {
                 setData(result);
             } else setError("Unable to start payment. Please try again.");
         }).catch(async (failure) => {
             if (cancelled || !active.current) return;
+            if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
             // Older running servers return an error for an already-paid order.
             // Verify ownership/payment status before presenting the paid screen.
             if (/already (?:been )?paid/i.test(failure.message || "")) {
@@ -156,28 +258,35 @@ function OrderCheckout({ orderId }) {
             if (!cancelled && active.current) setError(failure.message || "Unable to load checkout.");
         });
         return () => { cancelled = true; };
-    }, [orderId, gold, attempt, params, confirmGoldPayment]);
+    }, [checkoutViewId, orderId, gold, requestedWallet, attempt, params, confirmGoldPayment, prepareFullWallet, presence]);
 
-    const updatePrice = async (goldToUse, couponCode) => {
-        if (!active.current || paymentBusy || priceRequest.current) return;
+    const updatePrice = async (goldToUse, couponCode, walletToUseCents = data?.summary?.walletAppliedCents || 0) => {
+        if (!active.current || paymentBusy || priceRequest.current || fullWalletRef.current) return;
         priceRequest.current = true;
         setUpdatingPrice(true);
         try {
-            let result = await createCheckoutSession(orderId, goldToUse, true, undefined, couponCode);
+            let result = await createCheckoutSession(orderId, goldToUse, true, undefined, couponCode, { walletToUseCents, checkoutViewId });
             if (!active.current) return;
             const notice = result.couponNotice;
             let confirmGold = null;
             if (result.goldOnlyReady) {
                 confirmGold = result.summary.goldRedeemed;
-                result = await createCheckoutSession(orderId, 0);
+                result = await createCheckoutSession(orderId, 0, true, undefined, undefined, { walletToUseCents: 0, checkoutViewId });
                 if (!active.current) return;
             }
-            if (!result.summary || !(result.clientSecret || result.paid || result.paidWithGoldOnly || result.completed)) throw new Error("Unable to update checkout.");
+            if (result.walletOnlyReady) {
+                priceRequest.current = false;
+                await prepareFullWallet({ amountCents: result.summary.orderTotalCents, priorWalletCents: data?.summary.walletAppliedCents || 0, goldToUse, couponCode, quote: result });
+                return;
+            }
+            if (!result.summary || !(result.clientSecret || result.walletOnlyReady || result.paid || result.paidWithGoldOnly || result.completed)) throw new Error("Unable to update checkout.");
             const appliedGold = result.summary.goldRedeemed || 0;
-            request.current = { key: `${orderId}:${appliedGold}:${attempt}`, handled: true };
+            const appliedWallet = result.summary.walletAppliedCents || 0;
+            request.current = { key: `${checkoutViewId}:${orderId}:${appliedGold}:${appliedWallet}:${attempt}`, handled: true };
             setParams(previous => {
                 const next = new URLSearchParams(previous);
                 next.set("gold", String(appliedGold));
+                next.set('wallet', String(appliedWallet));
                 return next;
             }, { replace: true });
             setData(result);
@@ -189,12 +298,13 @@ function OrderCheckout({ orderId }) {
             if (notice) setCouponNotice(notice);
         } catch (failure) {
             if (!active.current) return;
+            if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
             if (failure.code === "COUPON_UNAVAILABLE") {
                 setCouponNotice({ title: "Coupon not applied", message: failure.message });
             } else {
                 // The server may have expired the old session before a network
                 // failure. Preserve the form, but require a fresh quote to pay.
-                setPriceUpdateError({ goldToUse, couponCode });
+                setPriceUpdateError({ goldToUse, couponCode, walletToUseCents });
             }
         } finally {
             priceRequest.current = false;
@@ -202,17 +312,17 @@ function OrderCheckout({ orderId }) {
         }
     };
     const applyGold = value => {
-        if (paymentBusy || priceRequest.current) return;
-        if (!priceUpdateError && data && value * 10 >= data.summary.totalCents + data.summary.goldDiscountCents) {
+        if (paymentBusy || priceRequest.current || fullWalletRef.current) return;
+        if (!priceUpdateError && data && value * 10 >= (data.summary.orderTotalCents ?? data.summary.totalCents) + data.summary.goldDiscountCents) {
             setGoldError("");
             setGoldConfirmation(value);
             return;
         }
-        updatePrice(value);
+        return updatePrice(value);
     };
     const applyCoupon = code => updatePrice(data?.summary.goldRedeemed || 0, code);
     const payWithGold = async () => {
-        if (!active.current || paymentBusy || goldSubmitting.current || priceRequest.current || priceUpdateError || goldConfirmation === null) return;
+        if (!active.current || paymentBusy || goldSubmitting.current || priceRequest.current || fullWalletRef.current || priceUpdateError || goldConfirmation === null) return;
         goldSubmitting.current = true;
         setGoldError("");
         setPaymentBusy(true);
@@ -220,8 +330,10 @@ function OrderCheckout({ orderId }) {
         try {
             const email = (contactEmail ?? data?.summary.email ?? "").trim();
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: "email_required" });
+            if (!await presence.protect()) return;
+            if (!active.current) return;
             settlementStarted = true;
-            const result = await createCheckoutSession(orderId, goldConfirmation, false, email);
+            const result = await createCheckoutSession(orderId, goldConfirmation, false, email, undefined, { walletToUseCents: 0, checkoutViewId });
             if (!active.current) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
             if (result.paidWithGoldOnly || result.paid) {
@@ -230,23 +342,31 @@ function OrderCheckout({ orderId }) {
             else throw new Error("Your balance changed. Please review your payment again.");
         } catch (failure) {
             if (active.current) {
+                if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
                 setGoldConfirmation(null);
                 if (settlementStarted && (!Number.isInteger(failure?.status) || failure.status >= 500)) {
                     // A disconnected browser may have missed a committed Gold
                     // payment. Read this order's status before allowing payment.
                     setData(previous => previous?.summary ? { ...previous, summary: { ...previous.summary, priceSummary: undefined } } : previous);
                     setVerification({ orderId, gold: "1" });
-                } else setGoldError(paymentErrorMessage(failure));
+                } else { await presence.clearProtection(); if (active.current) setGoldError(paymentErrorMessage(failure)); }
             }
         } finally { goldSubmitting.current = false; if (active.current) setPaymentBusy(false); }
     };
     const beforeConfirm = async () => {
-        if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
+        if (!active.current || fullWalletRef.current) throw new DOMException('Checkout changed.', 'AbortError');
+        if (!walletQuoteMatches(data.summary, data.sessionId, displaySession)) {
+            setPriceUpdateError({ goldToUse: data.summary.goldRedeemed || 0, walletToUseCents: data.summary.walletAppliedCents });
+            throw Object.assign(new Error('The wallet payment quote changed.'), { code: 'WALLET_QUOTE_CHANGED' });
+        }
         await checkServiceAvailability(data.summary.serviceId);
+        if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
+        if (!await presence.protect()) throw new DOMException('Payment is being verified.', 'AbortError');
         if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
     };
     const payWithWallet = async () => {
-        if (!active.current || walletSubmitting.current || paymentBusy || updatingPrice || priceRequest.current || priceUpdateError || walletConfirmation === null) return;
+        if (!active.current || walletSubmitting.current || paymentBusy || updatingPrice || priceRequest.current || priceUpdateError || walletConfirmation === null
+            || (fullWalletRef.current && fullWalletRef.current.stage !== 'ready')) return;
         walletSubmitting.current = true;
         setWalletProcessing(true);
         setPaymentBusy(true);
@@ -255,10 +375,14 @@ function OrderCheckout({ orderId }) {
         try {
             const email = (contactEmail ?? data?.summary.email ?? '').trim();
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw Object.assign(new Error(), { code: 'email_required' });
+            if (!await presence.protect()) return;
+            if (!active.current) return;
             settlementStarted = true;
-            const result = await payOrderWithWallet(orderId, email, walletConfirmation);
+            const confirmedTotal = fullWalletRef.current?.quote?.summary.orderTotalCents ?? walletConfirmation;
+            const result = await payOrderWithWallet(orderId, email, confirmedTotal, { checkoutViewId });
             if (!active.current) return;
             setWalletConfirmation(null);
+            fullWalletRef.current = null; setFullWallet(null);
             if (result.paidWithWallet || result.paid) {
                 if (result.summary) setData(previous => ({ ...previous, ...result }));
                 setVerification({ orderId: result.orderId || orderId, wallet: '1' });
@@ -268,27 +392,37 @@ function OrderCheckout({ orderId }) {
             } else throw new Error('Payment status needs verification.');
         } catch (failure) {
             if (!active.current) return;
-            setWalletConfirmation(null);
+            if (checkoutPresenceLost(failure)) { presence.recover(failure); return; }
             if (settlementStarted && (!Number.isInteger(failure?.status) || failure.status >= 500 || failure.code === 'WALLET_CARD_IN_PROGRESS')) {
+                setWalletConfirmation(null); fullWalletRef.current = null; setFullWallet(null);
                 setData(previous => previous?.summary ? { ...previous, summary: { ...previous.summary, priceSummary: undefined } } : previous);
                 setVerification(failure.code === 'WALLET_CARD_IN_PROGRESS' && data?.sessionId ? { session_id: data.sessionId, orderId } : { orderId, wallet: '1' });
             } else {
+                const failedContext = fullWalletRef.current;
+                await presence.clearProtection();
+                if (!active.current || (failedContext && fullWalletRef.current !== failedContext)) return;
                 const messages = {
                     WALLET_INSUFFICIENT: 'Your wallet balance changed and no longer covers this order. Top up your wallet or choose another payment method.',
                     WALLET_FROZEN: 'Your wallet is temporarily restricted. Please contact support.',
                     WALLET_QUOTE_CHANGED: 'Your order total changed. Review the refreshed total before paying.',
                     WALLET_EMAIL: 'Please enter a valid email address so we can send your payment confirmation.',
                 };
-                setWalletError(messages[failure.code] || paymentErrorMessage(failure));
+                const message = messages[failure.code] || paymentErrorMessage(failure);
+                if (fullWalletRef.current) {
+                    const failed = { ...fullWalletRef.current, stage: 'error', error: message };
+                    fullWalletRef.current = failed; setFullWallet(failed);
+                } else { setWalletConfirmation(null); setWalletError(message); }
                 setWalletReload(value => value + 1);
-                if (failure.code === 'WALLET_QUOTE_CHANGED') setAttempt(value => value + 1);
+                if (failure.code === 'WALLET_QUOTE_CHANGED' && !fullWalletRef.current) setAttempt(value => value + 1);
             }
         } finally {
             walletSubmitting.current = false;
             if (active.current) { setWalletProcessing(false); setPaymentBusy(false); }
         }
     };
-    const walletContent = <WalletPaymentOption wallet={wallet} loading={walletLoading} summary={data?.summary} orderId={orderId} busy={paymentBusy || updatingPrice || Boolean(verification) || paid || walletConfirmation !== null || goldConfirmation !== null || Boolean(priceUpdateError)} onRetry={() => setWalletReload(value => value + 1)} onPay={() => { setWalletError(''); setWalletConfirmation(data.summary.totalCents); }} />;
+    const walletBusy = paymentBusy || updatingPrice || Boolean(verification) || paid || goldConfirmation !== null || Boolean(priceUpdateError);
+    const fullWalletSelection = amount => prepareFullWallet({ amountCents: amount, priorWalletCents: data?.summary.walletAppliedCents || 0, goldToUse: data?.summary.goldRedeemed || 0 });
+    const walletContent = <WalletCheckoutOption key={`${data?.summary?.walletAppliedCents || 0}:${data?.sessionId || ''}`} wallet={wallet} loading={walletLoading} applying={updatingPrice} summary={fullWallet?.quote?.summary || data?.summary} orderId={orderId} busy={walletBusy} onRetry={() => setWalletReload(value => value + 1)} onMax={fullWalletSelection} onApply={amount => amount === walletCheckoutAmounts(wallet, data.summary).order ? fullWalletSelection(amount) : updatePrice(data?.summary.goldRedeemed || 0, undefined, amount)} />;
 
     return <div className={"checkout-shell checkout-" + (data?.summary?.game || "lol")}>
         <Navbar />
@@ -303,9 +437,9 @@ function OrderCheckout({ orderId }) {
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError) || walletProcessing || walletConfirmation !== null} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} walletContent={walletContent} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <><h3>Express Checkout</h3>{walletContent}<p role="alert">Card payment is temporarily unavailable. Please reload this page or contact support.</p></>)}
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError) || walletProcessing || goldConfirmation !== null} suspended={Boolean(fullWallet)} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} onDefinitiveFailure={presence.clearProtection} walletContent={walletContent} allowAdaptivePricing={!(data.summary.walletAppliedCents > 0)} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <>{walletContent}<p role="alert">Card payment is temporarily unavailable. Please reload this page or contact support.</p></>)}
                     </section>
-                    <OrderSummary summary={data?.summary || { orderId }} priceDisplay={priceDisplay} onApplyGold={applyGold} onApplyCoupon={applyCoupon} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification)} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
+                    <OrderSummary summary={data?.summary || { orderId }} priceDisplay={priceDisplay} onApplyGold={applyGold} onApplyCoupon={applyCoupon} onRemoveWallet={() => updatePrice(data?.summary.goldRedeemed || 0, undefined, 0)} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification) || goldConfirmation !== null} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode, priceUpdateError.walletToUseCents)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
         </main>
         {data?.summary?.serviceId && !paid && !verification && <LiveSaleFooter key={data.summary.serviceId} serviceId={data.summary.serviceId} />}
@@ -313,28 +447,13 @@ function OrderCheckout({ orderId }) {
         {error && !paid && <PaymentErrorDialog message={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? error : "We couldn’t load checkout. Please try again. If this continues, contact support."} action={error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" }) ? "Back to Services" : "Retry Checkout"} onClose={() => { if (error === paymentErrorMessage({ code: "SERVICE_UNAVAILABLE" })) navigate("/"); else { setError(""); setAttempt(value => value + 1); } }} />}
         {goldError && <PaymentErrorDialog message={goldError} onClose={() => setGoldError("")} />}
         {walletError && <PaymentErrorDialog message={walletError} onClose={() => setWalletError('')} />}
-        {walletConfirmation !== null && <WalletConfirmation totalCents={walletConfirmation} busy={walletProcessing} onConfirm={payWithWallet} onBack={() => { if (!walletProcessing) setWalletConfirmation(null); }} />}
+        {walletConfirmation !== null && <WalletConfirmation totalCents={walletConfirmation} busy={walletProcessing || fullWallet?.stage === 'preparing' || fullWallet?.stage === 'restoring'} error={fullWallet?.error} ready={!fullWallet || fullWallet.stage === 'ready'} onConfirm={payWithWallet} onRetry={() => fullWalletRef.current?.stage === 'restore-error' ? restoreCardPayment() : prepareFullWallet({ ...fullWalletRef.current, quote: undefined })} onBack={restoreCardPayment} />}
         {couponNotice && <PaymentErrorDialog informational title={couponNotice.title} message={couponNotice.message} action="Got it" onClose={() => setCouponNotice(null)} />}
         {goldConfirmation !== null && <GoldConfirmation gold={goldConfirmation} busy={paymentBusy} onConfirm={payWithGold} onBack={() => { if (!paymentBusy) setGoldConfirmation(null); }} />}
     </div>;
 }
 
-function WalletPaymentOption({ wallet, loading, summary, orderId, busy, onRetry, onPay }) {
-    const state = walletPaymentState(wallet, summary?.totalCents, summary?.currency);
-    const help = state === 'frozen' ? 'Your wallet is temporarily restricted. Contact support.'
-        : state === 'currency' ? 'Wallet payments are available for USD orders.'
-        : state === 'insufficient' ? `Add ${walletMoney(summary.totalCents - wallet.balanceCents)} or more to cover this order.`
-        : state === 'ready' ? `Pay ${walletMoney(summary.totalCents)} from your FastBoost balance.`
-        : 'We couldn’t load your wallet. You can still pay by card.';
-    return <div className="checkout-account-wallet">
-        <div className="checkout-account-wallet-heading"><span className="checkout-account-wallet-icon" aria-hidden="true">▣</span><div><strong>FastBoost Wallet</strong><span>{loading ? 'Loading balance…' : wallet ? `${walletMoney(wallet.balanceCents)} available · USD` : 'Balance unavailable'}</span></div><Link to={`/account/wallet?returnTo=${encodeURIComponent(`/checkout/${orderId}`)}`} aria-label="Top up your wallet and return to checkout" tabIndex={busy ? -1 : undefined} onClick={event => { if (busy) event.preventDefault(); }}>Top up <span aria-hidden="true">↗</span></Link></div>
-        <p id="checkout-wallet-help" role="status">{loading ? 'Checking your available balance.' : help}</p>
-        <button type="button" className="checkout-wallet-pay" disabled={busy || loading || state !== 'ready'} onClick={onPay} aria-describedby="checkout-wallet-help">{state === 'insufficient' ? 'Insufficient wallet balance' : 'Pay with Wallet'}{state === 'ready' && <span>{walletMoney(summary.totalCents)} <span aria-hidden="true">→</span></span>}</button>
-        {!loading && state === 'unavailable' && <button type="button" className="checkout-wallet-retry" disabled={busy} onClick={onRetry}>Refresh balance</button>}
-    </div>;
-}
-
-function WalletConfirmation({ totalCents, busy, onConfirm, onBack }) {
+function WalletConfirmation({ totalCents, busy, error, ready = true, onConfirm, onBack, onRetry }) {
     const dialog = useRef(null);
     useEffect(() => {
         const element = dialog.current;
@@ -343,9 +462,10 @@ function WalletConfirmation({ totalCents, busy, onConfirm, onBack }) {
     }, []);
     return <dialog ref={dialog} className="checkout-gold-dialog" aria-labelledby="wallet-confirm-title" aria-describedby="wallet-confirm-description" onCancel={event => { event.preventDefault(); if (!busy) onBack(); }}>
         <h2 id="wallet-confirm-title">Pay with your wallet?</h2>
-        <p id="wallet-confirm-description">We’ll deduct <strong>{walletMoney(totalCents)} USD</strong> from your FastBoost Wallet to pay for this order in full.</p>
+        <p id="wallet-confirm-description">We’ll deduct <strong>{walletMoney(totalCents)}</strong> from your FastBoost Wallet to pay for this order in full.</p>
         <p className="checkout-agreement"><LegalAgreement action="placing this order" /></p>
-        <button className="checkout-pay" disabled={busy} onClick={onConfirm}>{busy ? 'Processing wallet payment…' : `Confirm payment · ${walletMoney(totalCents)}`}</button>
+        {error && <p className="checkout-error" role="alert">{error}</p>}
+        <button className="checkout-pay" disabled={busy} onClick={ready ? onConfirm : onRetry}>{busy ? 'Processing…' : ready ? `Confirm payment · ${walletMoney(totalCents)}` : 'Try again'}</button>
         <button className="checkout-gold-back" autoFocus disabled={busy} onClick={onBack}>Back to payment methods</button>
     </dialog>;
 }
@@ -372,7 +492,7 @@ function GoldConfirmation({ gold, busy, onConfirm, onBack }) {
     </dialog>;
 }
 
-function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, paymentBusy, updatingPrice, priceUpdateError, onRetryPrice, paid, onGoToOrder }) {
+function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, onRemoveWallet, paymentBusy, updatingPrice, priceUpdateError, onRetryPrice, paid, onGoToOrder }) {
     const [promoCode, setPromoCode] = useState("");
     const enteredCode = promoCode.trim();
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
@@ -396,7 +516,7 @@ function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, payme
                     <div><span className="checkout-next-icon"><CheckoutIcon type="chat" /></span><div><strong>Track Progress in Chat</strong><p>Open your order page to message support.</p></div></div>
                 </section>
             </div>
-            <OrderPriceSummary summary={summary.priceSummary} variant="checkout" />
+            <OrderPriceSummary summary={summary.priceSummary} variant="checkout" settled />
             <p className="checkout-paid-notice" role="status"><span aria-hidden="true">✓</span>Your order has been paid. Your boost is ready to begin.</p>
             <button className="checkout-pay checkout-confirmed-button" onClick={onGoToOrder}>Go to Order <CheckoutIcon type="arrow" /></button>
         </div> : <>
@@ -407,9 +527,9 @@ function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, payme
             <div className="checkout-promo-controls"><div className="checkout-input"><input id="checkout-promo-code" placeholder="Enter your coupon code" autoComplete="off" spellCheck={false} maxLength={32} value={promoCode} disabled={paymentBusy} onChange={event => setPromoCode(event.target.value)} aria-describedby="checkout-promo-help" /></div><button type="submit" disabled={!enteredCode || paymentBusy}>Apply</button></div>
             <p id="checkout-promo-help">Coupons count as used only after successful payment. We apply the larger sale or coupon discount.</p>
         </form>
-        <OrderPriceSummary summary={summary.priceSummary} variant="checkout" formatPrice={priceDisplay?.formatPrice} onRemoveCoupon={() => onApplyCoupon('')} busy={paymentBusy} />
+        <OrderPriceSummary summary={summary.priceSummary} variant="checkout" formatPrice={priceDisplay?.formatPrice} onRemoveCoupon={() => onApplyCoupon('')} onRemoveWallet={onRemoveWallet} busy={paymentBusy} />
         {priceUpdateError && <div className="checkout-price-error" role="alert"><p>We couldn’t refresh your total. Retry before paying. Your entered details are still here.</p><button type="button" disabled={paymentBusy} onClick={onRetryPrice}>{updatingPrice ? "Updating…" : "Retry update"}</button></div>}
-        <div className="checkout-security"><strong>Secure Payment</strong><p>Powered by Stripe. FastBoost does not receive or store your full card details.</p><p><a href="https://stripe.com/legal/consumer" target="_blank" rel="noreferrer">Stripe Terms</a> · <a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a></p></div>
+        <CheckoutSecurity />
         </>}
     </aside>;
 }
@@ -433,7 +553,7 @@ function OrderTracker({ summary }) {
 function GoldRedemption({ summary, formatPrice, onApply, disabled }) {
     const [value, setValue] = useState(String(summary.goldRedeemed || 0));
     const available = Math.max(0, summary.availableGold || 0);
-    const orderCents = summary.totalCents + summary.goldDiscountCents;
+    const orderCents = (summary.orderTotalCents ?? summary.totalCents) + summary.goldDiscountCents;
     const rawMaximum = Math.min(available, Math.max(0, Math.floor(orderCents / 10)));
     const remainingCents = orderCents - rawMaximum * 10;
     const orderMaximum = remainingCents > 0 && remainingCents < 50 ? Math.max(0, Math.floor((orderCents - 50) / 10)) : rawMaximum;

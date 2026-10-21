@@ -748,6 +748,7 @@ const deleteUnpaidCheckoutOrder = async (req, res) => {
         });
     } catch (error) {
         console.error("deleteUnpaidCheckoutOrder error:", error);
+        if (error.code?.startsWith('WALLET_')) return res.status(error.status || 409).json({ ok: false, code: error.code, message: error.message });
         if (error.code === "COUPON_UNAVAILABLE") return res.status(409).json({ ok: false, message: error.message });
 
         return res.status(500).json({

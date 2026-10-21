@@ -34,3 +34,26 @@ test('wallet migration enforces fixed packages, balanced immutable entries and r
     assert.equal((await db.query('SELECT count(*)::int AS count FROM "WalletCashbackEntitlement"')).rows[0].count, 1);
     assert.equal((await db.query('SELECT count(*)::int AS count FROM "WalletEntry"')).rows[0].count, 2);
 });
+
+test('eight-percent package migration preserves old intents and immutable credits while admitting only exact new quotes', async t => {
+    const db = new PGlite();
+    t.after(() => db.close());
+    await db.exec('CREATE TABLE "User" (id TEXT PRIMARY KEY); CREATE TABLE "Order" (id TEXT PRIMARY KEY);');
+    await db.exec(fs.readFileSync(path.join(__dirname, '../prisma/migrations/20261020010000_customer_wallet/migration.sql'), 'utf8'));
+    await db.exec(`INSERT INTO "User" VALUES ('customer');
+        INSERT INTO "WalletAccount" ("userId", "updatedAt") VALUES ('customer', CURRENT_TIMESTAMP);
+        INSERT INTO "WalletTopUp" (id, "userId", "packageId", "amountCents", "bonusPercent", "bonusCents", "clientUrl", "updatedAt")
+        VALUES ('old', 'customer', 'usd-5', 500, 10, 50, 'http://localhost:5173', CURRENT_TIMESTAMP);
+        INSERT INTO "WalletEntry" (id, "userId", "key", type, "amountCents", "purchasedCents", "promotionalCents", description, "topUpId")
+        VALUES ('old-entry', 'customer', 'topup:old', 'TOP_UP', 550, 500, 50, 'promised credit', 'old');`);
+    await db.exec(fs.readFileSync(path.join(__dirname, '../prisma/migrations/20261021010000_wallet_five_dollar_bonus_8_percent/migration.sql'), 'utf8'));
+    await db.exec(`INSERT INTO "WalletTopUp" (id, "userId", "packageId", "amountCents", "bonusPercent", "bonusCents", "clientUrl", "updatedAt")
+        VALUES ('new', 'customer', 'usd-5-v2', 500, 8, 40, 'http://localhost:5173', CURRENT_TIMESTAMP);`);
+    assert.deepEqual((await db.query('SELECT "packageId", "bonusPercent", "bonusCents" FROM "WalletTopUp" ORDER BY id')).rows,
+        [{ packageId: 'usd-5-v2', bonusPercent: 8, bonusCents: 40 }, { packageId: 'usd-5', bonusPercent: 10, bonusCents: 50 }]);
+    assert.equal((await db.query('SELECT "amountCents" FROM "WalletEntry" WHERE id = \'old-entry\'')).rows[0].amountCents, 550);
+    await assert.rejects(db.exec(`UPDATE "WalletTopUp" SET "bonusCents" = 50 WHERE id = 'new'`), /WalletTopUp_package_check/);
+    await assert.rejects(db.exec(`UPDATE "WalletTopUp" SET "bonusPercent" = 8, "bonusCents" = 40 WHERE id = 'old'`), /WalletTopUp_package_check/);
+    await assert.rejects(db.exec(`UPDATE "WalletTopUp" SET "amountCents" = 501 WHERE id = 'new'`), /WalletTopUp_package_check/);
+    await assert.rejects(db.exec(`UPDATE "WalletEntry" SET "promotionalCents" = 40, "amountCents" = 540 WHERE id = 'old-entry'`), /immutable/);
+});

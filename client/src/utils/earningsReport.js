@@ -19,6 +19,32 @@ function paidDay(value) {
     return Number.isFinite(parsed.getTime()) ? parsed.toISOString().slice(0, 10) : null;
 }
 
+/** Count-only orders require each involved booster's submission to be reviewed.
+ * Individual-history orders instead review the submitted match evidence.
+ */
+export function earningsApprovalProgress(row) {
+    if (row.reviewMode !== 'contributions') {
+        const total = count(row.matchCounts?.submitted);
+        const hasSavedMatches = total > 0 || ['total', 'approved', 'pending', 'rejected', 'unsubmitted'].some(field => count(row.matchCounts?.[field]) > 0);
+        const boosterCount = new Set((row.boosters || []).map(booster => booster.id).filter(Boolean)).size;
+        // Before any evidence is saved, show the people still owing a submission.
+        // An assignment establishes no played or approved matches.
+        if (!hasSavedMatches && boosterCount) return { approved: 0, total: boosterCount,
+            unit: boosterCount === 1 ? 'booster' : 'boosters', pending: 0, returned: 0 };
+        return { approved: count(row.matchCounts?.approved), total, unit: total === 1 ? 'match' : 'matches',
+            pending: count(row.matchCounts?.pending), returned: count(row.matchCounts?.rejected) };
+    }
+    const records = new Map((row.contributions || []).filter(record => record.boosterId).map(record => [record.boosterId, record]));
+    const boosterIds = new Set([...(row.boosters || []).map(booster => booster.id), ...records.keys()].filter(Boolean));
+    let approved = 0, pending = 0, returned = 0;
+    for (const record of records.values()) {
+        if (Number.isInteger(record.approvedMatches) && record.approvedMatches >= 0 && record.approvedMatches === record.submittedMatches) approved++;
+        else if (record.reviewedAt && record.approvedMatches == null) returned++;
+        else pending++;
+    }
+    return { approved, total: boosterIds.size, unit: boosterIds.size === 1 ? 'booster' : 'boosters', pending, returned };
+}
+
 /** This is a completed-and-paid cohort. Dates consistently refer to UTC payment dates. */
 export function filterEarningsRows(rows, { currency = '', from = '', to = '' } = {}) {
     if ((from && !validDay(from)) || (to && !validDay(to)) || (from && to && from > to)) return [];

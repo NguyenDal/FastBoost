@@ -60,7 +60,7 @@ export async function updateOrderLoginInfo(orderId, payload) {
     return data.order;
 }
 
-export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail, couponCode, { signal } = {}) {
+export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnly = true, contactEmail, couponCode, { signal, walletToUseCents, checkoutViewId } = {}) {
   const { response: res, data } = await paymentJson(`${API_BASE_URL}/payments/create-checkout-session`, {
     method: "POST",
     headers: authHeaders(),
@@ -71,6 +71,8 @@ export async function createCheckoutSession(orderId, goldToUse = 0, deferGoldOnl
       deferGoldOnly,
       contactEmail,
       couponCode,
+      walletToUseCents,
+      checkoutViewId,
     }),
   }, 20000);
 
@@ -100,6 +102,45 @@ export async function verifyCheckoutSession({ sessionId, orderId, signal }) {
     throw Object.assign(new Error(data.message || "Failed to verify payment"), { status: res.status });
   }
 
+  return data;
+}
+
+export async function cancelCheckoutSession({ orderId, sessionId, signal }) {
+  const { response, data } = await paymentJson(`${API_BASE_URL}/payments/cancel-checkout-session`, {
+    method: "POST", headers: authHeaders(), signal,
+    body: JSON.stringify({ orderId, sessionId }),
+  }, 20000);
+  if (!response.ok || data.ok === false) {
+    throw Object.assign(new Error(data.message || "Could not cancel this payment."), { code: data.code, status: response.status });
+  }
+  return data;
+}
+
+export async function renewCheckoutPresence(orderId, checkoutViewId, { paymentInProgress = false, signal } = {}) {
+  const { response, data } = await paymentJson(`${API_BASE_URL}/payments/checkout-presence`, {
+    method: "POST", headers: authHeaders(), signal,
+    body: JSON.stringify({ orderId, checkoutViewId, paymentInProgress }),
+  }, 15000);
+  if (!response.ok || data.ok === false) {
+    throw Object.assign(new Error(data.message || "Could not check this checkout."), { code: data.code, status: response.status });
+  }
+  return data;
+}
+
+export async function leaveCheckoutPresence(orderId, checkoutViewId, { paymentInProgress = false } = {}) {
+  // The small authenticated request may finish after pagehide or route unmount.
+  // A server lease covers browsers that cannot deliver this final notification.
+  const response = await fetch(`${API_BASE_URL}/payments/checkout-presence/leave`, {
+    method: "POST", headers: authHeaders(), keepalive: true,
+    body: JSON.stringify({ orderId, checkoutViewId, paymentInProgress }),
+  });
+  const data = await response.json();
+  if (!response.ok || data.ok === false) {
+    throw Object.assign(new Error(data.message || "Could not release this checkout."), { code: data.code, status: response.status });
+  }
+  if ((data.released === true || data.paid === true) && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('wallet:updated'));
+  }
   return data;
 }
 

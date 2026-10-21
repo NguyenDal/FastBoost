@@ -63,9 +63,15 @@
 .checkout-pay { display: block; width: 100%; padding: 16px; margin-top: 24px; border: 0; border-radius: 10px; background: linear-gradient(110deg,#a333ef,#493cff); box-shadow: 0 5px 20px #7838ef33; color: white; font: inherit; font-weight: 700; cursor: pointer; }
 .checkout-pay:disabled { opacity: .6; cursor: wait; }
 .checkout-wallet-slot { min-height: 44px; }
+.checkout-wallet-slot.is-empty { min-height: 0; }
+.checkout-session-transition { display: grid; }
+.checkout-session-transition.has-wallet-slot { min-height: 44px; }
+.checkout-session-layer { grid-area: 1 / 1; min-width: 0; }
+.checkout-session-layer.is-preparing { visibility: hidden; pointer-events: none; }
 .checkout-account-wallet { padding: 16px; margin: 0 0 14px; border: 1px solid #70509c; border-radius: 12px; background: linear-gradient(125deg,#37224960,#191b302e); }
 .checkout-account-wallet-heading { display: flex; align-items: center; gap: 12px; }
 .checkout-account-wallet-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; background: #9f64e52b; border: 1px solid #9c6cda44; border-radius: 10px; color: #d6b7ff; font-size: 24px; }
+.checkout-account-wallet-icon svg { width: 23px; height: 23px; }
 .checkout-account-wallet-heading > div { min-width: 0; flex: 1; }
 .checkout-account-wallet-heading strong { display: block; font-size: 14px; }
 .checkout-account-wallet-heading > div > span { display: block; font-size: 12px; color: #baafcc; margin-top: 5px; }
@@ -75,6 +81,22 @@
 .checkout-wallet-pay > span { margin-left: auto; }
 .checkout-wallet-pay:disabled { background: #322b45; border-color: #4b3f60; color: #a89dbb; cursor: default; }
 .checkout-wallet-retry { margin-top: 12px; border: 0; padding: 0; color: #c89bff; background: transparent; font: inherit; font-size: 12px; cursor: pointer; }
+.checkout-wallet-controls { display: grid; grid-template-columns: minmax(0,1.8fr) minmax(76px,.8fr) minmax(88px,.9fr); gap: 12px; width: 100%; }
+.checkout-wallet-controls .checkout-input { min-width: 0; gap: 8px; padding: 10px 12px; }
+.checkout-wallet-controls .checkout-input > span { color: #baafcc; font-size: 14px; }
+.checkout-wallet-controls button { min-width: 0; min-height: 44px; padding: 0 16px; border: 1px solid #7846ba; border-radius: 9px; background: #6532ad; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.checkout-wallet-controls button[type="button"] { background: #a855f714; color: #d6b7ff; }
+.checkout-wallet-controls button:disabled { opacity: .45; cursor: default; }
+.checkout-wallet-controls button:focus-visible { outline: 2px solid #d9b7ff; outline-offset: 3px; }
+.checkout-wallet-spinner { display: block; width: 19px; height: 19px; margin: auto; animation: checkout-wallet-spin .8s linear infinite; }
+@keyframes checkout-wallet-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .checkout-wallet-spinner { animation: none; } }
+@media (max-width: 360px) { .checkout-wallet-controls { grid-template-columns: 1fr 1fr; } .checkout-wallet-controls .checkout-input { grid-column: 1 / -1; } }
+.checkout-account-wallet .checkout-wallet-error { color: #fda4af; margin-bottom: 0; }
+.checkout-wallet-amount + .checkout-wallet-pay { margin-top: 14px; }
+.checkout-wallet-contact { margin-bottom: 18px; }
+.checkout-totals .checkout-wallet-deduction dt,.checkout-totals .checkout-wallet-deduction dd { color: #bda0ed; }
+.checkout-totals .checkout-wallet-tender { margin-top: 14px; }
 .checkout-wallet-pay:focus-visible,.checkout-wallet-retry:focus-visible { outline: 2px solid #d9b7ff; outline-offset: 3px; }
 .checkout-currency-selector { margin-bottom: 22px; }
 .checkout-currency-selector h3 { margin-top: 0; }

@@ -13,6 +13,7 @@ function fixture() {
     const expired = [];
     const stripe = { checkout:{ sessions:{ retrieve:async id => sessions.get(id),expire:async id => { const s=sessions.get(id); if(s.status !== 'open') throw new Error('Session cannot expire'); s.status='expired';expired.push(id); } } } };
     const db = {
+        walletCheckoutHold: { findUnique: async () => null },
         serviceSale:{findFirst:async({where})=>where.couponCode===sale.couponCode && sale.active?sale:null,findUnique:async({where})=>where.id===sale.id?sale:null},
         order:{update:async({where,data})=>Object.assign(orders.get(where.id),data)},
         couponUse:{

@@ -24,6 +24,7 @@ async function walletRequest(path, { method = 'GET', body, signal } = {}) {
 }
 
 export const getWallet = options => walletRequest('/wallet', options);
-export const createWalletTopUp = packageId => walletRequest('/wallet/top-ups', { method: 'POST', body: { packageId } });
+export const createWalletTopUp = (packageId, options = {}) => walletRequest('/wallet/top-ups', { method: 'POST', body: { packageId, ...(options.uiMode ? { uiMode: options.uiMode } : {}) } });
+export const cancelWalletTopUp = sessionId => walletRequest('/wallet/top-ups/cancel', { method: 'POST', body: { sessionId } });
 export const verifyWalletTopUp = ({ sessionId, signal }) => walletRequest(`/wallet/top-ups/verify?${new URLSearchParams({ sessionId })}`, { signal });
-export const payOrderWithWallet = (orderId, contactEmail, expectedTotalCents) => walletRequest('/payments/wallet', { method: 'POST', body: { orderId, contactEmail, expectedTotalCents } });
+export const payOrderWithWallet = (orderId, contactEmail, expectedTotalCents, { checkoutViewId } = {}) => walletRequest('/payments/wallet', { method: 'POST', body: { orderId, contactEmail, expectedTotalCents, checkoutViewId } });
