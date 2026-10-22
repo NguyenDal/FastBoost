@@ -88,11 +88,22 @@ test('contribution submissions, revision approvals, contract ownership and curre
         assert.equal((await request('/contracts/contract/retry', 'admin', { providerUsername: 'InjectedName' })).status, 200);
         assert.equal(sentContract.providerUsername, 'LolBoost', 'send and retry use the saved account username, never request input');
         assert.equal(sentContract.boosterId, 'booster', 'recipient identity remains the internal ID');
+        contract.envelopeId = 'envelope';
+        contract.archivedAt = new Date('2026-10-22T05:00:00Z');
+        const archivedSnapshot = structuredClone(contract);
+        const archivedRead = await request('/contracts/contract', 'booster');
+        assert.equal(archivedRead.status, 200, 'old direct links remain available for reference');
+        assert.equal((await archivedRead.json()).contract.archivedAt, contract.archivedAt.toISOString());
+        assert.equal((await request('/contracts/contract/sync', 'booster', {})).status, 200, 'archived sync returns its saved state without an external call');
+        assert.equal((await request('/contracts/contract/signing-view', 'booster', {})).status, 409);
+        assert.equal((await request('/contracts/contract/retry', 'admin', {})).status, 409);
+        assert.equal((await request('/contracts/contract/document', 'booster')).status, 200, 'archived PDF evidence remains downloadable');
+        assert.deepEqual(contract, archivedSnapshot, 'reference reads never rewrite the original signing record');
         suspended = true;
         assert.equal((await request('/match-history/order', 'booster')).status, 403, 'history uses the current suspended account check');
         assert.equal((await request('/contracts/contract', 'booster')).status, 403);
         assert.equal((await request('/contracts/contract/document', 'booster')).status, 403);
-        assert.equal(documentCalls, 4, 'suspended accounts must not retrieve a PDF');
+        assert.equal(documentCalls, 5, 'suspended accounts must not retrieve a PDF');
     } finally {
         if (server) await new Promise(resolve => server.close(resolve));
         for (const [path, value] of saved) { if (value) require.cache[path] = value; else delete require.cache[path]; }

@@ -54,6 +54,6 @@ export default function BoosterDocumentForm({ boosterId, configured, suspended, 
             <label>Effective date<input key="effectiveAt" type="date" name="effectiveAt" disabled={locked} /></label>
             <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>Payout Information is not implemented yet.</p>
         </>}
-        <button className="ops-primary" disabled={!agreement || !configured || locked}>{busy ? 'Sending…' : 'Send with DocuSign'}</button>
+        <button className="ops-primary" disabled={!agreement || !configured || locked}>{busy ? 'Sending…' : 'Send agreement'}</button>
     </form>;
 }

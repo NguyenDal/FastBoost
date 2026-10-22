@@ -2,11 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
 
-test('document creation rejects unavailable types, fixes agreement identity and preserves retry snapshots', async () => {
-    const paths = ['../src/prisma', '../src/utils/docusign', '../src/routes/contractRoutes'].map(value => require.resolve(value));
+test('document creation defaults to website signing, rejects unavailable types and preserves legacy retry snapshots', async () => {
+    const paths = ['../src/prisma', '../src/utils/docusign', '../src/routes/contractRoutes', '../src/utils/nativeContractSigning'].map(value => require.resolve(value));
     const saved = paths.map(path => [path, require.cache[path]]);
     const records = new Map();
     const sent = [];
+    const issued = [];
     let dbCalls = 0, configCalls = 0, suspended = false;
     const db = {
         user: {
@@ -47,6 +48,19 @@ test('document creation rejects unavailable types, fixes agreement identity and 
             companySigner: () => ({ name: 'Company Signer', email: 'owner@example.test' }),
             sendContract: async contract => { sent.push(contract); return `envelope-${contract.id}`; },
         } };
+        require.cache[paths[3]] = { exports: {
+            PROVIDER: 'FASTBOOST',
+            createContract: async (client, input) => {
+                configCalls++;
+                const booster = await client.user.findUnique({ where: { id: input.boosterId } });
+                if (booster.suspendedAt) throw Object.assign(new Error('Active booster not found.'), { status: 404 });
+                const record = { id: input.requestId, boosterId: input.boosterId, issuedById: input.issuedById,
+                    title: 'Booster Service Agreement', signerName: input.signerName, signerEmail: booster.email,
+                    providerUsername: booster.username, templateId: 'FB-BSA-2.1', signingProvider: 'FASTBOOST',
+                    startsAt: new Date(input.startsAt), companySignerName: 'Company Signer', companySignerEmail: 'owner@example.test', status: 'sent' };
+                issued.push(record); records.set(record.id, record); return record;
+            },
+        } };
         delete require.cache[paths[2]];
         const app = express();
         app.use(express.json());
@@ -72,40 +86,43 @@ test('document creation rejects unavailable types, fixes agreement identity and 
         const response = await request({ ...payload, title: 'Injected document title', providerUsername: 'InjectedUsername' });
         assert.equal(response.status, 201);
         assert.deepEqual(await response.json(), { ok: true, id: payload.requestId });
-        assert.equal(sent.length, 1);
-        assert.equal(sent[0].title, 'Booster Service Agreement');
-        assert.equal(sent[0].templateId, 'FB-BSA-2.0');
-        assert.equal(sent[0].providerUsername, 'SavedUsername');
-        assert.equal(sent[0].signerEmail, 'saved@example.test');
-        assert.equal(sent[0].companySignerEmail, 'owner@example.test');
-        assert.equal(sent[0].startsAt.toISOString(), '2026-10-17T00:00:00.000Z');
+        assert.equal(sent.length, 0, 'a new agreement never calls DocuSign');
+        assert.equal(issued.length, 1);
+        assert.equal(issued[0].title, 'Booster Service Agreement');
+        assert.equal(issued[0].templateId, 'FB-BSA-2.1');
+        assert.equal(issued[0].providerUsername, 'SavedUsername');
+        assert.equal(issued[0].signerEmail, 'saved@example.test');
+        assert.equal(issued[0].companySignerEmail, 'owner@example.test');
+        assert.equal(issued[0].startsAt.toISOString(), '2026-10-17T00:00:00.000Z');
 
         assert.equal((await request(payload)).status, 201);
-        assert.equal(sent.length, 1, 'duplicate request returns its existing envelope');
+        assert.equal(issued.length, 1, 'duplicate request returns its existing website agreement');
+        assert.equal(sent.length, 0);
         assert.equal(configCalls, 1, 'saved requests do not replace their configuration snapshot');
         for (const body of [{ ...payload, signerName: 'Other Person' }, { ...payload, startsAt: '2026-10-18' }]) {
             assert.equal((await request(body)).status, 409);
         }
         assert.equal((await request(payload, { 'x-actor': 'different-admin' })).status, 409);
-        assert.equal(sent.length, 1);
+        assert.equal(sent.length, 0);
 
         const legacyId = 'd9af842e-b36c-4eb0-87b9-ecc9e8ad3702';
         records.set(legacyId, {
-            ...sent[0], id: legacyId, title: 'Historical agreement title', templateId: 'historical-remote-template',
+            ...issued[0], id: legacyId, title: 'Historical agreement title', templateId: 'historical-remote-template', signingProvider: 'DOCUSIGN',
             companySignerName: 'Original Owner', companySignerEmail: 'original@example.test', envelopeId: null,
         });
         const { documentType, ...legacyPayload } = payload;
         assert.equal((await request({ ...legacyPayload, requestId: legacyId, title: 'Historical agreement title' })).status, 201);
-        assert.equal(sent[1].templateId, 'historical-remote-template');
-        assert.equal(sent[1].companySignerEmail, 'original@example.test');
-        assert.equal(sent[1].title, 'Historical agreement title');
+        assert.equal(sent[0].templateId, 'historical-remote-template');
+        assert.equal(sent[0].companySignerEmail, 'original@example.test');
+        assert.equal(sent[0].title, 'Historical agreement title');
         assert.equal(configCalls, 1);
         assert.equal((await request({ ...legacyPayload, requestId: legacyId, title: 'Changed title' })).status, 409);
 
         const nextId = 'd9af842e-b36c-4eb0-87b9-ecc9e8ad3703';
         assert.equal((await request({ ...legacyPayload, requestId: nextId, title: 'Legacy free-form title' })).status, 201);
-        assert.equal(sent[2].title, 'Booster Service Agreement', 'old clients also create the current canonical agreement');
-        assert.equal(sent[2].templateId, 'FB-BSA-2.0');
+        assert.equal(issued[1].title, 'Booster Service Agreement', 'old clients also create the current canonical website agreement');
+        assert.equal(issued[1].templateId, 'FB-BSA-2.1');
+        assert.equal(sent.length, 1, 'only the explicit historical retry uses DocuSign');
         suspended = true;
         assert.equal((await request({ ...payload, requestId: 'd9af842e-b36c-4eb0-87b9-ecc9e8ad3704' })).status, 404);
     } finally {

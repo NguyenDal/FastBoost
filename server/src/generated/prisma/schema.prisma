@@ -270,34 +270,68 @@ model BoosterEarningsEntry {
 }
 
 model BoosterContract {
-  id                 String    @id @default(cuid())
-  boosterId          String
-  booster            User      @relation("BoosterContracts", fields: [boosterId], references: [id], onDelete: Restrict)
-  issuedById         String
-  issuedBy           User      @relation("IssuedBoosterContracts", fields: [issuedById], references: [id], onDelete: Restrict)
-  title              String
-  templateId         String
-  accountId          String
-  environment        String
-  envelopeId         String?   @unique
-  signerName         String
-  signerEmail        String
-  companySignerName  String?
-  companySignerEmail String?
-  boosterSignedAt    DateTime?
-  companySignedAt    DateTime?
-  status             String    @default("pending")
-  sendAttemptAt      DateTime?
-  sendError          String?
-  lastSyncedAt       DateTime?
-  startsAt           DateTime
-  createdAt          DateTime  @default(now())
-  signedAt           DateTime?
-  signedName         String?
-  viewedAt           DateTime?
-  revokedAt          DateTime?
+  id                    String                    @id @default(cuid())
+  boosterId             String
+  booster               User                      @relation("BoosterContracts", fields: [boosterId], references: [id], onDelete: Restrict)
+  issuedById            String
+  issuedBy              User                      @relation("IssuedBoosterContracts", fields: [issuedById], references: [id], onDelete: Restrict)
+  title                 String
+  templateId            String
+  accountId             String
+  environment           String
+  envelopeId            String?                   @unique
+  signerName            String
+  signerEmail           String
+  companySignerName     String?
+  companySignerEmail    String?
+  boosterSignedAt       DateTime?
+  companySignedAt       DateTime?
+  status                String                    @default("pending")
+  sendAttemptAt         DateTime?
+  sendError             String?
+  lastSyncedAt          DateTime?
+  startsAt              DateTime
+  createdAt             DateTime                  @default(now())
+  signedAt              DateTime?
+  signedName            String?
+  viewedAt              DateTime?
+  revokedAt             DateTime?
+  archivedAt            DateTime?
+  signingProvider       String                    @default("DOCUSIGN")
+  nativeCompanySignerId String?
+  nativeSnapshot        Json?
+  nativeDocumentHash    String?
+  nativePreparedAt      DateTime?
+  nativePdf             Bytes?
+  nativePdfHash         String?
+  nativeCompletedAt     DateTime?
+  replacesContractId    String?                   @unique
+  nativeSignatures      NativeContractSignature[]
 
   @@index([boosterId, createdAt])
+  @@index([boosterId, archivedAt, createdAt])
+}
+
+model NativeContractSignature {
+  id           String          @id @default(cuid())
+  contractId   String
+  contract     BoosterContract @relation(fields: [contractId], references: [id], onDelete: Restrict)
+  role         String
+  actorId      String
+  actorEmail   String
+  legalName    String
+  initials     String
+  consentText  String
+  signature    Json
+  documentHash String
+  requestId    String
+  requestHash  String
+  signedAt     DateTime        @default(now())
+  clientIp     String?
+  userAgent    String?
+
+  @@unique([contractId, role])
+  @@unique([contractId, requestId])
 }
 
 model SupportThread {

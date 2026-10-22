@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const db = require('../prisma');
 const docusign = require('../utils/docusign');
+const nativeSigning = require('../utils/nativeContractSigning');
 const { syncContract } = require('../utils/contractStatus');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -13,8 +14,11 @@ async function authorized(req, ownerOnly = false) {
     return contract;
 }
 async function send(contract) {
+    if (contract.archivedAt) fail(409, 'Archived agreements are available for reference only.');
+    if (contract.signingProvider === nativeSigning.PROVIDER) return contract;
+    if (contract.revokedAt) fail(409, 'This agreement is no longer available for delivery.');
     if (contract.envelopeId) return contract;
-    const claim = await db.boosterContract.updateMany({ where: { id: contract.id, envelopeId: null, OR: [
+    const claim = await db.boosterContract.updateMany({ where: { id: contract.id, archivedAt: null, envelopeId: null, OR: [
         { status: { in: ['pending', 'send_error'] } }, { status: 'sending', lastSyncedAt: { lt: new Date(Date.now() - 60000) } },
     ] }, data: { status: 'sending', lastSyncedAt: new Date(), sendAttemptAt: contract.sendAttemptAt || new Date() } });
     if (!claim.count) fail(409, 'This contract is being sent. Refresh shortly.');
@@ -37,53 +41,65 @@ async function send(contract) {
         throw error;
     }
 }
-router.get('/docusign/configuration', handle(async (req, res) => { admin(req); res.json({ ok: true, ...docusign.readiness() }); }));
+const signingConfiguration = handle(async (req, res) => { admin(req); res.json({ ok: true, ...await nativeSigning.readiness(db) }); });
+router.get('/contracts/configuration', signingConfiguration);
+// Compatibility for an older management page while clients migrate to the neutral route.
+router.get('/docusign/configuration', signingConfiguration);
 router.post('/boosters/:boosterId/contracts', handle(async (req, res) => {
     admin(req);
     const documentType = req.body.documentType === undefined ? 'BOOSTER_SERVICE_AGREEMENT' : req.body.documentType;
     if (documentType === 'PAYOUT_INFORMATION') fail(409, 'Payout Information is not available yet.');
     if (documentType !== 'BOOSTER_SERVICE_AGREEMENT') fail(400, 'Choose a supported document type.');
     const { requestId, startsAt } = req.body;
-    const signerName = String(req.body.signerName || '').trim();
-    if (!/^[a-f0-9-]{36}$/i.test(requestId || '') || !validDate(startsAt) || signerName.length < 2 || signerName.length > 100) fail(400, 'Enter the full signer name and a valid start date.');
+    const signerName = typeof req.body.signerName === 'string' ? req.body.signerName.trim() : '';
+    if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(requestId || '') || !validDate(startsAt) || signerName.length < 2 || signerName.length > 100) fail(400, 'Enter the full signer name and a valid start date.');
     const title = 'Booster Service Agreement';
     // An existing request retains its original document, recipients and version.
     // Older clients sent a free-form title; use it only to recognize their retry.
     const matchesRequest = contract => contract.boosterId === req.params.boosterId && contract.issuedById === req.actor.id && contract.signerName === signerName
         && contract.startsAt.toISOString().slice(0, 10) === startsAt
-        && contract.title === (req.body.documentType === undefined && contract.templateId !== docusign.AGREEMENT_VERSION ? String(req.body.title || '').trim() : title);
+        && contract.title === (req.body.documentType === undefined && contract.signingProvider !== nativeSigning.PROVIDER && contract.templateId !== docusign.AGREEMENT_VERSION ? String(req.body.title || '').trim() : title);
     const existing = await db.boosterContract.findUnique({ where: { id: requestId } });
     if (existing) {
         if (!matchesRequest(existing)) fail(409, 'This request already belongs to another document. Refresh before creating a new document.');
         const sent = await send(existing);
         return res.status(201).json({ ok: true, id: sent.id });
     }
-    const config = docusign.configuration();
-    const company = docusign.companySigner();
-    const countersigner = await db.user.findFirst({ where: { email: { equals: company.email, mode: 'insensitive' }, role: 'ADMIN', suspendedAt: null } });
-    if (!countersigner) fail(400, 'The FastBoost countersigner must have an active admin account with the configured email.');
-    const booster = await db.user.findUnique({ where: { id: req.params.boosterId } });
-    if (!booster || booster.suspendedAt || !(booster.role === 'PROVIDER' || booster.hasBoosterAccess)) fail(404, 'Active booster not found.');
-    if (booster.id === countersigner.id) fail(400, 'The booster and FastBoost must be different signers.');
-    const contract = await db.boosterContract.upsert({ where: { id: requestId }, update: {}, create: {
-        id: requestId, boosterId: booster.id, issuedById: req.actor.id, title, signerName, signerEmail: booster.email,
-        startsAt: new Date(startsAt), templateId: docusign.AGREEMENT_VERSION, accountId: config.accountId, environment: config.environment,
-        companySignerName: company.name, companySignerEmail: company.email,
-    } });
+    const contract = await nativeSigning.createContract(db, { requestId, boosterId: req.params.boosterId,
+        issuedById: req.actor.id, signerName, startsAt });
     if (!matchesRequest(contract)) fail(409, 'This request already belongs to another document. Refresh before creating a new document.');
     const sent = await send(contract);
     res.status(201).json({ ok: true, id: sent.id });
 }));
 router.post('/contracts/:id/retry', handle(async (req, res) => { admin(req); const contract = await authorized(req); await send(contract); res.json({ ok: true }); }));
-router.get('/contracts/:id', handle(async (req, res) => { const contract = await authorized(req); res.json({ ok: true, contract }); }));
+router.get('/contracts/:id', handle(async (req, res) => { const contract = await authorized(req); res.json({ ok: true, contract: nativeSigning.publicContract(contract) }); }));
+router.get('/contracts/:id/signing', handle(async (req, res) => {
+    const contract = await authorized(req);
+    res.json(await nativeSigning.signingContext(db, contract, req.actor));
+}));
+router.post('/contracts/:id/prepare', handle(async (req, res) => {
+    res.json(await nativeSigning.prepareContract(db, req.params.id, req.actor, req.body.values));
+}));
+router.post('/contracts/:id/sign', handle(async (req, res) => {
+    res.json(await nativeSigning.signContract(db, req.params.id, req.actor, req.body, { ip: req.ip, userAgent: req.get('user-agent') }));
+}));
+router.post('/contracts/:id/native-replacement', handle(async (req, res) => {
+    const original = await authorized(req);
+    const replacement = await nativeSigning.replaceLegacyContract(db, original, req.actor, req.body.requestId, docusign.getStatus);
+    res.status(201).json({ ok: true, id: replacement.id });
+}));
 router.post('/contracts/:id/sync', handle(async (req, res) => {
     const contract = await authorized(req);
+    if (contract.signingProvider === nativeSigning.PROVIDER || contract.archivedAt || contract.revokedAt) return res.json({ ok: true, contract: nativeSigning.publicContract(contract) });
     // Connect supplies timely updates; manual fallback observes DocuSign polling limits.
     if (contract.lastSyncedAt && Date.now() - contract.lastSyncedAt.getTime() < 15 * 60000) return res.json({ ok: true, contract, pending: true });
     res.json({ ok: true, contract: await syncContract(db, contract) });
 }));
 router.post('/contracts/:id/signing-view', handle(async (req, res) => {
     const contract = await authorized(req);
+    if (contract.archivedAt) fail(409, 'Archived agreements are available for reference only.');
+    if (contract.signingProvider === nativeSigning.PROVIDER) fail(409, 'Open this agreement on the FastBoost website to review and sign.');
+    if (contract.revokedAt) fail(409, 'This agreement is no longer available for signing.');
     const company = req.actor.role === 'ADMIN' && contract.companySignerEmail && req.actor.email?.toLowerCase() === contract.companySignerEmail.toLowerCase();
     const booster = contract.boosterId === req.actor.id && (req.actor.role === 'PROVIDER' || req.actor.hasBoosterAccess);
     if (!company && !booster) fail(404, 'Contract not found.');
@@ -98,9 +114,9 @@ router.post('/contracts/:id/signing-view', handle(async (req, res) => {
 }));
 router.get('/contracts/:id/document', handle(async (req, res) => {
     const contract = await authorized(req);
-    if (!contract.envelopeId) fail(409, 'The contract has not been sent yet.');
+    if (contract.signingProvider !== nativeSigning.PROVIDER && !contract.envelopeId) fail(409, 'The contract has not been sent yet.');
     if (req.actor.role !== 'ADMIN' && contract.companySignerEmail && !contract.companySignedAt) fail(403, 'The agreement will be available after FastBoost signs.');
-    const buffer = await docusign.document(contract);
+    const buffer = contract.signingProvider === nativeSigning.PROVIDER ? nativeSigning.document(contract) : await docusign.document(contract);
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-contract.pdf"' }).send(buffer);
 }));
 module.exports = router;

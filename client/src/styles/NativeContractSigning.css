@@ -1,0 +1,39 @@
+.native-signing-page{min-height:100dvh;background:#0c1019;color:#eae6f3;display:flex;flex-direction:column}
+.native-signing-page>.topbar{position:relative;flex-shrink:0}
+.native-signing-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 28px;border-bottom:1px solid #ffffff15}
+.native-signing-toolbar a,.native-signing-panel a{color:#c9b6ff;text-decoration:none;font-size:13px}
+.native-signing-toolbar h1{margin:8px 0 0;font-size:20px;line-height:1.4}
+.native-signing-status{font-size:12px;line-height:1.5;color:#d1c0ff;background:#8461d825;border:1px solid #b292f125;border-radius:18px;padding:7px 12px;white-space:nowrap}
+.native-signing-status.is-complete{color:#74e3bb;background:#17b58b18;border-color:#43c49b25}
+.native-signing-layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;flex:1;min-height:0;align-items:start}
+.native-signing-document{min-width:0;height:calc(100dvh - 180px);min-height:600px;position:sticky;top:0;background:#fff}
+.native-signing-document iframe{border:0;width:100%;height:100%;display:block;background:white}
+.native-signing-panel{min-width:0;padding:26px 22px;background:linear-gradient(150deg,#191b29,#111621);border-left:1px solid #ffffff16;box-sizing:border-box}
+.native-signing-panel h2{font-size:18px;line-height:1.5;margin:0 0 12px}
+.native-signing-panel p{font-size:13px;line-height:1.7;color:#b4bfd2;margin:0 0 18px}
+.native-signing-panel input:not([type=checkbox]):not([type=radio]),.native-signing-panel textarea{box-sizing:border-box;display:block;width:100%;padding:11px 12px;border:1px solid #ffffff24;background:#0c111c;color:#e6e6ee;border-radius:9px;font:inherit;font-size:14px;line-height:1.5;min-width:0}
+.native-signing-panel textarea{resize:vertical;min-height:78px}
+.native-signing-panel label{display:grid;gap:7px;color:#bbc5d8;font-size:12px;line-height:1.6}
+.native-signing-panel button{font:inherit;font-size:13px;line-height:1.5;padding:10px 14px;color:#eae5f5;background:#282438;border:1px solid #ffffff24;border-radius:9px;cursor:pointer;min-height:42px}
+.native-signing-panel button:disabled,.native-signing-panel input:disabled,.native-signing-panel textarea:disabled{opacity:.55;cursor:not-allowed}
+.native-signing-panel button.native-primary{background:linear-gradient(100deg,#8539ed,#5842eb);font-weight:700;min-height:46px;width:100%}
+.native-signing-panel :is(button,input,textarea,a,canvas):focus-visible,.native-signing-toolbar a:focus-visible{outline:2px solid #c6aeff;outline-offset:3px}
+.native-signing-parties{padding-bottom:22px;margin-bottom:24px;border-bottom:1px solid #ffffff15}
+.native-signing-parties>div{display:flex;gap:12px;margin-top:18px}
+.native-signing-parties>div>span{display:grid;place-items:center;flex:0 0 30px;height:30px;border:1px solid #a388dc50;border-radius:50%;font-size:12px;color:#cab6ef}
+.native-signing-parties>div>span.is-signed{color:#6de4ba;border-color:#42c69b40;background:#17b58b12}
+.native-signing-parties p{margin:0;overflow-wrap:anywhere;font-size:13px;line-height:1.6}
+.native-signing-parties strong,.native-signing-parties small{display:block}.native-signing-parties strong{color:#e8e3f1;font-size:13px;margin-bottom:3px}.native-signing-parties small{font-size:11px;color:#96a5bf;margin-top:5px}
+.native-commercial-form,.native-signature-form{display:grid;gap:18px}.native-commercial-form h2,.native-signature-form h2,.native-commercial-form>p,.native-signature-form>p{margin:0}
+.native-signature-method{margin:0;padding:0;border:0;min-width:0}.native-signature-method legend{font-size:12px;color:#bbc5d8;margin-bottom:8px}.native-signature-method>div{display:flex;gap:20px}.native-signature-method label{display:flex;align-items:center;gap:7px}.native-signature-method input{accent-color:#9e74ed;margin:0}
+.native-typed-signature{display:flex;align-items:center;justify-content:center;min-height:100px;padding:18px;background:#fff;border:1px solid #d7d0e3;border-radius:10px;color:#29213d;font-family:'Segoe Print','Bradley Hand',cursive;font-size:30px;font-style:italic;overflow-wrap:anywhere;text-align:center;box-sizing:border-box}
+.native-signature-pad{border:1px solid #d7d0e3;border-radius:10px;background:#fff;overflow:hidden}.native-signature-pad canvas{display:block;width:100%;height:140px;touch-action:none;cursor:crosshair;background:linear-gradient(to top,transparent 24px,#d8d2e2 25px,transparent 26px)}.native-signature-pad>div{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid #e8e3ee}.native-signature-pad>div>p{font-size:10px;line-height:1.5;color:#625970;margin:0}.native-signature-pad button{min-height:30px;padding:4px 9px;font-size:11px;color:#55436f;background:#f4f0fa;border-color:#d9cfe8}
+.native-signature-form .native-signing-consent{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.7;color:#c2cbdb}.native-signing-consent input{flex-shrink:0;width:17px;height:17px;accent-color:#9a6ee8;margin:3px 0 0}
+.native-signature-form>.native-signing-privacy{font-size:11px;color:#90a0ba;line-height:1.7}.native-signing-panel button.native-text-button{justify-self:start;border:0;background:none;padding:0;min-height:24px;color:#cbb6ff;text-decoration:underline;text-underline-offset:3px}
+.native-signing-panel p.native-signing-error{padding:13px;color:#ffb9bd;background:#d13c4b16;border:1px solid #e76b7528;border-radius:10px;overflow-wrap:anywhere}.native-signing-panel p.native-signing-message{padding:13px;color:#a9e5cf;background:#1da47d12;border:1px solid #4ac49a25;border-radius:10px}
+.native-signing-pending{padding:14px;border:1px solid #d8b46f35;border-radius:10px;background:#bb8c2310}.native-signing-pending p{font-size:12px;margin:0 0 12px;color:#ddc998}.native-signing-pending button{width:100%}
+.native-signing-finished p{margin-bottom:20px}.native-signing-loading{padding:36px 28px;color:#bdc6d8}.native-signing-legacy{width:min(680px,calc(100% - 40px));margin:35px auto;border:1px solid #ffffff20;border-radius:18px;padding:28px}
+@media(min-width:1450px){.native-signing-layout{grid-template-columns:minmax(0,1fr) 390px}.native-signing-panel{padding:30px}}
+@media(max-width:800px){.native-signing-toolbar{padding:18px 20px;align-items:flex-start}.native-signing-toolbar h1{font-size:18px}.native-signing-status{max-width:135px;white-space:normal;text-align:center;font-size:11px}.native-signing-layout{display:flex;flex-direction:column}.native-signing-document{position:relative;top:auto;width:100%;height:70dvh;min-height:420px}.native-signing-panel{width:100%;border-left:0;border-top:1px solid #ffffff20;padding:26px 22px}.native-signing-parties{display:grid;grid-template-columns:1fr 1fr;gap:12px}.native-signing-parties h2{grid-column:1/-1}.native-signing-parties>div{margin:0}.native-signature-form,.native-commercial-form,.native-signing-finished{max-width:540px;margin:0 auto}.native-signature-pad canvas{height:170px}}
+@media(max-width:420px){.native-signing-toolbar{padding:16px}.native-signing-toolbar h1{font-size:16px}.native-signing-status{max-width:105px}.native-signing-panel{padding:24px 18px}.native-signing-parties{grid-template-columns:1fr}.native-signing-parties h2{grid-column:auto}.native-signing-document{height:65dvh;min-height:360px}}
+@media print{.native-signing-page>.topbar,.native-signing-toolbar,.native-signing-panel{display:none}.native-signing-layout{display:block}.native-signing-document{height:auto;min-height:100vh;position:static}}

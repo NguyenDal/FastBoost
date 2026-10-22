@@ -1,5 +1,9 @@
 # FastBoost DocuSign setup
 
+New agreements now use [FastBoost website signing](NATIVE_SIGNING_SETUP.md).
+This guide remains for historical DocuSign agreements and their original provider
+configuration. The old signing assets are preserved for those records.
+
 The integration uses the eSignature REST API, JWT grant, recipient-view signing
 in a separate browser tab, and HMAC-authenticated Connect events. Start in the free developer sandbox. No actual
 contract has been sent by the coding agent.

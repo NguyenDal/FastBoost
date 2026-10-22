@@ -1,11 +1,14 @@
 const docusign = require('./docusign');
 async function syncContract(db, contract) {
-    if (!contract.envelopeId || contract.signedAt) return contract;
+    if (contract.signingProvider === 'FASTBOOST' || contract.archivedAt || contract.revokedAt || !contract.envelopeId || contract.signedAt) return contract;
     const status = await docusign.getStatus(contract);
     return db.$transaction(async tx => {
+        // Serialize a delayed Connect completion with explicit sandbox replacement.
+        // Reading without this lock could grant tenure after replacement committed.
+        await tx.$queryRawUnsafe('SELECT "id" FROM "BoosterContract" WHERE "id" = $1 FOR UPDATE', contract.id);
         // Never let a delayed event erase a completed agreement.
         const current = await tx.boosterContract.findUnique({ where: { id: contract.id } });
-        if (current.signedAt) return current;
+        if (current.signedAt || current.archivedAt || current.revokedAt || current.signingProvider === 'FASTBOOST') return current;
         const updated = await tx.boosterContract.update({ where: { id: current.id }, data: { ...status, lastSyncedAt: new Date() } });
         if (status.companySignedAt && !current.companySignedAt && !status.signedAt) {
             await tx.notification.updateMany({ where: { id: `contract-${current.id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });

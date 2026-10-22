@@ -13,13 +13,13 @@ router.use((req, res, next) => {
 });
 router.get('/', async (req, res, next) => {
     try {
-        const html = await readFile(resolve(documentRoot, 'provider-agreement.html'), 'utf8');
+        const html = await readFile(resolve(documentRoot, 'provider-agreement-native.html'), 'utf8');
         res.json({ ok: true, html });
     } catch (error) { next(error); }
 });
 router.get('/document', (req, res, next) => {
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-Booster-Service-Agreement.pdf"' });
-    res.sendFile(resolve(documentRoot, 'booster-service-agreement.pdf'), { cacheControl: false, lastModified: false }, error => {
+    res.sendFile(resolve(documentRoot, 'booster-service-agreement.native.pdf'), { cacheControl: false, lastModified: false }, error => {
         if (error) next(error);
     });
 });

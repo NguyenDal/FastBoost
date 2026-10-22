@@ -114,7 +114,7 @@ router.get('/me', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
     const [profile, contracts, income, rating, preferences] = await Promise.all([
         db.boosterProfile.findUnique({ where: { userId: req.actor.id } }),
-        db.boosterContract.findMany({ where: { boosterId: req.actor.id }, select: { id: true, title: true, startsAt: true, signedAt: true, revokedAt: true }, orderBy: { createdAt: 'desc' } }), boosterEarnings(db, req.actor.id),
+        db.boosterContract.findMany({ where: { boosterId: req.actor.id, archivedAt: null }, select: { id: true, title: true, startsAt: true, signedAt: true, revokedAt: true }, orderBy: { createdAt: 'desc' } }), boosterEarnings(db, req.actor.id),
         boosterRating(db, req.actor.id),
         loadPreferences(db, req.actor.id),
     ]);
@@ -137,7 +137,7 @@ router.patch('/me/preferences', handle(async (req, res) => {
 router.get('/boosters', admin, handle(async (req, res) => {
     const [users, income] = await Promise.all([
         db.user.findMany({ where: { OR: [{ role: 'PROVIDER' }, { hasBoosterAccess: true }] }, select: { ...identity,
-            boosterProfile: true, boosterContracts: { orderBy: { createdAt: 'desc' }, select: { id: true, title: true, startsAt: true, createdAt: true, signedAt: true, signedName: true, revokedAt: true } },
+            boosterProfile: true, boosterContracts: { where: { archivedAt: null }, orderBy: { createdAt: 'desc' }, select: { id: true, title: true, startsAt: true, createdAt: true, signedAt: true, signedName: true, revokedAt: true } },
             providedAssignments: { where: { order: { paymentStatus: 'PAID', status: { in: ['PENDING', 'IN_PROGRESS'] } } }, select: { id: true } },
         }, orderBy: { username: 'asc' } }), boosterEarnings(db),
     ]);

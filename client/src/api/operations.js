@@ -13,9 +13,12 @@ export async function operations(path, body, method = 'POST') {
     return result;
 }
 export async function downloadContract(id) {
-    const response = await fetch(`${API_BASE_URL}/operations/contracts/${id}/document`, { headers: { Authorization: `Bearer ${authStorage.getItem('token')}` } });
-    if (!response.ok) throw new Error((await response.json()).message || 'Could not download the contract.');
-    const url = URL.createObjectURL(await response.blob());
+    const token = authStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/operations/contracts/${encodeURIComponent(id)}/document`, { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) throw Object.assign(new Error((await response.json()).message || 'Could not download the contract.'), { status: response.status });
+    const blob = await response.blob();
+    if (token !== authStorage.getItem('token')) throw Object.assign(new Error('Your session changed. Reload this agreement.'), { name: 'AbortError' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a'); link.href = url; link.download = 'FastBoost-contract.pdf'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
 }

@@ -313,7 +313,35 @@ exports.Prisma.BoosterContractScalarFieldEnum = {
   signedAt: 'signedAt',
   signedName: 'signedName',
   viewedAt: 'viewedAt',
-  revokedAt: 'revokedAt'
+  revokedAt: 'revokedAt',
+  archivedAt: 'archivedAt',
+  signingProvider: 'signingProvider',
+  nativeCompanySignerId: 'nativeCompanySignerId',
+  nativeSnapshot: 'nativeSnapshot',
+  nativeDocumentHash: 'nativeDocumentHash',
+  nativePreparedAt: 'nativePreparedAt',
+  nativePdf: 'nativePdf',
+  nativePdfHash: 'nativePdfHash',
+  nativeCompletedAt: 'nativeCompletedAt',
+  replacesContractId: 'replacesContractId'
+};
+
+exports.Prisma.NativeContractSignatureScalarFieldEnum = {
+  id: 'id',
+  contractId: 'contractId',
+  role: 'role',
+  actorId: 'actorId',
+  actorEmail: 'actorEmail',
+  legalName: 'legalName',
+  initials: 'initials',
+  consentText: 'consentText',
+  signature: 'signature',
+  documentHash: 'documentHash',
+  requestId: 'requestId',
+  requestHash: 'requestHash',
+  signedAt: 'signedAt',
+  clientIp: 'clientIp',
+  userAgent: 'userAgent'
 };
 
 exports.Prisma.SupportThreadScalarFieldEnum = {
@@ -789,6 +817,7 @@ exports.Prisma.ModelName = {
   BoosterEarningsBalance: 'BoosterEarningsBalance',
   BoosterEarningsEntry: 'BoosterEarningsEntry',
   BoosterContract: 'BoosterContract',
+  NativeContractSignature: 'NativeContractSignature',
   SupportThread: 'SupportThread',
   SupportMessage: 'SupportMessage',
   SupportPresence: 'SupportPresence',

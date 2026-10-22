@@ -24,11 +24,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--font-dir', type=Path, default=Path('C:/Windows/Fonts'))
 parser.add_argument('--sandbox-template', action='store_true', help='Export a separate sandbox-only PDF and DocuSign field definitions')
 parser.add_argument('--signing-template', action='store_true', help='Export the execution PDF and bundled DocuSign document package')
+parser.add_argument('--native', action='store_true', help='Build the separate FastBoost signing package; preserve historical DocuSign assets')
 args = parser.parse_args()
 if args.sandbox_template and args.signing_template:
     parser.error('Choose either a signing template or a sandbox test copy.')
 signing = args.sandbox_template or args.signing_template
-VERSION = 'FB-BSA-2.0'
+VERSION = 'FB-BSA-2.1' if args.native else 'FB-BSA-2.0'
 field_positions = []
 field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
@@ -144,10 +145,10 @@ def table(node):
     tab.spaceAfter = 12
     return [tab]
 
-tree = html.parse(str(ROOT / 'server/private/legal/provider-agreement.html'))
+tree = html.parse(str(ROOT / ('server/private/legal/provider-agreement-native.html' if args.native else 'server/private/legal/provider-agreement.html')))
 story = [Paragraph('FASTBOOST', ParagraphStyle('brand', fontName='FB-Bold', fontSize=13, textColor=purple, spaceAfter=18))]
 story += [para(tree.xpath('//h1')[0], 'title')]
-story += [Paragraph(f'ENGLISH  |  {VERSION}  |  17 OCTOBER 2026', styles['small'])]
+story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('22 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
 if args.sandbox_template:
     story += [Paragraph('<b>SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION.</b> Field layout for integration testing. Commercial settings remain subject to approval.', styles['body'])]
 story += [para(tree.xpath('//p[@class="fb-intro"]')[0])]
@@ -205,7 +206,7 @@ def page_chrome(canvas, doc):
     canvas.drawRightString(558, 32, f'Page {doc.page}')
     canvas.restoreState()
 
-output = ROOT / ('output/pdf/FastBoost_Booster_Service_Agreement_sandbox.pdf' if args.sandbox_template else 'output/pdf/FastBoost_Booster_Service_Agreement_signing.pdf' if signing else 'output/pdf/FastBoost_Booster_Service_Agreement.pdf')
+output = ROOT / ('output/pdf/FastBoost_Booster_Service_Agreement_native_signing.pdf' if args.native and signing else 'output/pdf/FastBoost_Booster_Service_Agreement_native.pdf' if args.native else 'output/pdf/FastBoost_Booster_Service_Agreement_sandbox.pdf' if args.sandbox_template else 'output/pdf/FastBoost_Booster_Service_Agreement_signing.pdf' if signing else 'output/pdf/FastBoost_Booster_Service_Agreement.pdf')
 output.parent.mkdir(parents=True, exist_ok=True)
 doc = SimpleDocTemplate(str(output), pagesize=letter, topMargin=63, bottomMargin=60, leftMargin=54, rightMargin=54,
     title=f'FastBoost Booster Service Agreement - {VERSION}', author='FastBoost')
@@ -234,7 +235,7 @@ if signing:
     output.with_suffix('.template.json').write_text(json.dumps(template, indent=2), encoding='utf8')
     output.with_suffix('.fields.json').write_text(json.dumps(field_positions, indent=2), encoding='utf8')
     if args.signing_template:
-        (ROOT / 'server/private/legal/booster-service-agreement.template.json').write_text(json.dumps(template, indent=2), encoding='utf8')
+        (ROOT / ('server/private/legal/booster-service-agreement.native.json' if args.native else 'server/private/legal/booster-service-agreement.template.json')).write_text(json.dumps(template, indent=2), encoding='utf8')
 else:
-    shutil.copyfile(output, ROOT / 'server/private/legal/booster-service-agreement.pdf')
+    shutil.copyfile(output, ROOT / ('server/private/legal/booster-service-agreement.native.pdf' if args.native else 'server/private/legal/booster-service-agreement.pdf'))
 print(output)

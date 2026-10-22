@@ -94,6 +94,11 @@ export type BoosterEarningsEntry = $Result.DefaultSelection<Prisma.$BoosterEarni
  */
 export type BoosterContract = $Result.DefaultSelection<Prisma.$BoosterContractPayload>
 /**
+ * Model NativeContractSignature
+ *
+ */
+export type NativeContractSignature = $Result.DefaultSelection<Prisma.$NativeContractSignaturePayload>
+/**
  * Model SupportThread
  *
  */
@@ -643,6 +648,16 @@ export class PrismaClient<
     * ```
     */
   get boosterContract(): Prisma.BoosterContractDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.nativeContractSignature`: Exposes CRUD operations for the **NativeContractSignature** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NativeContractSignatures
+    * const nativeContractSignatures = await prisma.nativeContractSignature.findMany()
+    * ```
+    */
+  get nativeContractSignature(): Prisma.NativeContractSignatureDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.supportThread`: Exposes CRUD operations for the **SupportThread** model.
@@ -1396,6 +1411,7 @@ export namespace Prisma {
     BoosterEarningsBalance: 'BoosterEarningsBalance',
     BoosterEarningsEntry: 'BoosterEarningsEntry',
     BoosterContract: 'BoosterContract',
+    NativeContractSignature: 'NativeContractSignature',
     SupportThread: 'SupportThread',
     SupportMessage: 'SupportMessage',
     SupportPresence: 'SupportPresence',
@@ -1440,7 +1456,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "nativeContractSignature" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2625,6 +2641,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BoosterContractCountArgs<ExtArgs>
             result: $Utils.Optional<BoosterContractCountAggregateOutputType> | number
+          }
+        }
+      }
+      NativeContractSignature: {
+        payload: Prisma.$NativeContractSignaturePayload<ExtArgs>
+        fields: Prisma.NativeContractSignatureFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NativeContractSignatureFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NativeContractSignatureFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          findFirst: {
+            args: Prisma.NativeContractSignatureFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NativeContractSignatureFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          findMany: {
+            args: Prisma.NativeContractSignatureFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>[]
+          }
+          create: {
+            args: Prisma.NativeContractSignatureCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          createMany: {
+            args: Prisma.NativeContractSignatureCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NativeContractSignatureCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>[]
+          }
+          delete: {
+            args: Prisma.NativeContractSignatureDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          update: {
+            args: Prisma.NativeContractSignatureUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          deleteMany: {
+            args: Prisma.NativeContractSignatureDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NativeContractSignatureUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NativeContractSignatureUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>[]
+          }
+          upsert: {
+            args: Prisma.NativeContractSignatureUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractSignaturePayload>
+          }
+          aggregate: {
+            args: Prisma.NativeContractSignatureAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNativeContractSignature>
+          }
+          groupBy: {
+            args: Prisma.NativeContractSignatureGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NativeContractSignatureGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NativeContractSignatureCountArgs<ExtArgs>
+            result: $Utils.Optional<NativeContractSignatureCountAggregateOutputType> | number
           }
         }
       }
@@ -4913,6 +5003,7 @@ export namespace Prisma {
     boosterEarningsBalance?: BoosterEarningsBalanceOmit
     boosterEarningsEntry?: BoosterEarningsEntryOmit
     boosterContract?: BoosterContractOmit
+    nativeContractSignature?: NativeContractSignatureOmit
     supportThread?: SupportThreadOmit
     supportMessage?: SupportMessageOmit
     supportPresence?: SupportPresenceOmit
@@ -5359,6 +5450,37 @@ export namespace Prisma {
    */
   export type WalletTopUpCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WalletEntryWhereInput
+  }
+
+
+  /**
+   * Count Type BoosterContractCountOutputType
+   */
+
+  export type BoosterContractCountOutputType = {
+    nativeSignatures: number
+  }
+
+  export type BoosterContractCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    nativeSignatures?: boolean | BoosterContractCountOutputTypeCountNativeSignaturesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BoosterContractCountOutputType without action
+   */
+  export type BoosterContractCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoosterContractCountOutputType
+     */
+    select?: BoosterContractCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BoosterContractCountOutputType without action
+   */
+  export type BoosterContractCountOutputTypeCountNativeSignaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NativeContractSignatureWhereInput
   }
 
 
@@ -23405,6 +23527,15 @@ export namespace Prisma {
     signedName: string | null
     viewedAt: Date | null
     revokedAt: Date | null
+    archivedAt: Date | null
+    signingProvider: string | null
+    nativeCompanySignerId: string | null
+    nativeDocumentHash: string | null
+    nativePreparedAt: Date | null
+    nativePdf: Bytes | null
+    nativePdfHash: string | null
+    nativeCompletedAt: Date | null
+    replacesContractId: string | null
   }
 
   export type BoosterContractMaxAggregateOutputType = {
@@ -23432,6 +23563,15 @@ export namespace Prisma {
     signedName: string | null
     viewedAt: Date | null
     revokedAt: Date | null
+    archivedAt: Date | null
+    signingProvider: string | null
+    nativeCompanySignerId: string | null
+    nativeDocumentHash: string | null
+    nativePreparedAt: Date | null
+    nativePdf: Bytes | null
+    nativePdfHash: string | null
+    nativeCompletedAt: Date | null
+    replacesContractId: string | null
   }
 
   export type BoosterContractCountAggregateOutputType = {
@@ -23459,6 +23599,16 @@ export namespace Prisma {
     signedName: number
     viewedAt: number
     revokedAt: number
+    archivedAt: number
+    signingProvider: number
+    nativeCompanySignerId: number
+    nativeSnapshot: number
+    nativeDocumentHash: number
+    nativePreparedAt: number
+    nativePdf: number
+    nativePdfHash: number
+    nativeCompletedAt: number
+    replacesContractId: number
     _all: number
   }
 
@@ -23488,6 +23638,15 @@ export namespace Prisma {
     signedName?: true
     viewedAt?: true
     revokedAt?: true
+    archivedAt?: true
+    signingProvider?: true
+    nativeCompanySignerId?: true
+    nativeDocumentHash?: true
+    nativePreparedAt?: true
+    nativePdf?: true
+    nativePdfHash?: true
+    nativeCompletedAt?: true
+    replacesContractId?: true
   }
 
   export type BoosterContractMaxAggregateInputType = {
@@ -23515,6 +23674,15 @@ export namespace Prisma {
     signedName?: true
     viewedAt?: true
     revokedAt?: true
+    archivedAt?: true
+    signingProvider?: true
+    nativeCompanySignerId?: true
+    nativeDocumentHash?: true
+    nativePreparedAt?: true
+    nativePdf?: true
+    nativePdfHash?: true
+    nativeCompletedAt?: true
+    replacesContractId?: true
   }
 
   export type BoosterContractCountAggregateInputType = {
@@ -23542,6 +23710,16 @@ export namespace Prisma {
     signedName?: true
     viewedAt?: true
     revokedAt?: true
+    archivedAt?: true
+    signingProvider?: true
+    nativeCompanySignerId?: true
+    nativeSnapshot?: true
+    nativeDocumentHash?: true
+    nativePreparedAt?: true
+    nativePdf?: true
+    nativePdfHash?: true
+    nativeCompletedAt?: true
+    replacesContractId?: true
     _all?: true
   }
 
@@ -23642,6 +23820,16 @@ export namespace Prisma {
     signedName: string | null
     viewedAt: Date | null
     revokedAt: Date | null
+    archivedAt: Date | null
+    signingProvider: string
+    nativeCompanySignerId: string | null
+    nativeSnapshot: JsonValue | null
+    nativeDocumentHash: string | null
+    nativePreparedAt: Date | null
+    nativePdf: Bytes | null
+    nativePdfHash: string | null
+    nativeCompletedAt: Date | null
+    replacesContractId: string | null
     _count: BoosterContractCountAggregateOutputType | null
     _min: BoosterContractMinAggregateOutputType | null
     _max: BoosterContractMaxAggregateOutputType | null
@@ -23686,8 +23874,20 @@ export namespace Prisma {
     signedName?: boolean
     viewedAt?: boolean
     revokedAt?: boolean
+    archivedAt?: boolean
+    signingProvider?: boolean
+    nativeCompanySignerId?: boolean
+    nativeSnapshot?: boolean
+    nativeDocumentHash?: boolean
+    nativePreparedAt?: boolean
+    nativePdf?: boolean
+    nativePdfHash?: boolean
+    nativeCompletedAt?: boolean
+    replacesContractId?: boolean
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+    nativeSignatures?: boolean | BoosterContract$nativeSignaturesArgs<ExtArgs>
+    _count?: boolean | BoosterContractCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["boosterContract"]>
 
   export type BoosterContractSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -23715,6 +23915,16 @@ export namespace Prisma {
     signedName?: boolean
     viewedAt?: boolean
     revokedAt?: boolean
+    archivedAt?: boolean
+    signingProvider?: boolean
+    nativeCompanySignerId?: boolean
+    nativeSnapshot?: boolean
+    nativeDocumentHash?: boolean
+    nativePreparedAt?: boolean
+    nativePdf?: boolean
+    nativePdfHash?: boolean
+    nativeCompletedAt?: boolean
+    replacesContractId?: boolean
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["boosterContract"]>
@@ -23744,6 +23954,16 @@ export namespace Prisma {
     signedName?: boolean
     viewedAt?: boolean
     revokedAt?: boolean
+    archivedAt?: boolean
+    signingProvider?: boolean
+    nativeCompanySignerId?: boolean
+    nativeSnapshot?: boolean
+    nativeDocumentHash?: boolean
+    nativePreparedAt?: boolean
+    nativePdf?: boolean
+    nativePdfHash?: boolean
+    nativeCompletedAt?: boolean
+    replacesContractId?: boolean
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["boosterContract"]>
@@ -23773,12 +23993,24 @@ export namespace Prisma {
     signedName?: boolean
     viewedAt?: boolean
     revokedAt?: boolean
+    archivedAt?: boolean
+    signingProvider?: boolean
+    nativeCompanySignerId?: boolean
+    nativeSnapshot?: boolean
+    nativeDocumentHash?: boolean
+    nativePreparedAt?: boolean
+    nativePdf?: boolean
+    nativePdfHash?: boolean
+    nativeCompletedAt?: boolean
+    replacesContractId?: boolean
   }
 
-  export type BoosterContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boosterId" | "issuedById" | "title" | "templateId" | "accountId" | "environment" | "envelopeId" | "signerName" | "signerEmail" | "companySignerName" | "companySignerEmail" | "boosterSignedAt" | "companySignedAt" | "status" | "sendAttemptAt" | "sendError" | "lastSyncedAt" | "startsAt" | "createdAt" | "signedAt" | "signedName" | "viewedAt" | "revokedAt", ExtArgs["result"]["boosterContract"]>
+  export type BoosterContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boosterId" | "issuedById" | "title" | "templateId" | "accountId" | "environment" | "envelopeId" | "signerName" | "signerEmail" | "companySignerName" | "companySignerEmail" | "boosterSignedAt" | "companySignedAt" | "status" | "sendAttemptAt" | "sendError" | "lastSyncedAt" | "startsAt" | "createdAt" | "signedAt" | "signedName" | "viewedAt" | "revokedAt" | "archivedAt" | "signingProvider" | "nativeCompanySignerId" | "nativeSnapshot" | "nativeDocumentHash" | "nativePreparedAt" | "nativePdf" | "nativePdfHash" | "nativeCompletedAt" | "replacesContractId", ExtArgs["result"]["boosterContract"]>
   export type BoosterContractInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
+    nativeSignatures?: boolean | BoosterContract$nativeSignaturesArgs<ExtArgs>
+    _count?: boolean | BoosterContractCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BoosterContractIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booster?: boolean | UserDefaultArgs<ExtArgs>
@@ -23794,6 +24026,7 @@ export namespace Prisma {
     objects: {
       booster: Prisma.$UserPayload<ExtArgs>
       issuedBy: Prisma.$UserPayload<ExtArgs>
+      nativeSignatures: Prisma.$NativeContractSignaturePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23820,6 +24053,16 @@ export namespace Prisma {
       signedName: string | null
       viewedAt: Date | null
       revokedAt: Date | null
+      archivedAt: Date | null
+      signingProvider: string
+      nativeCompanySignerId: string | null
+      nativeSnapshot: Prisma.JsonValue | null
+      nativeDocumentHash: string | null
+      nativePreparedAt: Date | null
+      nativePdf: Prisma.Bytes | null
+      nativePdfHash: string | null
+      nativeCompletedAt: Date | null
+      replacesContractId: string | null
     }, ExtArgs["result"]["boosterContract"]>
     composites: {}
   }
@@ -24216,6 +24459,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     issuedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    nativeSignatures<T extends BoosterContract$nativeSignaturesArgs<ExtArgs> = {}>(args?: Subset<T, BoosterContract$nativeSignaturesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24269,6 +24513,16 @@ export namespace Prisma {
     readonly signedName: FieldRef<"BoosterContract", 'String'>
     readonly viewedAt: FieldRef<"BoosterContract", 'DateTime'>
     readonly revokedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly archivedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly signingProvider: FieldRef<"BoosterContract", 'String'>
+    readonly nativeCompanySignerId: FieldRef<"BoosterContract", 'String'>
+    readonly nativeSnapshot: FieldRef<"BoosterContract", 'Json'>
+    readonly nativeDocumentHash: FieldRef<"BoosterContract", 'String'>
+    readonly nativePreparedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly nativePdf: FieldRef<"BoosterContract", 'Bytes'>
+    readonly nativePdfHash: FieldRef<"BoosterContract", 'String'>
+    readonly nativeCompletedAt: FieldRef<"BoosterContract", 'DateTime'>
+    readonly replacesContractId: FieldRef<"BoosterContract", 'String'>
   }
 
 
@@ -24670,6 +24924,30 @@ export namespace Prisma {
   }
 
   /**
+   * BoosterContract.nativeSignatures
+   */
+  export type BoosterContract$nativeSignaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    where?: NativeContractSignatureWhereInput
+    orderBy?: NativeContractSignatureOrderByWithRelationInput | NativeContractSignatureOrderByWithRelationInput[]
+    cursor?: NativeContractSignatureWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NativeContractSignatureScalarFieldEnum | NativeContractSignatureScalarFieldEnum[]
+  }
+
+  /**
    * BoosterContract without action
    */
   export type BoosterContractDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24685,6 +24963,1195 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BoosterContractInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NativeContractSignature
+   */
+
+  export type AggregateNativeContractSignature = {
+    _count: NativeContractSignatureCountAggregateOutputType | null
+    _min: NativeContractSignatureMinAggregateOutputType | null
+    _max: NativeContractSignatureMaxAggregateOutputType | null
+  }
+
+  export type NativeContractSignatureMinAggregateOutputType = {
+    id: string | null
+    contractId: string | null
+    role: string | null
+    actorId: string | null
+    actorEmail: string | null
+    legalName: string | null
+    initials: string | null
+    consentText: string | null
+    documentHash: string | null
+    requestId: string | null
+    requestHash: string | null
+    signedAt: Date | null
+    clientIp: string | null
+    userAgent: string | null
+  }
+
+  export type NativeContractSignatureMaxAggregateOutputType = {
+    id: string | null
+    contractId: string | null
+    role: string | null
+    actorId: string | null
+    actorEmail: string | null
+    legalName: string | null
+    initials: string | null
+    consentText: string | null
+    documentHash: string | null
+    requestId: string | null
+    requestHash: string | null
+    signedAt: Date | null
+    clientIp: string | null
+    userAgent: string | null
+  }
+
+  export type NativeContractSignatureCountAggregateOutputType = {
+    id: number
+    contractId: number
+    role: number
+    actorId: number
+    actorEmail: number
+    legalName: number
+    initials: number
+    consentText: number
+    signature: number
+    documentHash: number
+    requestId: number
+    requestHash: number
+    signedAt: number
+    clientIp: number
+    userAgent: number
+    _all: number
+  }
+
+
+  export type NativeContractSignatureMinAggregateInputType = {
+    id?: true
+    contractId?: true
+    role?: true
+    actorId?: true
+    actorEmail?: true
+    legalName?: true
+    initials?: true
+    consentText?: true
+    documentHash?: true
+    requestId?: true
+    requestHash?: true
+    signedAt?: true
+    clientIp?: true
+    userAgent?: true
+  }
+
+  export type NativeContractSignatureMaxAggregateInputType = {
+    id?: true
+    contractId?: true
+    role?: true
+    actorId?: true
+    actorEmail?: true
+    legalName?: true
+    initials?: true
+    consentText?: true
+    documentHash?: true
+    requestId?: true
+    requestHash?: true
+    signedAt?: true
+    clientIp?: true
+    userAgent?: true
+  }
+
+  export type NativeContractSignatureCountAggregateInputType = {
+    id?: true
+    contractId?: true
+    role?: true
+    actorId?: true
+    actorEmail?: true
+    legalName?: true
+    initials?: true
+    consentText?: true
+    signature?: true
+    documentHash?: true
+    requestId?: true
+    requestHash?: true
+    signedAt?: true
+    clientIp?: true
+    userAgent?: true
+    _all?: true
+  }
+
+  export type NativeContractSignatureAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NativeContractSignature to aggregate.
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractSignatures to fetch.
+     */
+    orderBy?: NativeContractSignatureOrderByWithRelationInput | NativeContractSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: NativeContractSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned NativeContractSignatures
+    **/
+    _count?: true | NativeContractSignatureCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: NativeContractSignatureMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: NativeContractSignatureMaxAggregateInputType
+  }
+
+  export type GetNativeContractSignatureAggregateType<T extends NativeContractSignatureAggregateArgs> = {
+        [P in keyof T & keyof AggregateNativeContractSignature]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNativeContractSignature[P]>
+      : GetScalarType<T[P], AggregateNativeContractSignature[P]>
+  }
+
+
+
+
+  export type NativeContractSignatureGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NativeContractSignatureWhereInput
+    orderBy?: NativeContractSignatureOrderByWithAggregationInput | NativeContractSignatureOrderByWithAggregationInput[]
+    by: NativeContractSignatureScalarFieldEnum[] | NativeContractSignatureScalarFieldEnum
+    having?: NativeContractSignatureScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NativeContractSignatureCountAggregateInputType | true
+    _min?: NativeContractSignatureMinAggregateInputType
+    _max?: NativeContractSignatureMaxAggregateInputType
+  }
+
+  export type NativeContractSignatureGroupByOutputType = {
+    id: string
+    contractId: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt: Date
+    clientIp: string | null
+    userAgent: string | null
+    _count: NativeContractSignatureCountAggregateOutputType | null
+    _min: NativeContractSignatureMinAggregateOutputType | null
+    _max: NativeContractSignatureMaxAggregateOutputType | null
+  }
+
+  type GetNativeContractSignatureGroupByPayload<T extends NativeContractSignatureGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NativeContractSignatureGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NativeContractSignatureGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NativeContractSignatureGroupByOutputType[P]>
+            : GetScalarType<T[P], NativeContractSignatureGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NativeContractSignatureSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    role?: boolean
+    actorId?: boolean
+    actorEmail?: boolean
+    legalName?: boolean
+    initials?: boolean
+    consentText?: boolean
+    signature?: boolean
+    documentHash?: boolean
+    requestId?: boolean
+    requestHash?: boolean
+    signedAt?: boolean
+    clientIp?: boolean
+    userAgent?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractSignature"]>
+
+  export type NativeContractSignatureSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    role?: boolean
+    actorId?: boolean
+    actorEmail?: boolean
+    legalName?: boolean
+    initials?: boolean
+    consentText?: boolean
+    signature?: boolean
+    documentHash?: boolean
+    requestId?: boolean
+    requestHash?: boolean
+    signedAt?: boolean
+    clientIp?: boolean
+    userAgent?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractSignature"]>
+
+  export type NativeContractSignatureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    role?: boolean
+    actorId?: boolean
+    actorEmail?: boolean
+    legalName?: boolean
+    initials?: boolean
+    consentText?: boolean
+    signature?: boolean
+    documentHash?: boolean
+    requestId?: boolean
+    requestHash?: boolean
+    signedAt?: boolean
+    clientIp?: boolean
+    userAgent?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractSignature"]>
+
+  export type NativeContractSignatureSelectScalar = {
+    id?: boolean
+    contractId?: boolean
+    role?: boolean
+    actorId?: boolean
+    actorEmail?: boolean
+    legalName?: boolean
+    initials?: boolean
+    consentText?: boolean
+    signature?: boolean
+    documentHash?: boolean
+    requestId?: boolean
+    requestHash?: boolean
+    signedAt?: boolean
+    clientIp?: boolean
+    userAgent?: boolean
+  }
+
+  export type NativeContractSignatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contractId" | "role" | "actorId" | "actorEmail" | "legalName" | "initials" | "consentText" | "signature" | "documentHash" | "requestId" | "requestHash" | "signedAt" | "clientIp" | "userAgent", ExtArgs["result"]["nativeContractSignature"]>
+  export type NativeContractSignatureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+  export type NativeContractSignatureIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+  export type NativeContractSignatureIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+
+  export type $NativeContractSignaturePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NativeContractSignature"
+    objects: {
+      contract: Prisma.$BoosterContractPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      contractId: string
+      role: string
+      actorId: string
+      actorEmail: string
+      legalName: string
+      initials: string
+      consentText: string
+      signature: Prisma.JsonValue
+      documentHash: string
+      requestId: string
+      requestHash: string
+      signedAt: Date
+      clientIp: string | null
+      userAgent: string | null
+    }, ExtArgs["result"]["nativeContractSignature"]>
+    composites: {}
+  }
+
+  type NativeContractSignatureGetPayload<S extends boolean | null | undefined | NativeContractSignatureDefaultArgs> = $Result.GetResult<Prisma.$NativeContractSignaturePayload, S>
+
+  type NativeContractSignatureCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NativeContractSignatureFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NativeContractSignatureCountAggregateInputType | true
+    }
+
+  export interface NativeContractSignatureDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NativeContractSignature'], meta: { name: 'NativeContractSignature' } }
+    /**
+     * Find zero or one NativeContractSignature that matches the filter.
+     * @param {NativeContractSignatureFindUniqueArgs} args - Arguments to find a NativeContractSignature
+     * @example
+     * // Get one NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NativeContractSignatureFindUniqueArgs>(args: SelectSubset<T, NativeContractSignatureFindUniqueArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NativeContractSignature that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NativeContractSignatureFindUniqueOrThrowArgs} args - Arguments to find a NativeContractSignature
+     * @example
+     * // Get one NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NativeContractSignatureFindUniqueOrThrowArgs>(args: SelectSubset<T, NativeContractSignatureFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NativeContractSignature that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureFindFirstArgs} args - Arguments to find a NativeContractSignature
+     * @example
+     * // Get one NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NativeContractSignatureFindFirstArgs>(args?: SelectSubset<T, NativeContractSignatureFindFirstArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NativeContractSignature that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureFindFirstOrThrowArgs} args - Arguments to find a NativeContractSignature
+     * @example
+     * // Get one NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NativeContractSignatureFindFirstOrThrowArgs>(args?: SelectSubset<T, NativeContractSignatureFindFirstOrThrowArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NativeContractSignatures that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NativeContractSignatures
+     * const nativeContractSignatures = await prisma.nativeContractSignature.findMany()
+     *
+     * // Get first 10 NativeContractSignatures
+     * const nativeContractSignatures = await prisma.nativeContractSignature.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const nativeContractSignatureWithIdOnly = await prisma.nativeContractSignature.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends NativeContractSignatureFindManyArgs>(args?: SelectSubset<T, NativeContractSignatureFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NativeContractSignature.
+     * @param {NativeContractSignatureCreateArgs} args - Arguments to create a NativeContractSignature.
+     * @example
+     * // Create one NativeContractSignature
+     * const NativeContractSignature = await prisma.nativeContractSignature.create({
+     *   data: {
+     *     // ... data to create a NativeContractSignature
+     *   }
+     * })
+     *
+     */
+    create<T extends NativeContractSignatureCreateArgs>(args: SelectSubset<T, NativeContractSignatureCreateArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NativeContractSignatures.
+     * @param {NativeContractSignatureCreateManyArgs} args - Arguments to create many NativeContractSignatures.
+     * @example
+     * // Create many NativeContractSignatures
+     * const nativeContractSignature = await prisma.nativeContractSignature.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends NativeContractSignatureCreateManyArgs>(args?: SelectSubset<T, NativeContractSignatureCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NativeContractSignatures and returns the data saved in the database.
+     * @param {NativeContractSignatureCreateManyAndReturnArgs} args - Arguments to create many NativeContractSignatures.
+     * @example
+     * // Create many NativeContractSignatures
+     * const nativeContractSignature = await prisma.nativeContractSignature.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many NativeContractSignatures and only return the `id`
+     * const nativeContractSignatureWithIdOnly = await prisma.nativeContractSignature.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends NativeContractSignatureCreateManyAndReturnArgs>(args?: SelectSubset<T, NativeContractSignatureCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NativeContractSignature.
+     * @param {NativeContractSignatureDeleteArgs} args - Arguments to delete one NativeContractSignature.
+     * @example
+     * // Delete one NativeContractSignature
+     * const NativeContractSignature = await prisma.nativeContractSignature.delete({
+     *   where: {
+     *     // ... filter to delete one NativeContractSignature
+     *   }
+     * })
+     *
+     */
+    delete<T extends NativeContractSignatureDeleteArgs>(args: SelectSubset<T, NativeContractSignatureDeleteArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NativeContractSignature.
+     * @param {NativeContractSignatureUpdateArgs} args - Arguments to update one NativeContractSignature.
+     * @example
+     * // Update one NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends NativeContractSignatureUpdateArgs>(args: SelectSubset<T, NativeContractSignatureUpdateArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NativeContractSignatures.
+     * @param {NativeContractSignatureDeleteManyArgs} args - Arguments to filter NativeContractSignatures to delete.
+     * @example
+     * // Delete a few NativeContractSignatures
+     * const { count } = await prisma.nativeContractSignature.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends NativeContractSignatureDeleteManyArgs>(args?: SelectSubset<T, NativeContractSignatureDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NativeContractSignatures.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NativeContractSignatures
+     * const nativeContractSignature = await prisma.nativeContractSignature.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends NativeContractSignatureUpdateManyArgs>(args: SelectSubset<T, NativeContractSignatureUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NativeContractSignatures and returns the data updated in the database.
+     * @param {NativeContractSignatureUpdateManyAndReturnArgs} args - Arguments to update many NativeContractSignatures.
+     * @example
+     * // Update many NativeContractSignatures
+     * const nativeContractSignature = await prisma.nativeContractSignature.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more NativeContractSignatures and only return the `id`
+     * const nativeContractSignatureWithIdOnly = await prisma.nativeContractSignature.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends NativeContractSignatureUpdateManyAndReturnArgs>(args: SelectSubset<T, NativeContractSignatureUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NativeContractSignature.
+     * @param {NativeContractSignatureUpsertArgs} args - Arguments to update or create a NativeContractSignature.
+     * @example
+     * // Update or create a NativeContractSignature
+     * const nativeContractSignature = await prisma.nativeContractSignature.upsert({
+     *   create: {
+     *     // ... data to create a NativeContractSignature
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NativeContractSignature we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NativeContractSignatureUpsertArgs>(args: SelectSubset<T, NativeContractSignatureUpsertArgs<ExtArgs>>): Prisma__NativeContractSignatureClient<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NativeContractSignatures.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureCountArgs} args - Arguments to filter NativeContractSignatures to count.
+     * @example
+     * // Count the number of NativeContractSignatures
+     * const count = await prisma.nativeContractSignature.count({
+     *   where: {
+     *     // ... the filter for the NativeContractSignatures we want to count
+     *   }
+     * })
+    **/
+    count<T extends NativeContractSignatureCountArgs>(
+      args?: Subset<T, NativeContractSignatureCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NativeContractSignatureCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NativeContractSignature.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NativeContractSignatureAggregateArgs>(args: Subset<T, NativeContractSignatureAggregateArgs>): Prisma.PrismaPromise<GetNativeContractSignatureAggregateType<T>>
+
+    /**
+     * Group by NativeContractSignature.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractSignatureGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends NativeContractSignatureGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NativeContractSignatureGroupByArgs['orderBy'] }
+        : { orderBy?: NativeContractSignatureGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NativeContractSignatureGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNativeContractSignatureGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NativeContractSignature model
+   */
+  readonly fields: NativeContractSignatureFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NativeContractSignature.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NativeContractSignatureClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    contract<T extends BoosterContractDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BoosterContractDefaultArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NativeContractSignature model
+   */
+  interface NativeContractSignatureFieldRefs {
+    readonly id: FieldRef<"NativeContractSignature", 'String'>
+    readonly contractId: FieldRef<"NativeContractSignature", 'String'>
+    readonly role: FieldRef<"NativeContractSignature", 'String'>
+    readonly actorId: FieldRef<"NativeContractSignature", 'String'>
+    readonly actorEmail: FieldRef<"NativeContractSignature", 'String'>
+    readonly legalName: FieldRef<"NativeContractSignature", 'String'>
+    readonly initials: FieldRef<"NativeContractSignature", 'String'>
+    readonly consentText: FieldRef<"NativeContractSignature", 'String'>
+    readonly signature: FieldRef<"NativeContractSignature", 'Json'>
+    readonly documentHash: FieldRef<"NativeContractSignature", 'String'>
+    readonly requestId: FieldRef<"NativeContractSignature", 'String'>
+    readonly requestHash: FieldRef<"NativeContractSignature", 'String'>
+    readonly signedAt: FieldRef<"NativeContractSignature", 'DateTime'>
+    readonly clientIp: FieldRef<"NativeContractSignature", 'String'>
+    readonly userAgent: FieldRef<"NativeContractSignature", 'String'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * NativeContractSignature findUnique
+   */
+  export type NativeContractSignatureFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractSignature to fetch.
+     */
+    where: NativeContractSignatureWhereUniqueInput
+  }
+
+  /**
+   * NativeContractSignature findUniqueOrThrow
+   */
+  export type NativeContractSignatureFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractSignature to fetch.
+     */
+    where: NativeContractSignatureWhereUniqueInput
+  }
+
+  /**
+   * NativeContractSignature findFirst
+   */
+  export type NativeContractSignatureFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractSignature to fetch.
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractSignatures to fetch.
+     */
+    orderBy?: NativeContractSignatureOrderByWithRelationInput | NativeContractSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for NativeContractSignatures.
+     */
+    cursor?: NativeContractSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractSignatures.
+     */
+    distinct?: NativeContractSignatureScalarFieldEnum | NativeContractSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractSignature findFirstOrThrow
+   */
+  export type NativeContractSignatureFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractSignature to fetch.
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractSignatures to fetch.
+     */
+    orderBy?: NativeContractSignatureOrderByWithRelationInput | NativeContractSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for NativeContractSignatures.
+     */
+    cursor?: NativeContractSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractSignatures.
+     */
+    distinct?: NativeContractSignatureScalarFieldEnum | NativeContractSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractSignature findMany
+   */
+  export type NativeContractSignatureFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractSignatures to fetch.
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractSignatures to fetch.
+     */
+    orderBy?: NativeContractSignatureOrderByWithRelationInput | NativeContractSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing NativeContractSignatures.
+     */
+    cursor?: NativeContractSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractSignatures.
+     */
+    distinct?: NativeContractSignatureScalarFieldEnum | NativeContractSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractSignature create
+   */
+  export type NativeContractSignatureCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NativeContractSignature.
+     */
+    data: XOR<NativeContractSignatureCreateInput, NativeContractSignatureUncheckedCreateInput>
+  }
+
+  /**
+   * NativeContractSignature createMany
+   */
+  export type NativeContractSignatureCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NativeContractSignatures.
+     */
+    data: NativeContractSignatureCreateManyInput | NativeContractSignatureCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NativeContractSignature createManyAndReturn
+   */
+  export type NativeContractSignatureCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * The data used to create many NativeContractSignatures.
+     */
+    data: NativeContractSignatureCreateManyInput | NativeContractSignatureCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NativeContractSignature update
+   */
+  export type NativeContractSignatureUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NativeContractSignature.
+     */
+    data: XOR<NativeContractSignatureUpdateInput, NativeContractSignatureUncheckedUpdateInput>
+    /**
+     * Choose, which NativeContractSignature to update.
+     */
+    where: NativeContractSignatureWhereUniqueInput
+  }
+
+  /**
+   * NativeContractSignature updateMany
+   */
+  export type NativeContractSignatureUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NativeContractSignatures.
+     */
+    data: XOR<NativeContractSignatureUpdateManyMutationInput, NativeContractSignatureUncheckedUpdateManyInput>
+    /**
+     * Filter which NativeContractSignatures to update
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * Limit how many NativeContractSignatures to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NativeContractSignature updateManyAndReturn
+   */
+  export type NativeContractSignatureUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * The data used to update NativeContractSignatures.
+     */
+    data: XOR<NativeContractSignatureUpdateManyMutationInput, NativeContractSignatureUncheckedUpdateManyInput>
+    /**
+     * Filter which NativeContractSignatures to update
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * Limit how many NativeContractSignatures to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NativeContractSignature upsert
+   */
+  export type NativeContractSignatureUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NativeContractSignature to update in case it exists.
+     */
+    where: NativeContractSignatureWhereUniqueInput
+    /**
+     * In case the NativeContractSignature found by the `where` argument doesn't exist, create a new NativeContractSignature with this data.
+     */
+    create: XOR<NativeContractSignatureCreateInput, NativeContractSignatureUncheckedCreateInput>
+    /**
+     * In case the NativeContractSignature was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NativeContractSignatureUpdateInput, NativeContractSignatureUncheckedUpdateInput>
+  }
+
+  /**
+   * NativeContractSignature delete
+   */
+  export type NativeContractSignatureDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
+    /**
+     * Filter which NativeContractSignature to delete.
+     */
+    where: NativeContractSignatureWhereUniqueInput
+  }
+
+  /**
+   * NativeContractSignature deleteMany
+   */
+  export type NativeContractSignatureDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NativeContractSignatures to delete
+     */
+    where?: NativeContractSignatureWhereInput
+    /**
+     * Limit how many NativeContractSignatures to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NativeContractSignature without action
+   */
+  export type NativeContractSignatureDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractSignature
+     */
+    select?: NativeContractSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractSignature
+     */
+    omit?: NativeContractSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractSignatureInclude<ExtArgs> | null
   }
 
 
@@ -58803,10 +60270,41 @@ export namespace Prisma {
     signedAt: 'signedAt',
     signedName: 'signedName',
     viewedAt: 'viewedAt',
-    revokedAt: 'revokedAt'
+    revokedAt: 'revokedAt',
+    archivedAt: 'archivedAt',
+    signingProvider: 'signingProvider',
+    nativeCompanySignerId: 'nativeCompanySignerId',
+    nativeSnapshot: 'nativeSnapshot',
+    nativeDocumentHash: 'nativeDocumentHash',
+    nativePreparedAt: 'nativePreparedAt',
+    nativePdf: 'nativePdf',
+    nativePdfHash: 'nativePdfHash',
+    nativeCompletedAt: 'nativeCompletedAt',
+    replacesContractId: 'replacesContractId'
   };
 
   export type BoosterContractScalarFieldEnum = (typeof BoosterContractScalarFieldEnum)[keyof typeof BoosterContractScalarFieldEnum]
+
+
+  export const NativeContractSignatureScalarFieldEnum: {
+    id: 'id',
+    contractId: 'contractId',
+    role: 'role',
+    actorId: 'actorId',
+    actorEmail: 'actorEmail',
+    legalName: 'legalName',
+    initials: 'initials',
+    consentText: 'consentText',
+    signature: 'signature',
+    documentHash: 'documentHash',
+    requestId: 'requestId',
+    requestHash: 'requestHash',
+    signedAt: 'signedAt',
+    clientIp: 'clientIp',
+    userAgent: 'userAgent'
+  };
+
+  export type NativeContractSignatureScalarFieldEnum = (typeof NativeContractSignatureScalarFieldEnum)[keyof typeof NativeContractSignatureScalarFieldEnum]
 
 
   export const SupportThreadScalarFieldEnum: {
@@ -59387,6 +60885,20 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+
+
+
+  /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
 
 
 
@@ -60741,8 +62253,19 @@ export namespace Prisma {
     signedName?: StringNullableFilter<"BoosterContract"> | string | null
     viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signingProvider?: StringFilter<"BoosterContract"> | string
+    nativeCompanySignerId?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeSnapshot?: JsonNullableFilter<"BoosterContract">
+    nativeDocumentHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativePreparedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    nativePdf?: BytesNullableFilter<"BoosterContract"> | Bytes | null
+    nativePdfHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeCompletedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    replacesContractId?: StringNullableFilter<"BoosterContract"> | string | null
     booster?: XOR<UserScalarRelationFilter, UserWhereInput>
     issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    nativeSignatures?: NativeContractSignatureListRelationFilter
   }
 
   export type BoosterContractOrderByWithRelationInput = {
@@ -60770,13 +62293,25 @@ export namespace Prisma {
     signedName?: SortOrderInput | SortOrder
     viewedAt?: SortOrderInput | SortOrder
     revokedAt?: SortOrderInput | SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    signingProvider?: SortOrder
+    nativeCompanySignerId?: SortOrderInput | SortOrder
+    nativeSnapshot?: SortOrderInput | SortOrder
+    nativeDocumentHash?: SortOrderInput | SortOrder
+    nativePreparedAt?: SortOrderInput | SortOrder
+    nativePdf?: SortOrderInput | SortOrder
+    nativePdfHash?: SortOrderInput | SortOrder
+    nativeCompletedAt?: SortOrderInput | SortOrder
+    replacesContractId?: SortOrderInput | SortOrder
     booster?: UserOrderByWithRelationInput
     issuedBy?: UserOrderByWithRelationInput
+    nativeSignatures?: NativeContractSignatureOrderByRelationAggregateInput
   }
 
   export type BoosterContractWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     envelopeId?: string
+    replacesContractId?: string
     AND?: BoosterContractWhereInput | BoosterContractWhereInput[]
     OR?: BoosterContractWhereInput[]
     NOT?: BoosterContractWhereInput | BoosterContractWhereInput[]
@@ -60802,9 +62337,19 @@ export namespace Prisma {
     signedName?: StringNullableFilter<"BoosterContract"> | string | null
     viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signingProvider?: StringFilter<"BoosterContract"> | string
+    nativeCompanySignerId?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeSnapshot?: JsonNullableFilter<"BoosterContract">
+    nativeDocumentHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativePreparedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    nativePdf?: BytesNullableFilter<"BoosterContract"> | Bytes | null
+    nativePdfHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeCompletedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     booster?: XOR<UserScalarRelationFilter, UserWhereInput>
     issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "envelopeId">
+    nativeSignatures?: NativeContractSignatureListRelationFilter
+  }, "id" | "envelopeId" | "replacesContractId">
 
   export type BoosterContractOrderByWithAggregationInput = {
     id?: SortOrder
@@ -60831,6 +62376,16 @@ export namespace Prisma {
     signedName?: SortOrderInput | SortOrder
     viewedAt?: SortOrderInput | SortOrder
     revokedAt?: SortOrderInput | SortOrder
+    archivedAt?: SortOrderInput | SortOrder
+    signingProvider?: SortOrder
+    nativeCompanySignerId?: SortOrderInput | SortOrder
+    nativeSnapshot?: SortOrderInput | SortOrder
+    nativeDocumentHash?: SortOrderInput | SortOrder
+    nativePreparedAt?: SortOrderInput | SortOrder
+    nativePdf?: SortOrderInput | SortOrder
+    nativePdfHash?: SortOrderInput | SortOrder
+    nativeCompletedAt?: SortOrderInput | SortOrder
+    replacesContractId?: SortOrderInput | SortOrder
     _count?: BoosterContractCountOrderByAggregateInput
     _max?: BoosterContractMaxOrderByAggregateInput
     _min?: BoosterContractMinOrderByAggregateInput
@@ -60864,6 +62419,123 @@ export namespace Prisma {
     signedName?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
     viewedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
     revokedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    signingProvider?: StringWithAggregatesFilter<"BoosterContract"> | string
+    nativeCompanySignerId?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    nativeSnapshot?: JsonNullableWithAggregatesFilter<"BoosterContract">
+    nativeDocumentHash?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    nativePreparedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    nativePdf?: BytesNullableWithAggregatesFilter<"BoosterContract"> | Bytes | null
+    nativePdfHash?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+    nativeCompletedAt?: DateTimeNullableWithAggregatesFilter<"BoosterContract"> | Date | string | null
+    replacesContractId?: StringNullableWithAggregatesFilter<"BoosterContract"> | string | null
+  }
+
+  export type NativeContractSignatureWhereInput = {
+    AND?: NativeContractSignatureWhereInput | NativeContractSignatureWhereInput[]
+    OR?: NativeContractSignatureWhereInput[]
+    NOT?: NativeContractSignatureWhereInput | NativeContractSignatureWhereInput[]
+    id?: StringFilter<"NativeContractSignature"> | string
+    contractId?: StringFilter<"NativeContractSignature"> | string
+    role?: StringFilter<"NativeContractSignature"> | string
+    actorId?: StringFilter<"NativeContractSignature"> | string
+    actorEmail?: StringFilter<"NativeContractSignature"> | string
+    legalName?: StringFilter<"NativeContractSignature"> | string
+    initials?: StringFilter<"NativeContractSignature"> | string
+    consentText?: StringFilter<"NativeContractSignature"> | string
+    signature?: JsonFilter<"NativeContractSignature">
+    documentHash?: StringFilter<"NativeContractSignature"> | string
+    requestId?: StringFilter<"NativeContractSignature"> | string
+    requestHash?: StringFilter<"NativeContractSignature"> | string
+    signedAt?: DateTimeFilter<"NativeContractSignature"> | Date | string
+    clientIp?: StringNullableFilter<"NativeContractSignature"> | string | null
+    userAgent?: StringNullableFilter<"NativeContractSignature"> | string | null
+    contract?: XOR<BoosterContractScalarRelationFilter, BoosterContractWhereInput>
+  }
+
+  export type NativeContractSignatureOrderByWithRelationInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    role?: SortOrder
+    actorId?: SortOrder
+    actorEmail?: SortOrder
+    legalName?: SortOrder
+    initials?: SortOrder
+    consentText?: SortOrder
+    signature?: SortOrder
+    documentHash?: SortOrder
+    requestId?: SortOrder
+    requestHash?: SortOrder
+    signedAt?: SortOrder
+    clientIp?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    contract?: BoosterContractOrderByWithRelationInput
+  }
+
+  export type NativeContractSignatureWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    contractId_role?: NativeContractSignatureContractIdRoleCompoundUniqueInput
+    contractId_requestId?: NativeContractSignatureContractIdRequestIdCompoundUniqueInput
+    AND?: NativeContractSignatureWhereInput | NativeContractSignatureWhereInput[]
+    OR?: NativeContractSignatureWhereInput[]
+    NOT?: NativeContractSignatureWhereInput | NativeContractSignatureWhereInput[]
+    contractId?: StringFilter<"NativeContractSignature"> | string
+    role?: StringFilter<"NativeContractSignature"> | string
+    actorId?: StringFilter<"NativeContractSignature"> | string
+    actorEmail?: StringFilter<"NativeContractSignature"> | string
+    legalName?: StringFilter<"NativeContractSignature"> | string
+    initials?: StringFilter<"NativeContractSignature"> | string
+    consentText?: StringFilter<"NativeContractSignature"> | string
+    signature?: JsonFilter<"NativeContractSignature">
+    documentHash?: StringFilter<"NativeContractSignature"> | string
+    requestId?: StringFilter<"NativeContractSignature"> | string
+    requestHash?: StringFilter<"NativeContractSignature"> | string
+    signedAt?: DateTimeFilter<"NativeContractSignature"> | Date | string
+    clientIp?: StringNullableFilter<"NativeContractSignature"> | string | null
+    userAgent?: StringNullableFilter<"NativeContractSignature"> | string | null
+    contract?: XOR<BoosterContractScalarRelationFilter, BoosterContractWhereInput>
+  }, "id" | "contractId_role" | "contractId_requestId">
+
+  export type NativeContractSignatureOrderByWithAggregationInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    role?: SortOrder
+    actorId?: SortOrder
+    actorEmail?: SortOrder
+    legalName?: SortOrder
+    initials?: SortOrder
+    consentText?: SortOrder
+    signature?: SortOrder
+    documentHash?: SortOrder
+    requestId?: SortOrder
+    requestHash?: SortOrder
+    signedAt?: SortOrder
+    clientIp?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    _count?: NativeContractSignatureCountOrderByAggregateInput
+    _max?: NativeContractSignatureMaxOrderByAggregateInput
+    _min?: NativeContractSignatureMinOrderByAggregateInput
+  }
+
+  export type NativeContractSignatureScalarWhereWithAggregatesInput = {
+    AND?: NativeContractSignatureScalarWhereWithAggregatesInput | NativeContractSignatureScalarWhereWithAggregatesInput[]
+    OR?: NativeContractSignatureScalarWhereWithAggregatesInput[]
+    NOT?: NativeContractSignatureScalarWhereWithAggregatesInput | NativeContractSignatureScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    contractId?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    role?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    actorId?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    actorEmail?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    legalName?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    initials?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    consentText?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    signature?: JsonWithAggregatesFilter<"NativeContractSignature">
+    documentHash?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    requestId?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    requestHash?: StringWithAggregatesFilter<"NativeContractSignature"> | string
+    signedAt?: DateTimeWithAggregatesFilter<"NativeContractSignature"> | Date | string
+    clientIp?: StringNullableWithAggregatesFilter<"NativeContractSignature"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"NativeContractSignature"> | string | null
   }
 
   export type SupportThreadWhereInput = {
@@ -64618,8 +66290,19 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
     booster: UserCreateNestedOneWithoutBoosterContractsInput
     issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+    nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateInput = {
@@ -64647,6 +66330,17 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUpdateInput = {
@@ -64672,8 +66366,19 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
     issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+    nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateInput = {
@@ -64701,6 +66406,17 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractCreateManyInput = {
@@ -64728,6 +66444,16 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
   }
 
   export type BoosterContractUpdateManyMutationInput = {
@@ -64753,6 +66479,16 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BoosterContractUncheckedUpdateManyInput = {
@@ -64780,6 +66516,141 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractSignatureCreateInput = {
+    id?: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+    contract: BoosterContractCreateNestedOneWithoutNativeSignaturesInput
+  }
+
+  export type NativeContractSignatureUncheckedCreateInput = {
+    id?: string
+    contractId: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+  }
+
+  export type NativeContractSignatureUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    contract?: BoosterContractUpdateOneRequiredWithoutNativeSignaturesNestedInput
+  }
+
+  export type NativeContractSignatureUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contractId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractSignatureCreateManyInput = {
+    id?: string
+    contractId: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+  }
+
+  export type NativeContractSignatureUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractSignatureUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contractId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SupportThreadCreateInput = {
@@ -68623,6 +70494,23 @@ export namespace Prisma {
     amountCents?: SortOrder
   }
 
+  export type BytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
+  export type NativeContractSignatureListRelationFilter = {
+    every?: NativeContractSignatureWhereInput
+    some?: NativeContractSignatureWhereInput
+    none?: NativeContractSignatureWhereInput
+  }
+
+  export type NativeContractSignatureOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BoosterContractCountOrderByAggregateInput = {
     id?: SortOrder
     boosterId?: SortOrder
@@ -68648,6 +70536,16 @@ export namespace Prisma {
     signedName?: SortOrder
     viewedAt?: SortOrder
     revokedAt?: SortOrder
+    archivedAt?: SortOrder
+    signingProvider?: SortOrder
+    nativeCompanySignerId?: SortOrder
+    nativeSnapshot?: SortOrder
+    nativeDocumentHash?: SortOrder
+    nativePreparedAt?: SortOrder
+    nativePdf?: SortOrder
+    nativePdfHash?: SortOrder
+    nativeCompletedAt?: SortOrder
+    replacesContractId?: SortOrder
   }
 
   export type BoosterContractMaxOrderByAggregateInput = {
@@ -68675,6 +70573,15 @@ export namespace Prisma {
     signedName?: SortOrder
     viewedAt?: SortOrder
     revokedAt?: SortOrder
+    archivedAt?: SortOrder
+    signingProvider?: SortOrder
+    nativeCompanySignerId?: SortOrder
+    nativeDocumentHash?: SortOrder
+    nativePreparedAt?: SortOrder
+    nativePdf?: SortOrder
+    nativePdfHash?: SortOrder
+    nativeCompletedAt?: SortOrder
+    replacesContractId?: SortOrder
   }
 
   export type BoosterContractMinOrderByAggregateInput = {
@@ -68702,6 +70609,92 @@ export namespace Prisma {
     signedName?: SortOrder
     viewedAt?: SortOrder
     revokedAt?: SortOrder
+    archivedAt?: SortOrder
+    signingProvider?: SortOrder
+    nativeCompanySignerId?: SortOrder
+    nativeDocumentHash?: SortOrder
+    nativePreparedAt?: SortOrder
+    nativePdf?: SortOrder
+    nativePdfHash?: SortOrder
+    nativeCompletedAt?: SortOrder
+    replacesContractId?: SortOrder
+  }
+
+  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
+  }
+
+  export type BoosterContractScalarRelationFilter = {
+    is?: BoosterContractWhereInput
+    isNot?: BoosterContractWhereInput
+  }
+
+  export type NativeContractSignatureContractIdRoleCompoundUniqueInput = {
+    contractId: string
+    role: string
+  }
+
+  export type NativeContractSignatureContractIdRequestIdCompoundUniqueInput = {
+    contractId: string
+    requestId: string
+  }
+
+  export type NativeContractSignatureCountOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    role?: SortOrder
+    actorId?: SortOrder
+    actorEmail?: SortOrder
+    legalName?: SortOrder
+    initials?: SortOrder
+    consentText?: SortOrder
+    signature?: SortOrder
+    documentHash?: SortOrder
+    requestId?: SortOrder
+    requestHash?: SortOrder
+    signedAt?: SortOrder
+    clientIp?: SortOrder
+    userAgent?: SortOrder
+  }
+
+  export type NativeContractSignatureMaxOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    role?: SortOrder
+    actorId?: SortOrder
+    actorEmail?: SortOrder
+    legalName?: SortOrder
+    initials?: SortOrder
+    consentText?: SortOrder
+    documentHash?: SortOrder
+    requestId?: SortOrder
+    requestHash?: SortOrder
+    signedAt?: SortOrder
+    clientIp?: SortOrder
+    userAgent?: SortOrder
+  }
+
+  export type NativeContractSignatureMinOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    role?: SortOrder
+    actorId?: SortOrder
+    actorEmail?: SortOrder
+    legalName?: SortOrder
+    initials?: SortOrder
+    consentText?: SortOrder
+    documentHash?: SortOrder
+    requestId?: SortOrder
+    requestHash?: SortOrder
+    signedAt?: SortOrder
+    clientIp?: SortOrder
+    userAgent?: SortOrder
   }
 
   export type SupportThreadCountOrderByAggregateInput = {
@@ -72052,6 +74045,24 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NativeContractSignatureCreateNestedManyWithoutContractInput = {
+    create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
+    createMany?: NativeContractSignatureCreateManyContractInputEnvelope
+    connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+  }
+
+  export type NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput = {
+    create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
+    createMany?: NativeContractSignatureCreateManyContractInputEnvelope
+    connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+  }
+
+  export type NullableBytesFieldUpdateOperationsInput = {
+    set?: Bytes | null
+  }
+
   export type UserUpdateOneRequiredWithoutBoosterContractsNestedInput = {
     create?: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
     connectOrCreate?: UserCreateOrConnectWithoutBoosterContractsInput
@@ -72066,6 +74077,48 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutIssuedBoosterContractsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIssuedBoosterContractsInput, UserUpdateWithoutIssuedBoosterContractsInput>, UserUncheckedUpdateWithoutIssuedBoosterContractsInput>
+  }
+
+  export type NativeContractSignatureUpdateManyWithoutContractNestedInput = {
+    create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
+    upsert?: NativeContractSignatureUpsertWithWhereUniqueWithoutContractInput | NativeContractSignatureUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: NativeContractSignatureCreateManyContractInputEnvelope
+    set?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    disconnect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    delete?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    update?: NativeContractSignatureUpdateWithWhereUniqueWithoutContractInput | NativeContractSignatureUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: NativeContractSignatureUpdateManyWithWhereWithoutContractInput | NativeContractSignatureUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
+  }
+
+  export type NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput = {
+    create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
+    upsert?: NativeContractSignatureUpsertWithWhereUniqueWithoutContractInput | NativeContractSignatureUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: NativeContractSignatureCreateManyContractInputEnvelope
+    set?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    disconnect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    delete?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+    update?: NativeContractSignatureUpdateWithWhereUniqueWithoutContractInput | NativeContractSignatureUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: NativeContractSignatureUpdateManyWithWhereWithoutContractInput | NativeContractSignatureUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
+  }
+
+  export type BoosterContractCreateNestedOneWithoutNativeSignaturesInput = {
+    create?: XOR<BoosterContractCreateWithoutNativeSignaturesInput, BoosterContractUncheckedCreateWithoutNativeSignaturesInput>
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutNativeSignaturesInput
+    connect?: BoosterContractWhereUniqueInput
+  }
+
+  export type BoosterContractUpdateOneRequiredWithoutNativeSignaturesNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutNativeSignaturesInput, BoosterContractUncheckedCreateWithoutNativeSignaturesInput>
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutNativeSignaturesInput
+    upsert?: BoosterContractUpsertWithoutNativeSignaturesInput
+    connect?: BoosterContractWhereUniqueInput
+    update?: XOR<XOR<BoosterContractUpdateToOneWithWhereWithoutNativeSignaturesInput, BoosterContractUpdateWithoutNativeSignaturesInput>, BoosterContractUncheckedUpdateWithoutNativeSignaturesInput>
   }
 
   export type UserCreateNestedOneWithoutSupportThreadInput = {
@@ -73956,6 +76009,23 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedBytesNullableFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
+  }
+
+  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
+    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBytesNullableFilter<$PrismaModel>
+    _max?: NestedBytesNullableFilter<$PrismaModel>
+  }
+
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -74316,7 +76386,18 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
     issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+    nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateWithoutBoosterInput = {
@@ -74343,6 +76424,17 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractCreateOrConnectWithoutBoosterInput = {
@@ -74378,7 +76470,18 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
     booster: UserCreateNestedOneWithoutBoosterContractsInput
+    nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateWithoutIssuedByInput = {
@@ -74405,6 +76508,17 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractCreateOrConnectWithoutIssuedByInput = {
@@ -75644,6 +77758,16 @@ export namespace Prisma {
     signedName?: StringNullableFilter<"BoosterContract"> | string | null
     viewedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    archivedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    signingProvider?: StringFilter<"BoosterContract"> | string
+    nativeCompanySignerId?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeSnapshot?: JsonNullableFilter<"BoosterContract">
+    nativeDocumentHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativePreparedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    nativePdf?: BytesNullableFilter<"BoosterContract"> | Bytes | null
+    nativePdfHash?: StringNullableFilter<"BoosterContract"> | string | null
+    nativeCompletedAt?: DateTimeNullableFilter<"BoosterContract"> | Date | string | null
+    replacesContractId?: StringNullableFilter<"BoosterContract"> | string | null
   }
 
   export type BoosterContractUpsertWithWhereUniqueWithoutIssuedByInput = {
@@ -79220,6 +81344,50 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutIssuedBoosterContractsInput, UserUncheckedCreateWithoutIssuedBoosterContractsInput>
   }
 
+  export type NativeContractSignatureCreateWithoutContractInput = {
+    id?: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+  }
+
+  export type NativeContractSignatureUncheckedCreateWithoutContractInput = {
+    id?: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+  }
+
+  export type NativeContractSignatureCreateOrConnectWithoutContractInput = {
+    where: NativeContractSignatureWhereUniqueInput
+    create: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput>
+  }
+
+  export type NativeContractSignatureCreateManyContractInputEnvelope = {
+    data: NativeContractSignatureCreateManyContractInput | NativeContractSignatureCreateManyContractInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutBoosterContractsInput = {
     update: XOR<UserUpdateWithoutBoosterContractsInput, UserUncheckedUpdateWithoutBoosterContractsInput>
     create: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
@@ -79432,6 +81600,207 @@ export namespace Prisma {
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type NativeContractSignatureUpsertWithWhereUniqueWithoutContractInput = {
+    where: NativeContractSignatureWhereUniqueInput
+    update: XOR<NativeContractSignatureUpdateWithoutContractInput, NativeContractSignatureUncheckedUpdateWithoutContractInput>
+    create: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput>
+  }
+
+  export type NativeContractSignatureUpdateWithWhereUniqueWithoutContractInput = {
+    where: NativeContractSignatureWhereUniqueInput
+    data: XOR<NativeContractSignatureUpdateWithoutContractInput, NativeContractSignatureUncheckedUpdateWithoutContractInput>
+  }
+
+  export type NativeContractSignatureUpdateManyWithWhereWithoutContractInput = {
+    where: NativeContractSignatureScalarWhereInput
+    data: XOR<NativeContractSignatureUpdateManyMutationInput, NativeContractSignatureUncheckedUpdateManyWithoutContractInput>
+  }
+
+  export type NativeContractSignatureScalarWhereInput = {
+    AND?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
+    OR?: NativeContractSignatureScalarWhereInput[]
+    NOT?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
+    id?: StringFilter<"NativeContractSignature"> | string
+    contractId?: StringFilter<"NativeContractSignature"> | string
+    role?: StringFilter<"NativeContractSignature"> | string
+    actorId?: StringFilter<"NativeContractSignature"> | string
+    actorEmail?: StringFilter<"NativeContractSignature"> | string
+    legalName?: StringFilter<"NativeContractSignature"> | string
+    initials?: StringFilter<"NativeContractSignature"> | string
+    consentText?: StringFilter<"NativeContractSignature"> | string
+    signature?: JsonFilter<"NativeContractSignature">
+    documentHash?: StringFilter<"NativeContractSignature"> | string
+    requestId?: StringFilter<"NativeContractSignature"> | string
+    requestHash?: StringFilter<"NativeContractSignature"> | string
+    signedAt?: DateTimeFilter<"NativeContractSignature"> | Date | string
+    clientIp?: StringNullableFilter<"NativeContractSignature"> | string | null
+    userAgent?: StringNullableFilter<"NativeContractSignature"> | string | null
+  }
+
+  export type BoosterContractCreateWithoutNativeSignaturesInput = {
+    id?: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    booster: UserCreateNestedOneWithoutBoosterContractsInput
+    issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+  }
+
+  export type BoosterContractUncheckedCreateWithoutNativeSignaturesInput = {
+    id?: string
+    boosterId: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+  }
+
+  export type BoosterContractCreateOrConnectWithoutNativeSignaturesInput = {
+    where: BoosterContractWhereUniqueInput
+    create: XOR<BoosterContractCreateWithoutNativeSignaturesInput, BoosterContractUncheckedCreateWithoutNativeSignaturesInput>
+  }
+
+  export type BoosterContractUpsertWithoutNativeSignaturesInput = {
+    update: XOR<BoosterContractUpdateWithoutNativeSignaturesInput, BoosterContractUncheckedUpdateWithoutNativeSignaturesInput>
+    create: XOR<BoosterContractCreateWithoutNativeSignaturesInput, BoosterContractUncheckedCreateWithoutNativeSignaturesInput>
+    where?: BoosterContractWhereInput
+  }
+
+  export type BoosterContractUpdateToOneWithWhereWithoutNativeSignaturesInput = {
+    where?: BoosterContractWhereInput
+    data: XOR<BoosterContractUpdateWithoutNativeSignaturesInput, BoosterContractUncheckedUpdateWithoutNativeSignaturesInput>
+  }
+
+  export type BoosterContractUpdateWithoutNativeSignaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
+    issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+  }
+
+  export type BoosterContractUncheckedUpdateWithoutNativeSignaturesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserCreateWithoutSupportThreadInput = {
@@ -90217,6 +92586,16 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
   }
 
   export type BoosterContractCreateManyIssuedByInput = {
@@ -90243,6 +92622,16 @@ export namespace Prisma {
     signedName?: string | null
     viewedAt?: Date | string | null
     revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
   }
 
   export type SupportMessageCreateManySenderInput = {
@@ -90640,7 +93029,18 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+    nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateWithoutBoosterInput = {
@@ -90667,6 +93067,17 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateManyWithoutBoosterInput = {
@@ -90693,6 +93104,16 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BoosterContractUpdateWithoutIssuedByInput = {
@@ -90718,7 +93139,18 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
+    nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateWithoutIssuedByInput = {
@@ -90745,6 +93177,17 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateManyWithoutIssuedByInput = {
@@ -90771,6 +93214,16 @@ export namespace Prisma {
     signedName?: NullableStringFieldUpdateOperationsInput | string | null
     viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SupportMessageUpdateWithoutSenderInput = {
@@ -91941,6 +94394,74 @@ export namespace Prisma {
     promotionalCents?: IntFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NativeContractSignatureCreateManyContractInput = {
+    id?: string
+    role: string
+    actorId: string
+    actorEmail: string
+    legalName: string
+    initials: string
+    consentText: string
+    signature: JsonNullValueInput | InputJsonValue
+    documentHash: string
+    requestId: string
+    requestHash: string
+    signedAt?: Date | string
+    clientIp?: string | null
+    userAgent?: string | null
+  }
+
+  export type NativeContractSignatureUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractSignatureUncheckedUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractSignatureUncheckedUpdateManyWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    actorEmail?: StringFieldUpdateOperationsInput | string
+    legalName?: StringFieldUpdateOperationsInput | string
+    initials?: StringFieldUpdateOperationsInput | string
+    consentText?: StringFieldUpdateOperationsInput | string
+    signature?: JsonNullValueInput | InputJsonValue
+    documentHash?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    requestHash?: StringFieldUpdateOperationsInput | string
+    signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientIp?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SupportMessageCreateManyThreadInput = {

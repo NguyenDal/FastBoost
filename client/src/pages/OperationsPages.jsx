@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { operations, downloadContract, date, tenure } from '../api/operations';
 import { loadChampions } from '../api/champions';
 import BoosterPreferenceSummary from '../components/BoosterPreferenceSummary';
@@ -7,7 +7,8 @@ import BoosterDocumentForm from '../components/BoosterDocumentForm';
 import OrderPagination from '../components/OrderPagination';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
-import { CONTRACT_SIGNING_CHANNEL, openContractSigning } from '../utils/contractSigning';
+import { CONTRACT_SIGNING_CHANNEL } from '../utils/contractSigning';
+import { agreementSigningPath } from '../utils/nativeSigning';
 import '../styles/Operations.css';
 
 function useData(path) {
@@ -81,7 +82,7 @@ function BoosterDetails({ booster, champions, preferencesAvailable, reload, conf
 }
 export function BoosterManagementPage() {
     const { data, error, reload } = useData('/boosters');
-    const { data: signing } = useData('/docusign/configuration');
+    const { data: signing } = useData('/contracts/configuration');
     const [query, setQuery] = useState('');
     const [actionError, setActionError] = useState('');
     const [champions, setChampions] = useState([]);
@@ -102,25 +103,22 @@ export function BoosterManagementPage() {
 }
 export function BoosterContractPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { data, error, reload } = useData(`/contracts/${id}`);
-    const [signingAttempt, setSigningAttempt] = useState(0);
     const [actionError, setActionError] = useState('');
     const [busy, setBusy] = useState(false);
     const contract = data?.contract;
+    const native = contract?.signingProvider === 'FASTBOOST';
     const viewer = getStoredUser();
     const own = contract?.boosterId === viewer?.id;
     const admin = viewer?.role === 'ADMIN';
     const company = admin && contract?.companySignerEmail && viewer?.email?.toLowerCase() === contract.companySignerEmail.toLowerCase();
-    const canSign = company ? !contract?.companySignedAt : own && !contract?.boosterSignedAt && (!contract?.companySignerEmail || contract?.companySignedAt);
-    const canDownload = Boolean(contract?.envelopeId && (admin || !contract.companySignerEmail || contract.companySignedAt));
+    const canSign = !contract?.archivedAt && (company ? !contract?.companySignedAt : own && !contract?.boosterSignedAt && (!contract?.companySignerEmail || contract?.companySignedAt));
+    const canDownload = Boolean((native ? contract.documentAvailable : contract?.envelopeId) && (admin || !contract.companySignerEmail || contract.companySignedAt));
     async function action(kind) {
         setBusy(true); setActionError('');
         try {
             if (kind === 'document') await downloadContract(id);
-            else if (kind === 'signing-view') {
-                await openContractSigning(() => operations(`/contracts/${id}/signing-view`, {}));
-                setSigningAttempt(attempt => attempt + 1);
-            }
             else {
                 await operations(`/contracts/${id}/${kind}`, {});
                 reload();
@@ -143,20 +141,20 @@ export function BoosterContractPage() {
     // Keep the badge current while either party signs, including in another tab.
     // Refresh only our stored status; this never polls DocuSign or trusts return parameters.
     useEffect(() => {
-        if (!contract?.envelopeId || contract.signedAt || ['completed', 'voided', 'declined'].includes(contract.status)) return;
+        if ((!native && !contract?.envelopeId) || contract.signedAt || ['completed', 'voided', 'declined'].includes(contract.status)) return;
         const timer = window.setInterval(() => { if (document.visibilityState === 'visible') reload(); }, 5000);
         const deadline = window.setTimeout(() => window.clearInterval(timer), 10 * 60000);
         return () => { window.clearInterval(timer); window.clearTimeout(deadline); };
-    }, [contract?.envelopeId, contract?.signedAt, contract?.status, signingAttempt, reload]);
-    const awaitingSignature = contract?.envelopeId && !contract.signedAt && !['voided', 'declined', 'completed'].includes(contract.status);
-    const status = contract?.signedAt ? 'Signed' : awaitingSignature
+    }, [native, contract?.envelopeId, contract?.signedAt, contract?.status, reload]);
+    const awaitingSignature = (native || contract?.envelopeId) && !contract.signedAt && !contract.revokedAt && !contract.archivedAt && !['voided', 'declined', 'completed', 'replaced'].includes(contract.status);
+    const status = contract?.archivedAt ? 'Archived' : contract?.signedAt ? 'Signed' : awaitingSignature
         ? contract.companySignerEmail ? !contract.companySignedAt ? 'Awaiting FastBoost' : !contract.boosterSignedAt ? 'Awaiting booster' : 'Confirming signatures' : 'Awaiting signature'
         : ({ pending: 'Pending', sending: 'Sending', send_error: 'Delivery failed', completed: 'Confirming signatures', voided: 'Voided', declined: 'Declined' }[contract?.status] || contract?.status?.replace(/_/g, ' '));
     const signers = contract ? [
         ...(contract.companySignerEmail ? [{ role: 'FastBoost', name: contract.companySignerName, signedAt: contract.companySignedAt }] : []),
         { role: 'Booster', name: contract.signedName || contract.signerName, signedAt: contract.boosterSignedAt || (!contract.companySignerEmail && contract.signedAt) },
     ] : [];
-    return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · DocuSign agreement</Heading><Link to={own ? '/provider/documents' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
+    return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · Agreement</Heading><Link to={own ? '/provider/documents' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
         {contract && <section className="ops-card ops-contract">
             <header className="ops-contract-header">
                 <div className="ops-contract-identity"><p className="ops-contract-label">Booster</p><h2>{contract.signerName}</h2><p>{contract.signerEmail}</p></div>
@@ -170,11 +168,11 @@ export function BoosterContractPage() {
             </div>
             {contract.sendError && <p className="ops-error" role="alert">{contract.sendError}</p>}
             {(canDownload || admin) && <footer className="ops-contract-footer">
-                {canDownload && <div className="ops-contract-document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg><div><strong>{contract.signedAt ? 'Signed agreement' : 'Agreement'}</strong><small>{contract.signedAt ? 'PDF · Includes completion certificate' : 'PDF document'}</small></div></div>}
+                {(native || canDownload) && <div className="ops-contract-document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg><div><strong>{contract.signedAt ? 'Signed agreement' : 'Agreement'}</strong><small>{contract.signedAt ? native ? 'PDF · Includes signing record' : 'PDF · Includes completion certificate' : 'PDF document'}</small></div></div>}
                 <div className="ops-actions">
-                    {canSign && awaitingSignature && <button className="ops-primary" disabled={busy} onClick={() => action('signing-view')} title="Opens DocuSign in a new tab">{company ? 'Review & sign for FastBoost' : 'Review & sign'} <span aria-hidden="true">↗</span><span className="ops-sr-only"> (opens in a new tab)</span></button>}
+                    {canSign && awaitingSignature && <button className="ops-primary" disabled={busy} onClick={() => navigate(agreementSigningPath(id))}>{company ? 'Review & sign for FastBoost' : 'Review & sign'}</button>}
                     {canDownload && <button className={contract.signedAt ? 'ops-primary' : ''} disabled={busy} onClick={() => action('document')}>Download PDF</button>}
-                    {admin && !contract.envelopeId && <button disabled={busy} onClick={() => action('retry')}>Retry delivery</button>}
+                    {admin && !native && !contract.envelopeId && <button disabled={busy} onClick={() => action('retry')}>Retry delivery</button>}
                 </div>
             </footer>}
         </section>}
