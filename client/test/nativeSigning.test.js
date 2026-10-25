@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { transformWithOxc } from 'vite';
 import { agreementSigningPath, hasDrawnSignature, signatureSubmission, signingValuesMatch } from '../src/utils/nativeSigning.js';
+import { nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp } from '../src/utils/nativeSigningI18n.js';
 
 test('the built-in agreement route binds the specific contract and retains a safe local destination', () => {
     assert.equal(agreementSigningPath('contract-123'), '/provider-agreement?contract=contract-123');
@@ -57,18 +58,22 @@ async function componentFixture(bindings, initialStates = [], options = {}) {
             return [states[i], value => { states[i] = typeof value === 'function' ? value(states[i]) : value; }];
         },
         useRef(value) { return refs[refCursor++] ||= { current: value }; },
-        useEffect(effect) { effects.push(effect); }, useCallback: callback => callback,
+        useEffect(effect) { effects.push(effect); }, useMemo: factory => factory(), useCallback: callback => callback,
+        createPortal: children => children, translateAgreementHtml: html => html,
+        nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp,
         Navbar: 'Navbar', ContractSignaturePad: 'SignaturePad', Link: 'Link',
         signatureSubmission, signingValuesMatch, hasDrawnSignature, agreementSigningPath,
         CONTRACT_SIGNING_CHANNEL: 'test-signing', date: value => value,
         getStoredUser: () => ({ id: 'company' }), hasValidSession: () => true,
         authStorage: { getItem: () => 'session' }, useNavigate: () => () => {},
-        window: eventHub(), document: eventHub(), crypto: { randomUUID: () => 'signature-request' },
+        window: { ...eventHub(), innerHeight: 900, scrollY: 0, scrollTo() {}, matchMedia: () => ({ matches: true }) },
+        document: eventHub(), crypto: { randomUUID: () => 'signature-request' },
         ...bindings,
     });
     return {
         render() { cursor = 0; refCursor = 0; return component({ id: 'contract' }); },
         state: index => states[index],
+        ref: index => refs[index],
         runEffects() { for (const effect of effects.splice(0)) { const cleanup = effect(); if (cleanup) cleanups.push(cleanup); } },
         cleanup() { for (const cleanup of cleanups.splice(0)) cleanup(); },
     };
@@ -79,18 +84,102 @@ function find(tree, predicate) {
     for (const child of Array.isArray(tree) ? tree : [tree.props?.children]) { const result = find(child, predicate); if (result) return result; }
     return null;
 }
-const readyContext = { contract: { id: 'contract', companySignerName: 'Company Signer', signerName: 'Booster' }, documentHash: 'frozen-hash', challenge: 'challenge', values: { EndDate: 'Ongoing' }, fields: [], prepared: true, canSign: true, role: 'company', signatures: [], consentText: 'Exact server consent statement.', html: '<h1>Exact agreement</h1>' };
+function attachAgreementDocument(fixture, fields = [], frameKey = 'frozen-hash-en') {
+    const markerNodes = fields.map(field => ({
+        getAttribute: name => name === 'data-native-field' ? field.key : null,
+        querySelector: () => ({ focus() {}, getBoundingClientRect: () => ({ top: 100 }) }),
+    }));
+    const section = { append(node) { node.parentNode = this; }, querySelector: () => ({ before(node) { node.parentNode = section; } }) };
+    const mounts = new Map();
+    const doc = {
+        body: { classList: { add() {}, toggle() {} }, scrollHeight: 1200 },
+        documentElement: { scrollHeight: 1200 },
+        getElementById: () => section,
+        createElement: () => ({ dataset: {}, parentNode: null }),
+        querySelectorAll: () => markerNodes,
+        querySelector(selector) {
+            if (selector === '[data-native-review-mount]') return mounts.get('review');
+            if (selector === '[data-native-signature-mount]') return mounts.get('signature');
+            return null;
+        },
+    };
+    section.append = node => { node.parentNode = section; mounts.set(node.dataset.nativeReviewMount === '' ? 'review' : 'signature', node); };
+    section.querySelector = () => ({ before(node) { section.append(node); } });
+    const frame = { contentDocument: doc, dataset: { frameKey }, style: {}, getBoundingClientRect: () => ({ top: 50 }) };
+    fixture.render();
+    fixture.ref(0).current = frame;
+    find(fixture.render(), node => node.type === 'iframe').props.onLoad({ currentTarget: frame });
+    return fixture.render();
+}
+const readyContext = { contract: { id: 'contract', companySignerName: 'Company Signer', signerName: 'Booster' }, documentHash: 'frozen-hash', challenge: 'challenge', values: { EndDate: 'Ongoing' }, fields: [], prepared: true, canSign: true, role: 'company', signingOrder: 'BOOSTER_FIRST', signatures: [], consentText: 'Exact server consent statement.', html: '<h1>Exact agreement</h1>' };
 
-test('the company can prepare an unsigned draft and sends only editable commercial fields', async () => {
+test('the FastBoost owner saves only current agreement fields, including fixed language, without identity fields', async () => {
     const calls = [];
-    const draft = { ...readyContext, canSign: false, prepared: false, documentHash: null, values: { EndDate: 'Ongoing', ProviderLegalName: 'Locked identity' }, fields: [{ key: 'EndDate', label: 'End date' }] };
-    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return readyContext; } }, [draft, draft.values, true]);
-    const form = find(fixture.render(), item => item.props?.className === 'native-commercial-form');
-    assert.ok(form, 'initial draft preparation must not depend on readiness to sign');
-    assert.equal(find(fixture.render(), item => item.type === 'p' && item.props.children === 'Signing is not available for this account at this stage.'), null);
-    await form.props.onSubmit({ preventDefault() {} });
+    const draft = { ...readyContext, role: 'company', canPrepare: true, canSign: false, prepared: false, documentHash: null,
+        values: { EndDate: 'Ongoing', ReferenceLanguage: 'English/Vietnamese', ProviderLegalName: 'Locked identity', ServiceScope: 'old removed value', AuthorizedSignatory: 'old removed value' },
+        fields: [{ key: 'EndDate', label: 'End date' }, { key: 'ReferenceLanguage', label: 'Language' }] };
+    const preparedOwner = { ...readyContext, role: 'company', canPrepare: true, canSign: false, values: draft.values, fields: draft.fields };
+    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return preparedOwner; } }, [draft, draft.values, true]);
+    const tree = attachAgreementDocument(fixture, draft.fields, 'draft-en');
+    const review = find(tree, item => item.type === 'button' && item.props.children === 'Save for booster review');
+    assert.ok(review, 'assigned FastBoost owner can save terms from within the document');
+    assert.equal(find(tree, item => item.type === 'p' && item.props.children === 'Signing is not available for this account at this stage.'), null);
+    await review.props.onClick({ preventDefault() {} });
     assert.equal(calls[0][1], 'prepare');
-    assert.equal(JSON.stringify(calls[0][2]), JSON.stringify({ values: { EndDate: 'Ongoing' } }));
+    assert.equal(JSON.stringify(calls[0][2]), JSON.stringify({ values: { EndDate: 'Ongoing', ReferenceLanguage: 'English/Vietnamese' } }));
+    const preparedTree = attachAgreementDocument(fixture, draft.fields);
+    assert.ok(find(preparedTree, item => item.props?.className === 'native-inline-notice'), 'owner now waits for booster signature');
+    assert.equal(find(preparedTree, item => item.props?.className === 'native-signature-form'), null);
+    assert.equal(calls.length, 1, 'preparation alone must not sign');
+});
+
+test('the guide jumps through editable document fields and skips the fixed agreement language', async () => {
+    const calls = [];
+    const fields = [
+        { key: 'EndDate', label: 'End date' },
+        { key: 'ReferenceLanguage', label: 'Agreement language' },
+        { key: 'PaymentMethod', label: 'Agreed payment method' },
+    ];
+    const draft = { ...readyContext, role: 'company', canPrepare: true, canSign: false, prepared: false, documentHash: null,
+        values: { EndDate: 'Ongoing', ReferenceLanguage: 'English/Vietnamese', PaymentMethod: '' }, fields };
+    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); } }, [draft, draft.values, true]);
+    attachAgreementDocument(fixture, fields, 'draft-en');
+    const next = find(fixture.render(), item => item.type === 'button' && item.props.children === 'Next field');
+    next.props.onClick();
+    assert.equal(fixture.state(13), 0);
+    find(fixture.render(), item => item.type === 'button' && item.props.children === 'Next field').props.onClick();
+    assert.equal(fixture.state(13), 1, 'the second step is PaymentMethod, not ReferenceLanguage');
+    assert.equal(calls.length, 0, 'navigation must not prepare or sign a contract');
+});
+
+test('the booster sees an unprepared draft without owner textboxes or a prepare action', async () => {
+    const boosterDraft = { ...readyContext, role: 'booster', canPrepare: false, canSign: false, prepared: false, documentHash: null,
+        values: { EndDate: 'Ongoing' }, fields: [{ key: 'EndDate', label: 'End date' }] };
+    const fixture = await componentFixture({}, [boosterDraft, boosterDraft.values, false]);
+    const tree = attachAgreementDocument(fixture, boosterDraft.fields, 'draft-en');
+    assert.equal(find(tree, item => item.props?.className === 'native-signing-parties'), null);
+    assert.equal(find(tree, item => item.props?.className === 'native-signing-outcome'), null);
+    assert.ok(find(tree, item => item.props?.className === 'native-inline-notice'));
+    assert.equal(find(tree, item => item.type === 'button' && item.props.children === 'Save for booster review'), null);
+    assert.equal(find(tree, item => item.props?.className === 'native-inline-field'), null);
+});
+
+test('the booster receives a signature form only after owner preparation', async () => {
+    const boosterReview = { ...readyContext, role: 'booster', canPrepare: false, canSign: true };
+    const fixture = await componentFixture({}, [boosterReview, boosterReview.values, false]);
+    const tree = attachAgreementDocument(fixture);
+    assert.ok(find(tree, item => item.props?.className === 'native-signature-form'));
+    assert.equal(find(tree, item => item.props?.className === 'native-inline-field'), null);
+});
+
+test('switching to the Vietnamese reading view does not submit a signature', async () => {
+    const calls = [];
+    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); } }, [readyContext, readyContext.values, false]);
+    const toggle = find(fixture.render(), item => item.type === 'button' && item.props.children === 'VN');
+    toggle.props.onClick();
+    const tree = fixture.render();
+    assert.equal(find(tree, item => item.type === 'iframe').props['data-frame-key'], 'frozen-hash-vi');
+    assert.equal(calls.length, 0);
 });
 
 test('archived native agreements expose read-only history and available downloads only', async () => {
@@ -123,7 +212,7 @@ test('the existing contract card retains its layout and hides signing on archive
 test('rendering a ready agreement never signs it; explicit submit uses the accepted snapshot', async () => {
     const calls = [];
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return {}; } }, [readyContext, readyContext.values, false, 'Company Signer', 'CS', { type: 'typed' }, true]);
-    const tree = fixture.render();
+    const tree = attachAgreementDocument(fixture);
     assert.equal(calls.length, 0, 'displaying the page cannot accept a contract');
     const form = find(tree, item => item.props?.className === 'native-signature-form');
     await form.props.onSubmit({ preventDefault() {} });
@@ -137,7 +226,7 @@ test('rendering a ready agreement never signs it; explicit submit uses the accep
 test('uncertain server replies lock editing and retry the identical signing intent', async () => {
     const calls = [];
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); throw new Error('Connection lost'); } }, [readyContext, readyContext.values, false, 'Company Signer', 'CS', { type: 'typed' }, true]);
-    await find(fixture.render(), item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
+    await find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
     assert.equal(fixture.state(9), true);
     const retry = fixture.render();
     assert.equal(find(retry, item => item.type === 'input' && item.props?.autoComplete === 'name').props.disabled, true);
@@ -149,7 +238,7 @@ test('uncertain server replies lock editing and retry the identical signing inte
 test('repeated submission is serialized before React commits disabled controls', async () => {
     let finish, count = 0;
     const fixture = await componentFixture({ nativeContractRequest: async () => { count++; await new Promise(resolve => { finish = resolve; }); return {}; } }, [readyContext, readyContext.values, false, 'Company Signer', 'CS', { type: 'typed' }, true]);
-    const submit = find(fixture.render(), item => item.props?.className === 'native-signature-form').props.onSubmit;
+    const submit = find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-form').props.onSubmit;
     const first = submit({ preventDefault() {} });
     await submit({ preventDefault() {} });
     assert.equal(count, 1);

@@ -4,22 +4,19 @@ const { createHash } = require('node:crypto');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 
-const VERSION = 'FB-BSA-2.1';
+const VERSION = 'FB-BSA-2.2';
 const root = resolve(__dirname, '../../private/legal');
 const fail = message => Object.assign(new Error(message), { status: 400 });
 const fields = [
-    ['AuthorizedSignatory', 'Business signatory and title', 100, 'Not applicable'],
     ['WorkLocation', 'Work country and state or province', 120, ''],
     ['EndDate', 'End date or Ongoing', 50, 'Ongoing'],
     ['PaymentMethod', 'Agreed payment method', 70, ''],
     ['PayeeLegalName', 'Payee legal name', 120, ''],
     ['TransferFeeVariation', 'Transfer fee variation', 150, 'None'],
-    ['ServiceScope', 'Games, services, regions and permitted methods', 180, ''],
     ['ProviderTimeZone', 'Provider time zone', 60, ''],
-    ['DataAccessCountries', 'Approved data-access countries', 120, ''],
-    ['ReferenceLanguage', 'Agreement language and any translation', 150, 'English'],
-    ['JurisdictionAddendum', 'Jurisdiction addendum', 180, 'None required'],
+    ['ReferenceLanguage', 'Available languages', 20, 'English/Vietnamese'],
 ].map(([key, label, maxLength, defaultValue]) => ({ key, label, maxLength, defaultValue, required: true }));
+const commercialFieldKeys = new Set(fields.map(field => field.key));
 const placeholders = {
     AGREEMENT_ID: 'AgreementId', PROVIDER_LEGAL_NAME: 'ProviderLegalName', PROVIDER_EMAIL: 'ProviderEmail',
     PROVIDER_USERNAME: 'ProviderUsername', EFFECTIVE_DATE: 'EffectiveDate',
@@ -29,6 +26,7 @@ const placeholders = {
     'NONE / WRITTEN REPLACEMENT RULE': 'TransferFeeVariation',
     'GAMES / SERVICES / REGIONS / PERMITTED METHODS': 'ServiceScope', PROVIDER_TIME_ZONE: 'ProviderTimeZone',
     COUNTRIES: 'DataAccessCountries', 'ENGLISH / IDENTIFY REVIEWED TRANSLATION AND AGREED CONFLICT RULE': 'ReferenceLanguage',
+    'ENGLISH / VIETNAMESE': 'ReferenceLanguage',
     'NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM': 'JurisdictionAddendum',
     'PROVIDER_LEGAL_NAME / AUTHORIZED SIGNATORY': 'ProviderLegalName',
 };
@@ -46,6 +44,7 @@ function validateValues(values) {
         if (typeof values[field.key] !== 'string') throw fail(`Complete ${field.label.toLowerCase()}.`);
         const value = values[field.key].normalize('NFC').trim();
         if (!value || value.length > field.maxLength || /[\u0000-\u001f\u007f-\u009f]/u.test(value)) throw fail(`Enter ${field.label.toLowerCase()} using 1–${field.maxLength} characters.`);
+        if (field.key === 'ReferenceLanguage' && value !== field.defaultValue) throw fail('Agreement languages cannot be changed.');
         return [field.key, value];
     }));
 }
@@ -86,11 +85,14 @@ function createSnapshot(contract, values = {}) {
 function renderHtml(snapshot, signatures = []) {
     let html = snapshot.htmlSource.replace(/\[([^\[\]]+)\]/g, (full, key) => {
         const label = placeholders[key];
-        return label ? escape(snapshot.values[label] || full) : full;
+        if (!label) return full;
+        const value = escape(snapshot.values[label] || full);
+        return commercialFieldKeys.has(label) ? `<span data-native-field="${label}"><span data-native-value>${value}</span></span>` : value;
     });
-    let cardIndex = 0;
     html = html.replace(/<div class="fb-signature-card">([\s\S]*?)<\/div>/g, (full, content) => {
-        const role = cardIndex++ === 0 ? 'COMPANY' : 'BOOSTER';
+        const heading = content.match(/<h3>([^<]+)<\/h3>/i)?.[1]?.trim().toUpperCase();
+        const role = heading === 'FASTBOOST' ? 'COMPANY' : heading === 'PROVIDER' ? 'BOOSTER' : null;
+        if (!role) throw new Error('The agreement has an unrecognized signature card.');
         const signature = signatures.find(item => item.role === role);
         let line = 0;
         const labels = ['Signature', 'Date', 'Schedule A approval / initials'];
@@ -165,7 +167,7 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
         else if (signature && box.type === 'signHereTabs') drawSignature(page, signature, box, font);
         else if (signature && box.type === 'initialHereTabs') drawBoxText(page, signature.initials, { ...box, width: '212', height: '28' }, font);
         else if (signature && box.type === 'dateSignedTabs') drawBoxText(page, new Date(signature.signedAt).toISOString().replace('T', ' ').replace('.000Z', ' UTC'), box, font);
-        else if (box.type === 'fullNameTabs') drawBoxText(page, signature?.legalName || snapshot.booster.name, box, font);
+        else if (box.type === 'fullNameTabs') drawBoxText(page, signature?.legalName || (box.role === 'COMPANY' ? snapshot.company.name : snapshot.booster.name), box, font);
     }
     if (completed) {
         if (!signatures.some(item => item.role === 'COMPANY') || !signatures.some(item => item.role === 'BOOSTER')) throw new Error('Both signatures are required for a completed agreement.');
@@ -180,9 +182,10 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
         line('FASTBOOST', 13); line('Electronic signing completion record', 20, 15);
         line(`Agreement: ${snapshot.values.AgreementId}`); line(`Version: ${snapshot.version}`);
         line(`Accepted document SHA-256: ${snapshotHash(snapshot)}`, 8, 14);
-        for (const role of ['COMPANY', 'BOOSTER']) {
+        const signingOrder = snapshot.version === 'FB-BSA-2.1' ? ['COMPANY', 'BOOSTER'] : ['BOOSTER', 'COMPANY'];
+        for (const [index, role] of signingOrder.entries()) {
             const item = signatures.find(signature => signature.role === role);
-            line(role === 'COMPANY' ? '1. FastBoost' : '2. Booster', 12);
+            line(`${index + 1}. ${role === 'COMPANY' ? 'FastBoost' : 'Booster'}`, 12);
             line(`Signed by: ${item.legalName}`); line(`Account email: ${item.actorEmail || item.email || (role === 'COMPANY' ? snapshot.company.email : snapshot.booster.email)}`);
             line(`Account reference: ${item.actorId}`); line(`Signed at (UTC): ${new Date(item.signedAt).toISOString()}`);
             line(`Schedule A initials: ${item.initials} | Signature: ${item.signature?.type === 'drawn' ? 'Drawn electronically' : 'Typed electronically'}`);

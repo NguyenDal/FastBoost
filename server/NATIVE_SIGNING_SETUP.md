@@ -13,24 +13,30 @@ The Booster Management form and contract status card retain their existing layou
 
 1. An admin issues an invitation with the booster's legal name and requested start
    date. The server captures current recipient identities, the agreement wording,
-   PDF and field layout as a private snapshot, version **FB-BSA-2.1**.
-2. The assigned FastBoost signer completes the required commercial details and
-   prepares the agreement. Its HTML and PDF contain the same saved values.
-3. The signer reviews the completed agreement, enters their assigned legal name
-   and Schedule A initials, chooses a typed or drawn signature, explicitly accepts
-   electronic signing, and submits the signature.
-4. The booster can then review that same completed agreement and the FastBoost
-   signature. The booster signs through their own authenticated account.
-5. The server saves the completed PDF and completion record before marking the
+   PDF and field layout as a private snapshot, version **FB-BSA-2.2**.
+2. The assigned FastBoost signer fills six commercial details and saves the
+   agreement with English as the fixed seventh setting. This prepares one exact
+   HTML/PDF snapshot. FastBoost may correct those details until the provider signs.
+3. The assigned provider reviews the saved agreement and signs with their own
+   account, legal name, Schedule A initials and explicit electronic-signing
+   consent. The FastBoost signer then reviews the same agreement and provider
+   signature before countersigning. Version 2.2 requires the provider signature first.
+4. The server saves the completed PDF and completion record before marking the
    agreement completed or initializing provider tenure. Downloads return those
    exact saved bytes. Later edits to the agreement source do not change them.
 
-Terms cannot be changed after the first signature. Corrections require a new
-agreement and both signatures. An unsigned, independently verified **sandbox**
+Terms cannot be changed after the first signature. Later corrections require a
+new agreement and both signatures. An unsigned, independently verified **sandbox**
 DocuSign invitation can be explicitly replaced from its website signing page.
 Its original record is retained and retired locally; this does not void the
 external sandbox envelope. Signed, production and unverifiable DocuSign envelopes
 cannot be converted by this action.
+
+Unsigned FB-BSA-2.1 drafts display the current FB-BSA-2.2 form without changing
+the database on a read. FastBoost must save the current fields, then the provider signs the
+2.2 document before FastBoost can countersign. Agreements already signed by
+FastBoost under 2.1 retain that exact company-first snapshot and PDF so the
+provider can finish signing.
 
 ## Configuration and storage
 
@@ -51,6 +57,23 @@ email, exact consent text, initials, signature, server timestamp, accepted docum
 hash, idempotency request and bounded security context. Preserve these records in
 database backups and restrict access. The API never serves signing assets publicly.
 
+## Agreement emails
+
+`NativeContractEmail` queues one delivery per event and recipient in the same
+transaction as issuance, preparation or signing. The booster receives an issuance
+notice and a second notice when FastBoost saves the completed terms. FastBoost
+receives a notice when the booster signs. After both signatures, both parties
+receive a branded completion message with an authenticated agreement link and the
+exact stored signed PDF as an attachment. Mail delivery retries independently of
+the signing request, so a mail outage does not ask either party to sign again.
+
+The worker uses `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, optional `SMTP_FROM`, and a
+valid public HTTPS `CLIENT_URL` in production. Set
+`NATIVE_CONTRACT_EMAILS_ENABLED=false` only to pause sending while retaining queued
+events. Apply the additive `20261025010000_native_contract_emails` migration and
+generate Prisma Client before starting the worker against a database. The worker
+does not send mail in tests or in the inert browser preview.
+
 The FastBoost completion record is an electronic-signing evidence record. It is
 not an independent identity certificate or an Adobe-trusted certificate signature.
 Contract enforceability remains subject to the agreement and applicable law.
@@ -69,8 +92,9 @@ python scripts/build-provider-agreement-pdf.py --native
 python scripts/build-provider-agreement-pdf.py --native --signing-template
 ```
 
-The additive migrations are `20261022010000_native_contract_signing` and
-`20261022020000_archive_contracts`. Generate Prisma after schema changes. Before
+The additive migrations are `20261022010000_native_contract_signing`,
+`20261022020000_archive_contracts`, and `20261025010000_native_contract_emails`.
+Generate Prisma after schema changes. Before
 deploying to a different database, inspect that
 database and its migration history, then apply the committed migration through
 the normal deployment process. A local database activation does not activate
@@ -90,7 +114,7 @@ the original evidence. New agreements created after that cutoff remain active.
 
 ## Verification
 
-Protocol tests cover actor/role checks, company-first ordering, frozen terms,
+Protocol tests cover actor/role checks, provider-first ordering, historical company-first ordering, frozen terms,
 challenge expiry and binding, consent, malformed signatures, retry/concurrency,
 artifact integrity, rollback before final PDF persistence, tenure preservation and
 explicit sandbox replacements. PDF tests cover completed settings, escaped HTML,

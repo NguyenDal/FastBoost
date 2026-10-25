@@ -99,6 +99,11 @@ export type BoosterContract = $Result.DefaultSelection<Prisma.$BoosterContractPa
  */
 export type NativeContractSignature = $Result.DefaultSelection<Prisma.$NativeContractSignaturePayload>
 /**
+ * Model NativeContractEmail
+ *
+ */
+export type NativeContractEmail = $Result.DefaultSelection<Prisma.$NativeContractEmailPayload>
+/**
  * Model SupportThread
  *
  */
@@ -658,6 +663,16 @@ export class PrismaClient<
     * ```
     */
   get nativeContractSignature(): Prisma.NativeContractSignatureDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.nativeContractEmail`: Exposes CRUD operations for the **NativeContractEmail** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NativeContractEmails
+    * const nativeContractEmails = await prisma.nativeContractEmail.findMany()
+    * ```
+    */
+  get nativeContractEmail(): Prisma.NativeContractEmailDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.supportThread`: Exposes CRUD operations for the **SupportThread** model.
@@ -1412,6 +1427,7 @@ export namespace Prisma {
     BoosterEarningsEntry: 'BoosterEarningsEntry',
     BoosterContract: 'BoosterContract',
     NativeContractSignature: 'NativeContractSignature',
+    NativeContractEmail: 'NativeContractEmail',
     SupportThread: 'SupportThread',
     SupportMessage: 'SupportMessage',
     SupportPresence: 'SupportPresence',
@@ -1456,7 +1472,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "nativeContractSignature" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "nativeContractSignature" | "nativeContractEmail" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2715,6 +2731,80 @@ export namespace Prisma {
           count: {
             args: Prisma.NativeContractSignatureCountArgs<ExtArgs>
             result: $Utils.Optional<NativeContractSignatureCountAggregateOutputType> | number
+          }
+        }
+      }
+      NativeContractEmail: {
+        payload: Prisma.$NativeContractEmailPayload<ExtArgs>
+        fields: Prisma.NativeContractEmailFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NativeContractEmailFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NativeContractEmailFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          findFirst: {
+            args: Prisma.NativeContractEmailFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NativeContractEmailFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          findMany: {
+            args: Prisma.NativeContractEmailFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>[]
+          }
+          create: {
+            args: Prisma.NativeContractEmailCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          createMany: {
+            args: Prisma.NativeContractEmailCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NativeContractEmailCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>[]
+          }
+          delete: {
+            args: Prisma.NativeContractEmailDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          update: {
+            args: Prisma.NativeContractEmailUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          deleteMany: {
+            args: Prisma.NativeContractEmailDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NativeContractEmailUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NativeContractEmailUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>[]
+          }
+          upsert: {
+            args: Prisma.NativeContractEmailUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NativeContractEmailPayload>
+          }
+          aggregate: {
+            args: Prisma.NativeContractEmailAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNativeContractEmail>
+          }
+          groupBy: {
+            args: Prisma.NativeContractEmailGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NativeContractEmailGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NativeContractEmailCountArgs<ExtArgs>
+            result: $Utils.Optional<NativeContractEmailCountAggregateOutputType> | number
           }
         }
       }
@@ -5004,6 +5094,7 @@ export namespace Prisma {
     boosterEarningsEntry?: BoosterEarningsEntryOmit
     boosterContract?: BoosterContractOmit
     nativeContractSignature?: NativeContractSignatureOmit
+    nativeContractEmail?: NativeContractEmailOmit
     supportThread?: SupportThreadOmit
     supportMessage?: SupportMessageOmit
     supportPresence?: SupportPresenceOmit
@@ -5459,10 +5550,12 @@ export namespace Prisma {
 
   export type BoosterContractCountOutputType = {
     nativeSignatures: number
+    nativeEmails: number
   }
 
   export type BoosterContractCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nativeSignatures?: boolean | BoosterContractCountOutputTypeCountNativeSignaturesArgs
+    nativeEmails?: boolean | BoosterContractCountOutputTypeCountNativeEmailsArgs
   }
 
   // Custom InputTypes
@@ -5481,6 +5574,13 @@ export namespace Prisma {
    */
   export type BoosterContractCountOutputTypeCountNativeSignaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NativeContractSignatureWhereInput
+  }
+
+  /**
+   * BoosterContractCountOutputType without action
+   */
+  export type BoosterContractCountOutputTypeCountNativeEmailsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NativeContractEmailWhereInput
   }
 
 
@@ -23887,6 +23987,7 @@ export namespace Prisma {
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
     nativeSignatures?: boolean | BoosterContract$nativeSignaturesArgs<ExtArgs>
+    nativeEmails?: boolean | BoosterContract$nativeEmailsArgs<ExtArgs>
     _count?: boolean | BoosterContractCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["boosterContract"]>
 
@@ -24010,6 +24111,7 @@ export namespace Prisma {
     booster?: boolean | UserDefaultArgs<ExtArgs>
     issuedBy?: boolean | UserDefaultArgs<ExtArgs>
     nativeSignatures?: boolean | BoosterContract$nativeSignaturesArgs<ExtArgs>
+    nativeEmails?: boolean | BoosterContract$nativeEmailsArgs<ExtArgs>
     _count?: boolean | BoosterContractCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BoosterContractIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24027,6 +24129,7 @@ export namespace Prisma {
       booster: Prisma.$UserPayload<ExtArgs>
       issuedBy: Prisma.$UserPayload<ExtArgs>
       nativeSignatures: Prisma.$NativeContractSignaturePayload<ExtArgs>[]
+      nativeEmails: Prisma.$NativeContractEmailPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -24460,6 +24563,7 @@ export namespace Prisma {
     booster<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     issuedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     nativeSignatures<T extends BoosterContract$nativeSignaturesArgs<ExtArgs> = {}>(args?: Subset<T, BoosterContract$nativeSignaturesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    nativeEmails<T extends BoosterContract$nativeEmailsArgs<ExtArgs> = {}>(args?: Subset<T, BoosterContract$nativeEmailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24945,6 +25049,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NativeContractSignatureScalarFieldEnum | NativeContractSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * BoosterContract.nativeEmails
+   */
+  export type BoosterContract$nativeEmailsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    where?: NativeContractEmailWhereInput
+    orderBy?: NativeContractEmailOrderByWithRelationInput | NativeContractEmailOrderByWithRelationInput[]
+    cursor?: NativeContractEmailWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NativeContractEmailScalarFieldEnum | NativeContractEmailScalarFieldEnum[]
   }
 
   /**
@@ -26152,6 +26280,1181 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: NativeContractSignatureInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NativeContractEmail
+   */
+
+  export type AggregateNativeContractEmail = {
+    _count: NativeContractEmailCountAggregateOutputType | null
+    _avg: NativeContractEmailAvgAggregateOutputType | null
+    _sum: NativeContractEmailSumAggregateOutputType | null
+    _min: NativeContractEmailMinAggregateOutputType | null
+    _max: NativeContractEmailMaxAggregateOutputType | null
+  }
+
+  export type NativeContractEmailAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type NativeContractEmailSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type NativeContractEmailMinAggregateOutputType = {
+    id: string | null
+    contractId: string | null
+    event: string | null
+    recipientRole: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    sentAt: Date | null
+    skippedAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type NativeContractEmailMaxAggregateOutputType = {
+    id: string | null
+    contractId: string | null
+    event: string | null
+    recipientRole: string | null
+    attempts: number | null
+    nextAttemptAt: Date | null
+    sentAt: Date | null
+    skippedAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date | null
+  }
+
+  export type NativeContractEmailCountAggregateOutputType = {
+    id: number
+    contractId: number
+    event: number
+    recipientRole: number
+    attempts: number
+    nextAttemptAt: number
+    sentAt: number
+    skippedAt: number
+    claim: number
+    lastError: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NativeContractEmailAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type NativeContractEmailSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type NativeContractEmailMinAggregateInputType = {
+    id?: true
+    contractId?: true
+    event?: true
+    recipientRole?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    skippedAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type NativeContractEmailMaxAggregateInputType = {
+    id?: true
+    contractId?: true
+    event?: true
+    recipientRole?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    skippedAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+  }
+
+  export type NativeContractEmailCountAggregateInputType = {
+    id?: true
+    contractId?: true
+    event?: true
+    recipientRole?: true
+    attempts?: true
+    nextAttemptAt?: true
+    sentAt?: true
+    skippedAt?: true
+    claim?: true
+    lastError?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NativeContractEmailAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NativeContractEmail to aggregate.
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractEmails to fetch.
+     */
+    orderBy?: NativeContractEmailOrderByWithRelationInput | NativeContractEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: NativeContractEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned NativeContractEmails
+    **/
+    _count?: true | NativeContractEmailCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: NativeContractEmailAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: NativeContractEmailSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: NativeContractEmailMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: NativeContractEmailMaxAggregateInputType
+  }
+
+  export type GetNativeContractEmailAggregateType<T extends NativeContractEmailAggregateArgs> = {
+        [P in keyof T & keyof AggregateNativeContractEmail]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNativeContractEmail[P]>
+      : GetScalarType<T[P], AggregateNativeContractEmail[P]>
+  }
+
+
+
+
+  export type NativeContractEmailGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NativeContractEmailWhereInput
+    orderBy?: NativeContractEmailOrderByWithAggregationInput | NativeContractEmailOrderByWithAggregationInput[]
+    by: NativeContractEmailScalarFieldEnum[] | NativeContractEmailScalarFieldEnum
+    having?: NativeContractEmailScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NativeContractEmailCountAggregateInputType | true
+    _avg?: NativeContractEmailAvgAggregateInputType
+    _sum?: NativeContractEmailSumAggregateInputType
+    _min?: NativeContractEmailMinAggregateInputType
+    _max?: NativeContractEmailMaxAggregateInputType
+  }
+
+  export type NativeContractEmailGroupByOutputType = {
+    id: string
+    contractId: string
+    event: string
+    recipientRole: string
+    attempts: number
+    nextAttemptAt: Date
+    sentAt: Date | null
+    skippedAt: Date | null
+    claim: string | null
+    lastError: string | null
+    createdAt: Date
+    _count: NativeContractEmailCountAggregateOutputType | null
+    _avg: NativeContractEmailAvgAggregateOutputType | null
+    _sum: NativeContractEmailSumAggregateOutputType | null
+    _min: NativeContractEmailMinAggregateOutputType | null
+    _max: NativeContractEmailMaxAggregateOutputType | null
+  }
+
+  type GetNativeContractEmailGroupByPayload<T extends NativeContractEmailGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NativeContractEmailGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NativeContractEmailGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NativeContractEmailGroupByOutputType[P]>
+            : GetScalarType<T[P], NativeContractEmailGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NativeContractEmailSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    event?: boolean
+    recipientRole?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    skippedAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractEmail"]>
+
+  export type NativeContractEmailSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    event?: boolean
+    recipientRole?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    skippedAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractEmail"]>
+
+  export type NativeContractEmailSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    contractId?: boolean
+    event?: boolean
+    recipientRole?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    skippedAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["nativeContractEmail"]>
+
+  export type NativeContractEmailSelectScalar = {
+    id?: boolean
+    contractId?: boolean
+    event?: boolean
+    recipientRole?: boolean
+    attempts?: boolean
+    nextAttemptAt?: boolean
+    sentAt?: boolean
+    skippedAt?: boolean
+    claim?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+  }
+
+  export type NativeContractEmailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "contractId" | "event" | "recipientRole" | "attempts" | "nextAttemptAt" | "sentAt" | "skippedAt" | "claim" | "lastError" | "createdAt", ExtArgs["result"]["nativeContractEmail"]>
+  export type NativeContractEmailInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+  export type NativeContractEmailIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+  export type NativeContractEmailIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    contract?: boolean | BoosterContractDefaultArgs<ExtArgs>
+  }
+
+  export type $NativeContractEmailPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NativeContractEmail"
+    objects: {
+      contract: Prisma.$BoosterContractPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      contractId: string
+      event: string
+      recipientRole: string
+      attempts: number
+      nextAttemptAt: Date
+      sentAt: Date | null
+      skippedAt: Date | null
+      claim: string | null
+      lastError: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["nativeContractEmail"]>
+    composites: {}
+  }
+
+  type NativeContractEmailGetPayload<S extends boolean | null | undefined | NativeContractEmailDefaultArgs> = $Result.GetResult<Prisma.$NativeContractEmailPayload, S>
+
+  type NativeContractEmailCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NativeContractEmailFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NativeContractEmailCountAggregateInputType | true
+    }
+
+  export interface NativeContractEmailDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NativeContractEmail'], meta: { name: 'NativeContractEmail' } }
+    /**
+     * Find zero or one NativeContractEmail that matches the filter.
+     * @param {NativeContractEmailFindUniqueArgs} args - Arguments to find a NativeContractEmail
+     * @example
+     * // Get one NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NativeContractEmailFindUniqueArgs>(args: SelectSubset<T, NativeContractEmailFindUniqueArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NativeContractEmail that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NativeContractEmailFindUniqueOrThrowArgs} args - Arguments to find a NativeContractEmail
+     * @example
+     * // Get one NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NativeContractEmailFindUniqueOrThrowArgs>(args: SelectSubset<T, NativeContractEmailFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NativeContractEmail that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailFindFirstArgs} args - Arguments to find a NativeContractEmail
+     * @example
+     * // Get one NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NativeContractEmailFindFirstArgs>(args?: SelectSubset<T, NativeContractEmailFindFirstArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NativeContractEmail that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailFindFirstOrThrowArgs} args - Arguments to find a NativeContractEmail
+     * @example
+     * // Get one NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NativeContractEmailFindFirstOrThrowArgs>(args?: SelectSubset<T, NativeContractEmailFindFirstOrThrowArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NativeContractEmails that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NativeContractEmails
+     * const nativeContractEmails = await prisma.nativeContractEmail.findMany()
+     *
+     * // Get first 10 NativeContractEmails
+     * const nativeContractEmails = await prisma.nativeContractEmail.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const nativeContractEmailWithIdOnly = await prisma.nativeContractEmail.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends NativeContractEmailFindManyArgs>(args?: SelectSubset<T, NativeContractEmailFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NativeContractEmail.
+     * @param {NativeContractEmailCreateArgs} args - Arguments to create a NativeContractEmail.
+     * @example
+     * // Create one NativeContractEmail
+     * const NativeContractEmail = await prisma.nativeContractEmail.create({
+     *   data: {
+     *     // ... data to create a NativeContractEmail
+     *   }
+     * })
+     *
+     */
+    create<T extends NativeContractEmailCreateArgs>(args: SelectSubset<T, NativeContractEmailCreateArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NativeContractEmails.
+     * @param {NativeContractEmailCreateManyArgs} args - Arguments to create many NativeContractEmails.
+     * @example
+     * // Create many NativeContractEmails
+     * const nativeContractEmail = await prisma.nativeContractEmail.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends NativeContractEmailCreateManyArgs>(args?: SelectSubset<T, NativeContractEmailCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NativeContractEmails and returns the data saved in the database.
+     * @param {NativeContractEmailCreateManyAndReturnArgs} args - Arguments to create many NativeContractEmails.
+     * @example
+     * // Create many NativeContractEmails
+     * const nativeContractEmail = await prisma.nativeContractEmail.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many NativeContractEmails and only return the `id`
+     * const nativeContractEmailWithIdOnly = await prisma.nativeContractEmail.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends NativeContractEmailCreateManyAndReturnArgs>(args?: SelectSubset<T, NativeContractEmailCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NativeContractEmail.
+     * @param {NativeContractEmailDeleteArgs} args - Arguments to delete one NativeContractEmail.
+     * @example
+     * // Delete one NativeContractEmail
+     * const NativeContractEmail = await prisma.nativeContractEmail.delete({
+     *   where: {
+     *     // ... filter to delete one NativeContractEmail
+     *   }
+     * })
+     *
+     */
+    delete<T extends NativeContractEmailDeleteArgs>(args: SelectSubset<T, NativeContractEmailDeleteArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NativeContractEmail.
+     * @param {NativeContractEmailUpdateArgs} args - Arguments to update one NativeContractEmail.
+     * @example
+     * // Update one NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends NativeContractEmailUpdateArgs>(args: SelectSubset<T, NativeContractEmailUpdateArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NativeContractEmails.
+     * @param {NativeContractEmailDeleteManyArgs} args - Arguments to filter NativeContractEmails to delete.
+     * @example
+     * // Delete a few NativeContractEmails
+     * const { count } = await prisma.nativeContractEmail.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends NativeContractEmailDeleteManyArgs>(args?: SelectSubset<T, NativeContractEmailDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NativeContractEmails.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NativeContractEmails
+     * const nativeContractEmail = await prisma.nativeContractEmail.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends NativeContractEmailUpdateManyArgs>(args: SelectSubset<T, NativeContractEmailUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NativeContractEmails and returns the data updated in the database.
+     * @param {NativeContractEmailUpdateManyAndReturnArgs} args - Arguments to update many NativeContractEmails.
+     * @example
+     * // Update many NativeContractEmails
+     * const nativeContractEmail = await prisma.nativeContractEmail.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more NativeContractEmails and only return the `id`
+     * const nativeContractEmailWithIdOnly = await prisma.nativeContractEmail.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends NativeContractEmailUpdateManyAndReturnArgs>(args: SelectSubset<T, NativeContractEmailUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NativeContractEmail.
+     * @param {NativeContractEmailUpsertArgs} args - Arguments to update or create a NativeContractEmail.
+     * @example
+     * // Update or create a NativeContractEmail
+     * const nativeContractEmail = await prisma.nativeContractEmail.upsert({
+     *   create: {
+     *     // ... data to create a NativeContractEmail
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NativeContractEmail we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NativeContractEmailUpsertArgs>(args: SelectSubset<T, NativeContractEmailUpsertArgs<ExtArgs>>): Prisma__NativeContractEmailClient<$Result.GetResult<Prisma.$NativeContractEmailPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NativeContractEmails.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailCountArgs} args - Arguments to filter NativeContractEmails to count.
+     * @example
+     * // Count the number of NativeContractEmails
+     * const count = await prisma.nativeContractEmail.count({
+     *   where: {
+     *     // ... the filter for the NativeContractEmails we want to count
+     *   }
+     * })
+    **/
+    count<T extends NativeContractEmailCountArgs>(
+      args?: Subset<T, NativeContractEmailCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NativeContractEmailCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NativeContractEmail.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NativeContractEmailAggregateArgs>(args: Subset<T, NativeContractEmailAggregateArgs>): Prisma.PrismaPromise<GetNativeContractEmailAggregateType<T>>
+
+    /**
+     * Group by NativeContractEmail.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NativeContractEmailGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends NativeContractEmailGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NativeContractEmailGroupByArgs['orderBy'] }
+        : { orderBy?: NativeContractEmailGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NativeContractEmailGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNativeContractEmailGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NativeContractEmail model
+   */
+  readonly fields: NativeContractEmailFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NativeContractEmail.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NativeContractEmailClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    contract<T extends BoosterContractDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BoosterContractDefaultArgs<ExtArgs>>): Prisma__BoosterContractClient<$Result.GetResult<Prisma.$BoosterContractPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NativeContractEmail model
+   */
+  interface NativeContractEmailFieldRefs {
+    readonly id: FieldRef<"NativeContractEmail", 'String'>
+    readonly contractId: FieldRef<"NativeContractEmail", 'String'>
+    readonly event: FieldRef<"NativeContractEmail", 'String'>
+    readonly recipientRole: FieldRef<"NativeContractEmail", 'String'>
+    readonly attempts: FieldRef<"NativeContractEmail", 'Int'>
+    readonly nextAttemptAt: FieldRef<"NativeContractEmail", 'DateTime'>
+    readonly sentAt: FieldRef<"NativeContractEmail", 'DateTime'>
+    readonly skippedAt: FieldRef<"NativeContractEmail", 'DateTime'>
+    readonly claim: FieldRef<"NativeContractEmail", 'String'>
+    readonly lastError: FieldRef<"NativeContractEmail", 'String'>
+    readonly createdAt: FieldRef<"NativeContractEmail", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * NativeContractEmail findUnique
+   */
+  export type NativeContractEmailFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractEmail to fetch.
+     */
+    where: NativeContractEmailWhereUniqueInput
+  }
+
+  /**
+   * NativeContractEmail findUniqueOrThrow
+   */
+  export type NativeContractEmailFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractEmail to fetch.
+     */
+    where: NativeContractEmailWhereUniqueInput
+  }
+
+  /**
+   * NativeContractEmail findFirst
+   */
+  export type NativeContractEmailFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractEmail to fetch.
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractEmails to fetch.
+     */
+    orderBy?: NativeContractEmailOrderByWithRelationInput | NativeContractEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for NativeContractEmails.
+     */
+    cursor?: NativeContractEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractEmails.
+     */
+    distinct?: NativeContractEmailScalarFieldEnum | NativeContractEmailScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractEmail findFirstOrThrow
+   */
+  export type NativeContractEmailFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractEmail to fetch.
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractEmails to fetch.
+     */
+    orderBy?: NativeContractEmailOrderByWithRelationInput | NativeContractEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for NativeContractEmails.
+     */
+    cursor?: NativeContractEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractEmails.
+     */
+    distinct?: NativeContractEmailScalarFieldEnum | NativeContractEmailScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractEmail findMany
+   */
+  export type NativeContractEmailFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter, which NativeContractEmails to fetch.
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of NativeContractEmails to fetch.
+     */
+    orderBy?: NativeContractEmailOrderByWithRelationInput | NativeContractEmailOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing NativeContractEmails.
+     */
+    cursor?: NativeContractEmailWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` NativeContractEmails from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` NativeContractEmails.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of NativeContractEmails.
+     */
+    distinct?: NativeContractEmailScalarFieldEnum | NativeContractEmailScalarFieldEnum[]
+  }
+
+  /**
+   * NativeContractEmail create
+   */
+  export type NativeContractEmailCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NativeContractEmail.
+     */
+    data: XOR<NativeContractEmailCreateInput, NativeContractEmailUncheckedCreateInput>
+  }
+
+  /**
+   * NativeContractEmail createMany
+   */
+  export type NativeContractEmailCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NativeContractEmails.
+     */
+    data: NativeContractEmailCreateManyInput | NativeContractEmailCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NativeContractEmail createManyAndReturn
+   */
+  export type NativeContractEmailCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * The data used to create many NativeContractEmails.
+     */
+    data: NativeContractEmailCreateManyInput | NativeContractEmailCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NativeContractEmail update
+   */
+  export type NativeContractEmailUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NativeContractEmail.
+     */
+    data: XOR<NativeContractEmailUpdateInput, NativeContractEmailUncheckedUpdateInput>
+    /**
+     * Choose, which NativeContractEmail to update.
+     */
+    where: NativeContractEmailWhereUniqueInput
+  }
+
+  /**
+   * NativeContractEmail updateMany
+   */
+  export type NativeContractEmailUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NativeContractEmails.
+     */
+    data: XOR<NativeContractEmailUpdateManyMutationInput, NativeContractEmailUncheckedUpdateManyInput>
+    /**
+     * Filter which NativeContractEmails to update
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * Limit how many NativeContractEmails to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NativeContractEmail updateManyAndReturn
+   */
+  export type NativeContractEmailUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * The data used to update NativeContractEmails.
+     */
+    data: XOR<NativeContractEmailUpdateManyMutationInput, NativeContractEmailUncheckedUpdateManyInput>
+    /**
+     * Filter which NativeContractEmails to update
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * Limit how many NativeContractEmails to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NativeContractEmail upsert
+   */
+  export type NativeContractEmailUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NativeContractEmail to update in case it exists.
+     */
+    where: NativeContractEmailWhereUniqueInput
+    /**
+     * In case the NativeContractEmail found by the `where` argument doesn't exist, create a new NativeContractEmail with this data.
+     */
+    create: XOR<NativeContractEmailCreateInput, NativeContractEmailUncheckedCreateInput>
+    /**
+     * In case the NativeContractEmail was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NativeContractEmailUpdateInput, NativeContractEmailUncheckedUpdateInput>
+  }
+
+  /**
+   * NativeContractEmail delete
+   */
+  export type NativeContractEmailDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
+    /**
+     * Filter which NativeContractEmail to delete.
+     */
+    where: NativeContractEmailWhereUniqueInput
+  }
+
+  /**
+   * NativeContractEmail deleteMany
+   */
+  export type NativeContractEmailDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NativeContractEmails to delete
+     */
+    where?: NativeContractEmailWhereInput
+    /**
+     * Limit how many NativeContractEmails to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NativeContractEmail without action
+   */
+  export type NativeContractEmailDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NativeContractEmail
+     */
+    select?: NativeContractEmailSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NativeContractEmail
+     */
+    omit?: NativeContractEmailOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NativeContractEmailInclude<ExtArgs> | null
   }
 
 
@@ -60307,6 +61610,23 @@ export namespace Prisma {
   export type NativeContractSignatureScalarFieldEnum = (typeof NativeContractSignatureScalarFieldEnum)[keyof typeof NativeContractSignatureScalarFieldEnum]
 
 
+  export const NativeContractEmailScalarFieldEnum: {
+    id: 'id',
+    contractId: 'contractId',
+    event: 'event',
+    recipientRole: 'recipientRole',
+    attempts: 'attempts',
+    nextAttemptAt: 'nextAttemptAt',
+    sentAt: 'sentAt',
+    skippedAt: 'skippedAt',
+    claim: 'claim',
+    lastError: 'lastError',
+    createdAt: 'createdAt'
+  };
+
+  export type NativeContractEmailScalarFieldEnum = (typeof NativeContractEmailScalarFieldEnum)[keyof typeof NativeContractEmailScalarFieldEnum]
+
+
   export const SupportThreadScalarFieldEnum: {
     id: 'id',
     customerId: 'customerId',
@@ -62266,6 +63586,7 @@ export namespace Prisma {
     booster?: XOR<UserScalarRelationFilter, UserWhereInput>
     issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
     nativeSignatures?: NativeContractSignatureListRelationFilter
+    nativeEmails?: NativeContractEmailListRelationFilter
   }
 
   export type BoosterContractOrderByWithRelationInput = {
@@ -62306,6 +63627,7 @@ export namespace Prisma {
     booster?: UserOrderByWithRelationInput
     issuedBy?: UserOrderByWithRelationInput
     nativeSignatures?: NativeContractSignatureOrderByRelationAggregateInput
+    nativeEmails?: NativeContractEmailOrderByRelationAggregateInput
   }
 
   export type BoosterContractWhereUniqueInput = Prisma.AtLeast<{
@@ -62349,6 +63671,7 @@ export namespace Prisma {
     booster?: XOR<UserScalarRelationFilter, UserWhereInput>
     issuedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
     nativeSignatures?: NativeContractSignatureListRelationFilter
+    nativeEmails?: NativeContractEmailListRelationFilter
   }, "id" | "envelopeId" | "replacesContractId">
 
   export type BoosterContractOrderByWithAggregationInput = {
@@ -62536,6 +63859,93 @@ export namespace Prisma {
     signedAt?: DateTimeWithAggregatesFilter<"NativeContractSignature"> | Date | string
     clientIp?: StringNullableWithAggregatesFilter<"NativeContractSignature"> | string | null
     userAgent?: StringNullableWithAggregatesFilter<"NativeContractSignature"> | string | null
+  }
+
+  export type NativeContractEmailWhereInput = {
+    AND?: NativeContractEmailWhereInput | NativeContractEmailWhereInput[]
+    OR?: NativeContractEmailWhereInput[]
+    NOT?: NativeContractEmailWhereInput | NativeContractEmailWhereInput[]
+    id?: StringFilter<"NativeContractEmail"> | string
+    contractId?: StringFilter<"NativeContractEmail"> | string
+    event?: StringFilter<"NativeContractEmail"> | string
+    recipientRole?: StringFilter<"NativeContractEmail"> | string
+    attempts?: IntFilter<"NativeContractEmail"> | number
+    nextAttemptAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+    sentAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    skippedAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    claim?: StringNullableFilter<"NativeContractEmail"> | string | null
+    lastError?: StringNullableFilter<"NativeContractEmail"> | string | null
+    createdAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+    contract?: XOR<BoosterContractScalarRelationFilter, BoosterContractWhereInput>
+  }
+
+  export type NativeContractEmailOrderByWithRelationInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    event?: SortOrder
+    recipientRole?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    skippedAt?: SortOrderInput | SortOrder
+    claim?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    contract?: BoosterContractOrderByWithRelationInput
+  }
+
+  export type NativeContractEmailWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NativeContractEmailWhereInput | NativeContractEmailWhereInput[]
+    OR?: NativeContractEmailWhereInput[]
+    NOT?: NativeContractEmailWhereInput | NativeContractEmailWhereInput[]
+    contractId?: StringFilter<"NativeContractEmail"> | string
+    event?: StringFilter<"NativeContractEmail"> | string
+    recipientRole?: StringFilter<"NativeContractEmail"> | string
+    attempts?: IntFilter<"NativeContractEmail"> | number
+    nextAttemptAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+    sentAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    skippedAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    claim?: StringNullableFilter<"NativeContractEmail"> | string | null
+    lastError?: StringNullableFilter<"NativeContractEmail"> | string | null
+    createdAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+    contract?: XOR<BoosterContractScalarRelationFilter, BoosterContractWhereInput>
+  }, "id">
+
+  export type NativeContractEmailOrderByWithAggregationInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    event?: SortOrder
+    recipientRole?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    skippedAt?: SortOrderInput | SortOrder
+    claim?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: NativeContractEmailCountOrderByAggregateInput
+    _avg?: NativeContractEmailAvgOrderByAggregateInput
+    _max?: NativeContractEmailMaxOrderByAggregateInput
+    _min?: NativeContractEmailMinOrderByAggregateInput
+    _sum?: NativeContractEmailSumOrderByAggregateInput
+  }
+
+  export type NativeContractEmailScalarWhereWithAggregatesInput = {
+    AND?: NativeContractEmailScalarWhereWithAggregatesInput | NativeContractEmailScalarWhereWithAggregatesInput[]
+    OR?: NativeContractEmailScalarWhereWithAggregatesInput[]
+    NOT?: NativeContractEmailScalarWhereWithAggregatesInput | NativeContractEmailScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NativeContractEmail"> | string
+    contractId?: StringWithAggregatesFilter<"NativeContractEmail"> | string
+    event?: StringWithAggregatesFilter<"NativeContractEmail"> | string
+    recipientRole?: StringWithAggregatesFilter<"NativeContractEmail"> | string
+    attempts?: IntWithAggregatesFilter<"NativeContractEmail"> | number
+    nextAttemptAt?: DateTimeWithAggregatesFilter<"NativeContractEmail"> | Date | string
+    sentAt?: DateTimeNullableWithAggregatesFilter<"NativeContractEmail"> | Date | string | null
+    skippedAt?: DateTimeNullableWithAggregatesFilter<"NativeContractEmail"> | Date | string | null
+    claim?: StringNullableWithAggregatesFilter<"NativeContractEmail"> | string | null
+    lastError?: StringNullableWithAggregatesFilter<"NativeContractEmail"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"NativeContractEmail"> | Date | string
   }
 
   export type SupportThreadWhereInput = {
@@ -66303,6 +67713,7 @@ export namespace Prisma {
     booster: UserCreateNestedOneWithoutBoosterContractsInput
     issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
     nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateInput = {
@@ -66341,6 +67752,7 @@ export namespace Prisma {
     nativeCompletedAt?: Date | string | null
     replacesContractId?: string | null
     nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUpdateInput = {
@@ -66379,6 +67791,7 @@ export namespace Prisma {
     booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
     issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
     nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateInput = {
@@ -66417,6 +67830,7 @@ export namespace Prisma {
     nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractCreateManyInput = {
@@ -66651,6 +68065,103 @@ export namespace Prisma {
     signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clientIp?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractEmailCreateInput = {
+    id: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    contract: BoosterContractCreateNestedOneWithoutNativeEmailsInput
+  }
+
+  export type NativeContractEmailUncheckedCreateInput = {
+    id: string
+    contractId: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type NativeContractEmailUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contract?: BoosterContractUpdateOneRequiredWithoutNativeEmailsNestedInput
+  }
+
+  export type NativeContractEmailUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contractId?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NativeContractEmailCreateManyInput = {
+    id: string
+    contractId: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type NativeContractEmailUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NativeContractEmailUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contractId?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupportThreadCreateInput = {
@@ -70507,7 +72018,17 @@ export namespace Prisma {
     none?: NativeContractSignatureWhereInput
   }
 
+  export type NativeContractEmailListRelationFilter = {
+    every?: NativeContractEmailWhereInput
+    some?: NativeContractEmailWhereInput
+    none?: NativeContractEmailWhereInput
+  }
+
   export type NativeContractSignatureOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NativeContractEmailOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -70695,6 +72216,56 @@ export namespace Prisma {
     signedAt?: SortOrder
     clientIp?: SortOrder
     userAgent?: SortOrder
+  }
+
+  export type NativeContractEmailCountOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    event?: SortOrder
+    recipientRole?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    skippedAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NativeContractEmailAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type NativeContractEmailMaxOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    event?: SortOrder
+    recipientRole?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    skippedAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NativeContractEmailMinOrderByAggregateInput = {
+    id?: SortOrder
+    contractId?: SortOrder
+    event?: SortOrder
+    recipientRole?: SortOrder
+    attempts?: SortOrder
+    nextAttemptAt?: SortOrder
+    sentAt?: SortOrder
+    skippedAt?: SortOrder
+    claim?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NativeContractEmailSumOrderByAggregateInput = {
+    attempts?: SortOrder
   }
 
   export type SupportThreadCountOrderByAggregateInput = {
@@ -74052,11 +75623,25 @@ export namespace Prisma {
     connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
   }
 
+  export type NativeContractEmailCreateNestedManyWithoutContractInput = {
+    create?: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput> | NativeContractEmailCreateWithoutContractInput[] | NativeContractEmailUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractEmailCreateOrConnectWithoutContractInput | NativeContractEmailCreateOrConnectWithoutContractInput[]
+    createMany?: NativeContractEmailCreateManyContractInputEnvelope
+    connect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+  }
+
   export type NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput = {
     create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
     connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
     createMany?: NativeContractSignatureCreateManyContractInputEnvelope
     connect?: NativeContractSignatureWhereUniqueInput | NativeContractSignatureWhereUniqueInput[]
+  }
+
+  export type NativeContractEmailUncheckedCreateNestedManyWithoutContractInput = {
+    create?: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput> | NativeContractEmailCreateWithoutContractInput[] | NativeContractEmailUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractEmailCreateOrConnectWithoutContractInput | NativeContractEmailCreateOrConnectWithoutContractInput[]
+    createMany?: NativeContractEmailCreateManyContractInputEnvelope
+    connect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
   }
 
   export type NullableBytesFieldUpdateOperationsInput = {
@@ -74093,6 +75678,20 @@ export namespace Prisma {
     deleteMany?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
   }
 
+  export type NativeContractEmailUpdateManyWithoutContractNestedInput = {
+    create?: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput> | NativeContractEmailCreateWithoutContractInput[] | NativeContractEmailUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractEmailCreateOrConnectWithoutContractInput | NativeContractEmailCreateOrConnectWithoutContractInput[]
+    upsert?: NativeContractEmailUpsertWithWhereUniqueWithoutContractInput | NativeContractEmailUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: NativeContractEmailCreateManyContractInputEnvelope
+    set?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    disconnect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    delete?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    connect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    update?: NativeContractEmailUpdateWithWhereUniqueWithoutContractInput | NativeContractEmailUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: NativeContractEmailUpdateManyWithWhereWithoutContractInput | NativeContractEmailUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: NativeContractEmailScalarWhereInput | NativeContractEmailScalarWhereInput[]
+  }
+
   export type NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput = {
     create?: XOR<NativeContractSignatureCreateWithoutContractInput, NativeContractSignatureUncheckedCreateWithoutContractInput> | NativeContractSignatureCreateWithoutContractInput[] | NativeContractSignatureUncheckedCreateWithoutContractInput[]
     connectOrCreate?: NativeContractSignatureCreateOrConnectWithoutContractInput | NativeContractSignatureCreateOrConnectWithoutContractInput[]
@@ -74107,6 +75706,20 @@ export namespace Prisma {
     deleteMany?: NativeContractSignatureScalarWhereInput | NativeContractSignatureScalarWhereInput[]
   }
 
+  export type NativeContractEmailUncheckedUpdateManyWithoutContractNestedInput = {
+    create?: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput> | NativeContractEmailCreateWithoutContractInput[] | NativeContractEmailUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: NativeContractEmailCreateOrConnectWithoutContractInput | NativeContractEmailCreateOrConnectWithoutContractInput[]
+    upsert?: NativeContractEmailUpsertWithWhereUniqueWithoutContractInput | NativeContractEmailUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: NativeContractEmailCreateManyContractInputEnvelope
+    set?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    disconnect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    delete?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    connect?: NativeContractEmailWhereUniqueInput | NativeContractEmailWhereUniqueInput[]
+    update?: NativeContractEmailUpdateWithWhereUniqueWithoutContractInput | NativeContractEmailUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: NativeContractEmailUpdateManyWithWhereWithoutContractInput | NativeContractEmailUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: NativeContractEmailScalarWhereInput | NativeContractEmailScalarWhereInput[]
+  }
+
   export type BoosterContractCreateNestedOneWithoutNativeSignaturesInput = {
     create?: XOR<BoosterContractCreateWithoutNativeSignaturesInput, BoosterContractUncheckedCreateWithoutNativeSignaturesInput>
     connectOrCreate?: BoosterContractCreateOrConnectWithoutNativeSignaturesInput
@@ -74119,6 +75732,20 @@ export namespace Prisma {
     upsert?: BoosterContractUpsertWithoutNativeSignaturesInput
     connect?: BoosterContractWhereUniqueInput
     update?: XOR<XOR<BoosterContractUpdateToOneWithWhereWithoutNativeSignaturesInput, BoosterContractUpdateWithoutNativeSignaturesInput>, BoosterContractUncheckedUpdateWithoutNativeSignaturesInput>
+  }
+
+  export type BoosterContractCreateNestedOneWithoutNativeEmailsInput = {
+    create?: XOR<BoosterContractCreateWithoutNativeEmailsInput, BoosterContractUncheckedCreateWithoutNativeEmailsInput>
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutNativeEmailsInput
+    connect?: BoosterContractWhereUniqueInput
+  }
+
+  export type BoosterContractUpdateOneRequiredWithoutNativeEmailsNestedInput = {
+    create?: XOR<BoosterContractCreateWithoutNativeEmailsInput, BoosterContractUncheckedCreateWithoutNativeEmailsInput>
+    connectOrCreate?: BoosterContractCreateOrConnectWithoutNativeEmailsInput
+    upsert?: BoosterContractUpsertWithoutNativeEmailsInput
+    connect?: BoosterContractWhereUniqueInput
+    update?: XOR<XOR<BoosterContractUpdateToOneWithWhereWithoutNativeEmailsInput, BoosterContractUpdateWithoutNativeEmailsInput>, BoosterContractUncheckedUpdateWithoutNativeEmailsInput>
   }
 
   export type UserCreateNestedOneWithoutSupportThreadInput = {
@@ -76398,6 +78025,7 @@ export namespace Prisma {
     replacesContractId?: string | null
     issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
     nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateWithoutBoosterInput = {
@@ -76435,6 +78063,7 @@ export namespace Prisma {
     nativeCompletedAt?: Date | string | null
     replacesContractId?: string | null
     nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractCreateOrConnectWithoutBoosterInput = {
@@ -76482,6 +78111,7 @@ export namespace Prisma {
     replacesContractId?: string | null
     booster: UserCreateNestedOneWithoutBoosterContractsInput
     nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateWithoutIssuedByInput = {
@@ -76519,6 +78149,7 @@ export namespace Prisma {
     nativeCompletedAt?: Date | string | null
     replacesContractId?: string | null
     nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
+    nativeEmails?: NativeContractEmailUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractCreateOrConnectWithoutIssuedByInput = {
@@ -81388,6 +83019,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type NativeContractEmailCreateWithoutContractInput = {
+    id: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type NativeContractEmailUncheckedCreateWithoutContractInput = {
+    id: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
+  export type NativeContractEmailCreateOrConnectWithoutContractInput = {
+    where: NativeContractEmailWhereUniqueInput
+    create: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput>
+  }
+
+  export type NativeContractEmailCreateManyContractInputEnvelope = {
+    data: NativeContractEmailCreateManyContractInput | NativeContractEmailCreateManyContractInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutBoosterContractsInput = {
     update: XOR<UserUpdateWithoutBoosterContractsInput, UserUncheckedUpdateWithoutBoosterContractsInput>
     create: XOR<UserCreateWithoutBoosterContractsInput, UserUncheckedCreateWithoutBoosterContractsInput>
@@ -81639,6 +83306,39 @@ export namespace Prisma {
     userAgent?: StringNullableFilter<"NativeContractSignature"> | string | null
   }
 
+  export type NativeContractEmailUpsertWithWhereUniqueWithoutContractInput = {
+    where: NativeContractEmailWhereUniqueInput
+    update: XOR<NativeContractEmailUpdateWithoutContractInput, NativeContractEmailUncheckedUpdateWithoutContractInput>
+    create: XOR<NativeContractEmailCreateWithoutContractInput, NativeContractEmailUncheckedCreateWithoutContractInput>
+  }
+
+  export type NativeContractEmailUpdateWithWhereUniqueWithoutContractInput = {
+    where: NativeContractEmailWhereUniqueInput
+    data: XOR<NativeContractEmailUpdateWithoutContractInput, NativeContractEmailUncheckedUpdateWithoutContractInput>
+  }
+
+  export type NativeContractEmailUpdateManyWithWhereWithoutContractInput = {
+    where: NativeContractEmailScalarWhereInput
+    data: XOR<NativeContractEmailUpdateManyMutationInput, NativeContractEmailUncheckedUpdateManyWithoutContractInput>
+  }
+
+  export type NativeContractEmailScalarWhereInput = {
+    AND?: NativeContractEmailScalarWhereInput | NativeContractEmailScalarWhereInput[]
+    OR?: NativeContractEmailScalarWhereInput[]
+    NOT?: NativeContractEmailScalarWhereInput | NativeContractEmailScalarWhereInput[]
+    id?: StringFilter<"NativeContractEmail"> | string
+    contractId?: StringFilter<"NativeContractEmail"> | string
+    event?: StringFilter<"NativeContractEmail"> | string
+    recipientRole?: StringFilter<"NativeContractEmail"> | string
+    attempts?: IntFilter<"NativeContractEmail"> | number
+    nextAttemptAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+    sentAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    skippedAt?: DateTimeNullableFilter<"NativeContractEmail"> | Date | string | null
+    claim?: StringNullableFilter<"NativeContractEmail"> | string | null
+    lastError?: StringNullableFilter<"NativeContractEmail"> | string | null
+    createdAt?: DateTimeFilter<"NativeContractEmail"> | Date | string
+  }
+
   export type BoosterContractCreateWithoutNativeSignaturesInput = {
     id?: string
     title: string
@@ -81674,6 +83374,7 @@ export namespace Prisma {
     replacesContractId?: string | null
     booster: UserCreateNestedOneWithoutBoosterContractsInput
     issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+    nativeEmails?: NativeContractEmailCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractUncheckedCreateWithoutNativeSignaturesInput = {
@@ -81711,6 +83412,7 @@ export namespace Prisma {
     nativePdfHash?: string | null
     nativeCompletedAt?: Date | string | null
     replacesContractId?: string | null
+    nativeEmails?: NativeContractEmailUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type BoosterContractCreateOrConnectWithoutNativeSignaturesInput = {
@@ -81764,6 +83466,7 @@ export namespace Prisma {
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
     issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+    nativeEmails?: NativeContractEmailUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateWithoutNativeSignaturesInput = {
@@ -81801,6 +83504,175 @@ export namespace Prisma {
     nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
     nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeEmails?: NativeContractEmailUncheckedUpdateManyWithoutContractNestedInput
+  }
+
+  export type BoosterContractCreateWithoutNativeEmailsInput = {
+    id?: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    booster: UserCreateNestedOneWithoutBoosterContractsInput
+    issuedBy: UserCreateNestedOneWithoutIssuedBoosterContractsInput
+    nativeSignatures?: NativeContractSignatureCreateNestedManyWithoutContractInput
+  }
+
+  export type BoosterContractUncheckedCreateWithoutNativeEmailsInput = {
+    id?: string
+    boosterId: string
+    issuedById: string
+    title: string
+    templateId: string
+    accountId: string
+    environment: string
+    envelopeId?: string | null
+    signerName: string
+    signerEmail: string
+    companySignerName?: string | null
+    companySignerEmail?: string | null
+    boosterSignedAt?: Date | string | null
+    companySignedAt?: Date | string | null
+    status?: string
+    sendAttemptAt?: Date | string | null
+    sendError?: string | null
+    lastSyncedAt?: Date | string | null
+    startsAt: Date | string
+    createdAt?: Date | string
+    signedAt?: Date | string | null
+    signedName?: string | null
+    viewedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    archivedAt?: Date | string | null
+    signingProvider?: string
+    nativeCompanySignerId?: string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: string | null
+    nativePreparedAt?: Date | string | null
+    nativePdf?: Bytes | null
+    nativePdfHash?: string | null
+    nativeCompletedAt?: Date | string | null
+    replacesContractId?: string | null
+    nativeSignatures?: NativeContractSignatureUncheckedCreateNestedManyWithoutContractInput
+  }
+
+  export type BoosterContractCreateOrConnectWithoutNativeEmailsInput = {
+    where: BoosterContractWhereUniqueInput
+    create: XOR<BoosterContractCreateWithoutNativeEmailsInput, BoosterContractUncheckedCreateWithoutNativeEmailsInput>
+  }
+
+  export type BoosterContractUpsertWithoutNativeEmailsInput = {
+    update: XOR<BoosterContractUpdateWithoutNativeEmailsInput, BoosterContractUncheckedUpdateWithoutNativeEmailsInput>
+    create: XOR<BoosterContractCreateWithoutNativeEmailsInput, BoosterContractUncheckedCreateWithoutNativeEmailsInput>
+    where?: BoosterContractWhereInput
+  }
+
+  export type BoosterContractUpdateToOneWithWhereWithoutNativeEmailsInput = {
+    where?: BoosterContractWhereInput
+    data: XOR<BoosterContractUpdateWithoutNativeEmailsInput, BoosterContractUncheckedUpdateWithoutNativeEmailsInput>
+  }
+
+  export type BoosterContractUpdateWithoutNativeEmailsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
+    issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
+    nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
+  }
+
+  export type BoosterContractUncheckedUpdateWithoutNativeEmailsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boosterId?: StringFieldUpdateOperationsInput | string
+    issuedById?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
+    envelopeId?: NullableStringFieldUpdateOperationsInput | string | null
+    signerName?: StringFieldUpdateOperationsInput | string
+    signerEmail?: StringFieldUpdateOperationsInput | string
+    companySignerName?: NullableStringFieldUpdateOperationsInput | string | null
+    companySignerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterSignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companySignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    sendAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sendError?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signedName?: NullableStringFieldUpdateOperationsInput | string | null
+    viewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    signingProvider?: StringFieldUpdateOperationsInput | string
+    nativeCompanySignerId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    nativeDocumentHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativePreparedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nativePdf?: NullableBytesFieldUpdateOperationsInput | Bytes | null
+    nativePdfHash?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
+    nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type UserCreateWithoutSupportThreadInput = {
@@ -93041,6 +94913,7 @@ export namespace Prisma {
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: UserUpdateOneRequiredWithoutIssuedBoosterContractsNestedInput
     nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateWithoutBoosterInput = {
@@ -93078,6 +94951,7 @@ export namespace Prisma {
     nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateManyWithoutBoosterInput = {
@@ -93151,6 +95025,7 @@ export namespace Prisma {
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     booster?: UserUpdateOneRequiredWithoutBoosterContractsNestedInput
     nativeSignatures?: NativeContractSignatureUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateWithoutIssuedByInput = {
@@ -93188,6 +95063,7 @@ export namespace Prisma {
     nativeCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     replacesContractId?: NullableStringFieldUpdateOperationsInput | string | null
     nativeSignatures?: NativeContractSignatureUncheckedUpdateManyWithoutContractNestedInput
+    nativeEmails?: NativeContractEmailUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type BoosterContractUncheckedUpdateManyWithoutIssuedByInput = {
@@ -94413,6 +96289,19 @@ export namespace Prisma {
     userAgent?: string | null
   }
 
+  export type NativeContractEmailCreateManyContractInput = {
+    id: string
+    event: string
+    recipientRole: string
+    attempts?: number
+    nextAttemptAt?: Date | string
+    sentAt?: Date | string | null
+    skippedAt?: Date | string | null
+    claim?: string | null
+    lastError?: string | null
+    createdAt?: Date | string
+  }
+
   export type NativeContractSignatureUpdateWithoutContractInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -94462,6 +96351,45 @@ export namespace Prisma {
     signedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clientIp?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NativeContractEmailUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NativeContractEmailUncheckedUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NativeContractEmailUncheckedUpdateManyWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    recipientRole?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    nextAttemptAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    skippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    claim?: NullableStringFieldUpdateOperationsInput | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SupportMessageCreateManyThreadInput = {

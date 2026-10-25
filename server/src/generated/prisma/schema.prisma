@@ -307,6 +307,7 @@ model BoosterContract {
   nativeCompletedAt     DateTime?
   replacesContractId    String?                   @unique
   nativeSignatures      NativeContractSignature[]
+  nativeEmails          NativeContractEmail[]
 
   @@index([boosterId, createdAt])
   @@index([boosterId, archivedAt, createdAt])
@@ -332,6 +333,24 @@ model NativeContractSignature {
 
   @@unique([contractId, role])
   @@unique([contractId, requestId])
+}
+
+model NativeContractEmail {
+  id            String          @id
+  contractId    String
+  contract      BoosterContract @relation(fields: [contractId], references: [id], onDelete: Restrict)
+  event         String
+  recipientRole String
+  attempts      Int             @default(0)
+  nextAttemptAt DateTime        @default(now())
+  sentAt        DateTime?
+  skippedAt     DateTime?
+  claim         String?
+  lastError     String?
+  createdAt     DateTime        @default(now())
+
+  @@index([sentAt, skippedAt, nextAttemptAt])
+  @@index([contractId, event])
 }
 
 model SupportThread {

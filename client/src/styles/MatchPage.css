@@ -55,6 +55,21 @@
   padding: 34px 0 70px;
 }
 
+.service-banner-card.match-order-banner {
+  padding-block: 18px;
+  margin-bottom: 12px;
+}
+
+.match-order-banner .section-label {
+  margin-bottom: 4px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.match-order-banner .service-banner-title {
+  margin: 0;
+}
+
 .match-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);

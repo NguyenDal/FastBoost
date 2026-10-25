@@ -344,6 +344,20 @@ exports.Prisma.NativeContractSignatureScalarFieldEnum = {
   userAgent: 'userAgent'
 };
 
+exports.Prisma.NativeContractEmailScalarFieldEnum = {
+  id: 'id',
+  contractId: 'contractId',
+  event: 'event',
+  recipientRole: 'recipientRole',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  sentAt: 'sentAt',
+  skippedAt: 'skippedAt',
+  claim: 'claim',
+  lastError: 'lastError',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SupportThreadScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
@@ -818,6 +832,7 @@ exports.Prisma.ModelName = {
   BoosterEarningsEntry: 'BoosterEarningsEntry',
   BoosterContract: 'BoosterContract',
   NativeContractSignature: 'NativeContractSignature',
+  NativeContractEmail: 'NativeContractEmail',
   SupportThread: 'SupportThread',
   SupportMessage: 'SupportMessage',
   SupportPresence: 'SupportPresence',

@@ -28,3 +28,52 @@
  .fb-sources{font-size:8pt!important}
 }
 
+/* Interactive signing view: controls live beside their terms inside the document. */
+body.fb-signing .fb-header,body.fb-signing .fb-eyebrow,body.fb-signing .fb-sidebar,body.fb-signing .fb-mobile-contents,body.fb-signing .fb-footer{display:none!important}
+body.fb-signing .fb-hero{padding-top:25px}
+body.fb-signing .fb-layout{display:block;padding-top:30px}
+body.fb-signing .fb-main{max-width:1000px;margin-inline:auto}
+body.fb-signing .fb-container{width:min(1080px,calc(100% - 64px))}
+body.fb-signing [data-native-field]{display:inline;width:auto;vertical-align:baseline}
+body.fb-signing.native-is-editing [data-native-field]:has(.native-inline-field){display:inline-block;width:min(100%,430px);vertical-align:middle}
+body.fb-signing.native-is-editing [data-native-field]>[data-native-value]{display:none}
+body.fb-signing .native-inline-field{display:grid;gap:5px;width:100%;color:#e7e5f0}
+body.fb-signing .native-inline-field :is(input,textarea),body.fb-signing .native-signature-form input:not([type=radio]):not([type=checkbox]){box-sizing:border-box;display:block;width:100%;min-width:0;padding:10px 12px;border:1px solid #685d88;background:#181627;color:#f5f1fc;border-radius:7px;font:inherit;font-size:14px;line-height:1.45}
+body.fb-signing .native-inline-field :is(input,textarea):focus,body.fb-signing .native-signature-form input:focus{border-color:#bca6fa;box-shadow:0 0 0 2px #8b61dc50;outline:0}
+body.fb-signing .native-inline-field textarea{resize:vertical;min-height:85px}
+body.fb-signing .native-inline-field small,body.fb-signing .native-fixed-value small{display:block;margin-top:5px;color:#aeb9cd;font-size:11px;line-height:1.55;font-weight:400}
+body.fb-signing .native-inline-field :is(input,textarea):disabled,body.fb-signing .native-signature-form :is(input,button):disabled{opacity:.6;cursor:not-allowed}
+body.fb-signing .native-inline-mirror{color:#e4d9ff;overflow-wrap:anywhere}
+body.fb-signing .native-fixed-value{color:#e4d9ff}
+body.fb-signing .native-inline-actions{margin:24px 0 0;padding:20px 22px;border:1px solid #665384;border-radius:10px;background:#1d1b2c}
+body.fb-signing .native-inline-notice{margin:22px 0;padding:12px 16px;border-left:3px solid #a388df;background:#211d32;color:#e3d9f4}
+body.fb-signing .native-inline-notice strong{display:block;font-size:14px;line-height:1.5}
+body.fb-signing .native-inline-notice p{margin:5px 0 0;color:#c7c9dd;font-size:13px;line-height:1.6}
+body.fb-signing .native-inline-notice button.native-text-button{margin-top:10px;padding:0;border:0;background:none;color:#d2c0ff;font:inherit;font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+body.fb-signing .native-inline-actions h3,body.fb-signing .native-signature-form h3{margin:0 0 8px;font-size:18px;line-height:1.4;color:#f0eaf8}
+body.fb-signing .native-inline-actions p,body.fb-signing .native-signature-form>p{margin:0 0 17px;color:#bfcbdb;font-size:13px;line-height:1.65}
+body.fb-signing .native-inline-actions button,body.fb-signing .native-signature-form button{font:inherit;font-size:13px;line-height:1.4;padding:10px 14px;color:#f5efff;background:#2c2840;border:1px solid #75668f;border-radius:8px;cursor:pointer;min-height:42px}
+body.fb-signing button.native-primary{background:linear-gradient(100deg,#8539ed,#5842eb);border-color:#9660f2;font-weight:700}
+body.fb-signing .native-signature-form{display:grid;gap:16px;max-width:620px;margin:15px 0 28px;padding:23px;border:1px solid #665384;border-radius:10px;background:#1d1b2c}
+body.fb-signing .native-signature-form>p{margin:0}
+body.fb-signing .native-signature-form>label:not(.native-signing-consent){display:grid;gap:6px;color:#d5d8e8;font-size:12px;line-height:1.5}
+body.fb-signing .native-signature-form button.native-text-button{justify-self:start;min-height:25px;padding:0;border:0;background:none;color:#d0beff;text-decoration:underline;text-underline-offset:3px}
+body.fb-signing .native-signature-method{min-width:0;margin:0;padding:0;border:0}
+body.fb-signing .native-signature-method legend{font-size:12px;color:#c9cee0;margin-bottom:9px}
+body.fb-signing .native-signature-method>div{display:flex;gap:20px}
+body.fb-signing .native-signature-method label{display:flex;align-items:center;gap:7px;color:#d4d8e6;font-size:12px}
+body.fb-signing .native-signature-method input{accent-color:#9e74ed;margin:0}
+body.fb-signing .native-typed-signature{display:flex;align-items:center;justify-content:center;min-height:100px;padding:18px;background:#fff;border:1px solid #d7d0e3;border-radius:10px;color:#29213d;font-family:'Segoe Print','Bradley Hand',cursive;font-size:30px;font-style:italic;overflow-wrap:anywhere;text-align:center}
+body.fb-signing .native-signature-pad{border:1px solid #d7d0e3;border-radius:10px;background:#fff;overflow:hidden}
+body.fb-signing .native-signature-pad canvas{display:block;width:100%;height:150px;touch-action:none;cursor:crosshair;background:linear-gradient(to top,transparent 24px,#d8d2e2 25px,transparent 26px)}
+body.fb-signing .native-signature-pad>div{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid #e8e3ee}
+body.fb-signing .native-signature-pad>div>p{font-size:10px;line-height:1.5;color:#625970;margin:0}
+body.fb-signing .native-signature-pad button{min-height:30px;padding:4px 9px;font-size:11px;color:#55436f;background:#f4f0fa;border-color:#d9cfe8}
+body.fb-signing .native-signing-consent{display:flex;align-items:flex-start;gap:10px;color:#d2d6e5;font-size:12px;line-height:1.7}
+body.fb-signing .native-signing-consent input{flex-shrink:0;width:17px;height:17px;accent-color:#9a6ee8;margin:3px 0 0}
+body.fb-signing .native-signature-form>p.native-signing-privacy{color:#aab5c9;font-size:11px;line-height:1.65}
+body.fb-signing .native-signature-form>p.native-consent-translation{padding:10px 12px;border-left:3px solid #a78be9;background:#2c2440;color:#dcd2f0;font-size:12px}
+body.fb-signing .native-signing-pending{padding:14px;border:1px solid #d8b46f35;border-radius:9px;background:#bb8c2310}
+body.fb-signing .native-signing-pending p{font-size:12px;line-height:1.5;margin:0 0 10px;color:#ddc998}
+@media(max-width:600px){body.fb-signing .fb-container{width:calc(100% - 32px)}body.fb-signing .fb-layout{padding-top:20px}body.fb-signing.native-is-editing [data-native-field]:has(.native-inline-field){width:min(100%,320px)}body.fb-signing .native-inline-actions,body.fb-signing .native-signature-form{padding:17px}body.fb-signing .native-signature-pad canvas{height:170px}}
+

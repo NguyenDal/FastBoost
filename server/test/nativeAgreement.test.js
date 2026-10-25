@@ -8,16 +8,17 @@ const contract = {
 };
 const values = () => ({ ...Object.fromEntries(agreement.commercialFields().map(field => [field.key, field.defaultValue])),
     WorkLocation: 'Manitoba, Canada', PaymentMethod: 'Bank transfer', PayeeLegalName: 'Nguyễn Minh Anh',
-    ServiceScope: 'League of Legends coaching, permitted publisher methods', ProviderTimeZone: 'America/Winnipeg', DataAccessCountries: 'Canada' });
+    ProviderTimeZone: 'America/Winnipeg' });
 const signature = (role, legalName, initials, time) => ({ role, legalName, initials, signedAt: time,
     signature: { type: 'typed' }, actorId: role.toLowerCase(), requestId: `${role}-test-request`,
     consentText: 'I agree to use electronic signatures and sign this exact agreement and Schedule A.' });
 
 test('issued snapshot is self-contained, current, and hash binds every accepted value', () => {
     const snapshot = agreement.createSnapshot(contract, agreement.validateValues(values()));
-    assert.equal(snapshot.version, 'FB-BSA-2.1');
+    assert.equal(snapshot.version, 'FB-BSA-2.2');
     assert.equal(snapshot.values.AgreementId, contract.id);
     assert.equal(snapshot.values.ProviderLegalName, contract.signerName);
+    assert.equal(snapshot.fields.some(field => field.tabLabel === 'ReferenceLanguage'), false, 'fixed languages do not create a PDF entry field');
     assert.equal(Buffer.from(snapshot.documentBase64, 'base64').subarray(0, 5).toString(), '%PDF-');
     assert.doesNotMatch(snapshot.htmlSource, /DocuSign|SANDBOX TEST COPY/);
     assert.equal(agreement.snapshotHash(snapshot), agreement.snapshotHash(JSON.parse(JSON.stringify(snapshot))));
@@ -28,10 +29,16 @@ test('issued snapshot is self-contained, current, and hash binds every accepted 
 });
 
 test('commercial settings reject missing fields, control characters and forged locked identities', () => {
+    assert.equal(agreement.commercialFields().length, 7);
+    assert.equal(agreement.commercialFields().find(field => field.key === 'ReferenceLanguage').defaultValue, 'English/Vietnamese');
+    assert.equal(agreement.commercialFields().some(field => ['AuthorizedSignatory', 'ServiceScope', 'JurisdictionAddendum', 'DataAccessCountries'].includes(field.key)), false);
     assert.throws(() => agreement.validateValues({ ...values(), ProviderLegalName: 'Someone Else' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), WorkLocation: ' ' }), /work country/);
     assert.throws(() => agreement.validateValues({ ...values(), PaymentMethod: 'a'.repeat(71) }), /payment method/);
-    assert.throws(() => agreement.validateValues({ ...values(), ServiceScope: 'valid\u0000hidden' }), /games/);
+    assert.throws(() => agreement.validateValues({ ...values(), ServiceScope: 'not in this version' }), /unknown/);
+    assert.throws(() => agreement.validateValues({ ...values(), AuthorizedSignatory: 'Not applicable' }), /unknown/);
+    assert.throws(() => agreement.validateValues({ ...values(), DataAccessCountries: 'Canada' }), /unknown/);
+    assert.throws(() => agreement.validateValues({ ...values(), ReferenceLanguage: 'English only' }), /languages cannot be changed/);
     const normalized = agreement.validateValues({ ...values(), PayeeLegalName: '  Nguyễn Minh Anh  ' });
     assert.equal(normalized.PayeeLegalName, contract.signerName);
 });
@@ -43,7 +50,22 @@ test('HTML preview fills repeated values and escapes names, terms and saved sign
     assert.doesNotMatch(html, /<script>|<img src=x|<svg onload|data-download-agreement|data-print\b/);
     assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
     assert.equal((html.match(/&lt;script&gt;/g) || []).length, 2, 'work location is synchronized in both sections');
+    assert.equal((html.match(/data-native-field="WorkLocation"/g) || []).length, 2, 'repeated agreement values have stable inline field markers');
+    assert.match(html, /data-native-field="ReferenceLanguage"><span data-native-value>/);
+    assert.doesNotMatch(html, /data-native-field="ProviderLegalName"/, 'locked identities do not become commercial inputs');
     assert.doesNotMatch(html, /\[PROVIDER_LEGAL_NAME\]|\[WORK_COUNTRY/);
+    assert.doesNotMatch(html, /Permitted service scope — required|Jurisdiction addendum \/ variations — required/);
+    assert.doesNotMatch(html, /Authorized signatory, if a business|data-native-field="AuthorizedSignatory"|data-native-field="DataAccessCountries"/);
+    assert.match(html, /<td>Available languages<\/td><td><span class="fb-template"><span data-native-field="ReferenceLanguage"><span data-native-value>English\/Vietnamese<\/span><\/span><\/span><\/td>/);
+});
+
+test('historical signed snapshots still display removed version 2.1 values', () => {
+    const html = agreement.renderHtml({ htmlSource: '<html><head></head><body><span class="fb-template">[SIGNATORY_NAME_AND_TITLE / NOT APPLICABLE]</span><span class="fb-template">[GAMES / SERVICES / REGIONS / PERMITTED METHODS]</span><span class="fb-template">[NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM]</span></body></html>',
+        values: { AuthorizedSignatory: 'Not applicable', ServiceScope: 'League of Legends coaching', JurisdictionAddendum: 'None required' } });
+    assert.match(html, /League of Legends coaching/);
+    assert.match(html, /Not applicable/);
+    assert.match(html, /None required/);
+    assert.doesNotMatch(html, /\[GAMES|\[NONE REQUIRED/);
 });
 
 test('PDF supports Vietnamese identities, both signature methods and a completion record', async () => {

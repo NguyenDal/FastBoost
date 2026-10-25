@@ -1,6 +1,7 @@
 const { createHash } = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const agreement = require('./nativeAgreement');
+const { queueNativeContractEmail } = require('./nativeContractEmail');
 
 const PROVIDER = 'FASTBOOST';
 const CONSENT_TEXT = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature and initials to bind me to this exact agreement. I can download and retain a completed copy.';
@@ -9,14 +10,19 @@ const HASH = /^[a-f0-9]{64}$/;
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const digest = value => createHash('sha256').update(value).digest('hex');
 const native = contract => contract.signingProvider === PROVIDER;
+const firstSignerRole = snapshot => snapshot.version === 'FB-BSA-2.1' ? 'COMPANY' : 'BOOSTER';
+const unsignedOldVersion = contract => !contract.archivedAt && !contract.revokedAt && !['voided', 'declined', 'replaced'].includes(contract.status)
+    && !contract.companySignedAt && !contract.boosterSignedAt && !contract.signedAt
+    && contract.nativeSnapshot?.version !== agreement.VERSION;
 const email = value => String(value || '').trim().toLowerCase();
 const eligible = actor => actor.role === 'PROVIDER' || actor.hasBoosterAccess;
 const sameName = (left, right) => left.normalize('NFKC').replace(/\s+/g, ' ').toLowerCase() === right.normalize('NFKC').replace(/\s+/g, ' ').toLowerCase();
 
 function publicContract(contract) {
     if (!contract) return null;
+    const documentAvailable = native(contract) ? Boolean(contract.nativePdf && contract.nativePreparedAt && !unsignedOldVersion(contract)) : Boolean(contract.envelopeId);
     const { nativeSnapshot, nativePdf, nativeSignatures, ...record } = contract;
-    return { ...record, signingProvider: record.signingProvider || 'DOCUSIGN', documentAvailable: native(contract) ? Boolean(nativePdf && contract.nativePreparedAt) : Boolean(contract.envelopeId) };
+    return { ...record, signingProvider: record.signingProvider || 'DOCUSIGN', documentAvailable };
 }
 async function activeActor(db, actor) {
     const current = actor?.id && await db.user.findUnique({ where: { id: actor.id } });
@@ -75,13 +81,14 @@ async function issue(db, input, company) {
     const contract = await db.boosterContract.upsert({ where: { id: input.requestId }, update: {}, create });
     if (!native(contract) || !matchesCreation(contract, input) || (contract.replacesContractId || null) !== (input.replacesContractId || null)) fail(409, 'This request already belongs to another agreement.');
     await db.notification.upsert({ where: { id: `contract-${contract.id}` }, update: {}, create: {
-        id: `contract-${contract.id}`, userId: contract.boosterId, type: 'BOOSTER_CONTRACT', title: 'New agreement awaiting FastBoost signature',
+        id: `contract-${contract.id}`, userId: contract.boosterId, type: 'BOOSTER_CONTRACT', title: 'Awaiting FastBoost agreement details',
         message: contract.title, data: { targetPath: `/provider/contracts/${contract.id}` },
     } });
     await db.notification.upsert({ where: { id: `contract-company-${contract.id}` }, update: {}, create: {
-        id: `contract-company-${contract.id}`, userId: contract.nativeCompanySignerId, type: 'BOOSTER_CONTRACT', title: 'Agreement ready for your signature',
+        id: `contract-company-${contract.id}`, userId: contract.nativeCompanySignerId, type: 'BOOSTER_CONTRACT', title: 'Complete the agreement details',
         message: contract.title, data: { targetPath: `/provider/contracts/${contract.id}` },
     } });
+    await queueNativeContractEmail(db, contract.id, 'ISSUED');
     return contract;
 }
 async function createContract(db, input) {
@@ -108,17 +115,26 @@ function assertOpen(contract) {
     if (contract.revokedAt || ['replaced', 'voided', 'declined'].includes(contract.status)) fail(409, 'This agreement is no longer available for signing.');
 }
 function verifyFrozen(contract) {
-    if (!contract.nativePreparedAt || !contract.nativeDocumentHash || !contract.nativePdf || !contract.nativePdfHash) fail(409, 'FastBoost must prepare the completed agreement before signing.');
+    if (!contract.nativePreparedAt || !contract.nativeDocumentHash || !contract.nativePdf || !contract.nativePdfHash) fail(409, 'FastBoost must complete the agreement details before signing.');
     if (agreement.snapshotHash(contract.nativeSnapshot) !== contract.nativeDocumentHash || digest(Buffer.from(contract.nativePdf)) !== contract.nativePdfHash) fail(503, 'The saved agreement could not be verified.');
 }
 function document(contract) {
-    assertNative(contract); verifyFrozen(contract);
+    assertNative(contract);
+    if (unsignedOldVersion(contract)) fail(409, 'FastBoost must submit the current agreement before its PDF is available.');
+    verifyFrozen(contract);
     return Buffer.from(contract.nativePdf);
 }
 function challengeFor(contract, actor, role) {
     return jwt.sign({ purpose: 'fastboost-contract-signature-v1', contractId: contract.id, actorId: actor.id, role,
-        documentHash: contract.nativeDocumentHash, pdfHash: contract.nativePdfHash, consentVersion: agreement.VERSION }, secret(),
+        documentHash: contract.nativeDocumentHash, pdfHash: contract.nativePdfHash, consentVersion: contract.nativeSnapshot.version }, secret(),
     { algorithm: 'HS256', expiresIn: '15m', issuer: 'FastBoost', audience: 'contract-signing' });
+}
+function currentDraftSnapshot(contract, values = {}) {
+    const saved = contract.nativeSnapshot;
+    return agreement.createSnapshot({ id: contract.id, signerName: saved.booster.name, signerEmail: saved.booster.email,
+        providerUsername: saved.values.ProviderUsername, startsAt: saved.values.EffectiveDate,
+        companySignerName: saved.company.name, companySignerEmail: saved.company.email },
+    { ...saved.values, ...values });
 }
 async function signingContext(db, contract, actor) {
     const current = await activeActor(db, actor);
@@ -129,15 +145,22 @@ async function signingContext(db, contract, actor) {
         canReplace: role === 'COMPANY' && contract.environment === 'demo' && !contract.archivedAt && !contract.revokedAt && !contract.signedAt && !contract.companySignedAt && !contract.boosterSignedAt };
     assertNative(contract);
     if (!contract.archivedAt) assertOpen(contract);
-    if (role === 'BOOSTER' && !contract.companySignedAt) fail(403, 'FastBoost must complete and sign the agreement before the booster can review it.');
     const signatures = await signaturesFor(db, contract.id);
-    const prepared = Boolean(contract.nativePreparedAt);
-    if (prepared) verifyFrozen(contract);
+    if (contract.nativePreparedAt) verifyFrozen(contract);
+    const currentVersionNeeded = unsignedOldVersion(contract) && !signatures.length;
+    const displayed = currentVersionNeeded ? currentDraftSnapshot(contract) : contract.nativeSnapshot;
+    const prepared = Boolean(contract.nativePreparedAt) && !currentVersionNeeded;
+    const firstRole = firstSignerRole(displayed);
+    const firstSignedAt = firstRole === 'COMPANY' ? contract.companySignedAt : contract.boosterSignedAt;
     const canSign = prepared && !contract.archivedAt && !contract.signedAt && !signatures.some(value => value.role === role)
-        && (role === 'COMPANY' || Boolean(contract.companySignedAt));
-    return { ok: true, contract: publicContract(contract), html: agreement.renderHtml(contract.nativeSnapshot, signatures),
-        fields: contract.nativeSnapshot.commercialFields || agreement.commercialFields(), values: contract.nativeSnapshot.values,
-        documentHash: contract.nativeDocumentHash || null, prepared, canSign, role: role.toLowerCase(), archived: Boolean(contract.archivedAt),
+        && (role === firstRole || Boolean(firstSignedAt && signatures.some(value => value.role === firstRole)));
+    const canPrepare = role === 'COMPANY' && !contract.archivedAt && !contract.signedAt && !contract.companySignedAt
+        && !contract.boosterSignedAt && !signatures.length;
+    return { ok: true, contract: publicContract(contract), html: agreement.renderHtml(displayed, signatures),
+        fields: currentVersionNeeded ? agreement.commercialFields() : displayed.commercialFields || agreement.commercialFields(), values: displayed.values,
+        documentHash: prepared ? contract.nativeDocumentHash : null, prepared, canSign, canPrepare,
+        documentVersion: displayed.version, signingOrder: firstRole === 'BOOSTER' ? 'BOOSTER_FIRST' : 'COMPANY_FIRST',
+        role: role.toLowerCase(), archived: Boolean(contract.archivedAt),
         signatures: signatures.map(publicSignature), consentText: CONSENT_TEXT,
         challenge: canSign ? challengeFor(contract, current, role) : null };
 }
@@ -158,16 +181,31 @@ async function prepareContract(db, id, actor, values) {
         const current = await lockedContract(tx, id);
         const signer = await lockedActor(tx, actor);
         assertNative(current); assertOpen(current);
-        if (roleFor(current, signer) !== 'COMPANY') fail(403, 'Only the assigned FastBoost signer can prepare this agreement.');
-        if (current.signedAt || current.companySignedAt || (await signaturesFor(tx, id)).length) fail(409, 'Signed agreement terms cannot be changed. Issue a replacement agreement.');
+        if (roleFor(current, signer) !== 'COMPANY') fail(403, 'Only the assigned FastBoost signer can complete these agreement details.');
+        if (current.signedAt || current.companySignedAt || current.boosterSignedAt || (await signaturesFor(tx, id)).length) fail(409, 'Signed agreement terms cannot be changed. Issue a replacement agreement.');
         const normalized = agreement.validateValues(values);
-        const snapshot = { ...current.nativeSnapshot, values: { ...current.nativeSnapshot.values, ...normalized } };
+        const snapshot = current.nativeSnapshot.version === agreement.VERSION
+            ? { ...current.nativeSnapshot, values: { ...current.nativeSnapshot.values, ...normalized } }
+            : { ...currentDraftSnapshot(current, normalized), commercialFields: agreement.commercialFields() };
         const hash = agreement.snapshotHash(snapshot);
         if (current.nativePreparedAt && hash === current.nativeDocumentHash) { verifyFrozen(current); return current; }
         const pdf = await agreement.renderPdf(snapshot);
         if (!Buffer.isBuffer(pdf) || pdf.subarray(0, 5).toString() !== '%PDF-') fail(503, 'The agreement PDF could not be prepared.');
-        return tx.boosterContract.update({ where: { id }, data: { nativeSnapshot: snapshot, nativeDocumentHash: hash,
+        const prepared = await tx.boosterContract.update({ where: { id }, data: { nativeSnapshot: snapshot, templateId: snapshot.version, nativeDocumentHash: hash,
             nativePreparedAt: new Date(), nativePdf: pdf, nativePdfHash: digest(pdf) } });
+        if (firstSignerRole(snapshot) === 'BOOSTER') {
+            await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
+                data: { title: 'Awaiting provider signature', read: true } });
+            await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId },
+                data: { title: 'Agreement ready for your signature', read: false } });
+            await queueNativeContractEmail(tx, id, 'READY');
+        } else {
+            await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
+                data: { title: 'Agreement ready for your signature', read: false } });
+            await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId },
+                data: { title: 'Awaiting FastBoost signature', read: true } });
+        }
+        return prepared;
     }, { timeout: 20000 });
     return signingContext(db, contract, actor);
 }
@@ -207,7 +245,7 @@ function verifyChallenge(token, contract, actor, role) {
     catch { fail(409, 'Your signing review has expired. Refresh and review the agreement again.'); }
     if (claims.purpose !== 'fastboost-contract-signature-v1' || claims.contractId !== contract.id || claims.actorId !== actor.id
         || claims.role !== role || claims.documentHash !== contract.nativeDocumentHash || claims.pdfHash !== contract.nativePdfHash
-        || claims.consentVersion !== agreement.VERSION) fail(409, 'The agreement changed. Refresh and review it before signing.');
+        || claims.consentVersion !== contract.nativeSnapshot.version) fail(409, 'The agreement changed. Refresh and review it before signing.');
 }
 async function signContract(db, id, actor, body, audit = {}) {
     const input = signingInput(body);
@@ -226,11 +264,16 @@ async function signContract(db, id, actor, body, audit = {}) {
         assertOpen(current);
         if (current.signedAt) fail(409, 'This agreement has already been completed.');
         verifyFrozen(current);
+        if (role === 'COMPANY' && unsignedOldVersion(current)) fail(409, 'The agreement version changed. FastBoost must submit the current terms before anyone signs.');
         if (input.documentHash !== current.nativeDocumentHash) fail(409, 'The agreement changed. Refresh and review it before signing.');
         verifyChallenge(body.challenge, current, signer, role);
         const signatures = await signaturesFor(tx, id);
         if (signatures.some(value => value.role === role)) fail(409, 'Your signature has already been recorded.');
-        if (role === 'BOOSTER' && (!current.companySignedAt || !signatures.some(value => value.role === 'COMPANY'))) fail(409, 'FastBoost must sign the completed agreement first.');
+        const firstRole = firstSignerRole(current.nativeSnapshot);
+        const firstSignedAt = firstRole === 'COMPANY' ? current.companySignedAt : current.boosterSignedAt;
+        if (role !== firstRole && (!firstSignedAt || !signatures.some(value => value.role === firstRole))) {
+            fail(409, firstRole === 'COMPANY' ? 'FastBoost must sign the completed agreement first.' : 'The provider must sign the completed agreement first.');
+        }
         const expectedName = role === 'COMPANY' ? current.companySignerName : current.signerName;
         if (!sameName(input.legalName, expectedName)) fail(400, 'Use the full legal name assigned to your signing invitation.');
         const signedAt = new Date();
@@ -239,13 +282,14 @@ async function signContract(db, id, actor, body, audit = {}) {
             requestId: input.requestId, requestHash: input.requestHash, signedAt,
             clientIp: typeof audit.ip === 'string' ? audit.ip.slice(0, 128) : null,
             userAgent: typeof audit.userAgent === 'string' ? audit.userAgent.slice(0, 500) : null };
-        const completed = role === 'BOOSTER';
+        const completed = role !== firstRole;
         const pdf = await agreement.renderPdf(current.nativeSnapshot, [...signatures, signature], { completed });
         if (!Buffer.isBuffer(pdf) || pdf.subarray(0, 5).toString() !== '%PDF-') fail(503, 'The signed PDF could not be saved. Your signature was not recorded.');
         await tx.nativeContractSignature.create({ data: signature });
         const updated = await tx.boosterContract.update({ where: { id }, data: {
             [role === 'COMPANY' ? 'companySignedAt' : 'boosterSignedAt']: signedAt,
-            nativePdf: pdf, nativePdfHash: digest(pdf), ...(completed && { signedAt, signedName: input.legalName,
+            nativePdf: pdf, nativePdfHash: digest(pdf), ...(completed && { signedAt,
+                signedName: role === 'BOOSTER' ? input.legalName : signatures.find(item => item.role === 'BOOSTER')?.legalName || current.signerName,
                 nativeCompletedAt: signedAt, status: 'completed' }),
         } });
         if (completed) {
@@ -254,7 +298,14 @@ async function signContract(db, id, actor, body, audit = {}) {
             await tx.boosterProfile.updateMany({ where: { userId: current.boosterId, startedAt: null }, data: { startedAt } });
             await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId }, data: { read: true } });
             await tx.notification.updateMany({ where: { id: `contract-company-${id}` }, data: { read: true } });
+        } else if (role === 'BOOSTER') {
+            await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId },
+                data: { title: 'Awaiting FastBoost signature', read: true } });
+            await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
+                data: { title: 'Agreement ready for your signature', read: false } });
         } else await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });
+        if (completed) await queueNativeContractEmail(tx, id, 'COMPLETED');
+        else if (role === 'BOOSTER' && firstRole === 'BOOSTER') await queueNativeContractEmail(tx, id, 'BOOSTER_SIGNED');
         return updated;
     }, { timeout: 20000 });
     return signingContext(db, contract, actor);

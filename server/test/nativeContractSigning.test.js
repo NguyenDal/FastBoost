@@ -22,7 +22,7 @@ const matches = (record, where = {}) => Object.entries(where).every(([key, value
 
 function database() {
     let state = {
-        contracts: new Map(), signatures: new Map(), notifications: new Map(), profiles: new Map(),
+        contracts: new Map(), signatures: new Map(), notifications: new Map(), profiles: new Map(), emails: new Map(),
         users: new Map([
             ['owner', { id: 'owner', role: 'ADMIN', isOwner: true, email: 'owner@example.test', username: 'Owner', suspendedAt: null }],
             ['booster', { id: 'booster', role: 'PROVIDER', email: 'booster@example.test', username: 'Booster', suspendedAt: null }],
@@ -33,6 +33,7 @@ function database() {
     const hydrate = row => row ? { ...copy(row), nativeSignatures: copy(rows('signatures', { contractId: row.id })) } : null;
     let pending = Promise.resolve();
     const db = {
+        emailFailureEvent: null,
         state: () => state,
         $queryRawUnsafe: async () => [],
         user: {
@@ -91,6 +92,16 @@ function database() {
                 return { count: changed.length };
             },
         },
+        nativeContractEmail: {
+            createMany: async ({ skipDuplicates, data }) => {
+                assert.equal(skipDuplicates, true);
+                if (data[0]?.event === db.emailFailureEvent) throw new Error('synthetic email outbox failure');
+                for (const row of data) {
+                    if (!state.emails.has(row.id)) state.emails.set(row.id, copy(row));
+                }
+                return { count: data.length };
+            },
+        },
         boosterProfile: {
             upsert: async ({ where, create, update }) => {
                 const current = state.profiles.get(where.userId);
@@ -118,21 +129,27 @@ function database() {
 
 function agreementStub() {
     const flags = { failPdf: false, pdfCalls: [] };
-    const fields = [{ key: 'PaymentMethod', label: 'Payment method', maxLength: 100, required: true, defaultValue: '' }];
+    let version = 'FB-BSA-2.1';
+    let fields = [{ key: 'PaymentMethod', label: 'Payment method', maxLength: 100, required: true, defaultValue: '' }];
     return {
         flags,
-        VERSION: 'FB-BSA-2.1',
+        get VERSION() { return version; },
+        set VERSION(next) { version = next; },
+        setFields(next) { fields = copy(next); },
         commercialFields: () => copy(fields),
         assertAssets: () => {},
         validateValues: values => {
-            if (!values || Object.keys(values).some(key => key !== 'PaymentMethod') || typeof values.PaymentMethod !== 'string' || !values.PaymentMethod.trim() || values.PaymentMethod.length > 100) {
+            if (!values || Object.keys(values).some(key => !fields.some(field => field.key === key)) || fields.some(field =>
+                typeof values[field.key] !== 'string' || !values[field.key].trim() || values[field.key].length > field.maxLength)) {
                 throw Object.assign(new Error('Complete payment method.'), { status: 400 });
             }
-            return { PaymentMethod: values.PaymentMethod.trim() };
+            return Object.fromEntries(fields.map(field => [field.key, values[field.key].trim()]));
         },
         createSnapshot: (contract, values = {}) => ({
-            version: 'FB-BSA-2.1', htmlSource: '<p>Frozen agreement</p>', documentBase64: Buffer.from('%PDF-base').toString('base64'), fields: [],
-            values: { AgreementId: contract.id, ProviderLegalName: contract.signerName, ProviderEmail: contract.signerEmail, ProviderUsername: contract.providerUsername, EffectiveDate: new Date(contract.startsAt).toISOString().slice(0, 10), ...copy(values) },
+            version, htmlSource: `<p>Frozen agreement ${version}</p>`, documentBase64: Buffer.from(`%PDF-base-${version}`).toString('base64'), fields: [],
+            values: { ...Object.fromEntries(fields.map(field => [field.key, values[field.key] ?? field.defaultValue])),
+                AgreementId: contract.id, ProviderLegalName: contract.signerName, ProviderEmail: contract.signerEmail,
+                ProviderUsername: contract.providerUsername, EffectiveDate: new Date(contract.startsAt).toISOString().slice(0, 10) },
             company: { name: contract.companySignerName, email: contract.companySignerEmail }, booster: { name: contract.signerName, email: contract.signerEmail },
         }),
         snapshotHash: snapshot => createHash('sha256').update(JSON.stringify(snapshot)).digest('hex'),
@@ -187,6 +204,12 @@ test('native contracts snapshot saved identities and keep private signing eviden
     assert.equal(c.signerEmail, 'booster@example.test');
     assert.equal(c.nativeSnapshot.values.ProviderUsername, 'Booster');
     assert.ok(c.nativeDocumentHash == null, 'an unprepared agreement has no accepted document hash');
+    assert.equal(f.db.state().notifications.get(`contract-${c.id}`).title, 'Awaiting FastBoost agreement details');
+    assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).title, 'Complete the agreement details');
+    assert.deepEqual([...f.db.state().emails.keys()], [`${c.id}:ISSUED:BOOSTER`]);
+    await f.service.createContract(f.db, { requestId: c.id, boosterId: 'booster', issuedById: 'owner',
+        signerName: 'Test Booster', startsAt: '2026-10-01' });
+    assert.deepEqual([...f.db.state().emails.keys()], [`${c.id}:ISSUED:BOOSTER`], 'retrying issuance does not queue a second email');
     const publicValue = f.service.publicContract({ ...c, nativePdf: Buffer.from('private bytes'), nativePdfHash: 'a'.repeat(64), nativeDocumentHash: 'b'.repeat(64), nativeSignatures: [{ clientIp: '192.0.2.12', userAgent: 'private browser', requestHash: 'c'.repeat(64) }] });
     const encoded = JSON.stringify(publicValue);
     for (const secret of ['private bytes', 'htmlSource', 'documentBase64', '192.0.2.12', 'private browser', 'requestHash']) assert.ok(!encoded.includes(secret), secret);
@@ -195,13 +218,33 @@ test('native contracts snapshot saved identities and keep private signing eviden
     assert.equal(f.db.state().profiles.size, 0);
 });
 
-test('native signing rechecks assigned actors and does not let the booster review or sign before the company', async t => {
+test('assigned FastBoost signer prepares the unsigned draft; version 2.1 still signs company-first', async t => {
     const f = await fixture(t);
     const c = await f.issue();
     await assert.rejects(f.context(c.id, 'other'), error => [403, 404].includes(error.status));
-    await assert.rejects(f.context(c.id, 'booster'), error => [403, 409].includes(error.status));
+    const providerDraft = await f.context(c.id, 'booster');
+    assert.equal(providerDraft.prepared, false);
+    assert.equal(providerDraft.canPrepare, false);
+    assert.equal(providerDraft.canSign, false);
+    assert.equal(providerDraft.fields.length, 1);
+    assert.equal((await f.context(c.id)).canPrepare, true);
+    await assert.rejects(f.service.prepareContract(f.db, c.id, f.actor('booster'), { PaymentMethod: 'Transfer' }), error => [403, 404].includes(error.status));
     await assert.rejects(f.service.prepareContract(f.db, c.id, f.actor('other'), { PaymentMethod: 'Transfer' }), error => [403, 404].includes(error.status));
     const ctx = await f.prepare(c.id);
+    const providerReview = await f.context(c.id, 'booster');
+    assert.equal(providerReview.canPrepare, false);
+    assert.equal(providerReview.canSign, false, 'submitting details does not sign the contract');
+    assert.equal(providerReview.challenge, null);
+    assert.equal(ctx.canPrepare, true, 'FastBoost can correct submitted details until the first signature');
+    assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).title, 'Agreement ready for your signature');
+    assert.equal(f.db.state().notifications.get(`contract-${c.id}`).title, 'Awaiting FastBoost signature');
+    const jwt = require('jsonwebtoken');
+    const forbiddenBoosterChallenge = jwt.sign({ purpose: 'fastboost-contract-signature-v1', contractId: c.id,
+        actorId: 'booster', role: 'BOOSTER', documentHash: providerReview.documentHash,
+        pdfHash: f.db.state().contracts.get(c.id).nativePdfHash, consentVersion: f.agreement.VERSION }, process.env.JWT_SECRET,
+    { algorithm: 'HS256', expiresIn: '15m', issuer: 'FastBoost', audience: 'contract-signing' });
+    await assert.rejects(f.sign(c.id, 'booster', f.body(providerReview, { challenge: forbiddenBoosterChallenge })), error => error.status === 409);
+    assert.equal(f.db.state().signatures.size, 0);
     f.db.state().users.get('owner').suspendedAt = new Date();
     await assert.rejects(f.sign(c.id, 'owner', f.body(ctx)), error => [403, 404].includes(error.status));
     f.db.state().users.get('owner').suspendedAt = null;
@@ -223,6 +266,174 @@ test('preparation requires complete commercial values and stale prepared hashes 
     assert.equal(f.db.state().signatures.size, 0);
     assert.match(second.html, /Updated transfer/);
     assert.doesNotMatch(second.html, /First transfer/);
+});
+
+test('an unsigned 2.1 agreement previews 2.2 without mutation and requires owner re-preparation', async t => {
+    const f = await fixture(t);
+    f.agreement.setFields([
+        { key: 'PaymentMethod', label: 'Payment method', maxLength: 100, required: true, defaultValue: '' },
+        { key: 'ServiceScope', label: 'Old service scope', maxLength: 180, required: true, defaultValue: '' },
+        { key: 'AuthorizedSignatory', label: 'Old business signatory', maxLength: 100, required: true, defaultValue: 'Not applicable' },
+        { key: 'DataAccessCountries', label: 'Old data-access countries', maxLength: 120, required: true, defaultValue: '' },
+    ]);
+    const c = await f.issue();
+    const old = await f.prepare(c.id, { PaymentMethod: 'First transfer', ServiceScope: 'Old scope',
+        AuthorizedSignatory: 'Not applicable', DataAccessCountries: 'Canada' });
+    const oldPayload = f.body(old);
+    const storedBefore = copy(f.db.state());
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    f.agreement.setFields([{ key: 'PaymentMethod', label: 'Payment method', maxLength: 100, required: true, defaultValue: '' }]);
+
+    const providerDraft = await f.context(c.id, 'booster');
+    const ownerDraft = await f.context(c.id);
+    assert.deepEqual(f.db.state(), storedBefore, 'previewing the new version does not mutate saved contract evidence');
+    assert.equal(providerDraft.documentVersion, 'FB-BSA-2.2');
+    assert.equal(providerDraft.prepared, false);
+    assert.equal(providerDraft.canPrepare, false);
+    assert.equal(providerDraft.canSign, false);
+    assert.equal(providerDraft.documentHash, null);
+    assert.deepEqual(providerDraft.fields.map(field => field.key), ['PaymentMethod']);
+    assert.equal('ServiceScope' in providerDraft.values, false);
+    assert.equal('AuthorizedSignatory' in providerDraft.values, false);
+    assert.equal('DataAccessCountries' in providerDraft.values, false);
+    assert.match(providerDraft.html, /FB-BSA-2\.2/);
+    assert.equal(ownerDraft.canSign, false);
+    assert.equal(ownerDraft.canPrepare, true);
+    assert.equal(ownerDraft.challenge, null);
+    assert.equal(ownerDraft.contract.documentAvailable, false);
+    assert.throws(() => f.service.document(f.db.state().contracts.get(c.id)), error => error.status === 409);
+    await assert.rejects(f.sign(c.id, 'owner', oldPayload), error => error.status === 409);
+
+    await f.service.prepareContract(f.db, c.id, f.actor('owner'), { PaymentMethod: 'Current transfer' });
+    const upgraded = await f.context(c.id);
+    assert.equal(upgraded.documentVersion, 'FB-BSA-2.2');
+    assert.equal(upgraded.prepared, true);
+    assert.equal(upgraded.canSign, false, 'FastBoost waits for the provider to sign version 2.2');
+    const providerUpgraded = await f.context(c.id, 'booster');
+    assert.equal(providerUpgraded.canSign, true);
+    assert.equal(providerUpgraded.signingOrder, 'BOOSTER_FIRST');
+    assert.equal(upgraded.contract.documentAvailable, true);
+    assert.match(upgraded.html, /Current transfer/);
+    assert.equal(f.db.state().contracts.get(c.id).templateId, 'FB-BSA-2.2');
+    assert.equal('ServiceScope' in f.db.state().contracts.get(c.id).nativeSnapshot.values, false);
+    assert.equal('AuthorizedSignatory' in f.db.state().contracts.get(c.id).nativeSnapshot.values, false);
+    assert.equal('DataAccessCountries' in f.db.state().contracts.get(c.id).nativeSnapshot.values, false);
+    assert.notEqual(upgraded.documentHash, old.documentHash);
+});
+
+test('a provider can complete a company-signed 2.1 agreement after 2.2 becomes current', async t => {
+    const f = await fixture(t);
+    const c = await f.issue();
+    const company = await f.prepare(c.id);
+    await f.sign(c.id, 'owner', f.body(company));
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    const booster = await f.context(c.id, 'booster');
+    assert.equal(booster.documentVersion, 'FB-BSA-2.1');
+    assert.equal(booster.canSign, true);
+    assert.equal(booster.canPrepare, false);
+    assert.match(booster.html, /FB-BSA-2\.1/);
+    assert.equal(require('jsonwebtoken').decode(booster.challenge).consentVersion, 'FB-BSA-2.1');
+    await f.sign(c.id, 'booster', f.body(booster));
+    const saved = f.db.state().contracts.get(c.id);
+    assert.equal(saved.nativeSnapshot.version, 'FB-BSA-2.1');
+    assert.equal(saved.templateId, 'FB-BSA-2.1');
+    assert.ok(saved.signedAt);
+    assert.deepEqual([...f.db.state().emails.keys()].sort(), [
+        `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`, `${c.id}:ISSUED:BOOSTER`,
+    ], 'historical company-first completion queues only the final copies');
+});
+
+test('version 2.2 has owner preparation, provider signature, then FastBoost countersignature', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    const c = await f.issue();
+    const providerDraft = await f.context(c.id, 'booster');
+    assert.equal(providerDraft.signingOrder, 'BOOSTER_FIRST');
+    assert.equal(providerDraft.canPrepare, false);
+    assert.equal(providerDraft.canSign, false);
+    assert.equal((await f.context(c.id)).canSign, false);
+    assert.equal((await f.context(c.id)).canPrepare, true);
+    await assert.rejects(f.service.prepareContract(f.db, c.id, f.actor('booster'), { PaymentMethod: 'Bank transfer' }), error => error.status === 403);
+    await f.prepare(c.id, { PaymentMethod: 'Bank transfer' });
+    const provider = await f.context(c.id, 'booster');
+    const ownerBefore = await f.context(c.id);
+    assert.equal(provider.canSign, true);
+    assert.equal(provider.canPrepare, false);
+    assert.equal(ownerBefore.canSign, false);
+    assert.equal(ownerBefore.canPrepare, true);
+    assert.ok(f.db.state().emails.has(`${c.id}:READY:BOOSTER`));
+    assert.equal(require('jsonwebtoken').decode(provider.challenge).consentVersion, 'FB-BSA-2.2');
+    const fakeOwnerChallenge = require('jsonwebtoken').sign({ purpose: 'fastboost-contract-signature-v1', contractId: c.id,
+        actorId: 'owner', role: 'COMPANY', documentHash: ownerBefore.documentHash,
+        pdfHash: f.db.state().contracts.get(c.id).nativePdfHash, consentVersion: f.agreement.VERSION }, process.env.JWT_SECRET,
+    { algorithm: 'HS256', expiresIn: '15m', issuer: 'FastBoost', audience: 'contract-signing' });
+    await assert.rejects(f.sign(c.id, 'owner', f.body(ownerBefore, { challenge: fakeOwnerChallenge })), error => error.status === 409);
+
+    const providerPayload = f.body(provider);
+    await f.sign(c.id, 'booster', providerPayload);
+    await f.sign(c.id, 'booster', providerPayload);
+    const partlySigned = f.db.state().contracts.get(c.id);
+    assert.ok(partlySigned.boosterSignedAt);
+    assert.equal(partlySigned.companySignedAt, null);
+    assert.equal(partlySigned.signedAt, null);
+    assert.equal(f.db.state().profiles.size, 0);
+    assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).title, 'Agreement ready for your signature');
+    assert.equal(f.db.state().notifications.get(`contract-${c.id}`).title, 'Awaiting FastBoost signature');
+    assert.deepEqual([...f.db.state().emails.keys()].sort(), [
+        `${c.id}:BOOSTER_SIGNED:COMPANY`, `${c.id}:ISSUED:BOOSTER`, `${c.id}:READY:BOOSTER`,
+    ], 'a provider signature retry does not queue a second owner alert');
+    await assert.rejects(f.prepare(c.id, { PaymentMethod: 'Changed after first signature' }), error => error.status === 409);
+    const owner = await f.context(c.id);
+    assert.equal(owner.canSign, true);
+    assert.equal((await f.context(c.id, 'booster')).canSign, false);
+    const ownerPayload = f.body(owner);
+    await f.sign(c.id, 'owner', ownerPayload);
+    await f.sign(c.id, 'owner', ownerPayload);
+    const completed = f.db.state().contracts.get(c.id);
+    assert.ok(completed.companySignedAt && completed.signedAt && completed.nativeCompletedAt);
+    assert.equal(completed.signedName, 'Test Booster', 'the contract keeps the provider name when the owner signs last');
+    assert.equal(f.db.state().profiles.size, 1);
+    assert.match(completed.nativePdf.toString(), /^%PDF-completed-/);
+    assert.equal(f.db.state().signatures.size, 2);
+    assert.equal(f.db.state().notifications.get(`contract-${c.id}`).read, true);
+    assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).read, true);
+    assert.deepEqual([...f.db.state().emails.keys()].sort(), [
+        `${c.id}:BOOSTER_SIGNED:COMPANY`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`,
+        `${c.id}:ISSUED:BOOSTER`, `${c.id}:READY:BOOSTER`,
+    ], 'the final signature queues one completed copy per signer');
+});
+
+test('owner corrections replace the provider signing challenge without duplicate READY email', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    const c = await f.issue();
+    await f.prepare(c.id, { PaymentMethod: 'First bank account' });
+    const oldProvider = await f.context(c.id, 'booster');
+    await f.prepare(c.id, { PaymentMethod: 'Correct bank account' });
+    const provider = await f.context(c.id, 'booster');
+    assert.notEqual(provider.documentHash, oldProvider.documentHash);
+    assert.equal(f.db.state().emails.size, 2, 'ISSUED and READY each have one fixed outbox ID');
+    await assert.rejects(f.sign(c.id, 'booster', f.body(oldProvider)), error => error.status === 409);
+    assert.equal(f.db.state().signatures.size, 0);
+    await f.sign(c.id, 'booster', f.body(provider));
+    assert.equal(f.db.state().signatures.size, 1);
+});
+
+test('a failed email enqueue rolls back the first signature and can be retried', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    const c = await f.issue();
+    await f.prepare(c.id);
+    const provider = await f.context(c.id, 'booster');
+    const payload = f.body(provider);
+    const before = copy(f.db.state());
+    f.db.emailFailureEvent = 'BOOSTER_SIGNED';
+    await assert.rejects(f.sign(c.id, 'booster', payload), /synthetic email outbox failure/);
+    assert.deepEqual(f.db.state(), before, 'the signature and PDF update roll back with the outbox insert');
+    f.db.emailFailureEvent = null;
+    await f.sign(c.id, 'booster', payload);
+    assert.equal(f.db.state().signatures.size, 1);
+    assert.ok(f.db.state().emails.has(`${c.id}:BOOSTER_SIGNED:COMPANY`));
 });
 
 test('consent, identity, signer-bound challenge and bounded drawing payloads are enforced', async t => {
@@ -269,6 +480,7 @@ test('company signature freezes the exact terms, records consent, and unlocks on
     const booster = await f.context(c.id, 'booster');
     assert.equal(booster.role, 'booster');
     assert.equal(booster.canSign, true);
+    assert.equal(booster.canPrepare, false);
     assert.equal(booster.documentHash, prepared.documentHash);
     assert.match(booster.html, /Test Owner/);
     f.db.state().users.get('booster').role = 'CUSTOMER';
@@ -490,7 +702,9 @@ test('archived native agreements remain readable to authorized parties but canno
     assert.deepEqual(f.service.document(saved), saved.nativePdf);
     await assert.rejects(f.prepare(c.id, { PaymentMethod: 'Changed archived terms' }), error => error.status === 409);
     await assert.rejects(f.sign(c.id, 'owner', payload), error => error.status === 409);
-    await assert.rejects(f.context(c.id, 'booster'), error => error.status === 403);
+    const archivedProvider = await f.context(c.id, 'booster');
+    assert.equal(archivedProvider.canPrepare, false);
+    assert.equal(archivedProvider.canSign, false);
     assert.deepEqual(f.db.state(), before, 'archive reads and blocked mutations preserve the exact saved record, evidence and PDF');
 });
 
@@ -512,6 +726,26 @@ test('archiving after the first signature preserves its PDF and blocks both seco
     assert.equal(archived.html, boosterReview.html);
     await assert.rejects(f.sign(c.id, 'booster', boosterPayload), error => error.status === 409);
     await assert.rejects(f.sign(c.id, 'owner', companyPayload), error => error.status === 409);
+    assert.deepEqual(f.db.state(), before);
+    assert.equal(f.db.state().profiles.size, 0);
+});
+
+test('archiving after a 2.2 provider signature blocks the owner countersignature', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.2';
+    const c = await f.issue();
+    await f.prepare(c.id);
+    const provider = await f.context(c.id, 'booster');
+    await f.sign(c.id, 'booster', f.body(provider));
+    const owner = await f.context(c.id);
+    assert.equal(owner.canSign, true);
+    const ownerPayload = f.body(owner);
+    f.db.state().contracts.get(c.id).archivedAt = new Date();
+    const before = copy(f.db.state());
+    const archived = await f.context(c.id);
+    assert.equal(archived.canSign, false);
+    assert.equal(archived.challenge, null);
+    await assert.rejects(f.sign(c.id, 'owner', ownerPayload), error => error.status === 409);
     assert.deepEqual(f.db.state(), before);
     assert.equal(f.db.state().profiles.size, 0);
 });

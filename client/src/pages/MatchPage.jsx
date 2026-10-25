@@ -20,7 +20,6 @@ import {
 import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
 import OrderRating from '../components/OrderRating';
-import { formatOrderTotal } from '../utils/orderPricing';
 import { findAssignedBooster, getBoosterAvatar, getBoosterDisplayName } from '../utils/matchBoosterProfile';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
 
@@ -839,19 +838,10 @@ function MatchPage() {
             />
             <div className="order-page-container">
 
-                <section className="service-banner-card">
+                <section className="service-banner-card match-order-banner">
                     <div className="service-banner-left">
-                        <p className="section-label">Order Status</p>
+                        <p className="section-label">Order #{order.orderNumber}</p>
                         <h1 className="service-banner-title">{getOrderTitle(order)}</h1>
-                        <p className="service-banner-meta">
-                            #{order.orderNumber} • Total {formatOrderTotal(order)}
-                        </p>
-                    </div>
-
-                    <div className="service-banner-right">
-                        <span className="service-status-badge">
-                            {order?.status === "COMPLETED" ? "Completed" : order?.status === "CANCELLED" ? "Cancelled" : matchedBooster ? "Matched" : "Searching"}
-                        </span>
                     </div>
                 </section>
 

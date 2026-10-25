@@ -51,7 +51,7 @@ export default function BoosterPortalPage({ section = 'overview' }) {
             {section === 'documents' && <>
                 <section className="ops-card"><h2>Your contracts</h2><p>Review your agreements and keep a copy of your signed documents.</p>
                     {data && (data.contracts.length ? data.contracts.map(contract => <Link className="ops-contract-link" key={contract.id} to={`/provider/contracts/${contract.id}`}>
-                        <span>{contract.title}<small>Starts {date(contract.startsAt)}</small></span><span className={`ops-badge ${contract.signedAt && !contract.revokedAt ? 'approved' : ''}`}>{contract.revokedAt ? 'Revoked' : contract.signedAt ? 'Signed' : 'Review & sign'} →</span>
+                        <span>{contract.title}<small>Starts {date(contract.startsAt)}</small></span><span className={`ops-badge ${contract.signedAt && !contract.revokedAt ? 'approved' : ''}`}>{contract.archivedAt ? 'Archived' : contract.revokedAt ? 'Revoked' : contract.signedAt ? 'Signed' : contract.signingProvider === 'FASTBOOST' ? !contract.documentAvailable ? 'Awaiting FastBoost' : !contract.boosterSignedAt ? 'Review & sign' : 'Awaiting FastBoost' : 'Review & sign'} →</span>
                     </Link>) : <p>No contracts have been issued to you yet.</p>)}
                 </section>
             </>}

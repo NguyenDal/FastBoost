@@ -77,7 +77,7 @@ function BoosterDetails({ booster, champions, preferencesAvailable, reload, conf
     return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><span className="ops-booster-title"><strong>{booster.profile?.displayName || booster.username}</strong><BoosterRating rating={booster.rating} /></span><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
             <h3>Send a document</h3><BoosterDocumentForm boosterId={booster.id} configured={configured} suspended={booster.suspendedAt} reload={reload} onError={onError} />
-            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.signedAt ? `Signed ${date(c.signedAt)}` : 'Awaiting signature'} →</span></Link>) : <p>No documents sent yet.</p>}</div>
+            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.archivedAt ? 'Archived' : c.signedAt ? `Signed ${date(c.signedAt)}` : c.signingProvider === 'FASTBOOST' ? !c.documentAvailable ? 'Complete agreement' : !c.boosterSignedAt ? 'Awaiting booster' : 'Awaiting FastBoost' : 'Awaiting signature'} →</span></Link>) : <p>No documents sent yet.</p>}</div>
     </details>;
 }
 export function BoosterManagementPage() {
@@ -114,6 +114,8 @@ export function BoosterContractPage() {
     const admin = viewer?.role === 'ADMIN';
     const company = admin && contract?.companySignerEmail && viewer?.email?.toLowerCase() === contract.companySignerEmail.toLowerCase();
     const canSign = !contract?.archivedAt && (company ? !contract?.companySignedAt : own && !contract?.boosterSignedAt && (!contract?.companySignerEmail || contract?.companySignedAt));
+    const detailsReady = Boolean(native && contract?.documentAvailable);
+    const providerFirst = native && !(contract?.templateId === 'FB-BSA-2.1' && contract?.companySignedAt);
     const canDownload = Boolean((native ? contract.documentAvailable : contract?.envelopeId) && (admin || !contract.companySignerEmail || contract.companySignedAt));
     async function action(kind) {
         setBusy(true); setActionError('');
@@ -148,12 +150,19 @@ export function BoosterContractPage() {
     }, [native, contract?.envelopeId, contract?.signedAt, contract?.status, reload]);
     const awaitingSignature = (native || contract?.envelopeId) && !contract.signedAt && !contract.revokedAt && !contract.archivedAt && !['voided', 'declined', 'completed', 'replaced'].includes(contract.status);
     const status = contract?.archivedAt ? 'Archived' : contract?.signedAt ? 'Signed' : awaitingSignature
-        ? contract.companySignerEmail ? !contract.companySignedAt ? 'Awaiting FastBoost' : !contract.boosterSignedAt ? 'Awaiting booster' : 'Confirming signatures' : 'Awaiting signature'
+        ? contract.companySignerEmail
+            ? providerFirst ? !detailsReady ? 'Complete agreement' : !contract.boosterSignedAt ? 'Awaiting booster' : !contract.companySignedAt ? 'Awaiting FastBoost' : 'Confirming signatures'
+                : !contract.companySignedAt ? 'Awaiting FastBoost' : !contract.boosterSignedAt ? 'Awaiting booster' : 'Confirming signatures'
+            : 'Awaiting signature'
         : ({ pending: 'Pending', sending: 'Sending', send_error: 'Delivery failed', completed: 'Confirming signatures', voided: 'Voided', declined: 'Declined' }[contract?.status] || contract?.status?.replace(/_/g, ' '));
-    const signers = contract ? [
-        ...(contract.companySignerEmail ? [{ role: 'FastBoost', name: contract.companySignerName, signedAt: contract.companySignedAt }] : []),
-        { role: 'Booster', name: contract.signedName || contract.signerName, signedAt: contract.boosterSignedAt || (!contract.companySignerEmail && contract.signedAt) },
-    ] : [];
+    const companySigner = contract?.companySignerEmail && { role: 'FastBoost', name: contract.companySignerName, signedAt: contract.companySignedAt };
+    const boosterSigner = contract && { role: 'Booster', name: contract.signedName || contract.signerName, signedAt: contract.boosterSignedAt || (!contract.companySignerEmail && contract.signedAt) };
+    const signers = contract ? providerFirst ? [boosterSigner, companySigner].filter(Boolean) : [companySigner, boosterSigner].filter(Boolean) : [];
+    const nativeAction = native && awaitingSignature && (company || own)
+        ? providerFirst
+            ? company && !detailsReady ? 'Complete agreement details' : own && detailsReady && !contract.boosterSignedAt ? 'Review & sign' : company && contract.boosterSignedAt && !contract.companySignedAt ? 'Review & sign for FastBoost' : company && !contract.boosterSignedAt ? 'Review agreement' : own && !detailsReady ? 'View agreement' : null
+            : company && !contract.companySignedAt ? 'Review & sign for FastBoost' : own && !contract.boosterSignedAt ? 'Review & sign' : null
+        : null;
     return <div className="page-shell"><Navbar /><main className="page-container ops-page"><Heading title={contract?.title || 'Contract'}>FastBoost · Agreement</Heading><Link to={own ? '/provider/documents' : '/admin/boosters'}>← Back</Link><Feedback error={error || actionError} loading={!data} />
         {contract && <section className="ops-card ops-contract">
             <header className="ops-contract-header">
@@ -167,10 +176,11 @@ export function BoosterContractPage() {
                 </div>)}
             </div>
             {contract.sendError && <p className="ops-error" role="alert">{contract.sendError}</p>}
-            {(canDownload || admin) && <footer className="ops-contract-footer">
-                {(native || canDownload) && <div className="ops-contract-document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg><div><strong>{contract.signedAt ? 'Signed agreement' : 'Agreement'}</strong><small>{contract.signedAt ? native ? 'PDF · Includes signing record' : 'PDF · Includes completion certificate' : 'PDF document'}</small></div></div>}
+            {(canDownload || admin || native && own) && <footer className="ops-contract-footer">
+                {(native || canDownload) && <div className="ops-contract-document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg><div><strong>{contract.signedAt ? 'Signed agreement' : 'Agreement'}</strong><small>{contract.signedAt ? native ? 'PDF · Includes signing record' : 'PDF · Includes completion certificate' : detailsReady || !native ? 'PDF document' : 'PDF available after FastBoost completes the terms'}</small></div></div>}
                 <div className="ops-actions">
-                    {canSign && awaitingSignature && <button className="ops-primary" disabled={busy} onClick={() => navigate(agreementSigningPath(id))}>{company ? 'Review & sign for FastBoost' : 'Review & sign'}</button>}
+                    {nativeAction && <button className="ops-primary" disabled={busy} onClick={() => navigate(agreementSigningPath(id))}>{nativeAction}</button>}
+                    {!native && canSign && awaitingSignature && <button className="ops-primary" disabled={busy} onClick={() => navigate(agreementSigningPath(id))}>{company ? 'Review & sign for FastBoost' : 'Review & sign'}</button>}
                     {canDownload && <button className={contract.signedAt ? 'ops-primary' : ''} disabled={busy} onClick={() => action('document')}>Download PDF</button>}
                     {admin && !native && !contract.envelopeId && <button disabled={busy} onClick={() => action('retry')}>Retry delivery</button>}
                 </div>

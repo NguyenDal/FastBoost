@@ -29,7 +29,7 @@ args = parser.parse_args()
 if args.sandbox_template and args.signing_template:
     parser.error('Choose either a signing template or a sandbox test copy.')
 signing = args.sandbox_template or args.signing_template
-VERSION = 'FB-BSA-2.1' if args.native else 'FB-BSA-2.0'
+VERSION = 'FB-BSA-2.2' if args.native else 'FB-BSA-2.0'
 field_positions = []
 field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
@@ -49,8 +49,18 @@ field_names = {
     'PROVIDER_TIME_ZONE': ('ProviderTimeZone', 'Provider time zone', '1'),
     'COUNTRIES': ('DataAccessCountries', 'Approved data-access countries', '1'),
     'ENGLISH / IDENTIFY REVIEWED TRANSLATION AND AGREED CONFLICT RULE': ('ReferenceLanguage', 'English, or translation and conflict rule', '1'),
+    'ENGLISH / VIETNAMESE': ('ReferenceLanguage', 'English / Vietnamese', '1'),
     'NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM': ('JurisdictionAddendum', 'None required, or identified signed addendum', '1'),
 }
+if args.native:
+    # These rows were removed from the new native agreement.
+    # Keep the historical DocuSign field map intact for its separate asset.
+    field_names.pop('SIGNATORY_NAME_AND_TITLE / NOT APPLICABLE')
+    field_names.pop('GAMES / SERVICES / REGIONS / PERMITTED METHODS')
+    field_names.pop('NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM')
+    field_names.pop('COUNTRIES')
+    # The owner prepares the terms, although the Booster signs them first.
+    field_names = {placeholder: (label, caption, '2') for placeholder, (label, caption, _) in field_names.items()}
 names = ['LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf', 'LiberationSans-BoldItalic.ttf']
 if not (args.font_dir / names[0]).exists():
     names = ['arial.ttf', 'arialbd.ttf', 'ariali.ttf', 'arialbi.ttf']
@@ -87,7 +97,8 @@ def inline(node):
         else:
             result += content
         result += entities.escape(clean(child.tail or ''))
-    return result
+    # The language choice is fixed; show it as text in both PDFs, not as a blank signing field.
+    return result.replace('[ENGLISH / VIETNAMESE]', 'English/Vietnamese') if args.native else result
 
 def para(node, kind='body'):
     return Paragraph(inline(node), styles[kind])
@@ -148,18 +159,21 @@ def table(node):
 tree = html.parse(str(ROOT / ('server/private/legal/provider-agreement-native.html' if args.native else 'server/private/legal/provider-agreement.html')))
 story = [Paragraph('FASTBOOST', ParagraphStyle('brand', fontName='FB-Bold', fontSize=13, textColor=purple, spaceAfter=18))]
 story += [para(tree.xpath('//h1')[0], 'title')]
-story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('22 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
+story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('24 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
 if args.sandbox_template:
     story += [Paragraph('<b>SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION.</b> Field layout for integration testing. Commercial settings remain subject to approval.', styles['body'])]
 story += [para(tree.xpath('//p[@class="fb-intro"]')[0])]
-story += [para(tree.xpath('//div[@class="fb-agreement-note"]')[0], 'small')]
+agreement_notes = tree.xpath('//div[@class="fb-agreement-note"]')
+if agreement_notes:
+    story += [para(agreement_notes[0], 'small')]
 story += [Spacer(1, 6)]
 for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)," ")," fb-section ")]'):
     if section.get('id') == 'schedule-a':
         story.append(PageBreak())
     number = section.xpath('.//span[@class="fb-section-number"]')[0].text_content()
     heading = section.xpath('.//h2')[0].text_content()
-    story.append(Paragraph(entities.escape(clean(f'{number}  {heading}')), styles['heading']))
+    display_heading = heading if number == 'A' and heading.startswith('Schedule A') else f'{number}  {heading}'
+    story.append(Paragraph(entities.escape(clean(display_heading)), styles['heading']))
     for node in section:
         if node.tag == 'p':
             story.append(para(node, 'small' if 'fb-sources' in node.get('class', '') else 'body'))
@@ -172,12 +186,13 @@ for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)
             cards = []
             for card in node:
                 cells = [para(card.find('h3'), 'heading')]
-                recipient = '1' if 'FASTBOOST' in card.find('h3').text_content() else '2'
+                recipient = ('2' if args.native else '1') if 'FASTBOOST' in card.find('h3').text_content() else ('1' if args.native else '2')
+                role_prefix = 'Company' if 'FASTBOOST' in card.find('h3').text_content() else 'Provider'
                 for p in card.findall('p'):
                     if signing and 'fb-signline' in p.get('class', ''):
                         label = p.text_content().split(':')[0]
                         kind = 'signHereTabs' if label == 'Signature' else 'dateSignedTabs' if label == 'Date' else 'initialHereTabs'
-                        cells.append(SigningField(('Company' if recipient == '1' else 'Provider') + kind, label, recipient,
+                        cells.append(SigningField(role_prefix + kind, label, recipient,
                             width=216, height=46 if kind == 'signHereTabs' else 32, tab_type=kind))
                     elif signing and '[' in p.text_content():
                         cells.append(SigningField('ProviderSignatureName', 'Provider / authorized signatory', recipient, width=216, tab_type='fullNameTabs'))
@@ -213,7 +228,8 @@ doc = SimpleDocTemplate(str(output), pagesize=letter, topMargin=63, bottomMargin
 doc.build(story, onFirstPage=page_chrome, onLaterPages=page_chrome)
 if signing:
     signers = []
-    for recipient, role in [('1', 'FastBoost'), ('2', 'Booster')]:
+    signer_order = [('1', 'Booster'), ('2', 'FastBoost')] if args.native else [('1', 'FastBoost'), ('2', 'Booster')]
+    for recipient, role in signer_order:
         tabs = {}
         for field in field_positions:
             if field['recipientId'] != recipient:
@@ -228,7 +244,7 @@ if signing:
             tabs.setdefault(field['type'], []).append(tab)
         signers.append({'recipientId': recipient, 'roleName': role, 'routingOrder': recipient, 'tabs': tabs})
     template = {'version': VERSION, 'name': f'FastBoost Booster Service Agreement {VERSION}' + (' - Sandbox Test' if args.sandbox_template else ''),
-        'description': 'FastBoost completes the required commercial settings and signs first; the Booster then reviews and signs.' + (' Sandbox testing only.' if args.sandbox_template else ''),
+        'description': ('FastBoost completes the commercial settings; the Booster reviews and signs first, then FastBoost countersigns.' if args.native else 'FastBoost completes the required commercial settings and signs first; the Booster then reviews and signs.') + (' Sandbox testing only.' if args.sandbox_template else ''),
         'emailSubject': 'Booster Service Agreement' + (' - SANDBOX TEST' if args.sandbox_template else ''),
         'documents': [{'documentId': '1', 'name': output.name, 'fileExtension': 'pdf', 'documentBase64': base64.b64encode(output.read_bytes()).decode()}],
         'recipients': {'signers': signers}}
