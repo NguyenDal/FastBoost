@@ -542,6 +542,9 @@ exports.Prisma.OrderHighlightScalarFieldEnum = {
   s3Key: 's3Key',
   mimeType: 'mimeType',
   byteSize: 'byteSize',
+  durationSeconds: 'durationSeconds',
+  durationProbedAt: 'durationProbedAt',
+  thumbnailKey: 'thumbnailKey',
   createdAt: 'createdAt'
 };
 

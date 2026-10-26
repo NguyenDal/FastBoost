@@ -19,6 +19,7 @@ import {
 } from "../api/chats";
 import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
+import OrderHighlightsSkeleton from '../components/OrderHighlightsSkeleton';
 import OrderRating from '../components/OrderRating';
 import AvatarImage from '../components/AvatarImage';
 import { shouldRefreshAvatarData } from '../utils/signedAvatar';
@@ -75,10 +76,11 @@ function MatchPage() {
         sessionStorage.getItem(`fastboost:order:${orderId}:gameMode`) ||
         "lol";
 
-    const loadedOrderGameMode =
-        String(order?.boostType || order?.service?.title || "").startsWith("TFT ")
+    const loadedOrderGameMode = order
+        ? [order.boostType, order.service?.title].some(value => String(value || "").startsWith("TFT "))
             ? "tft"
-            : initialGameMode;
+            : "lol"
+        : initialGameMode;
 
     const matchPageModeClass =
         loadedOrderGameMode === "tft" ? "order-page-tft" : "order-page-lol";
@@ -449,9 +451,8 @@ function MatchPage() {
                 const loadedOrder = orderData.order;
                 setOrder(loadedOrder);
 
-                const loadedGameMode = String(
-                    loadedOrder?.boostType || loadedOrder?.service?.title || ""
-                ).startsWith("TFT ")
+                const loadedGameMode = [loadedOrder?.boostType, loadedOrder?.service?.title]
+                    .some(value => String(value || "").startsWith("TFT "))
                     ? "tft"
                     : "lol";
 
@@ -903,7 +904,7 @@ function MatchPage() {
                 </div>
 
                 {showHistory && <Suspense fallback={<MatchHistorySkeleton />}><MatchHistory key={orderId} orderId={orderId} /></Suspense>}
-                {activeTab === 'highlights' && <Suspense fallback={<div className="match-history-loading" role="status">Loading highlights…</div>}><OrderHighlights key={orderId} orderId={orderId} /></Suspense>}
+                {activeTab === 'highlights' && <Suspense fallback={<OrderHighlightsSkeleton />}><OrderHighlights key={orderId} orderId={orderId} gameMode={loadedOrderGameMode} /></Suspense>}
                 <div className="match-layout" hidden={activeTab !== 'details'} style={{ display: activeTab !== 'details' ? 'none' : undefined }}>
                     <section className="match-main-panel">
                         <div className="chat-panel">

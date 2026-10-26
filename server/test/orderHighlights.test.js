@@ -1,8 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
-const { existsSync, readdirSync } = require('node:fs');
+const { existsSync, readdirSync, readFileSync } = require('node:fs');
 const { tmpdir } = require('node:os');
+const { join } = require('node:path');
 const { signSessionToken } = require('../src/utils/sessionToken');
 const realStorage = require('../src/utils/orderHighlightStorage');
 
@@ -18,6 +19,7 @@ test.after(() => { if (previousSecret === undefined) delete process.env.JWT_SECR
 
 const mp4 = Buffer.from([0, 0, 0, 16, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d, 0, 0, 0, 0]);
 const webm = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 0x93, 0x42, 0x82, 0x84, 0x77, 0x65, 0x62, 0x6d]);
+const jpeg = readFileSync(join(__dirname, '../../client/public/assets/logos/lol-logo.jpg'));
 
 function fixture() {
     const state = {
@@ -29,20 +31,33 @@ function fixture() {
         ],
         order: { id: 'order', customerId: 'customer', status: 'IN_PROGRESS', paymentStatus: 'PAID' },
         assignments: [{ id: 'assignment', orderId: 'order', boosterId: 'booster' }],
-        highlights: [], uploaded: [], removed: [], signed: [], tempPaths: [],
+        highlights: [], uploaded: [], uploadedThumbnails: [], removed: [], signed: [], signedThumbnails: [],
+        tempPaths: [], thumbnailTempPaths: [], inspected: [],
     };
     const db = {
         user: { findUnique: async ({ where }) => state.users.find(user => user.id === where.id) || null },
         order: { findUnique: async ({ where }) => where.id === state.order.id ? state.order : null },
         orderAssignment: { findFirst: async ({ where }) => state.assignments.find(row => row.orderId === where.orderId && row.boosterId === where.boosterId) || null },
         orderHighlight: {
-            findMany: async ({ where }) => state.highlights.filter(row => row.orderId === where.orderId).sort((a, b) => b.createdAt - a.createdAt),
+            findMany: async ({ where, orderBy }) => {
+                state.lastListOrderBy = orderBy;
+                return state.highlights.filter(row => row.orderId === where.orderId).sort((a, b) =>
+                    a.createdAt - b.createdAt || a.id.localeCompare(b.id));
+            },
             findFirst: async ({ where }) => state.highlights.find(row => row.id === where.id && row.orderId === where.orderId) || null,
             create: async ({ data }) => {
                 if (state.failCreate) throw new Error('database unavailable');
                 const row = { ...data, id: `highlight-${state.highlights.length + 1}`, createdAt: new Date('2026-10-25T20:00:00Z') };
                 state.highlights.push(row);
                 return row;
+            },
+            updateMany: async ({ where, data }) => {
+                const row = state.highlights.find(item => item.id === where.id &&
+                    (Object.hasOwn(where, 'durationProbedAt') ? item.durationProbedAt == null : true) &&
+                    (Object.hasOwn(where, 'thumbnailKey') ? item.thumbnailKey == null : true));
+                if (!row) return { count: 0 };
+                Object.assign(row, data);
+                return { count: 1 };
             },
         },
         $queryRaw: async (parts, id) => { state.locks ||= []; state.locks.push([parts.join('?'), id]); return [{ id }]; },
@@ -51,6 +66,14 @@ function fixture() {
     const storage = {
         MAX_HIGHLIGHT_BYTES: realStorage.MAX_HIGHLIGHT_BYTES,
         validateHighlightFile: realStorage.validateHighlightFile,
+        readVideoDurationSeconds: async () => state.uploadDuration ?? null,
+        MAX_THUMBNAIL_BYTES: realStorage.MAX_THUMBNAIL_BYTES,
+        validateHighlightThumbnail: realStorage.validateHighlightThumbnail,
+        inspectStoredHighlightDuration: async ({ key, mimeType }) => {
+            state.inspected.push({ key, mimeType });
+            if (state.failInspection) throw new Error('storage unavailable');
+            return state.storedDuration ?? 5;
+        },
         uploadHighlight: async ({ orderId, file, mimeType, extension }) => {
             assert.equal(orderId, 'order');
             state.tempPaths.push(file.path);
@@ -63,6 +86,19 @@ function fixture() {
         removeHighlight: async key => { state.removed.push(key); },
         createHighlightViewUrl: async ({ key, mimeType }) => {
             state.signed.push({ key, mimeType });
+            return `https://assets.example.invalid/${key}?signed=1`;
+        },
+        uploadHighlightThumbnail: async ({ orderId, file }) => {
+            assert.equal(orderId, 'order');
+            state.thumbnailTempPaths.push(file.path);
+            if (state.failThumbnailUpload) throw new Error('storage unavailable');
+            if (state.afterThumbnailUpload) await state.afterThumbnailUpload();
+            const key = `order-highlights/${orderId}/preview-${state.uploadedThumbnails.length + 1}.jpg`;
+            state.uploadedThumbnails.push(key);
+            return key;
+        },
+        createHighlightThumbnailUrl: async key => {
+            state.signedThumbnails.push(key);
             return `https://assets.example.invalid/${key}?signed=1`;
         },
     };
@@ -94,6 +130,11 @@ function videoForm({ content = mp4, mimeType = 'video/mp4', filename = 'match.mp
     form.append('highlight', new Blob([content], { type: mimeType }), filename);
     return form;
 }
+function thumbnailForm(content = jpeg) {
+    const form = new FormData();
+    form.append('thumbnail', new Blob([content], { type: 'image/jpeg' }), 'frame.jpg');
+    return form;
+}
 const tempHighlightNames = () => readdirSync(tmpdir()).filter(name => name.startsWith('fastboost-highlight-')).sort();
 
 test('only owner, current assigned booster, and admin can list or request playback', async t => {
@@ -107,7 +148,7 @@ test('only owner, current assigned booster, and admin can list or request playba
         assert.equal(result.status, 200);
         assert.equal(result.cache, 'private, no-store');
         assert.deepEqual(result.body, { ok: true, canUpload, highlights: [{ id: 'one', title: 'Pentakill', mimeType: 'video/mp4',
-            byteSize: 1100, createdAt: '2026-10-25T20:00:00.000Z', uploader: { username: 'skilledPlayer' } }] });
+            byteSize: 1100, durationSeconds: 5, hasThumbnail: false, createdAt: '2026-10-25T20:00:00.000Z', uploader: { username: 'skilledPlayer' } }] });
         const view = await request({ actor, path: '/order/highlights/one/view-url' });
         assert.equal(view.status, 200);
         assert.match(view.body.url, /signed=1$/);
@@ -116,6 +157,7 @@ test('only owner, current assigned booster, and admin can list or request playba
     assert.equal((await request({ actor: 'other', path: '/order/highlights/one/view-url' })).status, 404);
     assert.equal((await request({ path: '/order/highlights/missing/view-url' })).status, 404);
     assert.deepEqual(state.signed, Array(3).fill({ key: 'order-highlights/order/one.mp4', mimeType: 'video/mp4' }));
+    assert.equal(state.inspected.length, 1, 'legacy duration is inspected once and saved');
     state.assignments = [];
     assert.equal((await request({ actor: 'booster', path: '/order/highlights/one/view-url' })).status, 404);
     state.users.find(user => user.id === 'admin').suspendedAt = new Date();
@@ -124,6 +166,7 @@ test('only owner, current assigned booster, and admin can list or request playba
 
 test('upload accepts MP4 and WebM with private metadata, and customers cannot upload', async t => {
     const { state, request } = await serve(t);
+    state.uploadDuration = 6.25;
     assert.equal((await request({ actor: 'customer', method: 'POST', form: videoForm() })).status, 403);
     for (const [actor, form, expectedMime] of [
         ['booster', videoForm(), 'video/mp4'],
@@ -132,6 +175,7 @@ test('upload accepts MP4 and WebM with private metadata, and customers cannot up
         const result = await request({ actor, method: 'POST', form });
         assert.equal(result.status, 201, JSON.stringify(result.body));
         assert.equal(result.body.highlight.mimeType, expectedMime);
+        assert.equal(result.body.highlight.durationSeconds, 6.25);
         assert.equal(result.body.highlight.uploader.username, actor === 'booster' ? 'skilledPlayer' : 'manager');
         assert.equal(Object.hasOwn(result.body.highlight, 's3Key'), false);
     }
@@ -139,6 +183,80 @@ test('upload accepts MP4 and WebM with private metadata, and customers cannot up
     assert.deepEqual(state.uploaded.map(row => row.mimeType), ['video/mp4', 'video/webm']);
     assert.equal(state.tempPaths.every(path => !existsSync(path)), true, 'temporary uploads are removed');
     assert.equal(state.locks.length, 4, 'each saved upload locks the order and actor before a fresh authorization check');
+});
+
+test('legacy duration inspection failure does not break listing and can be retried', async t => {
+    const { state, request } = await serve(t);
+    state.highlights.push({ id: 'one', orderId: 'order', uploaderName: 'skilledPlayer', title: 'Pentakill',
+        mimeType: 'video/mp4', byteSize: 1100, createdAt: new Date('2026-10-25T20:00:00Z'), s3Key: 'order-highlights/order/one.mp4' });
+    state.failInspection = true;
+    const first = await request();
+    assert.equal(first.status, 200);
+    assert.equal(first.body.highlights[0].durationSeconds, null);
+    state.failInspection = false;
+    const second = await request();
+    assert.equal(second.body.highlights[0].durationSeconds, 5);
+    assert.equal(state.inspected.length, 2);
+});
+
+test('newer highlights append after the original clip in chronological order', async t => {
+    const { state, request } = await serve(t);
+    const original = { id: 'clip-1', orderId: 'order', uploaderName: 'skilledPlayer', title: 'First play',
+        mimeType: 'video/mp4', byteSize: 1100, durationSeconds: 5, durationProbedAt: new Date(),
+        createdAt: new Date('2026-10-25T20:00:00Z') };
+    state.highlights.push(original);
+    const first = await request();
+    assert.deepEqual(first.body.highlights.map(row => row.id), ['clip-1']);
+    state.highlights.push({ ...original, id: 'clip-2', title: 'Later play',
+        createdAt: new Date('2026-10-25T20:01:00Z') });
+    const second = await request();
+    assert.equal(second.status, 200);
+    assert.deepEqual(state.lastListOrderBy, [{ createdAt: 'asc' }, { id: 'asc' }]);
+    assert.deepEqual(second.body.highlights.map(row => row.id), ['clip-1', 'clip-2']);
+    assert.equal(second.body.highlights[0].title, 'First play', 'the original clip retains the first row');
+});
+
+test('only active-order staff can add a private thumbnail, and authorized viewers can request its short-lived URL', async t => {
+    const { state, request } = await serve(t);
+    const created = await request({ actor: 'booster', method: 'POST', form: videoForm() });
+    assert.equal(created.status, 201);
+    const id = created.body.highlight.id;
+    const path = `/order/highlights/${id}/thumbnail`;
+    assert.equal((await request({ actor: 'customer', method: 'POST', path, form: thumbnailForm() })).status, 403);
+    assert.equal((await request({ actor: 'other', method: 'POST', path, form: thumbnailForm() })).status, 404);
+    assert.equal((await request({ actor: 'booster', path: `${path}-url` })).status, 404);
+    const result = await request({ actor: 'booster', method: 'POST', path, form: thumbnailForm() });
+    assert.equal(result.status, 201, JSON.stringify(result.body));
+    assert.deepEqual(result.body, { ok: true, hasThumbnail: true });
+    assert.equal(state.uploadedThumbnails.length, 1);
+    assert.equal(state.thumbnailTempPaths.every(item => !existsSync(item)), true);
+    const list = await request({ actor: 'customer' });
+    assert.equal(list.body.highlights[0].hasThumbnail, true);
+    assert.equal(Object.hasOwn(list.body.highlights[0], 'thumbnailKey'), false);
+    assert.equal(Object.hasOwn(list.body.highlights[0], 'url'), false);
+    for (const actor of ['customer', 'booster', 'admin']) {
+        const url = await request({ actor, path: `${path}-url` });
+        assert.equal(url.status, 200);
+        assert.match(url.body.url, /signed=1$/);
+        assert.equal(url.cache, 'private, no-store');
+    }
+    assert.equal((await request({ actor: 'other', path: `${path}-url` })).status, 404);
+    assert.equal((await request({ actor: null, path: `${path}-url` })).status, 401);
+    assert.equal((await request({ actor: 'admin', method: 'POST', path, form: thumbnailForm() })).status, 409);
+    assert.equal(state.uploadedThumbnails.length, 1, 'duplicate preview is not stored');
+});
+
+test('thumbnail validation and reassignment prevent unsafe or orphaned previews', async t => {
+    const { state, request } = await serve(t);
+    const created = await request({ actor: 'booster', method: 'POST', form: videoForm() });
+    const path = `/order/highlights/${created.body.highlight.id}/thumbnail`;
+    assert.equal((await request({ actor: 'booster', method: 'POST', path, form: thumbnailForm(Buffer.alloc(64)) })).status, 400);
+    assert.equal((await request({ actor: 'booster', method: 'POST', path, form: thumbnailForm(Buffer.alloc(201 * 1024)) })).status, 413);
+    state.afterThumbnailUpload = () => { state.assignments = []; };
+    assert.equal((await request({ actor: 'booster', method: 'POST', path, form: thumbnailForm() })).status, 409);
+    assert.deepEqual(state.removed, [state.uploadedThumbnails[0]], 'uncommitted preview is removed');
+    assert.equal(state.highlights[0].thumbnailKey, undefined);
+    assert.equal(state.thumbnailTempPaths.every(item => !existsSync(item)), true);
 });
 
 test('upload rejects spoofed media, missing title, and unpaid or cancelled orders', async t => {

@@ -620,15 +620,18 @@ model Order {
 }
 
 model OrderHighlight {
-  id           String   @id @default(cuid())
-  orderId      String
-  uploadedById String?
-  uploaderName String
-  title        String
-  s3Key        String   @unique
-  mimeType     String
-  byteSize     Int
-  createdAt    DateTime @default(now())
+  id               String    @id @default(cuid())
+  orderId          String
+  uploadedById     String?
+  uploaderName     String
+  title            String
+  s3Key            String    @unique
+  mimeType         String
+  byteSize         Int
+  durationSeconds  Float?
+  durationProbedAt DateTime?
+  thumbnailKey     String?   @unique
+  createdAt        DateTime  @default(now())
 
   order      Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
   uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)

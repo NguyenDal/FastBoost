@@ -26,6 +26,23 @@ export async function getOrderHighlightViewUrl(orderId, highlightId, signal) {
   return data.url;
 }
 
+export async function getOrderHighlightThumbnailUrl(orderId, highlightId, signal) {
+  const response = await fetch(`${API_BASE_URL}${pathFor(orderId)}/${encodeURIComponent(highlightId)}/thumbnail-url`, {
+    headers: headers(), signal,
+  });
+  const data = await readResponse(response, 'Could not load this highlight preview.');
+  return data.url;
+}
+
+export async function uploadOrderHighlightThumbnail(orderId, highlightId, file, signal) {
+  const form = new FormData();
+  form.append('thumbnail', file);
+  const response = await fetch(`${API_BASE_URL}${pathFor(orderId)}/${encodeURIComponent(highlightId)}/thumbnail`, {
+    method: 'POST', headers: headers(), body: form, signal,
+  });
+  return readResponse(response, 'Could not save this highlight preview.');
+}
+
 export function uploadOrderHighlight(orderId, { file, title, onProgress, signal }) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();

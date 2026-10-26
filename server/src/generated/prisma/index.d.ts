@@ -40331,10 +40331,12 @@ export namespace Prisma {
 
   export type OrderHighlightAvgAggregateOutputType = {
     byteSize: number | null
+    durationSeconds: number | null
   }
 
   export type OrderHighlightSumAggregateOutputType = {
     byteSize: number | null
+    durationSeconds: number | null
   }
 
   export type OrderHighlightMinAggregateOutputType = {
@@ -40346,6 +40348,9 @@ export namespace Prisma {
     s3Key: string | null
     mimeType: string | null
     byteSize: number | null
+    durationSeconds: number | null
+    durationProbedAt: Date | null
+    thumbnailKey: string | null
     createdAt: Date | null
   }
 
@@ -40358,6 +40363,9 @@ export namespace Prisma {
     s3Key: string | null
     mimeType: string | null
     byteSize: number | null
+    durationSeconds: number | null
+    durationProbedAt: Date | null
+    thumbnailKey: string | null
     createdAt: Date | null
   }
 
@@ -40370,6 +40378,9 @@ export namespace Prisma {
     s3Key: number
     mimeType: number
     byteSize: number
+    durationSeconds: number
+    durationProbedAt: number
+    thumbnailKey: number
     createdAt: number
     _all: number
   }
@@ -40377,10 +40388,12 @@ export namespace Prisma {
 
   export type OrderHighlightAvgAggregateInputType = {
     byteSize?: true
+    durationSeconds?: true
   }
 
   export type OrderHighlightSumAggregateInputType = {
     byteSize?: true
+    durationSeconds?: true
   }
 
   export type OrderHighlightMinAggregateInputType = {
@@ -40392,6 +40405,9 @@ export namespace Prisma {
     s3Key?: true
     mimeType?: true
     byteSize?: true
+    durationSeconds?: true
+    durationProbedAt?: true
+    thumbnailKey?: true
     createdAt?: true
   }
 
@@ -40404,6 +40420,9 @@ export namespace Prisma {
     s3Key?: true
     mimeType?: true
     byteSize?: true
+    durationSeconds?: true
+    durationProbedAt?: true
+    thumbnailKey?: true
     createdAt?: true
   }
 
@@ -40416,6 +40435,9 @@ export namespace Prisma {
     s3Key?: true
     mimeType?: true
     byteSize?: true
+    durationSeconds?: true
+    durationProbedAt?: true
+    thumbnailKey?: true
     createdAt?: true
     _all?: true
   }
@@ -40515,6 +40537,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds: number | null
+    durationProbedAt: Date | null
+    thumbnailKey: string | null
     createdAt: Date
     _count: OrderHighlightCountAggregateOutputType | null
     _avg: OrderHighlightAvgAggregateOutputType | null
@@ -40546,6 +40571,9 @@ export namespace Prisma {
     s3Key?: boolean
     mimeType?: boolean
     byteSize?: boolean
+    durationSeconds?: boolean
+    durationProbedAt?: boolean
+    thumbnailKey?: boolean
     createdAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
@@ -40560,6 +40588,9 @@ export namespace Prisma {
     s3Key?: boolean
     mimeType?: boolean
     byteSize?: boolean
+    durationSeconds?: boolean
+    durationProbedAt?: boolean
+    thumbnailKey?: boolean
     createdAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
@@ -40574,6 +40605,9 @@ export namespace Prisma {
     s3Key?: boolean
     mimeType?: boolean
     byteSize?: boolean
+    durationSeconds?: boolean
+    durationProbedAt?: boolean
+    thumbnailKey?: boolean
     createdAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
@@ -40588,10 +40622,13 @@ export namespace Prisma {
     s3Key?: boolean
     mimeType?: boolean
     byteSize?: boolean
+    durationSeconds?: boolean
+    durationProbedAt?: boolean
+    thumbnailKey?: boolean
     createdAt?: boolean
   }
 
-  export type OrderHighlightOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "uploadedById" | "uploaderName" | "title" | "s3Key" | "mimeType" | "byteSize" | "createdAt", ExtArgs["result"]["orderHighlight"]>
+  export type OrderHighlightOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "uploadedById" | "uploaderName" | "title" | "s3Key" | "mimeType" | "byteSize" | "durationSeconds" | "durationProbedAt" | "thumbnailKey" | "createdAt", ExtArgs["result"]["orderHighlight"]>
   export type OrderHighlightInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
@@ -40620,6 +40657,9 @@ export namespace Prisma {
       s3Key: string
       mimeType: string
       byteSize: number
+      durationSeconds: number | null
+      durationProbedAt: Date | null
+      thumbnailKey: string | null
       createdAt: Date
     }, ExtArgs["result"]["orderHighlight"]>
     composites: {}
@@ -41054,6 +41094,9 @@ export namespace Prisma {
     readonly s3Key: FieldRef<"OrderHighlight", 'String'>
     readonly mimeType: FieldRef<"OrderHighlight", 'String'>
     readonly byteSize: FieldRef<"OrderHighlight", 'Int'>
+    readonly durationSeconds: FieldRef<"OrderHighlight", 'Float'>
+    readonly durationProbedAt: FieldRef<"OrderHighlight", 'DateTime'>
+    readonly thumbnailKey: FieldRef<"OrderHighlight", 'String'>
     readonly createdAt: FieldRef<"OrderHighlight", 'DateTime'>
   }
 
@@ -63182,6 +63225,9 @@ export namespace Prisma {
     s3Key: 's3Key',
     mimeType: 'mimeType',
     byteSize: 'byteSize',
+    durationSeconds: 'durationSeconds',
+    durationProbedAt: 'durationProbedAt',
+    thumbnailKey: 'thumbnailKey',
     createdAt: 'createdAt'
   };
 
@@ -66430,6 +66476,9 @@ export namespace Prisma {
     s3Key?: StringFilter<"OrderHighlight"> | string
     mimeType?: StringFilter<"OrderHighlight"> | string
     byteSize?: IntFilter<"OrderHighlight"> | number
+    durationSeconds?: FloatNullableFilter<"OrderHighlight"> | number | null
+    durationProbedAt?: DateTimeNullableFilter<"OrderHighlight"> | Date | string | null
+    thumbnailKey?: StringNullableFilter<"OrderHighlight"> | string | null
     createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     uploadedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -66444,6 +66493,9 @@ export namespace Prisma {
     s3Key?: SortOrder
     mimeType?: SortOrder
     byteSize?: SortOrder
+    durationSeconds?: SortOrderInput | SortOrder
+    durationProbedAt?: SortOrderInput | SortOrder
+    thumbnailKey?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     order?: OrderOrderByWithRelationInput
     uploadedBy?: UserOrderByWithRelationInput
@@ -66452,6 +66504,7 @@ export namespace Prisma {
   export type OrderHighlightWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     s3Key?: string
+    thumbnailKey?: string
     AND?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
     OR?: OrderHighlightWhereInput[]
     NOT?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
@@ -66461,10 +66514,12 @@ export namespace Prisma {
     title?: StringFilter<"OrderHighlight"> | string
     mimeType?: StringFilter<"OrderHighlight"> | string
     byteSize?: IntFilter<"OrderHighlight"> | number
+    durationSeconds?: FloatNullableFilter<"OrderHighlight"> | number | null
+    durationProbedAt?: DateTimeNullableFilter<"OrderHighlight"> | Date | string | null
     createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     uploadedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-  }, "id" | "s3Key">
+  }, "id" | "s3Key" | "thumbnailKey">
 
   export type OrderHighlightOrderByWithAggregationInput = {
     id?: SortOrder
@@ -66475,6 +66530,9 @@ export namespace Prisma {
     s3Key?: SortOrder
     mimeType?: SortOrder
     byteSize?: SortOrder
+    durationSeconds?: SortOrderInput | SortOrder
+    durationProbedAt?: SortOrderInput | SortOrder
+    thumbnailKey?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: OrderHighlightCountOrderByAggregateInput
     _avg?: OrderHighlightAvgOrderByAggregateInput
@@ -66495,6 +66553,9 @@ export namespace Prisma {
     s3Key?: StringWithAggregatesFilter<"OrderHighlight"> | string
     mimeType?: StringWithAggregatesFilter<"OrderHighlight"> | string
     byteSize?: IntWithAggregatesFilter<"OrderHighlight"> | number
+    durationSeconds?: FloatNullableWithAggregatesFilter<"OrderHighlight"> | number | null
+    durationProbedAt?: DateTimeNullableWithAggregatesFilter<"OrderHighlight"> | Date | string | null
+    thumbnailKey?: StringNullableWithAggregatesFilter<"OrderHighlight"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"OrderHighlight"> | Date | string
   }
 
@@ -70908,6 +70969,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
     order: OrderCreateNestedOneWithoutHighlightsInput
     uploadedBy?: UserCreateNestedOneWithoutUploadedHighlightsInput
@@ -70922,6 +70986,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -70932,6 +70999,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutHighlightsNestedInput
     uploadedBy?: UserUpdateOneWithoutUploadedHighlightsNestedInput
@@ -70946,6 +71016,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -70958,6 +71031,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -70968,6 +71044,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -70980,6 +71059,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -74662,11 +74744,15 @@ export namespace Prisma {
     s3Key?: SortOrder
     mimeType?: SortOrder
     byteSize?: SortOrder
+    durationSeconds?: SortOrder
+    durationProbedAt?: SortOrder
+    thumbnailKey?: SortOrder
     createdAt?: SortOrder
   }
 
   export type OrderHighlightAvgOrderByAggregateInput = {
     byteSize?: SortOrder
+    durationSeconds?: SortOrder
   }
 
   export type OrderHighlightMaxOrderByAggregateInput = {
@@ -74678,6 +74764,9 @@ export namespace Prisma {
     s3Key?: SortOrder
     mimeType?: SortOrder
     byteSize?: SortOrder
+    durationSeconds?: SortOrder
+    durationProbedAt?: SortOrder
+    thumbnailKey?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -74690,11 +74779,15 @@ export namespace Prisma {
     s3Key?: SortOrder
     mimeType?: SortOrder
     byteSize?: SortOrder
+    durationSeconds?: SortOrder
+    durationProbedAt?: SortOrder
+    thumbnailKey?: SortOrder
     createdAt?: SortOrder
   }
 
   export type OrderHighlightSumOrderByAggregateInput = {
     byteSize?: SortOrder
+    durationSeconds?: SortOrder
   }
 
   export type OrderRatingCountOrderByAggregateInput = {
@@ -80832,6 +80925,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
     order: OrderCreateNestedOneWithoutHighlightsInput
   }
@@ -80844,6 +80940,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -82017,6 +82116,9 @@ export namespace Prisma {
     s3Key?: StringFilter<"OrderHighlight"> | string
     mimeType?: StringFilter<"OrderHighlight"> | string
     byteSize?: IntFilter<"OrderHighlight"> | number
+    durationSeconds?: FloatNullableFilter<"OrderHighlight"> | number | null
+    durationProbedAt?: DateTimeNullableFilter<"OrderHighlight"> | Date | string | null
+    thumbnailKey?: StringNullableFilter<"OrderHighlight"> | string | null
     createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
   }
 
@@ -88319,6 +88421,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
     uploadedBy?: UserCreateNestedOneWithoutUploadedHighlightsInput
   }
@@ -88331,6 +88436,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -97320,6 +97428,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -98504,6 +98615,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutHighlightsNestedInput
   }
@@ -98516,6 +98630,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -98527,6 +98644,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -99955,6 +100075,9 @@ export namespace Prisma {
     s3Key: string
     mimeType: string
     byteSize: number
+    durationSeconds?: number | null
+    durationProbedAt?: Date | string | null
+    thumbnailKey?: string | null
     createdAt?: Date | string
   }
 
@@ -100138,6 +100261,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploadedBy?: UserUpdateOneWithoutUploadedHighlightsNestedInput
   }
@@ -100150,6 +100276,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -100161,6 +100290,9 @@ export namespace Prisma {
     s3Key?: StringFieldUpdateOperationsInput | string
     mimeType?: StringFieldUpdateOperationsInput | string
     byteSize?: IntFieldUpdateOperationsInput | number
+    durationSeconds?: NullableFloatFieldUpdateOperationsInput | number | null
+    durationProbedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    thumbnailKey?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
