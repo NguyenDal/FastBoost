@@ -25,23 +25,23 @@ Auth: Send `Authorization: Bearer <JWT>` header. Every protected request resolve
   lock. Existing overlapping sessions issued before this release need a separately
   planned Stripe cleanup; restarting the API alone does not expire them.
 - New chat attachments download as inert octet streams. Signed reads also override
-  legacy metadata. Previously public raw S3 objects require separate bucket/metadata
-  review; changing app code cannot alter those objects or their public access.
-- S3 privacy rollout: deploy the updated client artwork and server avatar/chat paths
-  before removing the temporary public bucket policy. Confirm LoL/TFT `CleanIcon`,
-  email artwork, profile avatars, chat attachments, and order highlights work through
-  the site. Then delete the anonymous bucket policy and enable all four bucket Block
-  Public Access settings. Raw S3 URLs should return 403; authorized temporary URLs
-  should still work. The current live policy permits anonymous reads only of
-  legacy artwork under `logos/*`, `services/*`, `roles/*`, and `updates/*`;
-  `profiles/*`, chat attachments, and highlights already deny raw public reads.
-  Existing live avatars may be broken until the new private-link API is released.
-  Full bucket privacy is not yet active.
-- The local backend IAM principal has `s3:PutObject` and `s3:GetObject` for
+  legacy metadata. The live bucket permissions were reviewed and public access
+  was blocked separately from these application changes.
+- S3 privacy rollout completed on the live `fastboost-assets` bucket: the
+  anonymous-read bucket policy was deleted, Block All Public Access and its four
+  settings are on, and ACLs are disabled. Public artwork is served by the site
+  from `/assets/...`, including LoL/TFT `CleanIcon` inputs. Profile, chat, and
+  highlight objects use authorized short-lived signed reads. A raw profile S3
+  URL returned `AccessDenied`, while a signed ranged read returned HTTP 206.
+  Signed URLs are bearer links until expiry; previously emailed raw S3 artwork
+  URLs may no longer display images.
+- The backend IAM principal has `s3:PutObject` and `s3:GetObject` for
   `profiles/*` and `chat-attachments/*`, plus `s3:PutObject`, `s3:GetObject`,
   and `s3:DeleteObject` for `order-highlights/*`. A disposable upload, signed
   read, anonymous denial, and cleanup were verified after that narrow grant.
-  Confirm which IAM identity the deployed backend uses before its release.
+  The deployed API's access key ID was confirmed to match this tested principal.
+  Migration `20261025020000_order_highlights` is applied in production. The
+  authenticated paid-order upload/playback flow has not been tested live.
 - Run `npm ci`, then `npx prisma generate` as part of setup/build after installing
   the aligned Prisma dependencies. `npm run dev` now uses Node's built-in watch mode
   (Node 22+); the production `npm start` command is unchanged.
