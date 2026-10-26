@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { signProfileImages } = require('../utils/privateProfileImages');
 
 const ALLOWED_ROLES = ["CUSTOMER", "PROVIDER", "ADMIN"];
 
@@ -59,13 +60,13 @@ async function adminListUsers(req, res) {
             prisma.user.count({ where }),
         ]);
 
-        return res.json({
+        return res.json(await signProfileImages({
             items: first ? [first, ...others] : others,
             canManageExtraRoles,
             total,
             page,
             pageSize,
-        });
+        }));
     } catch (error) {
         console.error("adminListUsers error:", error);
         return res.status(500).json({ message: "Failed to load users" });
@@ -149,10 +150,10 @@ async function adminUpdateUserRole(req, res) {
             });
         }
 
-        return res.json({
+        return res.json(await signProfileImages({
             message: "User role updated",
             user: updatedUser,
-        });
+        }));
     } catch (error) {
         if (error.code === "P2025") return res.status(403).json({ message: "Account no longer editable. Refresh and try again." });
         console.error("adminUpdateUserRole error:", error);
@@ -220,10 +221,10 @@ async function adminUpdateUserSuspension(req, res) {
             },
         });
 
-        return res.json({
+        return res.json(await signProfileImages({
             message: suspended ? "User suspended" : "User restored",
             user: updatedUser,
-        });
+        }));
     } catch (error) {
         if (error.code === "P2025") return res.status(403).json({ message: "Account no longer editable. Refresh and try again." });
         console.error("adminUpdateUserSuspension error:", error);

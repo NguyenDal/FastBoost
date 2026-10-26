@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { signProfileImages } = require('../utils/privateProfileImages');
 const {
   getReferralProgramDetails,
 } = require("../utils/referralProgram");
@@ -47,7 +48,9 @@ async function getPublicReferralInvite(req, res) {
 
     const referralProgram = getReferralProgramDetails();
 
-    return res.json({
+    res.set('Cache-Control', 'private, no-store');
+
+    return res.json(await signProfileImages({
       ok: true,
       invite: {
         referralCode: inviter.referralCode,
@@ -60,7 +63,7 @@ async function getPublicReferralInvite(req, res) {
           text: "Get 10% off your first purchase. After you complete a first purchase of $50 or more, both accounts receive 50 gold ($5); your gold is for a future purchase.",
         },
       },
-    });
+    }));
   } catch (error) {
     console.error("Get public referral invite error:", error);
 

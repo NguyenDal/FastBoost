@@ -533,6 +533,18 @@ exports.Prisma.OrderScalarFieldEnum = {
   matchHistorySyncedAt: 'matchHistorySyncedAt'
 };
 
+exports.Prisma.OrderHighlightScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  uploadedById: 'uploadedById',
+  uploaderName: 'uploaderName',
+  title: 'title',
+  s3Key: 's3Key',
+  mimeType: 'mimeType',
+  byteSize: 'byteSize',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.OrderRatingScalarFieldEnum = {
   orderId: 'orderId',
   customerId: 'customerId',
@@ -843,6 +855,7 @@ exports.Prisma.ModelName = {
   ServicePriceRule: 'ServicePriceRule',
   ServiceSale: 'ServiceSale',
   Order: 'Order',
+  OrderHighlight: 'OrderHighlight',
   OrderRating: 'OrderRating',
   OrderRatingRecipient: 'OrderRatingRecipient',
   OrderConfirmationEmail: 'OrderConfirmationEmail',

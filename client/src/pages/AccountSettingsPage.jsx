@@ -2,6 +2,7 @@ import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import AvatarImage from '../components/AvatarImage';
 import LinkedSignInAccounts from "../components/LinkedSignInAccounts";
 import { COUNTRIES, findCountry } from "../utils/countries";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
@@ -129,6 +130,19 @@ export default function AccountSettingsPage() {
         };
 
         loadAccount();
+    }, [hasAccess]);
+
+    useEffect(() => {
+        if (!hasAccess) return;
+        const refreshAvatar = (event) => {
+            const user = event.detail?.user;
+            if (!user) return;
+            setAccountForm(previous => ({ ...previous,
+                profileImageUrl: user.profile?.profileImageUrl || user.profileImage || '',
+            }));
+        };
+        window.addEventListener('avatar:updated', refreshAvatar);
+        return () => window.removeEventListener('avatar:updated', refreshAvatar);
     }, [hasAccess]);
 
     useEffect(() => {
@@ -541,11 +555,7 @@ export default function AccountSettingsPage() {
                             aria-label="Change profile picture"
                         >
                             <span className="avatar-image-frame">
-                                {previewImage ? (
-                                    <img src={previewImage} alt="Profile preview" />
-                                ) : (
-                                    <span className="avatar-fallback-icon">👤</span>
-                                )}
+                                <AvatarImage src={previewImage} alt="Profile preview" fallback={<span className="avatar-fallback-icon">👤</span>} />
                             </span>
 
                             <span className="avatar-upload-overlay" aria-hidden="true">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import BoosterPortalLayout from '../layouts/BoosterPortalLayout';
 import BoosterPreferences from '../components/BoosterPreferences';
 import BoosterMonthlyEarnings from '../components/BoosterMonthlyEarnings';
+import AvatarImage from '../components/AvatarImage';
 import { OrdersIcon, UsersIcon, PriceIcon } from '../components/AdminIcons';
 import { operations, date } from '../api/operations';
 import { Contributions } from './OperationsPages';
@@ -31,6 +32,17 @@ export default function BoosterPortalPage({ section = 'overview' }) {
             .catch(error => { if (active) setState({ data: null, error: error.message }); });
         return () => { active = false; };
     }, [section, version]);
+    useEffect(() => {
+        const refreshAvatar = event => {
+            const user = event.detail?.user;
+            if (!user) return;
+            setState(current => current.data ? { ...current, data: { ...current.data,
+                account: { ...current.data.account, profile: { ...current.data.account?.profile,
+                    profileImageUrl: user.profile?.profileImageUrl || user.profileImage || null } } } } : current);
+        };
+        window.addEventListener('avatar:updated', refreshAvatar);
+        return () => window.removeEventListener('avatar:updated', refreshAvatar);
+    }, []);
     const { data, error } = state;
     const name = data?.account?.profile?.displayName || data?.account?.username || 'Booster';
     return <BoosterPortalLayout>
@@ -57,7 +69,8 @@ export default function BoosterPortalPage({ section = 'overview' }) {
             </>}
             {section === 'profile' && data && <div className="booster-profile-grid">
                 <section className="ops-card"><div className="booster-profile-identity">
-                    {data.account?.profile?.profileImageUrl ? <img src={data.account.profile.profileImageUrl} alt="" /> : <span className="booster-profile-avatar" aria-hidden="true">{name[0]}</span>}
+                    <AvatarImage src={data.account?.profile?.profileImageUrl} alt=""
+                        fallback={<span className="booster-profile-avatar" aria-hidden="true">{name[0]}</span>} />
                     <h2>{name}</h2>
                 </div>
                     <BoosterPreferences preferences={data.preferences} available={data.preferencesAvailable} onSave={preferences => setState(current => ({ ...current, data: { ...current.data, preferences, preferencesAvailable: true } }))} />

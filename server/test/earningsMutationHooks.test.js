@@ -40,9 +40,9 @@ function fixture(t, { emails = false } = {}) {
     const state = { order: { id: 'order', orderNumber: 'TEST-LEDGER', customerId: 'customer', status: 'IN_PROGRESS', paymentStatus: 'PAID',
         amountCents: 10000, goldDiscountCents: 0, currency: 'usd', boostType: 'Rank Boost', queueType: 'Solo/Duo', matchHistoryEnabled: false,
         assignments: [assignedBooster('booster')], contributions: [{ boosterId: 'booster', submittedMatches: 1, approvedMatches: 1 }],
-        service: { title: 'Rank Boost' }, customer: { email: 'customer@example.test' }, trustpilotReviewSentAt: new Date() }, locks: [] };
+        service: { title: 'Rank Boost' }, customer: { email: 'customer@example.test' }, trustpilotReviewSentAt: new Date() }, locks: [], audits: [] };
     const db = {
-        user: { findUnique: async ({ where }) => ({ id: where.id, role: 'PROVIDER', suspendedAt: null }), findMany: async () => [] },
+        user: { findUnique: async ({ where }) => ({ id: where.id, username: where.id === 'new-booster' ? 'New Booster' : 'Booster', role: 'PROVIDER', suspendedAt: null }), findMany: async () => [] },
         order: {
             findUnique: async ({ select } = {}) => {
                 if (select?.assignments?.select?.booster) assert.match(state.locks.at(-1), /Order.*FOR UPDATE/, 'email snapshot follows the order lock');
@@ -69,14 +69,15 @@ function fixture(t, { emails = false } = {}) {
                 order: structuredClone(state.order), booster: { id: 'new-booster', role: 'PROVIDER', username: 'Synthetic' } }),
             update: async ({ data }) => ({ id: 'invite', ...data }),
         },
+        managementAuditLog: { create: async ({ data }) => { state.audits.push(structuredClone(data)); return data; } },
         $queryRaw: async strings => { state.locks.push(strings.join('?')); return []; },
     };
     const ledger = attachEarningsLedger(db);
     attachEmailOutbox(db, state);
     db.$transaction = async callback => {
-        const before = structuredClone({ order: state.order, emails: state.emails, entries: ledger.entries, balances: ledger.balances });
+        const before = structuredClone({ order: state.order, emails: state.emails, entries: ledger.entries, balances: ledger.balances, audits: state.audits });
         try { return await callback(db); }
-        catch (error) { state.order = before.order; state.emails = before.emails; ledger.entries = before.entries; ledger.balances = before.balances; throw error; }
+        catch (error) { state.order = before.order; state.emails = before.emails; ledger.entries = before.entries; ledger.balances = before.balances; state.audits = before.audits; throw error; }
     };
     const replacements = new Map([
         [require.resolve('../src/prisma'), db], [require.resolve('../src/utils/stripeClient'), {}],
@@ -168,6 +169,9 @@ test('assignment, invitation, leave, completion and cancellation hooks queue onl
     assert.deepEqual(f.state.emails.map(row => [row.boosterId, row.event]), [
         ['new-booster', 'ASSIGNED'], ['new-booster', 'UNASSIGNED'], ['new-booster', 'ASSIGNED'], ['new-booster', 'UNASSIGNED'],
         ['booster', 'COMPLETED'], ['booster', 'CANCELLED'],
+    ]);
+    assert.deepEqual(f.state.audits.map(row => [row.action, row.actorName]), [
+        ['assignment.accept', 'New Booster'], ['order.leave', 'New Booster'], ['order.complete', 'Booster'],
     ]);
     assert.ok(f.state.emails[0].skippedAt, 'an older assignment email cannot revive after reassignment');
 });

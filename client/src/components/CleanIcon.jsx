@@ -23,31 +23,24 @@ function isCheckerboardBackgroundPixel(r, g, b, a) {
 }
 
 function CleanIcon({ src, alt, className }) {
-  const [cleanSrc, setCleanSrc] = useState(() => iconCache.get(src) || "");
-  const [isReady, setIsReady] = useState(() => iconCache.has(src));
+  const [processed, setProcessed] = useState(() => ({ source: src, value: iconCache.get(src) || "", ready: iconCache.has(src) }));
+  const cleanSrc = processed.source === src ? processed.value : iconCache.get(src) || "";
+  const isReady = processed.source === src ? processed.ready : iconCache.has(src);
 
   useEffect(() => {
-    if (!src) return;
-
-    if (iconCache.has(src)) {
-      setCleanSrc(iconCache.get(src));
-      setIsReady(true);
-      return;
-    }
+    if (!src || iconCache.has(src)) return;
 
     let cancelled = false;
 
-    setIsReady(false);
-    setCleanSrc("");
-
     const image = new Image();
-    image.crossOrigin = "anonymous";
+    const sameOrigin = new URL(src, window.location.href).origin === window.location.origin;
+    if (!sameOrigin) image.crossOrigin = "anonymous";
 
     const cacheBustedSrc = src.includes("?")
       ? `${src}&clean=v2`
       : `${src}?clean=v2`;
 
-    image.src = cacheBustedSrc;
+    image.src = sameOrigin ? src : cacheBustedSrc;
 
     image.onload = () => {
       if (cancelled) return;
@@ -65,13 +58,12 @@ function CleanIcon({ src, alt, className }) {
       try {
         imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       } catch (error) {
-        console.warn("CleanIcon skipped because S3 CORS blocked canvas access:", src);
+        console.warn("CleanIcon could not read image pixels:", src, error);
 
         iconCache.set(src, src);
 
         if (!cancelled) {
-          setCleanSrc(src);
-          setIsReady(true);
+          setProcessed({ source: src, value: src, ready: true });
         }
 
         return;
@@ -100,8 +92,7 @@ function CleanIcon({ src, alt, className }) {
       iconCache.set(src, processedSrc);
 
       if (!cancelled) {
-        setCleanSrc(processedSrc);
-        setIsReady(true);
+        setProcessed({ source: src, value: processedSrc, ready: true });
       }
     };
 
@@ -109,8 +100,7 @@ function CleanIcon({ src, alt, className }) {
       if (cancelled) return;
 
       iconCache.set(src, src);
-      setCleanSrc(src);
-      setIsReady(true);
+      setProcessed({ source: src, value: src, ready: true });
     };
 
     return () => {

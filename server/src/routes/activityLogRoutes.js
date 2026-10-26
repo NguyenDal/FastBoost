@@ -1,28 +1,28 @@
 const express = require('express');
 const db = require('../prisma');
 const { createProtect } = require('../middleware/authMiddleware');
-const { actions, categories } = require('../utils/managementAudit');
+const { actions, categories, definitions, visibleActions } = require('../utils/managementAudit');
 const { auditActors } = require('../utils/auditActors');
+const { presentActivityLogItems } = require('../utils/activityLogPresentation');
 const PAGE_SIZE = 10;
+const visibleCategories = Object.fromEntries(Object.entries(categories).filter(([key]) => definitions.some(definition => definition[2] === key && visibleActions.includes(definition[3]))));
 const fail = message => { throw Object.assign(new Error(message), { status: 400 }); };
 function filters(query) {
-    // Keep internal rollout metadata out of the owner's action list and totals.
-    const where = { action: { not: 'logging.enabled' } };
+    // Keep older routine records in storage, but exclude them from the owner's
+    // critical-change list and total, along with failed and unchanged requests.
+    const where = { action: { in: visibleActions }, outcome: 'SUCCEEDED' };
     const q = String(query.q || '').trim();
     if (q.length > 100) fail('Search must be 100 characters or fewer.');
-    if (q) where.OR = ['actorName', 'targetLabel', 'targetId'].map(key => ({ [key]: { contains: q, mode: 'insensitive' } }));
+    if (q) where.OR = ['actorName', 'targetLabel'].map(key => ({ [key]: { contains: q, mode: 'insensitive' } }));
     if (query.actor) {
         if (typeof query.actor !== 'string' || query.actor.length > 128) fail('Choose an admin.');
         where.actorId = query.actor;
     }
     if (query.category) {
-        if (!Object.hasOwn(categories, query.category)) fail('Choose a valid area.');
+        if (!Object.hasOwn(visibleCategories, query.category)) fail('Choose a valid area.');
         where.category = query.category;
     }
-    if (query.outcome) {
-        if (!['SUCCEEDED', 'FAILED', 'STARTED'].includes(query.outcome)) fail('Choose a valid outcome.');
-        where.outcome = query.outcome;
-    }
+    if (query.outcome && query.outcome !== 'SUCCEEDED') fail('Only completed changes are shown.');
     for (const [key, bound] of [['from', 'gte'], ['to', 'lt']]) {
         if (!query[key]) continue;
         const date = new Date(`${query[key]}T00:00:00.000Z`);
@@ -50,6 +50,17 @@ function createActivityLogRouter(client = db) {
     router.get('/', async (req, res, next) => {
         try {
             const { where, page: requestedPage } = filters(req.query);
+            const search = String(req.query.q || '').trim();
+            if (search) {
+                // Older entries can hold a generic actor label or a target ID.
+                // Include account IDs whose current username is what the owner sees.
+                const users = await client.user.findMany({ where: { username: { contains: search, mode: 'insensitive' } }, select: { id: true } });
+                const ids = users.map(user => user.id);
+                if (ids.length) where.OR.push(
+                    { actorId: { in: ids } },
+                    { targetType: { in: ['user', 'booster'] }, targetId: { in: ids } },
+                );
+            }
             const result = await client.$transaction(async tx => {
                 const total = await tx.managementAuditLog.count({ where });
                 const page = Math.min(requestedPage, Math.max(1, Math.ceil(total / PAGE_SIZE)));
@@ -57,8 +68,9 @@ function createActivityLogRouter(client = db) {
                 return { items, total, page, pageSize: PAGE_SIZE };
             }, { isolationLevel: 'RepeatableRead' });
             const actors = await auditActors(client);
-            res.json({ ...result, actors, categories,
-                items: result.items.map(item => ({ ...item, actionLabel: actions[item.action] || 'Management action' })) });
+            const presented = await presentActivityLogItems(client, result.items);
+            res.json({ ...result, actors, categories: visibleCategories,
+                items: presented.map(item => ({ ...item, actionLabel: actions[item.action] || 'Management action' })) });
         } catch (error) { next(error); }
     });
     router.use((error, req, res, next) => {

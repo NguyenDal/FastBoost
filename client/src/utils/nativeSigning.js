@@ -1,5 +1,5 @@
 export function agreementSigningPath(id) {
-    return `/provider-agreement?contract=${encodeURIComponent(id)}`;
+    return `/provider/contracts/${encodeURIComponent(id)}/sign`;
 }
 
 export function signingValuesMatch(values, acceptedValues) {

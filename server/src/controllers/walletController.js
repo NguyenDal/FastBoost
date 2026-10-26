@@ -1,19 +1,17 @@
 const prisma = require('../prisma');
 const stripe = require('../utils/stripeClient');
 const { createWalletService } = require('../utils/customerWallet');
+const { clientOrigin } = require('../utils/clientOrigin');
 const wallet = createWalletService({ prisma, stripe,
     settleOrderPayment: (order, session) => require('./paymentController').completeCheckoutSessionPayment(order, session) });
 const userId = req => req.user?.id || req.user?.userId;
 
 function clientUrl(req) {
-    const configured = process.env.CLIENT_URL?.trim();
-    const candidate = configured || req.get('origin') || 'http://localhost:5173';
-    const url = new URL(candidate);
-    const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
-    if ((process.env.NODE_ENV === 'production' && local) || (!configured && !local) || (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) || url.username || url.password) {
-        throw Object.assign(new Error('The frontend checkout URL is not configured.'), { status: 503, code: 'WALLET_CHECKOUT_UNAVAILABLE' });
+    try {
+        return clientOrigin(req);
+    } catch {
+        throw Object.assign(new Error('Checkout is temporarily unavailable. Please try again later.'), { status: 503, code: 'WALLET_CHECKOUT_UNAVAILABLE' });
     }
-    return url.origin;
 }
 
 const handle = action => async (req, res) => {

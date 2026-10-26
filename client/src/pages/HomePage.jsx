@@ -14,6 +14,8 @@ import RegisterPage from "./RegisterPage";
 import CleanIcon from "../components/CleanIcon";
 import { CardGridSkeleton } from "../components/PageSkeletons";
 import { API_BASE_URL } from "../api/config";
+import { shouldRefreshAvatarData } from '../utils/signedAvatar';
+import { orderPathForService, searchWithSelectedGame, selectedGameFromSearch } from '../utils/productRoutes';
 import "../styles/HomePage.css";
 
 const SERVICES_CACHE_KEY = "fastboost:services:v1";
@@ -74,8 +76,12 @@ function HomePage() {
   );
 
   const [servicesError, setServicesError] = useState("");
-  const [selectedGame, setSelectedGame] = useState("");
-  const [visibleGame, setVisibleGame] = useState("");
+  const [selectedGame, setSelectedGame] = useState(() => selectedGameFromSearch(location.search));
+  const [visibleGame, setVisibleGame] = useState(() => selectedGameFromSearch(location.search));
+
+  useEffect(() => {
+    setSelectedGame(selectedGameFromSearch(location.search));
+  }, [location.search]);
   const [inlineServices, setInlineServices] = useState(() => window.matchMedia("(max-width: 1024px)").matches);
 
   useEffect(() => {
@@ -168,7 +174,7 @@ function HomePage() {
       shortTitle: "LOL",
       description: "Rank boosting, placements, win boosting, and pro duo services.",
       image:
-        "https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg",
+        "/assets/services/lol-card.jpg",
       status: "Available",
     },
     {
@@ -177,26 +183,26 @@ function HomePage() {
       shortTitle: "TFT",
       description: "Rank boost, win boost, and placement services for TFT.",
       image:
-        "https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg",
+        "/assets/services/tft-card.jpg",
       status: "Available",
     },
   ];
 
   const serviceImageMap = {
     "Rank Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
+      "/assets/services/rank-boost-transparent.png",
     "Placement Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
+      "/assets/services/placement-boost-transparent.png",
     "Win Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
+      "/assets/services/win-boost-transparent.png",
     "Pro Duo":
-      "https://fastboost-assets.s3.amazonaws.com/services/pro-duo-transparent.png",
+      "/assets/services/pro-duo-transparent.png",
     "TFT Rank Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/rank-boost-transparent.png",
+      "/assets/services/rank-boost-transparent.png",
     "TFT Win Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/win-boost-transparent.png",
+      "/assets/services/win-boost-transparent.png",
     "TFT Placement Boost":
-      "https://fastboost-assets.s3.amazonaws.com/services/placement-boost-transparent.png",
+      "/assets/services/placement-boost-transparent.png",
   };
 
   useEffect(() => {
@@ -237,19 +243,20 @@ function HomePage() {
     if (!referralCode) return;
 
     let cancelled = false;
+    let pending = false;
+    let lastRefreshedAt = 0;
 
-    const loadReferralInvite = async () => {
-      setReferralInviteLoading(true);
-      setReferralInviteError("");
-
-      setRegisterForm((prev) => ({
-        ...prev,
-        referralCode,
-      }));
-
-      setAuthMode("register");
-      setShowAuthModal(true);
-      setAuthMessage("");
+    const loadReferralInvite = async (initial = false, force = false) => {
+      if (pending || (!initial && !force && !shouldRefreshAvatarData(lastRefreshedAt))) return;
+      pending = true;
+      if (initial) {
+        setReferralInviteLoading(true);
+        setReferralInviteError("");
+        setRegisterForm((prev) => ({ ...prev, referralCode }));
+        setAuthMode("register");
+        setShowAuthModal(true);
+        setAuthMessage("");
+      }
 
       try {
         const response = await fetch(
@@ -264,23 +271,33 @@ function HomePage() {
 
         if (!cancelled) {
           setReferralInvite(data.invite || null);
+          lastRefreshedAt = Date.now();
         }
       } catch (error) {
-        if (!cancelled) {
+        if (!cancelled && initial) {
           setReferralInvite(null);
           setReferralInviteError(error.message || "Could not load private invite.");
         }
       } finally {
-        if (!cancelled) {
+        pending = false;
+        if (!cancelled && initial) {
           setReferralInviteLoading(false);
         }
       }
     };
 
-    loadReferralInvite();
+    void loadReferralInvite(true);
+    const refreshInvite = () => { if (!document.hidden) void loadReferralInvite(); };
+    const refreshFailedImage = () => { if (!document.hidden) void loadReferralInvite(false, true); };
+    window.addEventListener('focus', refreshInvite);
+    window.addEventListener('avatar:refresh', refreshFailedImage);
+    document.addEventListener('visibilitychange', refreshInvite);
 
     return () => {
       cancelled = true;
+      window.removeEventListener('focus', refreshInvite);
+      window.removeEventListener('avatar:refresh', refreshFailedImage);
+      document.removeEventListener('visibilitychange', refreshInvite);
     };
   }, [referralCode]);
 
@@ -426,7 +443,7 @@ function HomePage() {
 
   const handleOrderNow = (service) => {
     if (service.active === false) return;
-    navigate(`/order/${service.id}`);
+    navigate(orderPathForService(service, services));
   };
 
   const handleLoginInputChange = (event) => {
@@ -876,7 +893,9 @@ function HomePage() {
                   <article
                     className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""}`}
                     onClick={() => {
-                      setSelectedGame((prevGame) => (prevGame === game.key ? "" : game.key));
+                      const nextGame = selectedGame === game.key ? "" : game.key;
+                      setSelectedGame(nextGame);
+                      navigate({ pathname: location.pathname, search: searchWithSelectedGame(location.search, nextGame), hash: location.hash });
                     }}
                   >
                     <img src={game.image} alt={game.title} />

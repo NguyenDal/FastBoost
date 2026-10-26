@@ -35,6 +35,9 @@ async function withBackendReadFixture(run) {
             await client.query('SET LOCAL search_path = pg_temp, pg_catalog');
             await client.query("SET LOCAL statement_timeout = '30s'");
             await client.query(`
+                CREATE TEMP TABLE "User" (
+                    id text PRIMARY KEY, username text NOT NULL
+                ) ON COMMIT DROP;
                 CREATE TEMP TABLE "Service" (
                     id text PRIMARY KEY, title text NOT NULL
                 ) ON COMMIT DROP;
@@ -56,7 +59,8 @@ async function withBackendReadFixture(run) {
                 ) ON COMMIT DROP;
                 CREATE TEMP TABLE "ManagementAuditLog" (
                     id text PRIMARY KEY, "actorId" text, "actorName" text NOT NULL,
-                    action text NOT NULL, "createdAt" timestamp(3) NOT NULL
+                    action text NOT NULL, outcome text NOT NULL,
+                    "createdAt" timestamp(3) NOT NULL
                 ) ON COMMIT DROP
             `);
             const db = { async $queryRaw(query, ...values) {

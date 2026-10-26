@@ -2,7 +2,8 @@ const { Server } = require("socket.io");
 const prisma = require("./prisma");
 const { verifySessionToken } = require("./utils/sessionToken");
 const { withAuditedSocketMessage } = require('./utils/auditedSocketMessage');
-const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect } = require('./utils/orderChat');
+const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect, presentChatMessage } = require('./utils/orderChat');
+const { signProfileImages } = require('./utils/privateProfileImages');
 
 async function refreshSocketUser(socket) {
     const token = socket.sessionToken || socket.handshake.auth?.token || (socket.handshake.headers?.authorization || '').split(' ')[1];
@@ -62,7 +63,7 @@ function initSocket(httpServer) {
                 // Check again after asynchronous history reads before exposing it.
                 await conversationAccess(socket, conversation.id);
                 await socket.join('conv:' + conversation.id);
-                reply({ ok: true, conversationId: conversation.id, messages: messages.reverse() });
+                reply({ ok: true, conversationId: conversation.id, messages: await signProfileImages(messages.reverse().map(presentChatMessage)) });
             } catch { reply({ ok: false, message: 'Join failed' }); }
         });
         socket.on('chat:message', async (payload, cb) => {
@@ -75,8 +76,9 @@ function initSocket(httpServer) {
                 const message = await withAuditedSocketMessage(prisma, socket.user, conversationId, () => saveOrderChatMessage(prisma, {
                     conversationId, senderId: socket.user.userId, content,
                 }));
-                await emitAuthorized(io, conversationId, 'chat:message', message);
-                reply({ ok: true, message });
+                const delivered = await signProfileImages(presentChatMessage(message));
+                await emitAuthorized(io, conversationId, 'chat:message', delivered);
+                reply({ ok: true, message: delivered });
             } catch (error) {
                 reply({ ok: false, message: [400, 429].includes(error.status) ? error.message : 'Send failed' });
             }

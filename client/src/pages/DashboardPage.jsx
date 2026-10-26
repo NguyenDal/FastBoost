@@ -2,6 +2,7 @@ import DashboardCoupons from "../components/DashboardCoupons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listMyNotifications, markNotificationRead } from "../api/notifications";
+import AvatarImage from '../components/AvatarImage';
 import { getMyLoyalty } from "../api/loyalty";
 import { getMyAccount } from "../api/accountSettings";
 import { customerListMyOrders } from "../api/customerOrders";
@@ -63,6 +64,14 @@ export default function DashboardPage() {
             window.removeEventListener('wallet:updated', refresh);
             window.removeEventListener('online', refresh);
         };
+    }, []);
+
+    useEffect(() => {
+        const refreshAccountAvatar = event => {
+            if (event.detail?.user) setAccount(event.detail.user);
+        };
+        window.addEventListener('avatar:updated', refreshAccountAvatar);
+        return () => window.removeEventListener('avatar:updated', refreshAccountAvatar);
     }, []);
 
     useEffect(() => {
@@ -476,12 +485,9 @@ function ActivityIcon({ kind }) {
 }
 
 function MessageAvatar({ item }) {
-    const [failedSource, setFailedSource] = useState(null);
     const source = item.data?.senderAvatar;
-    if (source && source !== failedSource) {
-        return <img src={source} alt="" className="dashboard-message-avatar" onError={() => setFailedSource(source)} />;
-    }
-    return item.data?.senderInitial || item.title?.charAt(0) || "?";
+    return <AvatarImage src={source} alt="" className="dashboard-message-avatar"
+        fallback={item.data?.senderInitial || item.title?.charAt(0) || '?'} />;
 }
 
 function DashboardListCard({ title, emptyText, items, onItemClick, isMessage = false }) {

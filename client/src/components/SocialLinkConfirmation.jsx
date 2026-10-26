@@ -29,7 +29,7 @@ export default function SocialLinkConfirmation({ pending, logo, onCancel, onSucc
   };
   return <dialog ref={dialog} className="social-link-dialog" aria-labelledby="social-link-title" aria-describedby="social-link-description" onCancel={event => { event.preventDefault(); if (!submitting.current) onCancel(); }}>
     <div className="social-link-illustration" aria-hidden="true">
-      <div className="social-link-identity"><span className="social-link-avatar"><img src="https://fastboost-assets.s3.ca-central-1.amazonaws.com/logos/fastboost-logo.png" alt="" /></span></div>
+      <div className="social-link-identity"><span className="social-link-avatar"><img src="/assets/logos/fastboost-logo.png" alt="" /></span></div>
       <span className="social-link-connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="m10 13 4-4m-6 6-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 2 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(1 1)"/></svg></span>
       <div className="social-link-identity"><span className="social-link-avatar social-link-provider">{logo}</span></div>
     </div>

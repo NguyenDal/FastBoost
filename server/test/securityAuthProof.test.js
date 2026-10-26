@@ -181,6 +181,8 @@ test('security regression: verified OAuth recovery removes preregistrant passwor
 });
 
 function socketHarness(t) {
+    const signProfileImages = require('../src/utils/privateProfileImages').signProfileImages;
+    const avatarKey = 'profiles/customer/1730000000000-abc.png';
     let io;
     class FakeServer {
         constructor() { io = this; this.clients = []; }
@@ -195,11 +197,15 @@ function socketHarness(t) {
         conversation: { findUnique: async () => ({ id: 'conversation', orderId: 'order' }), upsert: async () => ({ id: 'conversation', orderId: 'order' }), update: async () => ({}) },
         conversationParticipant: { upsert: async () => ({}) },
         user: { findUnique: async ({ where }) => users.get(where.id) },
-        message: { count: async () => 0, findMany: async () => [{ id: 'old-message', content: 'private history' }], create: async ({ data }) => ({ ...data, id: 'new-message', createdAt: new Date() }) },
+        message: { count: async () => 0, findMany: async () => [{ id: 'old-message', content: 'private history', attachmentUrl: 'https://old-public.example.test/file',
+            sender: { profile: { profileImageUrl: avatarKey } } }], create: async ({ data }) => ({ ...data, id: 'new-message', createdAt: new Date(),
+            sender: { profile: { profileImageUrl: avatarKey } } }) },
         $queryRaw: async () => [], $transaction: callback => callback(db),
     };
     const { initSocket } = load(t, '../src/socket', { 'socket.io': { Server: FakeServer }, '../src/prisma': db,
-        '../src/utils/chatNotifications': { createChatMessageNotifications: async () => {} } });
+        '../src/utils/chatNotifications': { createChatMessageNotifications: async () => {} },
+        '../src/utils/privateProfileImages': { signProfileImages: value => signProfileImages(value,
+            async key => `https://signed.example.test/${key}?expires=15m`) } });
     initSocket({});
     async function connect(id, expiresIn = null) {
         const user = users.get(id);
@@ -232,6 +238,24 @@ test('security regression: unassigned booster is evicted before new private chat
     assert.equal(sent.ok, true);
     assert.equal(booster.received.length, 0);
     assert.equal(booster.rooms.size, 0);
+});
+
+test('socket chat signs sender avatars and never emits legacy bare attachment URLs', async t => {
+    environment(t);
+    const harness = socketHarness(t);
+    const booster = await harness.connect('booster');
+    let joined;
+    await booster.handlers.get('chat:join')({ orderId: 'order' }, result => { joined = result; });
+    assert.equal(joined.ok, true);
+    assert.equal(joined.messages[0].attachmentUrl, null, 'legacy row has no attachment key but cannot expose a dead public link');
+    assert.match(joined.messages[0].sender.profile.profileImageUrl, /signed\.example\.test/);
+    const customer = await harness.connect('customer');
+    let sent;
+    await customer.handlers.get('chat:message')({ conversationId: 'conversation', content: 'hello' }, result => { sent = result; });
+    assert.equal(sent.ok, true);
+    assert.equal(sent.message.attachmentUrl, null);
+    assert.match(sent.message.sender.profile.profileImageUrl, /signed\.example\.test/);
+    assert.equal(booster.received[0].message.attachmentUrl, null);
 });
 
 test('security regression: socket history is refused after JWT expiry', async t => {

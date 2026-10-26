@@ -101,25 +101,56 @@ test('password rotation preserves persistence and cannot restore or replace anot
 
 test('password recovery creates a tab session even when an older account was remembered', async t => {
     browserStorage(t);
-    storeAuthSession('old-remembered-token', { id: 'old' }, true);
-    const notifications = [], requests = [];
-    const fixture = await componentFixture('ResetPasswordPage', {
-        useNavigate: () => () => {}, useSearchParams: () => [new URLSearchParams('token=synthetic-reset')],
-        API_BASE_URL: 'https://synthetic.invalid/api', storeAuthSession,
-        notifyAuthChanged: detail => notifications.push(detail),
-        fetch: async (url, options) => {
-            requests.push({ url, body: JSON.parse(options.body) });
-            return { ok: true, json: async () => ({ token: 'recovered-token', user: { id: 'recovered' } }) };
-        },
-    }, [{ password: 'StrongPassword!123', confirmPassword: 'StrongPassword!123' }]);
-    const form = findElement(fixture.render(), node => node.type === 'form');
-    await form.props.onSubmit({ preventDefault() {} });
-    assert.equal(requests[0].body.token, 'synthetic-reset');
-    assert.equal(localStorage.getItem('token'), null);
-    assert.equal(localStorage.getItem('user'), null);
-    assert.equal(sessionStorage.getItem('token'), 'recovered-token');
-    assert.equal(JSON.parse(sessionStorage.getItem('user')).id, 'recovered');
-    assert.equal(notifications[0].loggedIn, true);
+    for (const incoming of [
+        { search: '?campaign=welcome', hash: '#token=synthetic-reset&source=email', cleanedHash: '#source=email' },
+        { search: '?campaign=welcome&token=synthetic-reset', hash: '#section', cleanedHash: '#section' },
+    ]) {
+        storeAuthSession('old-remembered-token', { id: 'old' }, true);
+        const notifications = [], requests = [], replacements = [];
+        let visible = { pathname: '/reset-password', search: incoming.search, hash: incoming.hash, state: { from: 'email' } };
+        const fixture = await componentFixture('ResetPasswordPage', {
+            useLocation: () => visible,
+            useNavigate: () => (target, options) => {
+                if (typeof target === 'object') {
+                    visible = { ...visible, ...target, state: options.state };
+                    replacements.push(options);
+                }
+            },
+            useSearchParams: () => [new URLSearchParams(visible.search)],
+            API_BASE_URL: 'https://synthetic.invalid/api', storeAuthSession,
+            notifyAuthChanged: detail => notifications.push(detail),
+            fetch: async (url, options) => {
+                requests.push({ url, body: JSON.parse(options.body) });
+                return { ok: true, json: async () => ({ token: 'recovered-token', user: { id: 'recovered' } }) };
+            },
+        });
+        let tree = fixture.render();
+        assert.equal(new URLSearchParams(visible.search).has('token'), false, 'the reset token leaves the query before paint');
+        assert.equal(new URLSearchParams(visible.hash.slice(1)).has('token'), false, 'the reset token leaves the fragment before paint');
+        assert.equal(new URLSearchParams(visible.search).get('campaign'), 'welcome', 'unrelated link parameters remain intact');
+        assert.equal(visible.hash, incoming.cleanedHash);
+        assert.equal(visible.state.from, 'email');
+        assert.equal(replacements.length, 1);
+        assert.equal(replacements[0].replace, true, 'the token URL is replaced rather than added to browser history');
+        for (const name of ['password', 'confirmPassword']) {
+            findElement(tree, node => node.type === 'input' && node.props?.name === name)
+                .props.onChange({ target: { name, value: 'StrongPassword!123' } });
+        }
+        tree = fixture.render();
+        const form = findElement(tree, node => node.type === 'form');
+        await form.props.onSubmit({ preventDefault() {} });
+        assert.equal(requests[0].body.token, 'synthetic-reset');
+        assert.equal(localStorage.getItem('token'), null);
+        assert.equal(localStorage.getItem('user'), null);
+        assert.equal(sessionStorage.getItem('token'), 'recovered-token');
+        assert.equal(JSON.parse(sessionStorage.getItem('user')).id, 'recovered');
+        assert.equal(notifications[0].loggedIn, true);
+    }
+});
+
+test('the static site does not send password-reset URLs as referrers', async () => {
+    const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+    assert.match(html, /<meta\s+name="referrer"\s+content="no-referrer"\s*\/>/i);
 });
 
 test('password change stores its replacement token and ignores an account switch during the request', async t => {
@@ -201,7 +232,7 @@ test('late navbar account checks cannot log out refreshed sessions or replace an
             useLocation: () => ({ pathname: '/' }), useNavigate: () => () => {},
             window: { addEventListener() {}, removeEventListener() {}, clearTimeout() {} },
             document: {}, API_BASE_URL: 'https://synthetic.invalid/api',
-            CleanIcon: 'img', Link: 'a', ActivityClearRow: 'div', BinIcon: 'span',
+            CleanIcon: 'img', AvatarImage: 'img', Link: 'a', ActivityClearRow: 'div', BinIcon: 'span',
             fetch: async () => response,
         }, [], 'components');
         fixture.render();
@@ -328,6 +359,26 @@ const checkoutStates = overrides => {
         goldConfirmation: null, goldError: '', contactEmail: null, couponNotice: null, ...overrides };
     return Object.values(values);
 };
+
+test('checkout keeps an unsettled Stripe return URL for recovery and removes it after payment', async () => {
+    for (const paid of [false, true]) {
+        let visibleParams = new URLSearchParams('session_id=cs_synthetic&gold=100');
+        const replacements = [];
+        const fixture = await checkoutViewFixture(async () => assert.fail('URL cleanup must not start a new checkout'),
+            checkoutStates({ paid }), visibleParams.toString(), {
+                useSearchParams: () => [visibleParams, (change, options) => {
+                    visibleParams = typeof change === 'function' ? change(visibleParams) : change;
+                    replacements.push(options);
+                }],
+            });
+        fixture.render({ orderId: 'synthetic-order' });
+        fixture.runEffectMatching('session_id');
+        assert.equal(visibleParams.has('session_id'), !paid);
+        assert.equal(visibleParams.get('gold'), '100');
+        assert.equal(replacements.length, paid ? 1 : 0);
+        if (paid) assert.equal(replacements[0].replace, true, 'the Stripe session must leave browser history');
+    }
+});
 
 async function goldPaymentFixture(createCheckoutSession) {
     const fixture = await checkoutViewFixture(createCheckoutSession,

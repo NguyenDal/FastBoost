@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+const { signProfileImages } = require('../utils/privateProfileImages');
 const { getReferralFirstPurchaseOffer } = require("../utils/referralProgram");
 
 function getUserId(req) {
@@ -90,10 +91,10 @@ exports.listMyNotifications = async (req, res) => {
       }
     }
 
-    return res.json({
+    return res.json(await signProfileImages({
       ok: true,
       notifications,
-    });
+    }));
   } catch (error) {
     console.error("listMyNotifications error:", error);
 

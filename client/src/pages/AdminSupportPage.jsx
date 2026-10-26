@@ -17,7 +17,10 @@ export default function AdminSupportPage() {
     useEffect(() => {
         let stopped = false;
         let timer;
+        let running = false;
         const refresh = async () => {
+            if (running) return;
+            running = true;
             try {
                 if (!document.hidden) {
                     const data = await supportRequest('/threads');
@@ -27,10 +30,15 @@ export default function AdminSupportPage() {
                     setError('');
                 }
             } catch (err) { if (!stopped) setError(err.message); }
-            finally { if (!stopped) { setLoading(false); timer = setTimeout(refresh, 5000); } }
+            finally { running = false; if (!stopped) { setLoading(false); timer = setTimeout(refresh, 5000); } }
         };
         void refresh();
-        return () => { stopped = true; clearTimeout(timer); };
+        const refreshNow = () => { if (!document.hidden) { clearTimeout(timer); void refresh(); } };
+        window.addEventListener('focus', refreshNow);
+        window.addEventListener('avatar:refresh', refreshNow);
+        document.addEventListener('visibilitychange', refreshNow);
+        return () => { stopped = true; clearTimeout(timer); window.removeEventListener('focus', refreshNow);
+            window.removeEventListener('avatar:refresh', refreshNow); document.removeEventListener('visibilitychange', refreshNow); };
     }, []);
     async function more() {
         setMoreBusy(true);

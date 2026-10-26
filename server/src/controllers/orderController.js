@@ -8,11 +8,13 @@ const { sendTrustpilotReviewInvite } = require("../utils/trustpilotEmail");
 const { queueOrderCompletion } = require("../utils/orderCompletionEmail");
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
+const { recordCriticalActivity } = require("../utils/criticalActivity");
 const { calculateOrderPrice } = require("../utils/pricingCalculator");
 const { orderQuantities, orderChampionPreferences } = require("../utils/orderQuantity");
 const { savedOrderPriceSummary } = require("../utils/checkoutSummary");
 const { historicalOrderPromotion } = require("../utils/historicalOrderPromotion");
 const { boosterRating } = require("../utils/orderRatings");
+const { signProfileImages } = require('../utils/privateProfileImages');
 const {
     applyReferralFirstPurchaseDiscount,
     getReferralFirstPurchaseOffer,
@@ -649,10 +651,7 @@ const getOrderById = async (req, res) => {
             booster: { ...assignment.booster, rating: ratings.get(assignment.booster.id) },
         } : assignment);
 
-        return res.json({
-            ok: true,
-            order: safeOrder,
-        });
+        return res.json(await signProfileImages({ ok: true, order: safeOrder }));
     } catch (error) {
         console.error("getOrderById error:", error);
 
@@ -1437,6 +1436,11 @@ module.exports.providerCompleteAssignedOrder = async (req, res) => {
                     conversation: true,
                 },
             });
+            if (current.status !== "COMPLETED") await recordCriticalActivity(db, {
+                actor: provider, action: 'order.complete', targetType: 'order',
+                targetId: current.id, targetLabel: current.orderNumber || 'Order',
+                before: { status: current.status }, after: { status: 'COMPLETED' },
+            });
             if (current.status !== "COMPLETED") await queueOrderCompletion(db, result);
             if (result.status === "COMPLETED" && result.paymentStatus === "PAID") referralReward = await grantReferralCompletionRewards(result.id, db);
             return result;
@@ -1571,6 +1575,7 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
                 });
 
                 const currentOrder = await tx.order.findUnique({ where: { id: orderId } });
+                let nextStatus = currentOrder?.status;
                 if (remainingAssignments === 0 && ["PENDING", "IN_PROGRESS"].includes(currentOrder?.status)) {
                     await tx.order.update({
                         where: { id: orderId },
@@ -1578,7 +1583,14 @@ module.exports.providerLeaveAssignedOrder = async (req, res) => {
                             status: "PENDING",
                         },
                     });
+                    nextStatus = 'PENDING';
                 }
+                await recordCriticalActivity(tx, {
+                    actor: provider, allowAdmin: true, action: 'order.leave', targetType: 'order',
+                    targetId: orderId, targetLabel: currentOrder?.orderNumber || 'Order',
+                    before: { status: currentOrder?.status || null, booster: provider.username || 'Unknown user', assigned: true },
+                    after: { status: nextStatus || null, booster: provider.username || 'Unknown user', assigned: false },
+                });
                 return remainingAssignments;
             });
         }));

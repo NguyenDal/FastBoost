@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SocialAuthButtons from "../components/SocialAuthButtons";
 import LegalAgreement from "../components/LegalAgreement";
+import AvatarImage from '../components/AvatarImage';
 import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
 
@@ -258,18 +259,8 @@ function RegisterPage({
                   <div className="private-invite-register-card">
                     <div className="private-invite-card-top">
                       <div className="private-invite-avatar">
-                        {referralInvite?.inviter?.profileImageUrl ? (
-                          <img
-                            src={referralInvite.inviter.profileImageUrl}
-                            alt="Inviter profile"
-                          />
-                        ) : (
-                          <span>
-                            {(referralInvite?.inviter?.username || "F")
-                              .slice(0, 1)
-                              .toUpperCase()}
-                          </span>
-                        )}
+                        <AvatarImage src={referralInvite?.inviter?.profileImageUrl} alt="Inviter profile"
+                          fallback={<span>{(referralInvite?.inviter?.username || 'F').slice(0, 1).toUpperCase()}</span>} />
                       </div>
 
                       <div>

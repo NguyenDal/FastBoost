@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
+import { serviceTitleFromOrderRoute, uniqueServiceForTitle } from "../utils/productRoutes";
 import "../styles/SaleFooter.css";
 
 function CouponCode({ code }) {
@@ -102,6 +103,24 @@ export function LiveSaleFooter({ serviceId }) {
 export default function SaleFooter() {
     const { pathname } = useLocation();
     const order = pathname.match(/^\/order\/([^/]+)\/?$/);
-    const visible = pathname === "/" || pathname === "/contact" || /^\/r\/[^/]+\/?$/.test(pathname) || order;
-    return visible ? <LiveSaleFooter key={pathname} serviceId={order?.[1]} /> : null;
+    const [, game, product] = pathname.match(/^\/order\/([^/]+)\/([^/]+)\/?$/) || [];
+    const title = serviceTitleFromOrderRoute(game, product);
+    const [resolved, setResolved] = useState(null);
+    useEffect(() => {
+        if (!title) return;
+        const controller = new AbortController();
+        fetch(`${API_BASE_URL}/services`, { cache: 'no-store', signal: controller.signal })
+            .then(response => response.ok ? response.json() : null)
+            .then(data => {
+                if (controller.signal.aborted) return;
+                const service = uniqueServiceForTitle(data?.services, title);
+                setResolved({ title, id: service?.id || null });
+            })
+            .catch(() => { if (!controller.signal.aborted) setResolved({ title, id: null }); });
+        return () => controller.abort();
+    }, [title]);
+    const visible = pathname === "/" || pathname === "/contact" || /^\/r\/[^/]+\/?$/.test(pathname) || order || title;
+    const serviceId = order?.[1] || (resolved?.title === title ? resolved.id : null);
+    if (title && resolved?.title !== title) return null;
+    return visible ? <LiveSaleFooter key={pathname} serviceId={serviceId} /> : null;
 }

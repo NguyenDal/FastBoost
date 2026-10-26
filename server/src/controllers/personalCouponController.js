@@ -1,10 +1,11 @@
 const prisma = require('../prisma');
+const { signProfileImages } = require('../utils/privateProfileImages');
 exports.searchCustomers = async (req,res) => {
  const q=typeof req.query.q==='string'?req.query.q.trim():'';
  if(q.length<2||q.length>80)return res.json({ok:true,customers:[]});
  try {
  const customers=await prisma.user.findMany({where:{OR:[{username:{contains:q,mode:'insensitive'}},{email:{contains:q,mode:'insensitive'}},{profile:{displayName:{contains:q,mode:'insensitive'}}}]},select:{id:true,username:true,email:true,profile:{select:{profileImageUrl:true,displayName:true}}},orderBy:{username:'asc'},take:8});
- res.set('Cache-Control','no-store');return res.json({ok:true,customers});
+ res.set('Cache-Control','no-store');return res.json(await signProfileImages({ok:true,customers}));
  }catch{return res.status(500).json({ok:false,message:'Unable to search accounts.'});}
 };
 exports.myCoupons = async(req,res)=>{

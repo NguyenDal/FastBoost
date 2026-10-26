@@ -23,11 +23,11 @@
 }
 
 .order-page-lol::before {
-  background-image: url("https://fastboost-assets.s3.amazonaws.com/services/lol-card.jpg");
+  background-image: url("/assets/services/lol-card.jpg");
 }
 
 .order-page-tft::before {
-  background-image: url("https://fastboost-assets.s3.amazonaws.com/services/tft-card.jpg");
+  background-image: url("/assets/services/tft-card.jpg");
 }
 
 .order-page-bg-overlay {
@@ -570,6 +570,14 @@
   object-fit: cover;
   border: 2px solid rgba(91, 201, 255, 0.35);
   display: block;
+}
+
+.match-avatar-fallback {
+  display: grid;
+  place-items: center;
+  color: #e9e4ff;
+  background: #28204a;
+  font-weight: 800;
 }
 
 .chat-avatar-online-dot {

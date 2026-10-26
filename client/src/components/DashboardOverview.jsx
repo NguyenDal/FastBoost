@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { findCountry } from "../utils/countries";
 import CleanIcon from "./CleanIcon";
+import AvatarImage from './AvatarImage';
 import DashboardIcon from "./DashboardIcon";
 
 function CardHeading({ title, icon, to, action }) {
@@ -20,7 +21,7 @@ export function DashboardOrders({ orders }) {
             const title = order.service?.title || order.boostType || "Order";
             const isTft = /tft|teamfight/i.test(title + " " + (order.boostType || ""));
             return <Link key={order.id} to={"/match/" + order.id} className="dashboard-order-row">
-                <CleanIcon className="dashboard-game-logo" src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (isTft ? "tft-logo.png" : "lol-logo.jpg")} alt={isTft ? "TFT" : "LoL"} />
+                <CleanIcon className="dashboard-game-logo" src={"/assets/logos/" + (isTft ? "tft-logo.png" : "lol-logo.jpg")} alt={isTft ? "TFT" : "LoL"} />
                 <div className="dashboard-order-copy"><strong>#{order.orderNumber}</strong><small>{title}</small></div>
                 <div className="dashboard-order-meta"><span className={"dashboard-order-status status-" + order.status?.toLowerCase()}>{labels[order.status] || order.status}</span><small>{new Date(order.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</small></div>
                 <span aria-hidden="true">›</span>
@@ -42,7 +43,7 @@ export function DashboardAccount({ account }) {
     return <section className="dashboard-card">
         <CardHeading title="Account Overview" icon="profile" to="/account/settings" action="View Profile" />
         <div className="dashboard-account-identity">
-            {profile.profileImageUrl ? <img src={profile.profileImageUrl} alt="" /> : <span className="dashboard-account-initial">{name.charAt(0)}</span>}
+            <AvatarImage src={profile.profileImageUrl} alt="" fallback={<span className="dashboard-account-initial">{name.charAt(0)}</span>} />
             <div><strong>{name}</strong><small>{account?.email}</small>{account?.emailVerifiedAt && <span className="dashboard-verified">✓ Verified</span>}</div>
         </div>
         <div className="dashboard-account-facts">

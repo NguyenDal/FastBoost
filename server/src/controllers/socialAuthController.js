@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const prisma = require('../prisma');
 const { registrationConsent } = require('../utils/registrationConsent');
 const { verifySessionToken, sessionSecurityStamp } = require('../utils/sessionToken');
+const { signProfileImages } = require('../utils/privateProfileImages');
 
 const providers = {
   google: { authorization: 'https://accounts.google.com/o/oauth2/v2/auth', token: 'https://oauth2.googleapis.com/token', user: 'https://openidconnect.googleapis.com/v1/userinfo', scope: 'openid email profile' },
@@ -39,9 +40,9 @@ function finish(res, origin, payload) {
   res.set('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${nonce}'; base-uri 'none'; frame-ancestors 'none'`);
   return res.type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><title>FastBoost sign-in</title><body><p>You can close this window and return to FastBoost.</p><script nonce="${nonce}">if(window.opener){window.opener.postMessage(${data},${JSON.stringify(origin)});window.close();}</script></body></html>`);
 }
-function sessionPayload(user, rememberMe) {
+async function sessionPayload(user, rememberMe) {
   const token = require('../utils/sessionToken').signSessionToken(user, rememberMe);
-  return { token, rememberMe: Boolean(rememberMe), user: { id: user.id, email: user.email, username: user.username, role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess), profile: user.profile } };
+  return signProfileImages({ token, rememberMe: Boolean(rememberMe), user: { id: user.id, email: user.email, username: user.username, role: user.role, hasBoosterAccess: Boolean(user.hasBoosterAccess), profile: user.profile } });
 }
 // Signup tickets cannot be used as app session tokens or OAuth state cookies.
 function signupSecret() {
@@ -257,7 +258,7 @@ exports.confirmSocialLink = async (req, res) => {
       const account = await linkSocialUser(tx, user.id, pending.provider, pending.identity);
       return account;
     });
-    return res.json(sessionPayload(linked, pending.rememberMe));
+    return res.json(await sessionPayload(linked, pending.rememberMe));
   } catch (error) { return res.status(400).json({ error: error.code ? 'Could not link your account. Please try again.' : error.message }); }
 };
 exports.completeSocialSignup = async (req, res) => {
@@ -276,7 +277,7 @@ exports.completeSocialSignup = async (req, res) => {
       referralCode: pending.referralCode,
 
     });
-    return res.json(sessionPayload(user, pending.rememberMe));
+    return res.json(await sessionPayload(user, pending.rememberMe));
   } catch (error) {
     if (error.code === 'SOCIAL_LINK_CONFIRMATION_REQUIRED') return res.json(linkConfirmation(pending.provider, pending.identity, pending, error.userId, error.securityStamp));
     if (error.field === 'username') return res.status(error.status || 400).json({ error: error.message, field: 'username' });
@@ -341,7 +342,7 @@ exports.socialCallback = async (req, res) => {
       if (error.code) throw error;
       return finish(res, context.origin, { error: error.message });
     }
-    return finish(res, context.origin, sessionPayload(user, context.rememberMe));
+    return finish(res, context.origin, await sessionPayload(user, context.rememberMe));
   } catch {
     return finish(res, context.origin, { error: 'We could not complete sign-in. Please try again or use email and password.' });
   }

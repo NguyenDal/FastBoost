@@ -1,12 +1,12 @@
 export const roleNames = ["Top", "Jungle", "Middle", "Bottom", "Support"];
 
 export const roleIconMap = {
-  Top: "https://fastboost-assets.s3.amazonaws.com/roles/top.png",
-  Jungle: "https://fastboost-assets.s3.amazonaws.com/roles/jungle.png",
-  Middle: "https://fastboost-assets.s3.amazonaws.com/roles/mid.png",
-  Bottom: "https://fastboost-assets.s3.amazonaws.com/roles/bot.png",
-  Support: "https://fastboost-assets.s3.amazonaws.com/roles/support.png",
-  Fill: "https://fastboost-assets.s3.amazonaws.com/roles/fill.png",
+  Top: "/assets/roles/top.png",
+  Jungle: "/assets/roles/jungle.png",
+  Middle: "/assets/roles/mid.png",
+  Bottom: "/assets/roles/bot.png",
+  Support: "/assets/roles/support.png",
+  Fill: "/assets/roles/fill.png",
 };
 
 export function getSecondRoleOptions(firstRole) {

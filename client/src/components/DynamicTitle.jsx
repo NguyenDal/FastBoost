@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { serviceTitleFromOrderRoute } from "../utils/productRoutes";
 
 export default function DynamicTitle() {
   const location = useLocation();
@@ -25,12 +26,16 @@ export default function DynamicTitle() {
       title = "Privacy Policy | FastBoost";
     } else if (path === "/provider-agreement") {
       title = "Provider Agreement | FastBoost";
+    } else if (/^\/provider\/contracts\/[^/]+\/sign\/?$/.test(path)) {
+      title = "Sign Agreement | FastBoost";
     } else if (path === "/contact") {
       title = "Contact | FastBoost";
     } else if (path.startsWith("/checkout/")) {
       title = "Secure Payment | FastBoost";
     } else if (path.startsWith("/order/")) {
-      title = "Order | FastBoost";
+      const [, game, product] = path.match(/^\/order\/([^/]+)\/([^/]+)\/?$/) || [];
+      const serviceTitle = serviceTitleFromOrderRoute(game, product);
+      title = serviceTitle ? `${serviceTitle} | FastBoost` : "Order | FastBoost";
     } else if (path.startsWith("/payment/success/")) {
       title = "Payment Successful | FastBoost";
     } else if (path.startsWith("/payment/cancelled/")) {

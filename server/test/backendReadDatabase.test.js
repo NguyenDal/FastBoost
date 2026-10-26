@@ -23,7 +23,7 @@ const reward = (id, overrides = {}) => ({
 // The only dynamic identifiers here come from these fixed test table names and
 // literal fixture object keys. Every fixture value is a bound query parameter.
 async function insert(client, table, rows) {
-    assert.ok(['Service', 'Order', 'RewardHistory', 'SupportMessage', 'ManagementAuditLog'].includes(table));
+    assert.ok(['User', 'Service', 'Order', 'RewardHistory', 'SupportMessage', 'ManagementAuditLog'].includes(table));
     if (!rows.length) return;
     const columns = Object.keys(rows[0]);
     const values = rows.flatMap(row => columns.map(column => {
@@ -172,21 +172,26 @@ test('backend read SQL preserves rewards, audit actors and support unread state 
             }));
         });
 
-        await t.test('audit actors use the latest eligible name and deterministic ties, excluding markers and null IDs', async () => {
+        await t.test('audit actors use the latest critical change name, excluding routine and unchanged records', async () => {
             assert.deepEqual(await auditActors(db), []);
-            const entry = (id, actorId, actorName, milliseconds, action = 'user.updated') => ({
-                id, actorId, actorName, action, createdAt: at(milliseconds),
+            await insert(client, 'User', [{ id: 'actor-c', username: 'Named admin' }]);
+            const entry = (id, actorId, actorName, milliseconds, action = 'account.role', outcome = 'SUCCEEDED') => ({
+                id, actorId, actorName, action, outcome, createdAt: at(milliseconds),
             });
             await insert(client, 'ManagementAuditLog', [
                 entry('actor-a-old', 'actor-a', 'Old name', 0),
                 entry('actor-a-a', 'actor-a', 'Tie loser', 1000),
                 entry('actor-a-z', 'actor-a', 'Current name', 1000),
                 entry('actor-a-marker', 'actor-a', 'Marker name', 5000, 'logging.enabled'),
+                entry('actor-a-nochange', 'actor-a', 'Unchanged name', 6000, 'account.role', 'NO_CHANGE'),
                 entry('actor-b', 'actor-b', 'Second actor', 2000),
+                entry('actor-b-routine', 'actor-b', 'Routine name', 4000, 'contract.signing-view'),
+                entry('actor-c', 'actor-c', 'Admin', 3000),
                 entry('marker-only', 'marker-only', 'Hidden marker actor', 6000, 'logging.enabled'),
                 entry('no-actor', null, 'System', 7000),
             ]);
             assert.deepEqual(await auditActors(db), [
+                { actorId: 'actor-c', actorName: 'Named admin' },
                 { actorId: 'actor-b', actorName: 'Second actor' },
                 { actorId: 'actor-a', actorName: 'Current name' },
             ]);

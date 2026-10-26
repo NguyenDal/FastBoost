@@ -7,6 +7,7 @@ const { boosterRating, boosterRatings } = require('../utils/orderRatings');
 const { preferenceSelect, validatePreferences, missingPreferencesTable, loadPreferences, loadPreferencesForUsers } = require('../utils/boosterPreferences');
 const { usesMatchHistory } = require('../utils/orderMatchScope');
 const { withEarningsLedgerMutation } = require('../utils/boosterEarningsLedger');
+const { signProfileImages } = require('../utils/privateProfileImages');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const eligible = user => user.role === 'PROVIDER' || user.hasBoosterAccess;
@@ -118,8 +119,8 @@ router.get('/me', handle(async (req, res) => {
         boosterRating(db, req.actor.id),
         loadPreferences(db, req.actor.id),
     ]);
-    res.json({ ok: true, profile, contracts, earnings: income[req.actor.id] || {}, rating, ...preferences,
-        account: { username: req.actor.username, email: req.actor.email, profile: req.actor.profile } });
+    res.json(await signProfileImages({ ok: true, profile, contracts, earnings: income[req.actor.id] || {}, rating, ...preferences,
+        account: { username: req.actor.username, email: req.actor.email, profile: req.actor.profile } }));
 }));
 router.patch('/me/preferences', handle(async (req, res) => {
     if (!eligible(req.actor)) fail(403, 'Boosters only.');
@@ -145,8 +146,8 @@ router.get('/boosters', admin, handle(async (req, res) => {
     const [{ preferencesByUser, preferencesAvailable }, ratings] = await Promise.all([
         loadPreferencesForUsers(db, userIds), boosterRatings(db, userIds),
     ]);
-    res.json({ ok: true, preferencesAvailable, boosters: users.map(user => ({ ...user,
-        preferences: preferencesByUser.get(user.id), rating: ratings.get(user.id), earnings: income[user.id] || {} })) });
+    res.json(await signProfileImages({ ok: true, preferencesAvailable, boosters: users.map(user => ({ ...user,
+        preferences: preferencesByUser.get(user.id), rating: ratings.get(user.id), earnings: income[user.id] || {} })) }));
 }));
 router.patch('/boosters/:id', admin, handle(async (req, res) => {
     const user = await db.user.findUnique({ where: { id: req.params.id } });

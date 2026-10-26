@@ -7,8 +7,8 @@ import { agreementSigningPath, hasDrawnSignature, signatureSubmission, signingVa
 import { nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp } from '../src/utils/nativeSigningI18n.js';
 
 test('the built-in agreement route binds the specific contract and retains a safe local destination', () => {
-    assert.equal(agreementSigningPath('contract-123'), '/provider-agreement?contract=contract-123');
-    assert.equal(agreementSigningPath('a&contract=b'), '/provider-agreement?contract=a%26contract%3Db');
+    assert.equal(agreementSigningPath('contract-123'), '/provider/contracts/contract-123/sign');
+    assert.equal(agreementSigningPath('a&contract=b'), '/provider/contracts/a%26contract%3Db/sign');
 });
 
 test('only the exact prepared commercial values remain eligible for signing', () => {

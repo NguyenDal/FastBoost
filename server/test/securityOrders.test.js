@@ -16,8 +16,8 @@ function orderFixture(t, overrides = {}) {
         basePrice: 200, totalPrice: 200, amountCents: 20000, currency: 'usd',
         assignments: [{ boosterId: 'booster' }], trustpilotReviewSentAt: new Date(),
         ...overrides };
-    const actor = { id: 'booster', role: 'PROVIDER', suspendedAt: null, hasBoosterAccess: false };
-    const calls = { users: 0, decryptions: 0, statuses: [], referrals: [], notifications: [] };
+    const actor = { id: 'booster', username: 'Synthetic booster', role: 'PROVIDER', suspendedAt: null, hasBoosterAccess: false };
+    const calls = { users: 0, decryptions: 0, statuses: [], referrals: [], notifications: [], audits: [] };
     const db = {
         user: { findUnique: async () => { calls.users++; return { ...actor }; }, findMany: async () => [] },
         order: {
@@ -30,6 +30,7 @@ function orderFixture(t, overrides = {}) {
             delete: async () => { order.assignments = []; }, count: async () => order.assignments.length,
         },
         conversation: { findUnique: async () => null },
+        managementAuditLog: { create: async ({ data }) => { calls.audits.push(structuredClone(data)); return data; } },
     };
     db.$transaction = callback => callback(db);
     db.$queryRaw = async () => [];
@@ -126,8 +127,8 @@ test('security negative control: previous ADMIN token cannot change an unrelated
     assert.equal(f.order.inGameName, 'Synthetic#Original');
     assert.equal(f.order.accountPasswordCiphertext, 'synthetic-ciphertext');
     const { routeFor } = require('../src/utils/managementAudit');
-    assert.equal(routeFor('PATCH', `/orders/${f.order.id}/login-info`).action, 'order.login-info',
-        'the mounted write additionally receives the fresh management actor check');
+    assert.equal(routeFor('PATCH', `/orders/${f.order.id}/login-info`), null,
+        'customer-only login changes are outside the critical management feed');
 });
 
 test('security regression: an assigned booster cannot complete an admin-cancelled paid order', async t => {
@@ -153,6 +154,7 @@ test('security regression: the last booster leaving preserves a completed order 
     assert.equal(result.code, 200);
     assert.equal(f.order.status, 'COMPLETED');
     assert.deepEqual(f.order.assignments, []);
+    assert.deepEqual(f.calls.audits.map(row => [row.action, row.actorName]), [['order.leave', 'Synthetic booster']]);
 });
 
 test('security regression: accepting a pending invitation cannot reopen an admin-cancelled order', async t => {

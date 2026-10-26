@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import NativeContractSigning from '../components/NativeContractSigning';
 import { loadProviderAgreement, downloadProviderAgreement } from '../api/providerAgreement';
 import { clearExpiredSession, hasValidSession } from '../utils/authSession';
+import { agreementSigningPath } from '../utils/nativeSigning';
 import '../styles/LegalDocument.css';
 
 export default function ProviderAgreementPage() {
+    const { id } = useParams();
     const [params] = useSearchParams();
-    const contractId = params.get('contract');
-    return contractId ? <NativeContractSigning key={contractId} id={contractId} /> : <AgreementPreview />;
+    const legacyContractId = params.get('contract');
+    if (!id && legacyContractId) return <Navigate to={agreementSigningPath(legacyContractId)} replace />;
+    return id ? <NativeContractSigning key={id} id={id} /> : <AgreementPreview />;
 }
 
 function AgreementPreview() {

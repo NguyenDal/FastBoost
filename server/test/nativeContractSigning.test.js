@@ -22,7 +22,7 @@ const matches = (record, where = {}) => Object.entries(where).every(([key, value
 
 function database() {
     let state = {
-        contracts: new Map(), signatures: new Map(), notifications: new Map(), profiles: new Map(), emails: new Map(),
+        contracts: new Map(), signatures: new Map(), notifications: new Map(), profiles: new Map(), emails: new Map(), audits: new Map(),
         users: new Map([
             ['owner', { id: 'owner', role: 'ADMIN', isOwner: true, email: 'owner@example.test', username: 'Owner', suspendedAt: null }],
             ['booster', { id: 'booster', role: 'PROVIDER', email: 'booster@example.test', username: 'Booster', suspendedAt: null }],
@@ -78,6 +78,13 @@ function database() {
                 }
                 const row = { id: randomUUID(), ...copy(data) };
                 state.signatures.set(row.id, row);
+                return copy(row);
+            },
+        },
+        managementAuditLog: {
+            create: async ({ data }) => {
+                const row = { id: randomUUID(), ...copy(data) };
+                state.audits.set(row.id, row);
                 return copy(row);
             },
         },
@@ -372,6 +379,8 @@ test('version 2.2 has owner preparation, provider signature, then FastBoost coun
     const providerPayload = f.body(provider);
     await f.sign(c.id, 'booster', providerPayload);
     await f.sign(c.id, 'booster', providerPayload);
+    assert.equal(f.db.state().audits.size, 1, 'one provider signature creates one critical activity record');
+    assert.deepEqual([...f.db.state().audits.values()].map(row => [row.action, row.actorName]), [['contract.sign', 'Booster']]);
     const partlySigned = f.db.state().contracts.get(c.id);
     assert.ok(partlySigned.boosterSignedAt);
     assert.equal(partlySigned.companySignedAt, null);

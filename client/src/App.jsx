@@ -124,10 +124,12 @@ function App() {
         <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><Navigate to="/provider/portal" replace /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id/signing-return" element={<ContractSigningReturnPage />} />
+        <Route path="/provider/contracts/:id/sign" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><ProviderAgreementPage /></ProtectedRoute>} />
         <Route path="/terms-and-conditions" element={<LegalDocumentPage />} />
         <Route path="/privacy-policy" element={<LegalDocumentPage privacy />} />
         <Route path="/provider-agreement" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><ProviderAgreementPage /></ProtectedRoute>} />
         <Route path="/order/:serviceId" element={<OrderPage />} />
+        <Route path="/order/:game/:product" element={<OrderPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FaqPage />} />

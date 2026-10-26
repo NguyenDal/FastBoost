@@ -2,7 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 function fixture(t) {
-    const state = { messages: [], assigned: true, actor: { id: 'booster', role: 'PROVIDER', suspendedAt: null }, locks: [] };
+    const state = { messages: [], assigned: true, actor: { id: 'booster', role: 'PROVIDER', suspendedAt: null }, locks: [], signedKeys: [] };
+    const { chatAttachmentKeyFromUrl } = require('../src/utils/s3Upload');
     let tail = Promise.resolve();
     const db = {
         user: { findUnique: async () => state.actor },
@@ -24,7 +25,10 @@ function fixture(t) {
     };
     const files = ['../src/controllers/chatController', '../src/utils/orderChat'].map(require.resolve);
     const replacements = new Map([
-        [require.resolve('../src/prisma'), db], [require.resolve('../src/utils/s3Upload'), {}],
+        [require.resolve('../src/prisma'), db], [require.resolve('../src/utils/s3Upload'), {
+            chatAttachmentKeyFromUrl,
+            createChatAttachmentSignedUrl: async ({ key }) => { state.signedKeys.push(key); return 'https://signed.example.test/attachment'; },
+        }],
         [require.resolve('../src/utils/chatNotifications'), { createChatMessageNotifications: async () => {} }],
     ]);
     const previous = new Map(files.map(path => [path, require.cache[path]]));
@@ -33,12 +37,52 @@ function fixture(t) {
     const controller = require(files[0]);
     const helper = require(files[1]);
     t.after(() => { for (const [path, value] of previous) { if (value) require.cache[path] = value; else delete require.cache[path]; } });
-    return { state, db, helper, async post(content) {
+    return { state, db, helper, async getAttachmentViewUrl(messageId = 'legacy') {
+        const res = { code: 200, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
+        await controller.getAttachmentViewUrl({ user: state.actor, params: { messageId } }, res);
+        return res;
+    }, async getMessages() {
+        const res = { code: 200, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
+        await controller.getMessages({ user: state.actor, params: { conversationId: 'chat' } }, res);
+        return res;
+    }, async post(content) {
         const res = { code: 200, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
         await controller.postMessage({ user: state.actor, params: { conversationId: 'chat' }, body: { content } }, res);
         return res;
     } };
 }
+
+test('match chat HTTP history strips legacy bare attachment URLs even without keys', async t => {
+    const f = fixture(t);
+    f.db.message.findMany = async () => [
+        { id: 'legacy', attachmentUrl: 'https://old-public.example.test/file', attachmentKey: null },
+        { id: 'signed', attachmentUrl: 'https://old-public.example.test/another', attachmentKey: 'chat-attachments/key' },
+    ];
+    const response = await f.getMessages();
+    assert.equal(response.code, 200);
+    assert.deepEqual(response.body.messages.map(message => message.attachmentUrl), [null, null]);
+});
+
+test('legacy own-bucket chat URL can be recovered only after fresh order authorization', async t => {
+    const f = fixture(t);
+    const bucket = process.env.AWS_S3_ASSETS_BUCKET || 'fastboost-assets';
+    const key = 'chat-attachments/chat/booster/1730000000000-0123456789abcdef01234567.pdf';
+    f.db.message.findUnique = async () => ({ id: 'legacy', attachmentKey: null,
+        attachmentUrl: `https://${bucket}.s3.ca-central-1.amazonaws.com/${key}`,
+        attachmentName: 'proof.pdf', conversation: { orderId: 'order' } });
+    const allowed = await f.getAttachmentViewUrl();
+    assert.equal(allowed.code, 200);
+    assert.equal(allowed.body.viewUrl, 'https://signed.example.test/attachment');
+    assert.deepEqual(f.state.signedKeys, [key]);
+    f.state.assigned = false;
+    assert.equal((await f.getAttachmentViewUrl()).code, 403);
+    assert.deepEqual(f.state.signedKeys, [key], 'removed boosters cannot renew a link');
+    f.state.assigned = true;
+    f.db.message.findUnique = async () => ({ id: 'legacy', attachmentKey: null,
+        attachmentUrl: `https://attacker.example.test/${key}`, attachmentName: 'proof.pdf', conversation: { orderId: 'order' } });
+    assert.equal((await f.getAttachmentViewUrl()).code, 404);
+    assert.deepEqual(f.state.signedKeys, [key], 'foreign URLs are never signed');
+});
 
 test('match chat rejects malformed and oversized messages before database writes', async t => {
     const f = fixture(t);

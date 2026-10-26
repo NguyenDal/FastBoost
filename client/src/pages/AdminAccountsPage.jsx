@@ -2,6 +2,8 @@ import { authStorage } from "../utils/authStorage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import OrderPagination from "../components/OrderPagination";
+import AvatarImage from '../components/AvatarImage';
+import { shouldRefreshAvatarData } from '../utils/signedAvatar';
 import {
     adminListUsers,
     adminUpdateUserRole,
@@ -107,6 +109,36 @@ export default function AdminAccountsPage() {
         return () => {
             active = false;
             clearTimeout(timeout);
+        };
+    }, [page, pageSize, query, roleFilter]);
+
+    useEffect(() => {
+        let active = true;
+        let pending = false;
+        let lastRefreshedAt = Date.now();
+        const refreshAvatars = async (force = false) => {
+            if (document.hidden || pending || (!force && !shouldRefreshAvatarData(lastRefreshedAt))) return;
+            pending = true;
+            try {
+                const fresh = await adminListUsers({ page, pageSize, q: query.trim(), role: roleFilter });
+                if (!active) return;
+                const byId = new Map(fresh.items.map(user => [user.id, user.profile?.profileImageUrl]));
+                setData(current => current ? { ...current, items: current.items.map(user => byId.has(user.id)
+                    ? { ...user, profile: { ...user.profile, profileImageUrl: byId.get(user.id) } } : user) } : current);
+                lastRefreshedAt = Date.now();
+            } catch { /* Keep the current list and show initials if an image fails. */ }
+            finally { pending = false; }
+        };
+        const onVisible = () => { if (!document.hidden) void refreshAvatars(); };
+        const onImageError = () => { if (!document.hidden) void refreshAvatars(true); };
+        window.addEventListener('focus', onVisible);
+        window.addEventListener('avatar:refresh', onImageError);
+        document.addEventListener('visibilitychange', onVisible);
+        return () => {
+            active = false;
+            window.removeEventListener('focus', onVisible);
+            window.removeEventListener('avatar:refresh', onImageError);
+            document.removeEventListener('visibilitychange', onVisible);
         };
     }, [page, pageSize, query, roleFilter]);
 
@@ -409,14 +441,8 @@ export default function AdminAccountsPage() {
                                             <td>
                                                 <div className="account-user-cell">
                                                     <div className="account-avatar">
-                                                        {user.profile?.profileImageUrl ? (
-                                                            <img
-                                                                src={user.profile.profileImageUrl}
-                                                                alt={displayName}
-                                                            />
-                                                        ) : (
-                                                            <span>{displayName.slice(0, 1).toUpperCase()}</span>
-                                                        )}
+                                                        <AvatarImage src={user.profile?.profileImageUrl} alt={displayName}
+                                                            fallback={<span>{displayName.slice(0, 1).toUpperCase()}</span>} />
                                                     </div>
 
                                                     <div>

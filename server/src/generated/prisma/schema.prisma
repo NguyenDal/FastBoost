@@ -64,6 +64,7 @@ model User {
   providedAssignments OrderAssignment[]
   conversationMembers ConversationParticipant[]
   sentMessages        Message[]
+  uploadedHighlights  OrderHighlight[]
 
   // Assignment request relations
   boosterAssignmentRequests AssignmentRequest[] @relation("BoosterAssignmentRequests")
@@ -609,6 +610,7 @@ model Order {
   assignments             OrderAssignment[]
   contributions           BoosterContribution[]
   matches                 OrderMatch[]
+  highlights              OrderHighlight[]
   matchHistoryEnabled     Boolean               @default(true)
   matchHistoryRevision    Int                   @default(0)
   matchHistoryConfirmedAt DateTime?
@@ -621,6 +623,24 @@ model Order {
   @@index([customerId, paymentStatus, paidAt])
   @@index([customerId, status, paymentStatus, updatedAt, id], map: "Order_customer_reward_page_idx")
   @@index([paymentStatus, status, id], map: "Order_completed_earnings_page_idx")
+}
+
+model OrderHighlight {
+  id           String   @id @default(cuid())
+  orderId      String
+  uploadedById String?
+  uploaderName String
+  title        String
+  s3Key        String   @unique
+  mimeType     String
+  byteSize     Int
+  createdAt    DateTime @default(now())
+
+  order      Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt, id])
+  @@index([uploadedById])
 }
 
 // One immutable customer review per order. Recipients are captured on submission

@@ -15,6 +15,9 @@ Auth: Send `Authorization: Bearer <JWT>` header. Every protected request resolve
   API (comma-separated). The default trusts no forwarded source headers. Do not
   guess proxy ranges or use `true`, a hop count, or a global subnet. Without a correct
   proxy policy, visitors behind a shared proxy share its source budget.
+- Set `CLIENT_URL` to the exact HTTPS site origin in production. Checkout and
+  wallet return URLs reject missing or invalid configuration and never trust a
+  request's arbitrary `Origin` header.
 - Existing JWTs without a security stamp require a fresh sign-in after this release.
   Password changes/reset revoke old HTTP, renewal and socket sessions. Transient
   account-store failures return 503; they do not declare a valid session expired.
@@ -24,6 +27,21 @@ Auth: Send `Authorization: Bearer <JWT>` header. Every protected request resolve
 - New chat attachments download as inert octet streams. Signed reads also override
   legacy metadata. Previously public raw S3 objects require separate bucket/metadata
   review; changing app code cannot alter those objects or their public access.
+- S3 privacy rollout: deploy the updated client artwork and server avatar/chat paths
+  before removing the temporary public bucket policy. Confirm LoL/TFT `CleanIcon`,
+  email artwork, profile avatars, chat attachments, and order highlights work through
+  the site. Then delete the anonymous bucket policy and enable all four bucket Block
+  Public Access settings. Raw S3 URLs should return 403; authorized temporary URLs
+  should still work. The current live policy permits anonymous reads only of
+  legacy artwork under `logos/*`, `services/*`, `roles/*`, and `updates/*`;
+  `profiles/*`, chat attachments, and highlights already deny raw public reads.
+  Existing live avatars may be broken until the new private-link API is released.
+  Full bucket privacy is not yet active.
+- The local backend IAM principal has `s3:PutObject` and `s3:GetObject` for
+  `profiles/*` and `chat-attachments/*`, plus `s3:PutObject`, `s3:GetObject`,
+  and `s3:DeleteObject` for `order-highlights/*`. A disposable upload, signed
+  read, anonymous denial, and cleanup were verified after that narrow grant.
+  Confirm which IAM identity the deployed backend uses before its release.
 - Run `npm ci`, then `npx prisma generate` as part of setup/build after installing
   the aligned Prisma dependencies. `npm run dev` now uses Node's built-in watch mode
   (Node 22+); the production `npm start` command is unchanged.

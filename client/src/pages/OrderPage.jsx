@@ -1,7 +1,7 @@
 import { authStorage, storeAuthSession } from "../utils/authStorage";
 import { notifyAuthChanged } from "../utils/authSession";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { TwoColumnPageSkeleton } from "../components/PageSkeletons";
 import { Skeleton } from "../components/Skeleton";
 import { API_BASE_URL } from "../api/config";
@@ -9,6 +9,7 @@ import { loadChampions } from "../api/champions";
 import { orderEstimateBreakdown } from "../utils/orderEstimateBreakdown";
 import { orderCashbackEstimate } from "../utils/orderCashbackEstimate";
 import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRoles";
+import { orderPathForService, serviceTitleFromOrderRoute, uniqueServiceForTitle } from "../utils/productRoutes";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
@@ -85,7 +86,13 @@ function refreshCachedService(updatedService) {
 
 function OrderPage() {
   const navigate = useNavigate();
-  const { serviceId } = useParams();
+  const location = useLocation();
+  const { serviceId, game, product } = useParams();
+  const routeTitle = serviceTitleFromOrderRoute(game, product);
+  const routeKey = `${game}/${product}`;
+  const [routeService, setRouteService] = useState(null);
+  const routeResolvedRef = useRef(false);
+  const resolvedServiceId = serviceId || (routeService?.key === routeKey ? routeService.id : null);
 
   const [service, setService] = useState(null);
   const [selectedBoostType, setSelectedBoostType] = useState("");
@@ -233,9 +240,15 @@ function OrderPage() {
   const [championSearch, setChampionSearch] = useState("");
 
   useEffect(() => {
+    if (!resolvedServiceId) {
+      setService(null);
+      setLoading(Boolean(routeTitle));
+      if (!routeTitle) setLoadError("This service link is unavailable.");
+      return;
+    }
     let cancelled = false;
 
-    const cached = getCachedService(serviceId);
+    const cached = getCachedService(resolvedServiceId);
 
     if (cached?.service) {
       setService(cached.service);
@@ -249,7 +262,7 @@ function OrderPage() {
     const fetchService = async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/services/${serviceId}`, { cache: "no-store" }
+          `${API_BASE_URL}/services/${encodeURIComponent(resolvedServiceId)}`, { cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -286,19 +299,42 @@ function OrderPage() {
     return () => {
       cancelled = true;
     };
-  }, [serviceId]);
+  }, [resolvedServiceId, routeTitle]);
 
   const serviceType = selectedBoostType || service?.title || "";
   const [serviceAvailability, setServiceAvailability] = useState({});
+  const [serviceCatalog, setServiceCatalog] = useState([]);
   useEffect(() => {
     const controller = new AbortController();
     const refresh = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/services`, { cache: "no-store", signal: controller.signal });
-        if (!response.ok) return;
+        if (!response.ok) throw new Error('Service catalog unavailable');
         const data = await response.json();
-        if (!controller.signal.aborted) setServiceAvailability(Object.fromEntries((data.services || []).map(item => [item.title, item.active])));
-      } catch { /* Order creation still verifies current availability on the server. */ }
+        if (controller.signal.aborted) return;
+        const catalog = Array.isArray(data.services) ? data.services : [];
+        setServiceCatalog(catalog);
+        setServiceAvailability(Object.fromEntries(catalog.map(item => [item.title, item.active])));
+        if (!serviceId && routeTitle) {
+          const match = uniqueServiceForTitle(catalog, routeTitle);
+          if (!match) {
+            routeResolvedRef.current = false;
+            setRouteService(null);
+            setLoading(false);
+            setLoadError("This service link is unavailable. Please choose a service from the home page.");
+          } else {
+            routeResolvedRef.current = true;
+            setRouteService({ key: routeKey, id: match.id });
+            setLoadError("");
+          }
+        }
+      } catch {
+        if (!controller.signal.aborted && !serviceId && routeTitle && !routeResolvedRef.current) {
+          setLoading(false);
+          setLoadError("Could not load this service. Please try again.");
+        }
+        // Order creation still verifies current availability on the server.
+      }
     };
     void refresh();
     const onVisible = () => { if (!document.hidden) void refresh(); };
@@ -306,7 +342,13 @@ function OrderPage() {
     window.addEventListener("focus", onVisible);
     window.addEventListener("storage", onVisible);
     return () => { controller.abort(); clearInterval(timer); window.removeEventListener("focus", onVisible); window.removeEventListener("storage", onVisible); };
-  }, []);
+  }, [serviceId, routeTitle, routeKey]);
+
+  useEffect(() => {
+    if (!serviceId || !service || !serviceCatalog.length || !location.pathname.startsWith('/order/')) return;
+    const canonical = orderPathForService(service, serviceCatalog);
+    if (canonical !== location.pathname) navigate(canonical, { replace: true });
+  }, [serviceId, service, serviceCatalog, location.pathname, navigate]);
   const serviceUnavailable = (serviceAvailability[serviceType] ?? service?.active) === false;
   const isTftService = serviceType.startsWith("TFT ");
   const normalizedServiceType = serviceType.replace("TFT ", "");
@@ -1209,8 +1251,11 @@ function OrderPage() {
                     key={type.value}
                     type="button"
                     className={`boost-type-tab ${selectedBoostType === type.value ? "active" : ""}`}
-                    onClick={() => setSelectedBoostType(type.value)}
-                    disabled={serviceAvailability[type.value] !== true}
+                    onClick={() => {
+                      const target = uniqueServiceForTitle(serviceCatalog, type.value);
+                      if (target) navigate(orderPathForService(target, serviceCatalog));
+                    }}
+                    disabled={serviceAvailability[type.value] !== true || !uniqueServiceForTitle(serviceCatalog, type.value)}
                     title={serviceAvailability[type.value] === false ? "Currently unavailable" : undefined}
                   >
                     {type.label}
@@ -2629,17 +2674,17 @@ function OrderPage() {
 }
 
 const rankImageMap = {
-  Unranked: "https://fastboost-assets.s3.amazonaws.com/services/ranks/unranked.webp",
-  Iron: "https://fastboost-assets.s3.amazonaws.com/services/ranks/iron.png",
-  Bronze: "https://fastboost-assets.s3.amazonaws.com/services/ranks/bronze.png",
-  Silver: "https://fastboost-assets.s3.amazonaws.com/services/ranks/silver.png",
-  Gold: "https://fastboost-assets.s3.amazonaws.com/services/ranks/gold.png",
-  Platinum: "https://fastboost-assets.s3.amazonaws.com/services/ranks/platinum.png",
-  Emerald: "https://fastboost-assets.s3.amazonaws.com/services/ranks/emerald.png",
-  Diamond: "https://fastboost-assets.s3.amazonaws.com/services/ranks/diamond.png",
-  Master: "https://fastboost-assets.s3.amazonaws.com/services/ranks/master.png",
-  Grandmaster: "https://fastboost-assets.s3.amazonaws.com/services/ranks/grandmaster.png",
-  Challenger: "https://fastboost-assets.s3.amazonaws.com/services/ranks/challenger.png",
+  Unranked: "/assets/services/ranks/unranked.webp",
+  Iron: "/assets/services/ranks/iron.png",
+  Bronze: "/assets/services/ranks/bronze.png",
+  Silver: "/assets/services/ranks/silver.png",
+  Gold: "/assets/services/ranks/gold.png",
+  Platinum: "/assets/services/ranks/platinum.png",
+  Emerald: "/assets/services/ranks/emerald.png",
+  Diamond: "/assets/services/ranks/diamond.png",
+  Master: "/assets/services/ranks/master.png",
+  Grandmaster: "/assets/services/ranks/grandmaster.png",
+  Challenger: "/assets/services/ranks/challenger.png",
 };
 
 const tierOrder = [

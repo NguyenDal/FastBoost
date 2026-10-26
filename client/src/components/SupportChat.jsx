@@ -5,6 +5,7 @@ import { authStorage } from '../utils/authStorage';
 import { getStoredUser, hasValidSession } from '../utils/authSession';
 import { formatChatDateDivider, shouldRenderDateDivider } from '../utils/chatDates';
 import { loadSupportMessageTarget, supportAdminDestination } from '../utils/supportMessageLink';
+import AvatarImage from './AvatarImage';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -13,7 +14,7 @@ export function SupportIcon({ type = 'chat' }) {
 }
 export function SupportAvatar({ user }) {
     const name = user?.username || user?.profile?.displayName || 'Support';
-    return <span className="support-avatar">{user?.profile?.profileImageUrl ? <img src={user.profile.profileImageUrl} alt="" /> : name.slice(0, 1).toUpperCase()}</span>;
+    return <span className="support-avatar"><AvatarImage src={user?.profile?.profileImageUrl} alt="" fallback={name.slice(0, 1).toUpperCase()} /></span>;
 }
 const nameOf = user => user?.username || user?.profile?.displayName || 'Support';
 const mergeMessages = (old, fresh) => [...new Map([...old, ...fresh].map(m => [m.id, m])).values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
@@ -44,7 +45,10 @@ export function SupportConversation({ threadId, user, active = true, online = nu
         if (!active) return;
         let stopped = false;
         let timer;
+        let running = false;
         const poll = async () => {
+            if (running) return;
+            running = true;
             try {
                 if (!document.hidden) {
                     const data = initialPage.current
@@ -56,10 +60,15 @@ export function SupportConversation({ threadId, user, active = true, online = nu
                     setConnectionError('');
                 }
             } catch (err) { if (!stopped) setConnectionError(err.message); }
-            finally { if (!stopped) { setLoading(false); timer = setTimeout(poll, 3000); } }
+            finally { running = false; if (!stopped) { setLoading(false); timer = setTimeout(poll, 3000); } }
         };
         void poll();
-        return () => { stopped = true; clearTimeout(timer); };
+        const refresh = () => { if (!document.hidden) { clearTimeout(timer); void poll(); } };
+        window.addEventListener('focus', refresh);
+        window.addEventListener('avatar:refresh', refresh);
+        document.addEventListener('visibilitychange', refresh);
+        return () => { stopped = true; clearTimeout(timer); window.removeEventListener('focus', refresh);
+            window.removeEventListener('avatar:refresh', refresh); document.removeEventListener('visibilitychange', refresh); };
     }, [threadId, active, targetMessageId]);
 
     useEffect(() => {
@@ -206,7 +215,10 @@ function CustomerSupport({ user }) {
         if (!user) return;
         let stopped = false;
         let timer;
+        let running = false;
         const poll = async () => {
+            if (running) return;
+            running = true;
             try {
                 if (!document.hidden) {
                     const data = await supportRequest('/status');
@@ -218,10 +230,15 @@ function CustomerSupport({ user }) {
                     }
                 }
             } catch { if (!stopped) setAdmins(null); }
-            finally { if (!stopped) timer = setTimeout(poll, 10000); }
+            finally { running = false; if (!stopped) timer = setTimeout(poll, 10000); }
         };
         void poll();
-        return () => { stopped = true; clearTimeout(timer); };
+        const refresh = () => { if (!document.hidden) { clearTimeout(timer); void poll(); } };
+        window.addEventListener('focus', refresh);
+        window.addEventListener('avatar:refresh', refresh);
+        document.addEventListener('visibilitychange', refresh);
+        return () => { stopped = true; clearTimeout(timer); window.removeEventListener('focus', refresh);
+            window.removeEventListener('avatar:refresh', refresh); document.removeEventListener('visibilitychange', refresh); };
     }, [user, thread, open]);
     useEffect(() => {
         if (!user || thread) return;

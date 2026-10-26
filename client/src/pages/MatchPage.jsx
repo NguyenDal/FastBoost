@@ -20,18 +20,24 @@ import {
 import { updateOrderLoginInfo } from "../api/orders";
 import MatchHistorySkeleton from '../components/MatchHistorySkeleton';
 import OrderRating from '../components/OrderRating';
+import AvatarImage from '../components/AvatarImage';
+import { shouldRefreshAvatarData } from '../utils/signedAvatar';
 import { findAssignedBooster, getBoosterAvatar, getBoosterDisplayName } from '../utils/matchBoosterProfile';
+import { canOpenChatAttachment } from '../utils/chatAttachment';
 const MatchHistory = lazy(() => import('../components/MatchHistory'));
+const OrderHighlights = lazy(() => import('../components/OrderHighlights'));
 
 function MatchPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const ratingRequested = location.hash === '#order-rating';
-    const showHistory = !ratingRequested && new URLSearchParams(location.search).get('tab') === 'history';
-    function setHistoryTab(history) {
+    const requestedTab = new URLSearchParams(location.search).get('tab');
+    const activeTab = !ratingRequested && (requestedTab === 'history' || requestedTab === 'highlights') ? requestedTab : 'details';
+    const showHistory = activeTab === 'history';
+    function setMatchTab(tab) {
         const search = new URLSearchParams(location.search);
-        if (history) search.set('tab', 'history'); else search.delete('tab');
+        if (tab === 'details') search.delete('tab'); else search.set('tab', tab);
         navigate({ pathname: location.pathname, search: search.toString() }, { replace: true, state: location.state });
     }
 
@@ -270,7 +276,7 @@ function MatchPage() {
             el.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", updateChatScrollbar);
         };
-    }, [messages, showHistory, updateChatScrollbar, saveChatScrollState]);
+    }, [messages, activeTab, updateChatScrollbar, saveChatScrollState]);
 
     useEffect(() => {
         if (!messages.length) return;
@@ -532,6 +538,51 @@ function MatchPage() {
         loadChatPage();
     }, [orderId]);
 
+    useEffect(() => {
+        let stopped = false;
+        let pending = false;
+        let lastRefreshedAt = Date.now();
+        const refreshAvatars = async (force = false) => {
+            if (document.hidden || pending || (!force && !shouldRefreshAvatarData(lastRefreshedAt))) return;
+            const token = authStorage.getItem('token');
+            if (!token) return;
+            pending = true;
+            try {
+                const [orderResponse, freshConversation] = await Promise.all([
+                    fetch(`${API_BASE_URL}/orders/${orderId}`, { headers: { Authorization: `Bearer ${token}` } }),
+                    getOrderConversation(orderId),
+                ]);
+                if (!orderResponse.ok || stopped || authStorage.getItem('token') !== token) return;
+                const { order: freshOrder } = await orderResponse.json();
+                if (!freshOrder || !freshConversation?.id || stopped) return;
+                const freshMessages = await getConversationMessages(freshConversation.id);
+                if (stopped || authStorage.getItem('token') !== token) return;
+                setOrder(current => current ? { ...current, assignments: freshOrder.assignments ?? current.assignments } : freshOrder);
+                setConversation(freshConversation);
+                setMatchedBooster(findAssignedBooster(freshConversation, freshOrder));
+                const senders = new Map(freshMessages.map(message => [String(message.id), message.sender]));
+                setMessages(current => current.map(message => {
+                    const sender = senders.get(String(message.id));
+                    return sender ? { ...message, senderUser: sender,
+                        senderName: getSenderDisplayName(sender), senderAvatar: getSenderAvatar(sender) } : message;
+                }));
+                lastRefreshedAt = Date.now();
+            } catch { /* Keep the last successful order and let failed images show initials. */ }
+            finally { pending = false; }
+        };
+        const onVisible = () => { if (!document.hidden) void refreshAvatars(); };
+        const onImageError = () => { if (!document.hidden) void refreshAvatars(true); };
+        window.addEventListener('focus', onVisible);
+        window.addEventListener('avatar:refresh', onImageError);
+        document.addEventListener('visibilitychange', onVisible);
+        return () => {
+            stopped = true;
+            window.removeEventListener('focus', onVisible);
+            window.removeEventListener('avatar:refresh', onImageError);
+            document.removeEventListener('visibilitychange', onVisible);
+        };
+    }, [orderId]);
+
     const isCustomerView = effectiveUser?.role === "CUSTOMER";
     const isProviderView = effectiveUser?.role === "PROVIDER" || Boolean(effectiveUser?.hasBoosterAccess);
     const canEditLoginInfo = isCustomerOwner;
@@ -700,7 +751,7 @@ function MatchPage() {
     };
 
     const handleOpenAttachment = async (message) => {
-        if (!message?.id || !message?.attachmentKey) return;
+        if (!canOpenChatAttachment(message)) return;
 
         try {
             const viewUrl = await getMessageAttachmentViewUrl(message.id);
@@ -846,12 +897,14 @@ function MatchPage() {
                 </section>
 
                 <div className="match-tabs">
-                    <button className={`match-tab ${!showHistory ? 'active' : ''}`} aria-pressed={!showHistory} onClick={() => setHistoryTab(false)}>Details</button>
-                    <button className={`match-tab ${showHistory ? 'active' : ''}`} aria-pressed={showHistory} onClick={() => setHistoryTab(true)}>Match History</button>
+                    <button className={`match-tab ${activeTab === 'details' ? 'active' : ''}`} aria-pressed={activeTab === 'details'} onClick={() => setMatchTab('details')}>Details</button>
+                    <button className={`match-tab ${showHistory ? 'active' : ''}`} aria-pressed={showHistory} onClick={() => setMatchTab('history')}>Match History</button>
+                    <button className={`match-tab ${activeTab === 'highlights' ? 'active' : ''}`} aria-pressed={activeTab === 'highlights'} onClick={() => setMatchTab('highlights')}>Highlights</button>
                 </div>
 
                 {showHistory && <Suspense fallback={<MatchHistorySkeleton />}><MatchHistory key={orderId} orderId={orderId} /></Suspense>}
-                <div className="match-layout" hidden={showHistory}>
+                {activeTab === 'highlights' && <Suspense fallback={<div className="match-history-loading" role="status">Loading highlights…</div>}><OrderHighlights key={orderId} orderId={orderId} /></Suspense>}
+                <div className="match-layout" hidden={activeTab !== 'details'} style={{ display: activeTab !== 'details' ? 'none' : undefined }}>
                     <section className="match-main-panel">
                         <div className="chat-panel">
                             <div className="chat-panel-header">
@@ -859,11 +912,8 @@ function MatchPage() {
                                     {matchedBooster ? (
                                         <>
                                             <div className="chat-avatar-wrap">
-                                                <img
-                                                    src={getBoosterAvatar(matchedBooster)}
-                                                    alt={getBoosterDisplayName(matchedBooster)}
-                                                    className="chat-header-avatar"
-                                                />
+                                                <AvatarImage src={getBoosterAvatar(matchedBooster)} alt={getBoosterDisplayName(matchedBooster)}
+                                                    className="chat-header-avatar" fallback={<span className="chat-header-avatar match-avatar-fallback">{getBoosterDisplayName(matchedBooster).charAt(0)}</span>} />
                                                 <span className="chat-avatar-online-dot" />
                                             </div>
 
@@ -910,11 +960,9 @@ function MatchPage() {
                                                 >
                                                     {showAvatar && (
                                                         <div className="chat-avatar-wrap">
-                                                            <img
-                                                                src={message.senderAvatar || getSenderAvatar(message.senderUser)}
-                                                                alt={message.senderName || "Sender"}
-                                                                className="chat-message-avatar"
-                                                            />
+                                                            <AvatarImage src={message.senderAvatar || getSenderAvatar(message.senderUser)}
+                                                                alt={message.senderName || "Sender"} className="chat-message-avatar"
+                                                                fallback={<span className="chat-message-avatar match-avatar-fallback">{(message.senderName || 'S').charAt(0)}</span>} />
                                                             <span className="chat-avatar-online-dot" />
                                                         </div>
                                                     )}
@@ -1076,11 +1124,8 @@ function MatchPage() {
                             ) : (
                                 <div className="booster-profile-card">
                                     <div className="booster-profile-top">
-                                        <img
-                                            src={getBoosterAvatar(matchedBooster)}
-                                            alt={getBoosterDisplayName(matchedBooster)}
-                                            className="booster-avatar"
-                                        />
+                                        <AvatarImage src={getBoosterAvatar(matchedBooster)} alt={getBoosterDisplayName(matchedBooster)}
+                                            className="booster-avatar" fallback={<span className="booster-avatar match-avatar-fallback">{getBoosterDisplayName(matchedBooster).charAt(0)}</span>} />
 
                                         <div className="booster-profile-main">
                                             <div className="booster-name-row">

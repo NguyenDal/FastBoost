@@ -2,6 +2,7 @@ const { createHash } = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const agreement = require('./nativeAgreement');
 const { queueNativeContractEmail } = require('./nativeContractEmail');
+const { recordCriticalActivity } = require('./criticalActivity');
 
 const PROVIDER = 'FASTBOOST';
 const CONSENT_TEXT = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature and initials to bind me to this exact agreement. I can download and retain a completed copy.';
@@ -292,6 +293,13 @@ async function signContract(db, id, actor, body, audit = {}) {
                 signedName: role === 'BOOSTER' ? input.legalName : signatures.find(item => item.role === 'BOOSTER')?.legalName || current.signerName,
                 nativeCompletedAt: signedAt, status: 'completed' }),
         } });
+        await recordCriticalActivity(tx, {
+            actor: signer, action: 'contract.sign', targetType: 'contract', targetId: id,
+            targetLabel: current.title || 'Booster agreement',
+            requested: { signer: role === 'BOOSTER' ? 'Booster' : 'FastBoost' },
+            before: { status: current.status, boosterSignedAt: current.boosterSignedAt, signedAt: current.signedAt },
+            after: { status: updated.status, boosterSignedAt: updated.boosterSignedAt, signedAt: updated.signedAt },
+        });
         if (completed) {
             const startedAt = new Date(Math.max(new Date(current.startsAt).getTime(), signedAt.getTime()));
             await tx.boosterProfile.upsert({ where: { userId: current.boosterId }, create: { userId: current.boosterId, startedAt }, update: {} });

@@ -13,7 +13,7 @@ test("login return preserves order links including the rating fragment and query
 test("login return keeps existing provider agreement and contract destinations", () => {
   for (const value of [
     "/provider-agreement", "/provider/workspace", "/provider/portal", "/provider/contracts/contract-123",
-    "/provider/contracts/contract-123?source=email#agreement",
+    "/provider/contracts/contract-123?source=email#agreement", "/provider/contracts/contract-123/sign",
   ]) assert.equal(authReturnPath(value), value);
 });
 
@@ -33,7 +33,7 @@ test("login return rejects external, malformed, traversing and unrelated destina
     "\\\\example.com", "/\\example.com/match/order", "javascript:alert(1)",
     " /match/order", "/match/order\n", "/match/order\u0000", "/match/order?x=bad\r\n",
     "/match/../admin", "/match/%2e%2e", "/match/order/extra", "/match/order%2Fextra",
-    "/provider/contracts/../workspace", "/provider/contracts/", "/match/", "/admin/orders",
+    "/provider/contracts/../workspace", "/provider/contracts/", "/provider/contracts/contract-123/sign/other", "/match/", "/admin/orders",
     "/account/settings", "/", "/match/order?" + "x".repeat(2048),
   ]) assert.equal(authReturnPath(value), null, String(value));
 });

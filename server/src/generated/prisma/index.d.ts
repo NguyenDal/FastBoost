@@ -154,6 +154,11 @@ export type ServiceSale = $Result.DefaultSelection<Prisma.$ServiceSalePayload>
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model OrderHighlight
+ *
+ */
+export type OrderHighlight = $Result.DefaultSelection<Prisma.$OrderHighlightPayload>
+/**
  * Model OrderRating
  *
  */
@@ -773,6 +778,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orderHighlight`: Exposes CRUD operations for the **OrderHighlight** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrderHighlights
+    * const orderHighlights = await prisma.orderHighlight.findMany()
+    * ```
+    */
+  get orderHighlight(): Prisma.OrderHighlightDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.orderRating`: Exposes CRUD operations for the **OrderRating** model.
@@ -1438,6 +1453,7 @@ export namespace Prisma {
     ServicePriceRule: 'ServicePriceRule',
     ServiceSale: 'ServiceSale',
     Order: 'Order',
+    OrderHighlight: 'OrderHighlight',
     OrderRating: 'OrderRating',
     OrderRatingRecipient: 'OrderRatingRecipient',
     OrderConfirmationEmail: 'OrderConfirmationEmail',
@@ -1472,7 +1488,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "nativeContractSignature" | "nativeContractEmail" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
+      modelProps: "rateLimitBucket" | "user" | "walletAccount" | "walletCheckoutHold" | "walletCheckoutPresence" | "walletTopUp" | "walletEntry" | "walletCashbackEntitlement" | "managementAuditLog" | "registrationConsent" | "boosterProfile" | "boosterPreferences" | "boosterEarningsLedgerState" | "boosterEarningsBalance" | "boosterEarningsEntry" | "boosterContract" | "nativeContractSignature" | "nativeContractEmail" | "supportThread" | "supportMessage" | "supportPresence" | "supportEmailAlert" | "socialIdentity" | "profile" | "service" | "servicePriceRule" | "serviceSale" | "order" | "orderHighlight" | "orderRating" | "orderRatingRecipient" | "orderConfirmationEmail" | "orderCompletionEmail" | "boosterOrderEmail" | "couponUse" | "orderNumberReservation" | "orderAssignment" | "boosterContribution" | "orderMatch" | "orderMatchReview" | "rewardHistory" | "assignmentRequest" | "conversation" | "conversationParticipant" | "message" | "passwordResetToken" | "verificationCode" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3548,6 +3564,80 @@ export namespace Prisma {
           }
         }
       }
+      OrderHighlight: {
+        payload: Prisma.$OrderHighlightPayload<ExtArgs>
+        fields: Prisma.OrderHighlightFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderHighlightFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderHighlightFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderHighlightFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderHighlightFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          findMany: {
+            args: Prisma.OrderHighlightFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>[]
+          }
+          create: {
+            args: Prisma.OrderHighlightCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          createMany: {
+            args: Prisma.OrderHighlightCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderHighlightCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderHighlightDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          update: {
+            args: Prisma.OrderHighlightUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderHighlightDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderHighlightUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderHighlightUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderHighlightUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderHighlightPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderHighlightAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrderHighlight>
+          }
+          groupBy: {
+            args: Prisma.OrderHighlightGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderHighlightGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderHighlightCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderHighlightCountAggregateOutputType> | number
+          }
+        }
+      }
       OrderRating: {
         payload: Prisma.$OrderRatingPayload<ExtArgs>
         fields: Prisma.OrderRatingFieldRefs
@@ -5105,6 +5195,7 @@ export namespace Prisma {
     servicePriceRule?: ServicePriceRuleOmit
     serviceSale?: ServiceSaleOmit
     order?: OrderOmit
+    orderHighlight?: OrderHighlightOmit
     orderRating?: OrderRatingOmit
     orderRatingRecipient?: OrderRatingRecipientOmit
     orderConfirmationEmail?: OrderConfirmationEmailOmit
@@ -5227,6 +5318,7 @@ export namespace Prisma {
     providedAssignments: number
     conversationMembers: number
     sentMessages: number
+    uploadedHighlights: number
     boosterAssignmentRequests: number
     adminAssignmentRequests: number
     notifications: number
@@ -5256,6 +5348,7 @@ export namespace Prisma {
     providedAssignments?: boolean | UserCountOutputTypeCountProvidedAssignmentsArgs
     conversationMembers?: boolean | UserCountOutputTypeCountConversationMembersArgs
     sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
+    uploadedHighlights?: boolean | UserCountOutputTypeCountUploadedHighlightsArgs
     boosterAssignmentRequests?: boolean | UserCountOutputTypeCountBoosterAssignmentRequestsArgs
     adminAssignmentRequests?: boolean | UserCountOutputTypeCountAdminAssignmentRequestsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
@@ -5431,6 +5524,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSentMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUploadedHighlightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderHighlightWhereInput
   }
 
   /**
@@ -5745,6 +5845,7 @@ export namespace Prisma {
     assignments: number
     contributions: number
     matches: number
+    highlights: number
     assignmentRequests: number
   }
 
@@ -5754,6 +5855,7 @@ export namespace Prisma {
     assignments?: boolean | OrderCountOutputTypeCountAssignmentsArgs
     contributions?: boolean | OrderCountOutputTypeCountContributionsArgs
     matches?: boolean | OrderCountOutputTypeCountMatchesArgs
+    highlights?: boolean | OrderCountOutputTypeCountHighlightsArgs
     assignmentRequests?: boolean | OrderCountOutputTypeCountAssignmentRequestsArgs
   }
 
@@ -5801,6 +5903,13 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountMatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderMatchWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountHighlightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderHighlightWhereInput
   }
 
   /**
@@ -7191,6 +7300,7 @@ export namespace Prisma {
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
+    uploadedHighlights?: boolean | User$uploadedHighlightsArgs<ExtArgs>
     boosterAssignmentRequests?: boolean | User$boosterAssignmentRequestsArgs<ExtArgs>
     adminAssignmentRequests?: boolean | User$adminAssignmentRequestsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
@@ -7282,6 +7392,7 @@ export namespace Prisma {
     providedAssignments?: boolean | User$providedAssignmentsArgs<ExtArgs>
     conversationMembers?: boolean | User$conversationMembersArgs<ExtArgs>
     sentMessages?: boolean | User$sentMessagesArgs<ExtArgs>
+    uploadedHighlights?: boolean | User$uploadedHighlightsArgs<ExtArgs>
     boosterAssignmentRequests?: boolean | User$boosterAssignmentRequestsArgs<ExtArgs>
     adminAssignmentRequests?: boolean | User$adminAssignmentRequestsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
@@ -7327,6 +7438,7 @@ export namespace Prisma {
       providedAssignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
       conversationMembers: Prisma.$ConversationParticipantPayload<ExtArgs>[]
       sentMessages: Prisma.$MessagePayload<ExtArgs>[]
+      uploadedHighlights: Prisma.$OrderHighlightPayload<ExtArgs>[]
       boosterAssignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       adminAssignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
@@ -7770,6 +7882,7 @@ export namespace Prisma {
     providedAssignments<T extends User$providedAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$providedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversationMembers<T extends User$conversationMembersArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentMessages<T extends User$sentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    uploadedHighlights<T extends User$uploadedHighlightsArgs<ExtArgs> = {}>(args?: Subset<T, User$uploadedHighlightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     boosterAssignmentRequests<T extends User$boosterAssignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$boosterAssignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     adminAssignmentRequests<T extends User$adminAssignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminAssignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -8899,6 +9012,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.uploadedHighlights
+   */
+  export type User$uploadedHighlightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    where?: OrderHighlightWhereInput
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    cursor?: OrderHighlightWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderHighlightScalarFieldEnum | OrderHighlightScalarFieldEnum[]
   }
 
   /**
@@ -38592,6 +38729,7 @@ export namespace Prisma {
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
     contributions?: boolean | Order$contributionsArgs<ExtArgs>
     matches?: boolean | Order$matchesArgs<ExtArgs>
+    highlights?: boolean | Order$highlightsArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     rating?: boolean | Order$ratingArgs<ExtArgs>
@@ -38840,6 +38978,7 @@ export namespace Prisma {
     assignments?: boolean | Order$assignmentsArgs<ExtArgs>
     contributions?: boolean | Order$contributionsArgs<ExtArgs>
     matches?: boolean | Order$matchesArgs<ExtArgs>
+    highlights?: boolean | Order$highlightsArgs<ExtArgs>
     assignmentRequests?: boolean | Order$assignmentRequestsArgs<ExtArgs>
     conversation?: boolean | Order$conversationArgs<ExtArgs>
     rating?: boolean | Order$ratingArgs<ExtArgs>
@@ -38871,6 +39010,7 @@ export namespace Prisma {
       assignments: Prisma.$OrderAssignmentPayload<ExtArgs>[]
       contributions: Prisma.$BoosterContributionPayload<ExtArgs>[]
       matches: Prisma.$OrderMatchPayload<ExtArgs>[]
+      highlights: Prisma.$OrderHighlightPayload<ExtArgs>[]
       assignmentRequests: Prisma.$AssignmentRequestPayload<ExtArgs>[]
       conversation: Prisma.$ConversationPayload<ExtArgs> | null
       rating: Prisma.$OrderRatingPayload<ExtArgs> | null
@@ -39353,6 +39493,7 @@ export namespace Prisma {
     assignments<T extends Order$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     contributions<T extends Order$contributionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$contributionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoosterContributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     matches<T extends Order$matchesArgs<ExtArgs> = {}>(args?: Subset<T, Order$matchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderMatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    highlights<T extends Order$highlightsArgs<ExtArgs> = {}>(args?: Subset<T, Order$highlightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignmentRequests<T extends Order$assignmentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Order$assignmentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation<T extends Order$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Order$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     rating<T extends Order$ratingArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingArgs<ExtArgs>>): Prisma__OrderRatingClient<$Result.GetResult<Prisma.$OrderRatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -40072,6 +40213,30 @@ export namespace Prisma {
   }
 
   /**
+   * Order.highlights
+   */
+  export type Order$highlightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    where?: OrderHighlightWhereInput
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    cursor?: OrderHighlightWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderHighlightScalarFieldEnum | OrderHighlightScalarFieldEnum[]
+  }
+
+  /**
    * Order.assignmentRequests
    */
   export type Order$assignmentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40149,6 +40314,1182 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrderHighlight
+   */
+
+  export type AggregateOrderHighlight = {
+    _count: OrderHighlightCountAggregateOutputType | null
+    _avg: OrderHighlightAvgAggregateOutputType | null
+    _sum: OrderHighlightSumAggregateOutputType | null
+    _min: OrderHighlightMinAggregateOutputType | null
+    _max: OrderHighlightMaxAggregateOutputType | null
+  }
+
+  export type OrderHighlightAvgAggregateOutputType = {
+    byteSize: number | null
+  }
+
+  export type OrderHighlightSumAggregateOutputType = {
+    byteSize: number | null
+  }
+
+  export type OrderHighlightMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    uploadedById: string | null
+    uploaderName: string | null
+    title: string | null
+    s3Key: string | null
+    mimeType: string | null
+    byteSize: number | null
+    createdAt: Date | null
+  }
+
+  export type OrderHighlightMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    uploadedById: string | null
+    uploaderName: string | null
+    title: string | null
+    s3Key: string | null
+    mimeType: string | null
+    byteSize: number | null
+    createdAt: Date | null
+  }
+
+  export type OrderHighlightCountAggregateOutputType = {
+    id: number
+    orderId: number
+    uploadedById: number
+    uploaderName: number
+    title: number
+    s3Key: number
+    mimeType: number
+    byteSize: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type OrderHighlightAvgAggregateInputType = {
+    byteSize?: true
+  }
+
+  export type OrderHighlightSumAggregateInputType = {
+    byteSize?: true
+  }
+
+  export type OrderHighlightMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    uploadedById?: true
+    uploaderName?: true
+    title?: true
+    s3Key?: true
+    mimeType?: true
+    byteSize?: true
+    createdAt?: true
+  }
+
+  export type OrderHighlightMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    uploadedById?: true
+    uploaderName?: true
+    title?: true
+    s3Key?: true
+    mimeType?: true
+    byteSize?: true
+    createdAt?: true
+  }
+
+  export type OrderHighlightCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    uploadedById?: true
+    uploaderName?: true
+    title?: true
+    s3Key?: true
+    mimeType?: true
+    byteSize?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type OrderHighlightAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderHighlight to aggregate.
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderHighlights to fetch.
+     */
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: OrderHighlightWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderHighlights from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderHighlights.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned OrderHighlights
+    **/
+    _count?: true | OrderHighlightCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: OrderHighlightAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: OrderHighlightSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderHighlightMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderHighlightMaxAggregateInputType
+  }
+
+  export type GetOrderHighlightAggregateType<T extends OrderHighlightAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrderHighlight]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrderHighlight[P]>
+      : GetScalarType<T[P], AggregateOrderHighlight[P]>
+  }
+
+
+
+
+  export type OrderHighlightGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderHighlightWhereInput
+    orderBy?: OrderHighlightOrderByWithAggregationInput | OrderHighlightOrderByWithAggregationInput[]
+    by: OrderHighlightScalarFieldEnum[] | OrderHighlightScalarFieldEnum
+    having?: OrderHighlightScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderHighlightCountAggregateInputType | true
+    _avg?: OrderHighlightAvgAggregateInputType
+    _sum?: OrderHighlightSumAggregateInputType
+    _min?: OrderHighlightMinAggregateInputType
+    _max?: OrderHighlightMaxAggregateInputType
+  }
+
+  export type OrderHighlightGroupByOutputType = {
+    id: string
+    orderId: string
+    uploadedById: string | null
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt: Date
+    _count: OrderHighlightCountAggregateOutputType | null
+    _avg: OrderHighlightAvgAggregateOutputType | null
+    _sum: OrderHighlightSumAggregateOutputType | null
+    _min: OrderHighlightMinAggregateOutputType | null
+    _max: OrderHighlightMaxAggregateOutputType | null
+  }
+
+  type GetOrderHighlightGroupByPayload<T extends OrderHighlightGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderHighlightGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderHighlightGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderHighlightGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderHighlightGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderHighlightSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    uploadedById?: boolean
+    uploaderName?: boolean
+    title?: boolean
+    s3Key?: boolean
+    mimeType?: boolean
+    byteSize?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }, ExtArgs["result"]["orderHighlight"]>
+
+  export type OrderHighlightSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    uploadedById?: boolean
+    uploaderName?: boolean
+    title?: boolean
+    s3Key?: boolean
+    mimeType?: boolean
+    byteSize?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }, ExtArgs["result"]["orderHighlight"]>
+
+  export type OrderHighlightSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    uploadedById?: boolean
+    uploaderName?: boolean
+    title?: boolean
+    s3Key?: boolean
+    mimeType?: boolean
+    byteSize?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }, ExtArgs["result"]["orderHighlight"]>
+
+  export type OrderHighlightSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    uploadedById?: boolean
+    uploaderName?: boolean
+    title?: boolean
+    s3Key?: boolean
+    mimeType?: boolean
+    byteSize?: boolean
+    createdAt?: boolean
+  }
+
+  export type OrderHighlightOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "uploadedById" | "uploaderName" | "title" | "s3Key" | "mimeType" | "byteSize" | "createdAt", ExtArgs["result"]["orderHighlight"]>
+  export type OrderHighlightInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }
+  export type OrderHighlightIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }
+  export type OrderHighlightIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    uploadedBy?: boolean | OrderHighlight$uploadedByArgs<ExtArgs>
+  }
+
+  export type $OrderHighlightPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrderHighlight"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      uploadedBy: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      uploadedById: string | null
+      uploaderName: string
+      title: string
+      s3Key: string
+      mimeType: string
+      byteSize: number
+      createdAt: Date
+    }, ExtArgs["result"]["orderHighlight"]>
+    composites: {}
+  }
+
+  type OrderHighlightGetPayload<S extends boolean | null | undefined | OrderHighlightDefaultArgs> = $Result.GetResult<Prisma.$OrderHighlightPayload, S>
+
+  type OrderHighlightCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderHighlightFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderHighlightCountAggregateInputType | true
+    }
+
+  export interface OrderHighlightDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrderHighlight'], meta: { name: 'OrderHighlight' } }
+    /**
+     * Find zero or one OrderHighlight that matches the filter.
+     * @param {OrderHighlightFindUniqueArgs} args - Arguments to find a OrderHighlight
+     * @example
+     * // Get one OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderHighlightFindUniqueArgs>(args: SelectSubset<T, OrderHighlightFindUniqueArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrderHighlight that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderHighlightFindUniqueOrThrowArgs} args - Arguments to find a OrderHighlight
+     * @example
+     * // Get one OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderHighlightFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderHighlightFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderHighlight that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightFindFirstArgs} args - Arguments to find a OrderHighlight
+     * @example
+     * // Get one OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderHighlightFindFirstArgs>(args?: SelectSubset<T, OrderHighlightFindFirstArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrderHighlight that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightFindFirstOrThrowArgs} args - Arguments to find a OrderHighlight
+     * @example
+     * // Get one OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderHighlightFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderHighlightFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrderHighlights that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrderHighlights
+     * const orderHighlights = await prisma.orderHighlight.findMany()
+     *
+     * // Get first 10 OrderHighlights
+     * const orderHighlights = await prisma.orderHighlight.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const orderHighlightWithIdOnly = await prisma.orderHighlight.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends OrderHighlightFindManyArgs>(args?: SelectSubset<T, OrderHighlightFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrderHighlight.
+     * @param {OrderHighlightCreateArgs} args - Arguments to create a OrderHighlight.
+     * @example
+     * // Create one OrderHighlight
+     * const OrderHighlight = await prisma.orderHighlight.create({
+     *   data: {
+     *     // ... data to create a OrderHighlight
+     *   }
+     * })
+     *
+     */
+    create<T extends OrderHighlightCreateArgs>(args: SelectSubset<T, OrderHighlightCreateArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrderHighlights.
+     * @param {OrderHighlightCreateManyArgs} args - Arguments to create many OrderHighlights.
+     * @example
+     * // Create many OrderHighlights
+     * const orderHighlight = await prisma.orderHighlight.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends OrderHighlightCreateManyArgs>(args?: SelectSubset<T, OrderHighlightCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrderHighlights and returns the data saved in the database.
+     * @param {OrderHighlightCreateManyAndReturnArgs} args - Arguments to create many OrderHighlights.
+     * @example
+     * // Create many OrderHighlights
+     * const orderHighlight = await prisma.orderHighlight.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many OrderHighlights and only return the `id`
+     * const orderHighlightWithIdOnly = await prisma.orderHighlight.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends OrderHighlightCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderHighlightCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrderHighlight.
+     * @param {OrderHighlightDeleteArgs} args - Arguments to delete one OrderHighlight.
+     * @example
+     * // Delete one OrderHighlight
+     * const OrderHighlight = await prisma.orderHighlight.delete({
+     *   where: {
+     *     // ... filter to delete one OrderHighlight
+     *   }
+     * })
+     *
+     */
+    delete<T extends OrderHighlightDeleteArgs>(args: SelectSubset<T, OrderHighlightDeleteArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrderHighlight.
+     * @param {OrderHighlightUpdateArgs} args - Arguments to update one OrderHighlight.
+     * @example
+     * // Update one OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends OrderHighlightUpdateArgs>(args: SelectSubset<T, OrderHighlightUpdateArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrderHighlights.
+     * @param {OrderHighlightDeleteManyArgs} args - Arguments to filter OrderHighlights to delete.
+     * @example
+     * // Delete a few OrderHighlights
+     * const { count } = await prisma.orderHighlight.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends OrderHighlightDeleteManyArgs>(args?: SelectSubset<T, OrderHighlightDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderHighlights.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrderHighlights
+     * const orderHighlight = await prisma.orderHighlight.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends OrderHighlightUpdateManyArgs>(args: SelectSubset<T, OrderHighlightUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrderHighlights and returns the data updated in the database.
+     * @param {OrderHighlightUpdateManyAndReturnArgs} args - Arguments to update many OrderHighlights.
+     * @example
+     * // Update many OrderHighlights
+     * const orderHighlight = await prisma.orderHighlight.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more OrderHighlights and only return the `id`
+     * const orderHighlightWithIdOnly = await prisma.orderHighlight.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends OrderHighlightUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderHighlightUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrderHighlight.
+     * @param {OrderHighlightUpsertArgs} args - Arguments to update or create a OrderHighlight.
+     * @example
+     * // Update or create a OrderHighlight
+     * const orderHighlight = await prisma.orderHighlight.upsert({
+     *   create: {
+     *     // ... data to create a OrderHighlight
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrderHighlight we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderHighlightUpsertArgs>(args: SelectSubset<T, OrderHighlightUpsertArgs<ExtArgs>>): Prisma__OrderHighlightClient<$Result.GetResult<Prisma.$OrderHighlightPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrderHighlights.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightCountArgs} args - Arguments to filter OrderHighlights to count.
+     * @example
+     * // Count the number of OrderHighlights
+     * const count = await prisma.orderHighlight.count({
+     *   where: {
+     *     // ... the filter for the OrderHighlights we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderHighlightCountArgs>(
+      args?: Subset<T, OrderHighlightCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderHighlightCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrderHighlight.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderHighlightAggregateArgs>(args: Subset<T, OrderHighlightAggregateArgs>): Prisma.PrismaPromise<GetOrderHighlightAggregateType<T>>
+
+    /**
+     * Group by OrderHighlight.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderHighlightGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<
+      T extends OrderHighlightGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderHighlightGroupByArgs['orderBy'] }
+        : { orderBy?: OrderHighlightGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderHighlightGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderHighlightGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrderHighlight model
+   */
+  readonly fields: OrderHighlightFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrderHighlight.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderHighlightClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    uploadedBy<T extends OrderHighlight$uploadedByArgs<ExtArgs> = {}>(args?: Subset<T, OrderHighlight$uploadedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrderHighlight model
+   */
+  interface OrderHighlightFieldRefs {
+    readonly id: FieldRef<"OrderHighlight", 'String'>
+    readonly orderId: FieldRef<"OrderHighlight", 'String'>
+    readonly uploadedById: FieldRef<"OrderHighlight", 'String'>
+    readonly uploaderName: FieldRef<"OrderHighlight", 'String'>
+    readonly title: FieldRef<"OrderHighlight", 'String'>
+    readonly s3Key: FieldRef<"OrderHighlight", 'String'>
+    readonly mimeType: FieldRef<"OrderHighlight", 'String'>
+    readonly byteSize: FieldRef<"OrderHighlight", 'Int'>
+    readonly createdAt: FieldRef<"OrderHighlight", 'DateTime'>
+  }
+
+
+  // Custom InputTypes
+  /**
+   * OrderHighlight findUnique
+   */
+  export type OrderHighlightFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderHighlight to fetch.
+     */
+    where: OrderHighlightWhereUniqueInput
+  }
+
+  /**
+   * OrderHighlight findUniqueOrThrow
+   */
+  export type OrderHighlightFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderHighlight to fetch.
+     */
+    where: OrderHighlightWhereUniqueInput
+  }
+
+  /**
+   * OrderHighlight findFirst
+   */
+  export type OrderHighlightFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderHighlight to fetch.
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderHighlights to fetch.
+     */
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderHighlights.
+     */
+    cursor?: OrderHighlightWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderHighlights from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderHighlights.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderHighlights.
+     */
+    distinct?: OrderHighlightScalarFieldEnum | OrderHighlightScalarFieldEnum[]
+  }
+
+  /**
+   * OrderHighlight findFirstOrThrow
+   */
+  export type OrderHighlightFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderHighlight to fetch.
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderHighlights to fetch.
+     */
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for OrderHighlights.
+     */
+    cursor?: OrderHighlightWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderHighlights from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderHighlights.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderHighlights.
+     */
+    distinct?: OrderHighlightScalarFieldEnum | OrderHighlightScalarFieldEnum[]
+  }
+
+  /**
+   * OrderHighlight findMany
+   */
+  export type OrderHighlightFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter, which OrderHighlights to fetch.
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of OrderHighlights to fetch.
+     */
+    orderBy?: OrderHighlightOrderByWithRelationInput | OrderHighlightOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing OrderHighlights.
+     */
+    cursor?: OrderHighlightWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` OrderHighlights from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` OrderHighlights.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of OrderHighlights.
+     */
+    distinct?: OrderHighlightScalarFieldEnum | OrderHighlightScalarFieldEnum[]
+  }
+
+  /**
+   * OrderHighlight create
+   */
+  export type OrderHighlightCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrderHighlight.
+     */
+    data: XOR<OrderHighlightCreateInput, OrderHighlightUncheckedCreateInput>
+  }
+
+  /**
+   * OrderHighlight createMany
+   */
+  export type OrderHighlightCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrderHighlights.
+     */
+    data: OrderHighlightCreateManyInput | OrderHighlightCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrderHighlight createManyAndReturn
+   */
+  export type OrderHighlightCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrderHighlights.
+     */
+    data: OrderHighlightCreateManyInput | OrderHighlightCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderHighlight update
+   */
+  export type OrderHighlightUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrderHighlight.
+     */
+    data: XOR<OrderHighlightUpdateInput, OrderHighlightUncheckedUpdateInput>
+    /**
+     * Choose, which OrderHighlight to update.
+     */
+    where: OrderHighlightWhereUniqueInput
+  }
+
+  /**
+   * OrderHighlight updateMany
+   */
+  export type OrderHighlightUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrderHighlights.
+     */
+    data: XOR<OrderHighlightUpdateManyMutationInput, OrderHighlightUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderHighlights to update
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * Limit how many OrderHighlights to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderHighlight updateManyAndReturn
+   */
+  export type OrderHighlightUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * The data used to update OrderHighlights.
+     */
+    data: XOR<OrderHighlightUpdateManyMutationInput, OrderHighlightUncheckedUpdateManyInput>
+    /**
+     * Filter which OrderHighlights to update
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * Limit how many OrderHighlights to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrderHighlight upsert
+   */
+  export type OrderHighlightUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrderHighlight to update in case it exists.
+     */
+    where: OrderHighlightWhereUniqueInput
+    /**
+     * In case the OrderHighlight found by the `where` argument doesn't exist, create a new OrderHighlight with this data.
+     */
+    create: XOR<OrderHighlightCreateInput, OrderHighlightUncheckedCreateInput>
+    /**
+     * In case the OrderHighlight was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderHighlightUpdateInput, OrderHighlightUncheckedUpdateInput>
+  }
+
+  /**
+   * OrderHighlight delete
+   */
+  export type OrderHighlightDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
+    /**
+     * Filter which OrderHighlight to delete.
+     */
+    where: OrderHighlightWhereUniqueInput
+  }
+
+  /**
+   * OrderHighlight deleteMany
+   */
+  export type OrderHighlightDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrderHighlights to delete
+     */
+    where?: OrderHighlightWhereInput
+    /**
+     * Limit how many OrderHighlights to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrderHighlight.uploadedBy
+   */
+  export type OrderHighlight$uploadedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * OrderHighlight without action
+   */
+  export type OrderHighlightDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderHighlight
+     */
+    select?: OrderHighlightSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderHighlight
+     */
+    omit?: OrderHighlightOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderHighlightInclude<ExtArgs> | null
   }
 
 
@@ -61832,6 +63173,21 @@ export namespace Prisma {
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+  export const OrderHighlightScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    uploadedById: 'uploadedById',
+    uploaderName: 'uploaderName',
+    title: 'title',
+    s3Key: 's3Key',
+    mimeType: 'mimeType',
+    byteSize: 'byteSize',
+    createdAt: 'createdAt'
+  };
+
+  export type OrderHighlightScalarFieldEnum = (typeof OrderHighlightScalarFieldEnum)[keyof typeof OrderHighlightScalarFieldEnum]
+
+
   export const OrderRatingScalarFieldEnum: {
     orderId: 'orderId',
     customerId: 'customerId',
@@ -62443,6 +63799,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
+    uploadedHighlights?: OrderHighlightListRelationFilter
     boosterAssignmentRequests?: AssignmentRequestListRelationFilter
     adminAssignmentRequests?: AssignmentRequestListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -62493,6 +63850,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentOrderByRelationAggregateInput
     conversationMembers?: ConversationParticipantOrderByRelationAggregateInput
     sentMessages?: MessageOrderByRelationAggregateInput
+    uploadedHighlights?: OrderHighlightOrderByRelationAggregateInput
     boosterAssignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     adminAssignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
@@ -62546,6 +63904,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentListRelationFilter
     conversationMembers?: ConversationParticipantListRelationFilter
     sentMessages?: MessageListRelationFilter
+    uploadedHighlights?: OrderHighlightListRelationFilter
     boosterAssignmentRequests?: AssignmentRequestListRelationFilter
     adminAssignmentRequests?: AssignmentRequestListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -64714,6 +66073,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentListRelationFilter
     contributions?: BoosterContributionListRelationFilter
     matches?: OrderMatchListRelationFilter
+    highlights?: OrderHighlightListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
     rating?: XOR<OrderRatingNullableScalarRelationFilter, OrderRatingWhereInput> | null
@@ -64803,6 +66163,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentOrderByRelationAggregateInput
     contributions?: BoosterContributionOrderByRelationAggregateInput
     matches?: OrderMatchOrderByRelationAggregateInput
+    highlights?: OrderHighlightOrderByRelationAggregateInput
     assignmentRequests?: AssignmentRequestOrderByRelationAggregateInput
     conversation?: ConversationOrderByWithRelationInput
     rating?: OrderRatingOrderByWithRelationInput
@@ -64895,6 +66256,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentListRelationFilter
     contributions?: BoosterContributionListRelationFilter
     matches?: OrderMatchListRelationFilter
+    highlights?: OrderHighlightListRelationFilter
     assignmentRequests?: AssignmentRequestListRelationFilter
     conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
     rating?: XOR<OrderRatingNullableScalarRelationFilter, OrderRatingWhereInput> | null
@@ -65054,6 +66416,86 @@ export namespace Prisma {
     matchHistoryConfirmedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     matchHistoryConfirmedBy?: StringNullableWithAggregatesFilter<"Order"> | string | null
     matchHistorySyncedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  }
+
+  export type OrderHighlightWhereInput = {
+    AND?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
+    OR?: OrderHighlightWhereInput[]
+    NOT?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
+    id?: StringFilter<"OrderHighlight"> | string
+    orderId?: StringFilter<"OrderHighlight"> | string
+    uploadedById?: StringNullableFilter<"OrderHighlight"> | string | null
+    uploaderName?: StringFilter<"OrderHighlight"> | string
+    title?: StringFilter<"OrderHighlight"> | string
+    s3Key?: StringFilter<"OrderHighlight"> | string
+    mimeType?: StringFilter<"OrderHighlight"> | string
+    byteSize?: IntFilter<"OrderHighlight"> | number
+    createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    uploadedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type OrderHighlightOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    uploadedById?: SortOrderInput | SortOrder
+    uploaderName?: SortOrder
+    title?: SortOrder
+    s3Key?: SortOrder
+    mimeType?: SortOrder
+    byteSize?: SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+    uploadedBy?: UserOrderByWithRelationInput
+  }
+
+  export type OrderHighlightWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    s3Key?: string
+    AND?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
+    OR?: OrderHighlightWhereInput[]
+    NOT?: OrderHighlightWhereInput | OrderHighlightWhereInput[]
+    orderId?: StringFilter<"OrderHighlight"> | string
+    uploadedById?: StringNullableFilter<"OrderHighlight"> | string | null
+    uploaderName?: StringFilter<"OrderHighlight"> | string
+    title?: StringFilter<"OrderHighlight"> | string
+    mimeType?: StringFilter<"OrderHighlight"> | string
+    byteSize?: IntFilter<"OrderHighlight"> | number
+    createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    uploadedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "s3Key">
+
+  export type OrderHighlightOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    uploadedById?: SortOrderInput | SortOrder
+    uploaderName?: SortOrder
+    title?: SortOrder
+    s3Key?: SortOrder
+    mimeType?: SortOrder
+    byteSize?: SortOrder
+    createdAt?: SortOrder
+    _count?: OrderHighlightCountOrderByAggregateInput
+    _avg?: OrderHighlightAvgOrderByAggregateInput
+    _max?: OrderHighlightMaxOrderByAggregateInput
+    _min?: OrderHighlightMinOrderByAggregateInput
+    _sum?: OrderHighlightSumOrderByAggregateInput
+  }
+
+  export type OrderHighlightScalarWhereWithAggregatesInput = {
+    AND?: OrderHighlightScalarWhereWithAggregatesInput | OrderHighlightScalarWhereWithAggregatesInput[]
+    OR?: OrderHighlightScalarWhereWithAggregatesInput[]
+    NOT?: OrderHighlightScalarWhereWithAggregatesInput | OrderHighlightScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    orderId?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    uploadedById?: StringNullableWithAggregatesFilter<"OrderHighlight"> | string | null
+    uploaderName?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    title?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    s3Key?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    mimeType?: StringWithAggregatesFilter<"OrderHighlight"> | string
+    byteSize?: IntWithAggregatesFilter<"OrderHighlight"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"OrderHighlight"> | Date | string
   }
 
   export type OrderRatingWhereInput = {
@@ -66445,6 +67887,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -66494,6 +67937,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -66543,6 +67987,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -66592,6 +68037,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -68969,6 +70415,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -69055,6 +70502,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -69141,6 +70589,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -69227,6 +70676,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -69449,6 +70899,88 @@ export namespace Prisma {
     matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
     matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrderHighlightCreateInput = {
+    id?: string
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutHighlightsInput
+    uploadedBy?: UserCreateNestedOneWithoutUploadedHighlightsInput
+  }
+
+  export type OrderHighlightUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    uploadedById?: string | null
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+  }
+
+  export type OrderHighlightUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutHighlightsNestedInput
+    uploadedBy?: UserUpdateOneWithoutUploadedHighlightsNestedInput
+  }
+
+  export type OrderHighlightUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderHighlightCreateManyInput = {
+    id?: string
+    orderId: string
+    uploadedById?: string | null
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+  }
+
+  export type OrderHighlightUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderHighlightUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderRatingCreateInput = {
@@ -71076,6 +72608,12 @@ export namespace Prisma {
     none?: MessageWhereInput
   }
 
+  export type OrderHighlightListRelationFilter = {
+    every?: OrderHighlightWhereInput
+    some?: OrderHighlightWhereInput
+    none?: OrderHighlightWhereInput
+  }
+
   export type AssignmentRequestListRelationFilter = {
     every?: AssignmentRequestWhereInput
     some?: AssignmentRequestWhereInput
@@ -71178,6 +72716,10 @@ export namespace Prisma {
   }
 
   export type MessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrderHighlightOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -73111,6 +74653,50 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type OrderHighlightCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    uploadedById?: SortOrder
+    uploaderName?: SortOrder
+    title?: SortOrder
+    s3Key?: SortOrder
+    mimeType?: SortOrder
+    byteSize?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderHighlightAvgOrderByAggregateInput = {
+    byteSize?: SortOrder
+  }
+
+  export type OrderHighlightMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    uploadedById?: SortOrder
+    uploaderName?: SortOrder
+    title?: SortOrder
+    s3Key?: SortOrder
+    mimeType?: SortOrder
+    byteSize?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderHighlightMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    uploadedById?: SortOrder
+    uploaderName?: SortOrder
+    title?: SortOrder
+    s3Key?: SortOrder
+    mimeType?: SortOrder
+    byteSize?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type OrderHighlightSumOrderByAggregateInput = {
+    byteSize?: SortOrder
+  }
+
   export type OrderRatingCountOrderByAggregateInput = {
     orderId?: SortOrder
     customerId?: SortOrder
@@ -74094,6 +75680,13 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type OrderHighlightCreateNestedManyWithoutUploadedByInput = {
+    create?: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput> | OrderHighlightCreateWithoutUploadedByInput[] | OrderHighlightUncheckedCreateWithoutUploadedByInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutUploadedByInput | OrderHighlightCreateOrConnectWithoutUploadedByInput[]
+    createMany?: OrderHighlightCreateManyUploadedByInputEnvelope
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+  }
+
   export type AssignmentRequestCreateNestedManyWithoutBoosterInput = {
     create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
@@ -74310,6 +75903,13 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutSenderInput | MessageCreateOrConnectWithoutSenderInput[]
     createMany?: MessageCreateManySenderInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput = {
+    create?: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput> | OrderHighlightCreateWithoutUploadedByInput[] | OrderHighlightUncheckedCreateWithoutUploadedByInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutUploadedByInput | OrderHighlightCreateOrConnectWithoutUploadedByInput[]
+    createMany?: OrderHighlightCreateManyUploadedByInputEnvelope
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
   }
 
   export type AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput = {
@@ -74741,6 +76341,20 @@ export namespace Prisma {
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
+  export type OrderHighlightUpdateManyWithoutUploadedByNestedInput = {
+    create?: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput> | OrderHighlightCreateWithoutUploadedByInput[] | OrderHighlightUncheckedCreateWithoutUploadedByInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutUploadedByInput | OrderHighlightCreateOrConnectWithoutUploadedByInput[]
+    upsert?: OrderHighlightUpsertWithWhereUniqueWithoutUploadedByInput | OrderHighlightUpsertWithWhereUniqueWithoutUploadedByInput[]
+    createMany?: OrderHighlightCreateManyUploadedByInputEnvelope
+    set?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    disconnect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    delete?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    update?: OrderHighlightUpdateWithWhereUniqueWithoutUploadedByInput | OrderHighlightUpdateWithWhereUniqueWithoutUploadedByInput[]
+    updateMany?: OrderHighlightUpdateManyWithWhereWithoutUploadedByInput | OrderHighlightUpdateManyWithWhereWithoutUploadedByInput[]
+    deleteMany?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
+  }
+
   export type AssignmentRequestUpdateManyWithoutBoosterNestedInput = {
     create?: XOR<AssignmentRequestCreateWithoutBoosterInput, AssignmentRequestUncheckedCreateWithoutBoosterInput> | AssignmentRequestCreateWithoutBoosterInput[] | AssignmentRequestUncheckedCreateWithoutBoosterInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutBoosterInput | AssignmentRequestCreateOrConnectWithoutBoosterInput[]
@@ -75163,6 +76777,20 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutSenderInput | MessageUpdateWithWhereUniqueWithoutSenderInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutSenderInput | MessageUpdateManyWithWhereWithoutSenderInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput = {
+    create?: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput> | OrderHighlightCreateWithoutUploadedByInput[] | OrderHighlightUncheckedCreateWithoutUploadedByInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutUploadedByInput | OrderHighlightCreateOrConnectWithoutUploadedByInput[]
+    upsert?: OrderHighlightUpsertWithWhereUniqueWithoutUploadedByInput | OrderHighlightUpsertWithWhereUniqueWithoutUploadedByInput[]
+    createMany?: OrderHighlightCreateManyUploadedByInputEnvelope
+    set?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    disconnect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    delete?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    update?: OrderHighlightUpdateWithWhereUniqueWithoutUploadedByInput | OrderHighlightUpdateWithWhereUniqueWithoutUploadedByInput[]
+    updateMany?: OrderHighlightUpdateManyWithWhereWithoutUploadedByInput | OrderHighlightUpdateManyWithWhereWithoutUploadedByInput[]
+    deleteMany?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
   }
 
   export type AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput = {
@@ -76315,6 +77943,13 @@ export namespace Prisma {
     connect?: OrderMatchWhereUniqueInput | OrderMatchWhereUniqueInput[]
   }
 
+  export type OrderHighlightCreateNestedManyWithoutOrderInput = {
+    create?: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput> | OrderHighlightCreateWithoutOrderInput[] | OrderHighlightUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutOrderInput | OrderHighlightCreateOrConnectWithoutOrderInput[]
+    createMany?: OrderHighlightCreateManyOrderInputEnvelope
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+  }
+
   export type AssignmentRequestCreateNestedManyWithoutOrderInput = {
     create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
@@ -76391,6 +78026,13 @@ export namespace Prisma {
     connectOrCreate?: OrderMatchCreateOrConnectWithoutOrderInput | OrderMatchCreateOrConnectWithoutOrderInput[]
     createMany?: OrderMatchCreateManyOrderInputEnvelope
     connect?: OrderMatchWhereUniqueInput | OrderMatchWhereUniqueInput[]
+  }
+
+  export type OrderHighlightUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput> | OrderHighlightCreateWithoutOrderInput[] | OrderHighlightUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutOrderInput | OrderHighlightCreateOrConnectWithoutOrderInput[]
+    createMany?: OrderHighlightCreateManyOrderInputEnvelope
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
   }
 
   export type AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput = {
@@ -76572,6 +78214,20 @@ export namespace Prisma {
     deleteMany?: OrderMatchScalarWhereInput | OrderMatchScalarWhereInput[]
   }
 
+  export type OrderHighlightUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput> | OrderHighlightCreateWithoutOrderInput[] | OrderHighlightUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutOrderInput | OrderHighlightCreateOrConnectWithoutOrderInput[]
+    upsert?: OrderHighlightUpsertWithWhereUniqueWithoutOrderInput | OrderHighlightUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: OrderHighlightCreateManyOrderInputEnvelope
+    set?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    disconnect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    delete?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    update?: OrderHighlightUpdateWithWhereUniqueWithoutOrderInput | OrderHighlightUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: OrderHighlightUpdateManyWithWhereWithoutOrderInput | OrderHighlightUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
+  }
+
   export type AssignmentRequestUpdateManyWithoutOrderNestedInput = {
     create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
@@ -76716,6 +78372,20 @@ export namespace Prisma {
     deleteMany?: OrderMatchScalarWhereInput | OrderMatchScalarWhereInput[]
   }
 
+  export type OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput> | OrderHighlightCreateWithoutOrderInput[] | OrderHighlightUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: OrderHighlightCreateOrConnectWithoutOrderInput | OrderHighlightCreateOrConnectWithoutOrderInput[]
+    upsert?: OrderHighlightUpsertWithWhereUniqueWithoutOrderInput | OrderHighlightUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: OrderHighlightCreateManyOrderInputEnvelope
+    set?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    disconnect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    delete?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    connect?: OrderHighlightWhereUniqueInput | OrderHighlightWhereUniqueInput[]
+    update?: OrderHighlightUpdateWithWhereUniqueWithoutOrderInput | OrderHighlightUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: OrderHighlightUpdateManyWithWhereWithoutOrderInput | OrderHighlightUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
+  }
+
   export type AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<AssignmentRequestCreateWithoutOrderInput, AssignmentRequestUncheckedCreateWithoutOrderInput> | AssignmentRequestCreateWithoutOrderInput[] | AssignmentRequestUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: AssignmentRequestCreateOrConnectWithoutOrderInput | AssignmentRequestCreateOrConnectWithoutOrderInput[]
@@ -76748,6 +78418,36 @@ export namespace Prisma {
     delete?: OrderRatingWhereInput | boolean
     connect?: OrderRatingWhereUniqueInput
     update?: XOR<XOR<OrderRatingUpdateToOneWithWhereWithoutOrderInput, OrderRatingUpdateWithoutOrderInput>, OrderRatingUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderCreateNestedOneWithoutHighlightsInput = {
+    create?: XOR<OrderCreateWithoutHighlightsInput, OrderUncheckedCreateWithoutHighlightsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutHighlightsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutUploadedHighlightsInput = {
+    create?: XOR<UserCreateWithoutUploadedHighlightsInput, UserUncheckedCreateWithoutUploadedHighlightsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUploadedHighlightsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutHighlightsNestedInput = {
+    create?: XOR<OrderCreateWithoutHighlightsInput, OrderUncheckedCreateWithoutHighlightsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutHighlightsInput
+    upsert?: OrderUpsertWithoutHighlightsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutHighlightsInput, OrderUpdateWithoutHighlightsInput>, OrderUncheckedUpdateWithoutHighlightsInput>
+  }
+
+  export type UserUpdateOneWithoutUploadedHighlightsNestedInput = {
+    create?: XOR<UserCreateWithoutUploadedHighlightsInput, UserUncheckedCreateWithoutUploadedHighlightsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUploadedHighlightsInput
+    upsert?: UserUpsertWithoutUploadedHighlightsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUploadedHighlightsInput, UserUpdateWithoutUploadedHighlightsInput>, UserUncheckedUpdateWithoutUploadedHighlightsInput>
   }
 
   export type OrderCreateNestedOneWithoutRatingInput = {
@@ -78554,6 +80254,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -78639,6 +80340,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -78873,6 +80575,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -78921,6 +80624,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -78974,6 +80678,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -79022,6 +80727,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -79116,6 +80822,38 @@ export namespace Prisma {
 
   export type MessageCreateManySenderInputEnvelope = {
     data: MessageCreateManySenderInput | MessageCreateManySenderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderHighlightCreateWithoutUploadedByInput = {
+    id?: string
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutHighlightsInput
+  }
+
+  export type OrderHighlightUncheckedCreateWithoutUploadedByInput = {
+    id?: string
+    orderId: string
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+  }
+
+  export type OrderHighlightCreateOrConnectWithoutUploadedByInput = {
+    where: OrderHighlightWhereUniqueInput
+    create: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput>
+  }
+
+  export type OrderHighlightCreateManyUploadedByInputEnvelope = {
+    data: OrderHighlightCreateManyUploadedByInput | OrderHighlightCreateManyUploadedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -80074,6 +81812,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -80122,6 +81861,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -80249,6 +81989,37 @@ export namespace Prisma {
     attachmentSize?: IntNullableFilter<"Message"> | number | null
   }
 
+  export type OrderHighlightUpsertWithWhereUniqueWithoutUploadedByInput = {
+    where: OrderHighlightWhereUniqueInput
+    update: XOR<OrderHighlightUpdateWithoutUploadedByInput, OrderHighlightUncheckedUpdateWithoutUploadedByInput>
+    create: XOR<OrderHighlightCreateWithoutUploadedByInput, OrderHighlightUncheckedCreateWithoutUploadedByInput>
+  }
+
+  export type OrderHighlightUpdateWithWhereUniqueWithoutUploadedByInput = {
+    where: OrderHighlightWhereUniqueInput
+    data: XOR<OrderHighlightUpdateWithoutUploadedByInput, OrderHighlightUncheckedUpdateWithoutUploadedByInput>
+  }
+
+  export type OrderHighlightUpdateManyWithWhereWithoutUploadedByInput = {
+    where: OrderHighlightScalarWhereInput
+    data: XOR<OrderHighlightUpdateManyMutationInput, OrderHighlightUncheckedUpdateManyWithoutUploadedByInput>
+  }
+
+  export type OrderHighlightScalarWhereInput = {
+    AND?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
+    OR?: OrderHighlightScalarWhereInput[]
+    NOT?: OrderHighlightScalarWhereInput | OrderHighlightScalarWhereInput[]
+    id?: StringFilter<"OrderHighlight"> | string
+    orderId?: StringFilter<"OrderHighlight"> | string
+    uploadedById?: StringNullableFilter<"OrderHighlight"> | string | null
+    uploaderName?: StringFilter<"OrderHighlight"> | string
+    title?: StringFilter<"OrderHighlight"> | string
+    s3Key?: StringFilter<"OrderHighlight"> | string
+    mimeType?: StringFilter<"OrderHighlight"> | string
+    byteSize?: IntFilter<"OrderHighlight"> | number
+    createdAt?: DateTimeFilter<"OrderHighlight"> | Date | string
+  }
+
   export type AssignmentRequestUpsertWithWhereUniqueWithoutBoosterInput = {
     where: AssignmentRequestWhereUniqueInput
     update: XOR<AssignmentRequestUpdateWithoutBoosterInput, AssignmentRequestUncheckedUpdateWithoutBoosterInput>
@@ -80368,6 +82139,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -80416,6 +82188,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -80630,6 +82403,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -80678,6 +82452,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -80928,6 +82703,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -81013,6 +82789,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -81151,6 +82928,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -81236,6 +83014,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -81284,6 +83063,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -81332,6 +83112,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -81422,6 +83203,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -81507,6 +83289,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -81571,6 +83354,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -81619,6 +83403,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -81715,6 +83500,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -81800,6 +83586,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -82192,6 +83979,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -82240,6 +84028,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -82304,6 +84093,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -82352,6 +84142,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -82400,6 +84191,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -82448,6 +84240,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -82512,6 +84305,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -82560,6 +84354,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -82608,6 +84403,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -82656,6 +84452,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -82720,6 +84517,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -82768,6 +84566,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -82816,6 +84615,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -82864,6 +84664,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -82917,6 +84718,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -82965,6 +84767,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -83109,6 +84912,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -83157,6 +84961,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -83216,6 +85021,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -83264,6 +85070,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -83718,6 +85525,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -83766,6 +85574,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -83866,6 +85675,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -83914,6 +85724,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -84001,6 +85812,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -84049,6 +85861,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -84172,6 +85985,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -84220,6 +86034,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -84284,6 +86099,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -84332,6 +86148,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -84396,6 +86213,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -84444,6 +86262,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -84523,6 +86342,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -84571,6 +86391,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -84672,6 +86493,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -84720,6 +86542,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -84768,6 +86591,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -84816,6 +86640,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -84880,6 +86705,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -84928,6 +86754,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -84976,6 +86803,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -85024,6 +86852,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -85088,6 +86917,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -85136,6 +86966,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -85221,6 +87052,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -85306,6 +87138,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -85569,6 +87402,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -85617,6 +87451,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -85707,6 +87542,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -85792,6 +87628,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -85912,6 +87749,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -85960,6 +87798,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -86296,6 +88135,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -86344,6 +88184,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -86468,6 +88309,38 @@ export namespace Prisma {
 
   export type OrderMatchCreateManyOrderInputEnvelope = {
     data: OrderMatchCreateManyOrderInput | OrderMatchCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderHighlightCreateWithoutOrderInput = {
+    id?: string
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+    uploadedBy?: UserCreateNestedOneWithoutUploadedHighlightsInput
+  }
+
+  export type OrderHighlightUncheckedCreateWithoutOrderInput = {
+    id?: string
+    uploadedById?: string | null
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
+  }
+
+  export type OrderHighlightCreateOrConnectWithoutOrderInput = {
+    where: OrderHighlightWhereUniqueInput
+    create: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput>
+  }
+
+  export type OrderHighlightCreateManyOrderInputEnvelope = {
+    data: OrderHighlightCreateManyOrderInput | OrderHighlightCreateManyOrderInput[]
     skipDuplicates?: boolean
   }
 
@@ -86814,6 +88687,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -86862,6 +88736,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -86946,6 +88821,22 @@ export namespace Prisma {
     data: XOR<OrderMatchUpdateManyMutationInput, OrderMatchUncheckedUpdateManyWithoutOrderInput>
   }
 
+  export type OrderHighlightUpsertWithWhereUniqueWithoutOrderInput = {
+    where: OrderHighlightWhereUniqueInput
+    update: XOR<OrderHighlightUpdateWithoutOrderInput, OrderHighlightUncheckedUpdateWithoutOrderInput>
+    create: XOR<OrderHighlightCreateWithoutOrderInput, OrderHighlightUncheckedCreateWithoutOrderInput>
+  }
+
+  export type OrderHighlightUpdateWithWhereUniqueWithoutOrderInput = {
+    where: OrderHighlightWhereUniqueInput
+    data: XOR<OrderHighlightUpdateWithoutOrderInput, OrderHighlightUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type OrderHighlightUpdateManyWithWhereWithoutOrderInput = {
+    where: OrderHighlightScalarWhereInput
+    data: XOR<OrderHighlightUpdateManyMutationInput, OrderHighlightUncheckedUpdateManyWithoutOrderInput>
+  }
+
   export type AssignmentRequestUpsertWithWhereUniqueWithoutOrderInput = {
     where: AssignmentRequestWhereUniqueInput
     update: XOR<AssignmentRequestUpdateWithoutOrderInput, AssignmentRequestUncheckedUpdateWithoutOrderInput>
@@ -87014,6 +88905,578 @@ export namespace Prisma {
     stars?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: OrderRatingRecipientUncheckedUpdateManyWithoutRatingNestedInput
+  }
+
+  export type OrderCreateWithoutHighlightsInput = {
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
+    totalPrice?: number
+    matchHistoryEnabled?: boolean
+    matchHistoryRevision?: number
+    matchHistoryConfirmedAt?: Date | string | null
+    matchHistoryConfirmedBy?: string | null
+    matchHistorySyncedAt?: Date | string | null
+    couponSale?: ServiceSaleCreateNestedOneWithoutCouponOrdersInput
+    couponUse?: CouponUseCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailCreateNestedOneWithoutOrderInput
+    completionEmail?: OrderCompletionEmailCreateNestedOneWithoutOrderInput
+    boosterEmails?: BoosterOrderEmailCreateNestedManyWithoutOrderInput
+    walletCheckoutHold?: WalletCheckoutHoldCreateNestedOneWithoutOrderInput
+    walletCheckoutPresences?: WalletCheckoutPresenceCreateNestedManyWithoutOrderInput
+    customer: UserCreateNestedOneWithoutOrdersInput
+    service: ServiceCreateNestedOneWithoutOrdersInput
+    assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
+    matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
+    conversation?: ConversationCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutHighlightsInput = {
+    couponSaleId?: string | null
+    couponCode?: string | null
+    couponTitle?: string | null
+    couponDiscountCents?: number
+    couponOriginalAmountCents?: number | null
+    couponOriginalReferralDiscount?: number | null
+    id?: string
+    orderNumber?: string
+    customerId: string
+    serviceId: string
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paymentStatus?: $Enums.PaymentStatus
+    stripeCheckoutSessionId?: string | null
+    stripePaymentIntentId?: string | null
+    paidAt?: Date | string | null
+    trustpilotReviewSentAt?: Date | string | null
+    currency?: string
+    amountCents?: number | null
+    goldRedeemed?: number
+    goldDiscountCents?: number
+    cashAmountCents?: number | null
+    walletAmountCents?: number
+    walletPurchasedCents?: number
+    walletPromotionalCents?: number
+    cashbackPercent?: number | null
+    boostType: string
+    playMode?: string | null
+    region?: string | null
+    queueType?: string | null
+    inGameName?: string | null
+    accountPasswordCiphertext?: string | null
+    accountPasswordEncryptedKey?: string | null
+    accountPasswordIv?: string | null
+    accountPasswordAuthTag?: string | null
+    accountPasswordUpdatedAt?: Date | string | null
+    currentRank?: string | null
+    currentLP?: string | null
+    currentMasterLp?: number | null
+    desiredRank?: string | null
+    desiredMasterLp?: number | null
+    lpGain?: string | null
+    peakRank?: string | null
+    desiredWins?: number | null
+    placementGames?: number | null
+    numberOfGames?: number | null
+    firstRole?: string | null
+    secondRole?: string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: boolean
+    premiumCoaching?: boolean
+    liveStream?: boolean
+    appearOffline?: boolean
+    untrackableDuo?: boolean
+    bonusWin?: boolean
+    soloOnly?: boolean
+    highMMRDuo?: boolean
+    championPreferenceTier?: string
+    basePrice?: number
+    addonPrice?: number
+    referralDiscount?: number
+    promotionTitle?: string | null
+    promotionPercent?: Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: string | null
+    totalPrice?: number
+    matchHistoryEnabled?: boolean
+    matchHistoryRevision?: number
+    matchHistoryConfirmedAt?: Date | string | null
+    matchHistoryConfirmedBy?: string | null
+    matchHistorySyncedAt?: Date | string | null
+    couponUse?: CouponUseUncheckedCreateNestedOneWithoutOrderInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedCreateNestedOneWithoutOrderInput
+    completionEmail?: OrderCompletionEmailUncheckedCreateNestedOneWithoutOrderInput
+    boosterEmails?: BoosterOrderEmailUncheckedCreateNestedManyWithoutOrderInput
+    walletCheckoutHold?: WalletCheckoutHoldUncheckedCreateNestedOneWithoutOrderInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUncheckedCreateNestedManyWithoutOrderInput
+    assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
+    matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
+    conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
+    rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutHighlightsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutHighlightsInput, OrderUncheckedCreateWithoutHighlightsInput>
+  }
+
+  export type UserCreateWithoutUploadedHighlightsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    boosterProfile?: BoosterProfileCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientCreateNestedManyWithoutBoosterInput
+    boosterOrderEmails?: BoosterOrderEmailCreateNestedManyWithoutBoosterInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountCreateNestedOneWithoutUserInput
+    walletCheckoutPresences?: WalletCheckoutPresenceCreateNestedManyWithoutUserInput
+    referredBy?: UserCreateNestedOneWithoutReferralsInput
+    referrals?: UserCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUploadedHighlightsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    emailVerifiedAt?: Date | string | null
+    passwordHash: string
+    role?: $Enums.UserRole
+    isOwner?: boolean
+    hasBoosterAccess?: boolean
+    suspendedAt?: Date | string | null
+    suspendedReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referralCode?: string | null
+    referredById?: string | null
+    boosterProfile?: BoosterProfileUncheckedCreateNestedOneWithoutUserInput
+    boosterPreferences?: BoosterPreferencesUncheckedCreateNestedOneWithoutUserInput
+    contributions?: BoosterContributionUncheckedCreateNestedManyWithoutBoosterInput
+    playedMatches?: OrderMatchUncheckedCreateNestedManyWithoutBoosterInput
+    matchReviews?: OrderMatchReviewUncheckedCreateNestedManyWithoutReviewerInput
+    boosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutBoosterInput
+    issuedBoosterContracts?: BoosterContractUncheckedCreateNestedManyWithoutIssuedByInput
+    supportThread?: SupportThreadUncheckedCreateNestedOneWithoutCustomerInput
+    supportMessages?: SupportMessageUncheckedCreateNestedManyWithoutSenderInput
+    supportPresence?: SupportPresenceUncheckedCreateNestedManyWithoutAdminInput
+    supportAlerts?: SupportEmailAlertUncheckedCreateNestedManyWithoutAdminInput
+    registrationConsent?: RegistrationConsentUncheckedCreateNestedOneWithoutUserInput
+    socialIdentities?: SocialIdentityUncheckedCreateNestedManyWithoutUserInput
+    personalCoupons?: ServiceSaleUncheckedCreateNestedManyWithoutRecipientAccountInput
+    couponUses?: CouponUseUncheckedCreateNestedManyWithoutAccountInput
+    submittedOrderRatings?: OrderRatingUncheckedCreateNestedManyWithoutCustomerInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedCreateNestedManyWithoutBoosterInput
+    boosterOrderEmails?: BoosterOrderEmailUncheckedCreateNestedManyWithoutBoosterInput
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    verificationCodes?: VerificationCodeUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    rewardHistory?: RewardHistoryUncheckedCreateNestedManyWithoutUserInput
+    walletAccount?: WalletAccountUncheckedCreateNestedOneWithoutUserInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUncheckedCreateNestedManyWithoutUserInput
+    referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
+    providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
+    conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUploadedHighlightsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUploadedHighlightsInput, UserUncheckedCreateWithoutUploadedHighlightsInput>
+  }
+
+  export type OrderUpsertWithoutHighlightsInput = {
+    update: XOR<OrderUpdateWithoutHighlightsInput, OrderUncheckedUpdateWithoutHighlightsInput>
+    create: XOR<OrderCreateWithoutHighlightsInput, OrderUncheckedCreateWithoutHighlightsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutHighlightsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutHighlightsInput, OrderUncheckedUpdateWithoutHighlightsInput>
+  }
+
+  export type OrderUpdateWithoutHighlightsInput = {
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    matchHistoryRevision?: IntFieldUpdateOperationsInput | number
+    matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    couponSale?: ServiceSaleUpdateOneWithoutCouponOrdersNestedInput
+    couponUse?: CouponUseUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUpdateOneWithoutOrderNestedInput
+    completionEmail?: OrderCompletionEmailUpdateOneWithoutOrderNestedInput
+    boosterEmails?: BoosterOrderEmailUpdateManyWithoutOrderNestedInput
+    walletCheckoutHold?: WalletCheckoutHoldUpdateOneWithoutOrderNestedInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUpdateManyWithoutOrderNestedInput
+    customer?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
+    assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
+    matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutHighlightsInput = {
+    couponSaleId?: NullableStringFieldUpdateOperationsInput | string | null
+    couponCode?: NullableStringFieldUpdateOperationsInput | string | null
+    couponTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    couponDiscountCents?: IntFieldUpdateOperationsInput | number
+    couponOriginalAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    couponOriginalReferralDiscount?: NullableFloatFieldUpdateOperationsInput | number | null
+    id?: StringFieldUpdateOperationsInput | string
+    orderNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    stripeCheckoutSessionId?: NullableStringFieldUpdateOperationsInput | string | null
+    stripePaymentIntentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trustpilotReviewSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    amountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    goldRedeemed?: IntFieldUpdateOperationsInput | number
+    goldDiscountCents?: IntFieldUpdateOperationsInput | number
+    cashAmountCents?: NullableIntFieldUpdateOperationsInput | number | null
+    walletAmountCents?: IntFieldUpdateOperationsInput | number
+    walletPurchasedCents?: IntFieldUpdateOperationsInput | number
+    walletPromotionalCents?: IntFieldUpdateOperationsInput | number
+    cashbackPercent?: NullableIntFieldUpdateOperationsInput | number | null
+    boostType?: StringFieldUpdateOperationsInput | string
+    playMode?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    queueType?: NullableStringFieldUpdateOperationsInput | string | null
+    inGameName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordCiphertext?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordEncryptedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordIv?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordAuthTag?: NullableStringFieldUpdateOperationsInput | string | null
+    accountPasswordUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentRank?: NullableStringFieldUpdateOperationsInput | string | null
+    currentLP?: NullableStringFieldUpdateOperationsInput | string | null
+    currentMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    desiredRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredMasterLp?: NullableIntFieldUpdateOperationsInput | number | null
+    lpGain?: NullableStringFieldUpdateOperationsInput | string | null
+    peakRank?: NullableStringFieldUpdateOperationsInput | string | null
+    desiredWins?: NullableIntFieldUpdateOperationsInput | number | null
+    placementGames?: NullableIntFieldUpdateOperationsInput | number | null
+    numberOfGames?: NullableIntFieldUpdateOperationsInput | number | null
+    firstRole?: NullableStringFieldUpdateOperationsInput | string | null
+    secondRole?: NullableStringFieldUpdateOperationsInput | string | null
+    selectedChampions?: NullableJsonNullValueInput | InputJsonValue
+    priorityOrder?: BoolFieldUpdateOperationsInput | boolean
+    premiumCoaching?: BoolFieldUpdateOperationsInput | boolean
+    liveStream?: BoolFieldUpdateOperationsInput | boolean
+    appearOffline?: BoolFieldUpdateOperationsInput | boolean
+    untrackableDuo?: BoolFieldUpdateOperationsInput | boolean
+    bonusWin?: BoolFieldUpdateOperationsInput | boolean
+    soloOnly?: BoolFieldUpdateOperationsInput | boolean
+    highMMRDuo?: BoolFieldUpdateOperationsInput | boolean
+    championPreferenceTier?: StringFieldUpdateOperationsInput | string
+    basePrice?: FloatFieldUpdateOperationsInput | number
+    addonPrice?: FloatFieldUpdateOperationsInput | number
+    referralDiscount?: FloatFieldUpdateOperationsInput | number
+    promotionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    promotionPercent?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    promotionAppliesTo?: NullableStringFieldUpdateOperationsInput | string | null
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    matchHistoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    matchHistoryRevision?: IntFieldUpdateOperationsInput | number
+    matchHistoryConfirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    matchHistoryConfirmedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    matchHistorySyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    couponUse?: CouponUseUncheckedUpdateOneWithoutOrderNestedInput
+    confirmationEmail?: OrderConfirmationEmailUncheckedUpdateOneWithoutOrderNestedInput
+    completionEmail?: OrderCompletionEmailUncheckedUpdateOneWithoutOrderNestedInput
+    boosterEmails?: BoosterOrderEmailUncheckedUpdateManyWithoutOrderNestedInput
+    walletCheckoutHold?: WalletCheckoutHoldUncheckedUpdateOneWithoutOrderNestedInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUncheckedUpdateManyWithoutOrderNestedInput
+    assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
+    matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
+    conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
+    rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutUploadedHighlightsInput = {
+    update: XOR<UserUpdateWithoutUploadedHighlightsInput, UserUncheckedUpdateWithoutUploadedHighlightsInput>
+    create: XOR<UserCreateWithoutUploadedHighlightsInput, UserUncheckedCreateWithoutUploadedHighlightsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUploadedHighlightsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUploadedHighlightsInput, UserUncheckedUpdateWithoutUploadedHighlightsInput>
+  }
+
+  export type UserUpdateWithoutUploadedHighlightsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUpdateManyWithoutBoosterNestedInput
+    boosterOrderEmails?: BoosterOrderEmailUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUpdateOneWithoutUserNestedInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUpdateManyWithoutUserNestedInput
+    referredBy?: UserUpdateOneWithoutReferralsNestedInput
+    referrals?: UserUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUploadedHighlightsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isOwner?: BoolFieldUpdateOperationsInput | boolean
+    hasBoosterAccess?: BoolFieldUpdateOperationsInput | boolean
+    suspendedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspendedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    referredById?: NullableStringFieldUpdateOperationsInput | string | null
+    boosterProfile?: BoosterProfileUncheckedUpdateOneWithoutUserNestedInput
+    boosterPreferences?: BoosterPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    contributions?: BoosterContributionUncheckedUpdateManyWithoutBoosterNestedInput
+    playedMatches?: OrderMatchUncheckedUpdateManyWithoutBoosterNestedInput
+    matchReviews?: OrderMatchReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    boosterContracts?: BoosterContractUncheckedUpdateManyWithoutBoosterNestedInput
+    issuedBoosterContracts?: BoosterContractUncheckedUpdateManyWithoutIssuedByNestedInput
+    supportThread?: SupportThreadUncheckedUpdateOneWithoutCustomerNestedInput
+    supportMessages?: SupportMessageUncheckedUpdateManyWithoutSenderNestedInput
+    supportPresence?: SupportPresenceUncheckedUpdateManyWithoutAdminNestedInput
+    supportAlerts?: SupportEmailAlertUncheckedUpdateManyWithoutAdminNestedInput
+    registrationConsent?: RegistrationConsentUncheckedUpdateOneWithoutUserNestedInput
+    socialIdentities?: SocialIdentityUncheckedUpdateManyWithoutUserNestedInput
+    personalCoupons?: ServiceSaleUncheckedUpdateManyWithoutRecipientAccountNestedInput
+    couponUses?: CouponUseUncheckedUpdateManyWithoutAccountNestedInput
+    submittedOrderRatings?: OrderRatingUncheckedUpdateManyWithoutCustomerNestedInput
+    receivedOrderRatings?: OrderRatingRecipientUncheckedUpdateManyWithoutBoosterNestedInput
+    boosterOrderEmails?: BoosterOrderEmailUncheckedUpdateManyWithoutBoosterNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    verificationCodes?: VerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    rewardHistory?: RewardHistoryUncheckedUpdateManyWithoutUserNestedInput
+    walletAccount?: WalletAccountUncheckedUpdateOneWithoutUserNestedInput
+    walletCheckoutPresences?: WalletCheckoutPresenceUncheckedUpdateManyWithoutUserNestedInput
+    referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
+    providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
+    conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
+    adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrderCreateWithoutRatingInput = {
@@ -87097,6 +89560,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
   }
@@ -87182,6 +89646,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -87234,6 +89699,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -87282,6 +89748,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -87402,6 +89869,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
   }
@@ -87487,6 +89955,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -87545,6 +90014,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -87593,6 +90063,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -87676,6 +90147,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -87724,6 +90196,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -87813,6 +90286,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -87861,6 +90335,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -87946,6 +90421,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -88031,6 +90507,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -88132,6 +90609,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -88217,6 +90695,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -88302,6 +90781,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -88387,6 +90867,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -88488,6 +90969,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -88573,6 +91055,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -88658,6 +91141,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -88743,6 +91227,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -88796,6 +91281,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -88844,6 +91330,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -88945,6 +91432,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -89030,6 +91518,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -89089,6 +91578,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -89137,6 +91627,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -89185,6 +91676,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -89233,6 +91725,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -89372,6 +91865,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -89457,6 +91951,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -89521,6 +92016,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -89569,6 +92065,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -89720,6 +92217,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -89805,6 +92303,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -89890,6 +92389,7 @@ export namespace Prisma {
     service: ServiceCreateNestedOneWithoutOrdersInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -89975,6 +92475,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -90028,6 +92529,7 @@ export namespace Prisma {
     referrals?: UserCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -90076,6 +92578,7 @@ export namespace Prisma {
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -90177,6 +92680,7 @@ export namespace Prisma {
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -90262,6 +92766,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -90321,6 +92826,7 @@ export namespace Prisma {
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -90369,6 +92875,7 @@ export namespace Prisma {
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -90454,6 +92961,7 @@ export namespace Prisma {
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -90539,6 +93047,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedCreateNestedManyWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -90592,6 +93101,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -90640,6 +93150,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -90741,6 +93252,7 @@ export namespace Prisma {
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -90826,6 +93338,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedUpdateManyWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -90885,6 +93398,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -90933,6 +93447,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -91018,6 +93533,7 @@ export namespace Prisma {
     service: ServiceCreateNestedOneWithoutOrdersInput
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
@@ -91103,6 +93619,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedCreateNestedManyWithoutOrderInput
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
@@ -91156,6 +93673,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -91204,6 +93722,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -91335,6 +93854,7 @@ export namespace Prisma {
     service?: ServiceUpdateOneRequiredWithoutOrdersNestedInput
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -91420,6 +93940,7 @@ export namespace Prisma {
     walletCheckoutPresences?: WalletCheckoutPresenceUncheckedUpdateManyWithoutOrderNestedInput
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -91479,6 +94000,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -91527,6 +94049,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -91624,6 +94147,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -91672,6 +94196,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -91775,6 +94300,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -91823,6 +94349,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -91871,6 +94398,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -91919,6 +94447,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -91983,6 +94512,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -92031,6 +94561,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -92117,6 +94648,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     conversation?: ConversationCreateNestedOneWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
@@ -92202,6 +94734,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     conversation?: ConversationUncheckedCreateNestedOneWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -92255,6 +94788,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
   }
@@ -92303,6 +94837,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
@@ -92356,6 +94891,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
   }
@@ -92404,6 +94940,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
@@ -92505,6 +95042,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
@@ -92590,6 +95128,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -92649,6 +95188,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
@@ -92697,6 +95237,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -92756,6 +95297,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
@@ -92804,6 +95346,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -92889,6 +95432,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionCreateNestedManyWithoutOrderInput
     matches?: OrderMatchCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestCreateNestedManyWithoutOrderInput
     rating?: OrderRatingCreateNestedOneWithoutOrderInput
   }
@@ -92974,6 +95518,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedCreateNestedManyWithoutOrderInput
     contributions?: BoosterContributionUncheckedCreateNestedManyWithoutOrderInput
     matches?: OrderMatchUncheckedCreateNestedManyWithoutOrderInput
+    highlights?: OrderHighlightUncheckedCreateNestedManyWithoutOrderInput
     assignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutOrderInput
     rating?: OrderRatingUncheckedCreateNestedOneWithoutOrderInput
   }
@@ -93135,6 +95680,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
   }
@@ -93220,6 +95766,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
   }
@@ -93322,6 +95869,7 @@ export namespace Prisma {
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -93370,6 +95918,7 @@ export namespace Prisma {
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -93463,6 +96012,7 @@ export namespace Prisma {
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -93511,6 +96061,7 @@ export namespace Prisma {
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -93582,6 +96133,7 @@ export namespace Prisma {
     referrals?: UserCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -93630,6 +96182,7 @@ export namespace Prisma {
     referrals?: UserUncheckedCreateNestedManyWithoutReferredByInput
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -93723,6 +96276,7 @@ export namespace Prisma {
     referrals?: UserUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -93771,6 +96325,7 @@ export namespace Prisma {
     referrals?: UserUncheckedUpdateManyWithoutReferredByNestedInput
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -93819,6 +96374,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -93867,6 +96423,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -93931,6 +96488,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -93979,6 +96537,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -94027,6 +96586,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -94075,6 +96635,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -94139,6 +96700,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -94187,6 +96749,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -94236,6 +96799,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantCreateNestedManyWithoutUserInput
     sentMessages?: MessageCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestCreateNestedManyWithoutRequesterInput
   }
@@ -94284,6 +96848,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedCreateNestedManyWithoutBoosterInput
     conversationMembers?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    uploadedHighlights?: OrderHighlightUncheckedCreateNestedManyWithoutUploadedByInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutBoosterInput
     adminAssignmentRequests?: AssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
   }
@@ -94348,6 +96913,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
   }
@@ -94396,6 +96962,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
   }
@@ -94743,6 +97310,17 @@ export namespace Prisma {
     attachmentName?: string | null
     attachmentMimeType?: string | null
     attachmentSize?: number | null
+  }
+
+  export type OrderHighlightCreateManyUploadedByInput = {
+    id?: string
+    orderId: string
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
+    createdAt?: Date | string
   }
 
   export type AssignmentRequestCreateManyBoosterInput = {
@@ -95448,6 +98026,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -95533,6 +98112,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -95768,6 +98348,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -95816,6 +98397,7 @@ export namespace Prisma {
     providedAssignments?: OrderAssignmentUncheckedUpdateManyWithoutBoosterNestedInput
     conversationMembers?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    uploadedHighlights?: OrderHighlightUncheckedUpdateManyWithoutUploadedByNestedInput
     boosterAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutBoosterNestedInput
     adminAssignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -95913,6 +98495,39 @@ export namespace Prisma {
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentSize?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type OrderHighlightUpdateWithoutUploadedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutHighlightsNestedInput
+  }
+
+  export type OrderHighlightUncheckedUpdateWithoutUploadedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderHighlightUncheckedUpdateManyWithoutUploadedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssignmentRequestUpdateWithoutBoosterInput = {
@@ -96666,6 +99281,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -96751,6 +99367,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -97087,6 +99704,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUpdateOneWithoutOrderNestedInput
@@ -97172,6 +99790,7 @@ export namespace Prisma {
     assignments?: OrderAssignmentUncheckedUpdateManyWithoutOrderNestedInput
     contributions?: BoosterContributionUncheckedUpdateManyWithoutOrderNestedInput
     matches?: OrderMatchUncheckedUpdateManyWithoutOrderNestedInput
+    highlights?: OrderHighlightUncheckedUpdateManyWithoutOrderNestedInput
     assignmentRequests?: AssignmentRequestUncheckedUpdateManyWithoutOrderNestedInput
     conversation?: ConversationUncheckedUpdateOneWithoutOrderNestedInput
     rating?: OrderRatingUncheckedUpdateOneWithoutOrderNestedInput
@@ -97325,6 +99944,17 @@ export namespace Prisma {
     boosterId?: string | null
     status?: string
     revision?: number
+    createdAt?: Date | string
+  }
+
+  export type OrderHighlightCreateManyOrderInput = {
+    id?: string
+    uploadedById?: string | null
+    uploaderName: string
+    title: string
+    s3Key: string
+    mimeType: string
+    byteSize: number
     createdAt?: Date | string
   }
 
@@ -97498,6 +100128,39 @@ export namespace Prisma {
     boosterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     revision?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderHighlightUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploadedBy?: UserUpdateOneWithoutUploadedHighlightsNestedInput
+  }
+
+  export type OrderHighlightUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderHighlightUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    uploaderName?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    s3Key?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

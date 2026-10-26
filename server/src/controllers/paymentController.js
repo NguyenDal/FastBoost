@@ -16,6 +16,7 @@ const { releaseOtherGoldCheckouts } = require("../utils/checkoutGold");
 const { snapshotCashbackPercent } = require('../utils/customerCashback');
 const { enforceCheckoutReferral } = require("../utils/checkoutReferral");
 const { createWalletService } = require('../utils/customerWallet');
+const { clientOrigin } = require('../utils/clientOrigin');
 const customerWallet = createWalletService({ prisma, stripe, settleOrderPayment: completeCheckoutSessionPayment });
 const walletPaymentRequest = Symbol('walletPaymentRequest');
 const {
@@ -24,76 +25,6 @@ const {
 
 function getUserId(req) {
     return req.user?.id || req.user?.userId;
-}
-
-function isLocalhostUrl(value) {
-    if (!value) {
-        return false;
-    }
-
-    try {
-        const { hostname } = new URL(value);
-
-        return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname);
-    } catch {
-        return false;
-    }
-}
-
-function isLocalCheckoutRequest(req) {
-    const origin = req.get("origin");
-    const host = req.hostname;
-
-    return (
-        isLocalhostUrl(origin) ||
-        ["localhost", "127.0.0.1", "::1", "[::1]"].includes(host)
-    );
-}
-
-function getRequestOrigin(req) {
-    const origin = req.get("origin");
-
-    if (!origin) {
-        return null;
-    }
-
-    try {
-        const url = new URL(origin);
-
-        if (!["http:", "https:"].includes(url.protocol)) {
-            return null;
-        }
-
-        return url.origin;
-    } catch {
-        return null;
-    }
-}
-
-function getClientUrl(req) {
-    const clientUrl = process.env.CLIENT_URL?.trim();
-    const requestOrigin = getRequestOrigin(req);
-    const isLocalRequest = isLocalCheckoutRequest(req);
-
-    if (clientUrl) {
-        const normalizedClientUrl = clientUrl.replace(/\/+$/, "");
-
-        if (!isLocalhostUrl(normalizedClientUrl) || isLocalRequest) {
-            return normalizedClientUrl;
-        }
-    }
-
-    if (requestOrigin && !isLocalhostUrl(requestOrigin)) {
-        return requestOrigin;
-    }
-
-    if (isLocalRequest) {
-        return "http://localhost:5173";
-    }
-
-    throw new Error(
-        "Unable to determine the public frontend URL for deployed checkout."
-    );
 }
 
 async function getAvailableGold(userId, db = prisma) {
@@ -330,13 +261,16 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         if (order.status === "CANCELLED") {
             return res.status(400).json({ ok: false, message: "This order has been cancelled" });
         }
+        // Validate before presence, coupon, wallet, or Stripe changes. A bad
+        // return destination must not disturb an existing checkout.
+        const clientUrl = clientOrigin(req);
         if (checkoutViewId !== undefined) await renewCheckoutPresence(db, userId, order.id, checkoutViewId, { create: !useWallet });
 
         const checkoutCurrency = (order.currency || "usd").toLowerCase();
         if (useWallet && checkoutCurrency !== 'usd') return res.status(400).json({ ok: false, code: 'WALLET_CURRENCY', message: 'Wallet payments are available for USD orders only.' });
-        // Local-currency presentment keeps new USD orders denominated in USD.
-        // Historical orders retain their original currency and checkout behavior.
-        let adaptivePricingEnabled = checkoutCurrency === "usd";
+        // Charge in the order currency so a USD price remains USD at checkout.
+        // Historical orders retain their original currency.
+        const adaptivePricingEnabled = false;
 
         let currentHold = await db.walletCheckoutHold.findUnique({ where: { orderId: order.id } });
         const previousWalletCents = currentHold?.amountCents || 0;
@@ -398,13 +332,11 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         let walletAppliedCents = useWallet ? 0 : Math.min(walletToUseCents ?? previousWalletCents, cashAmountCents);
         if (walletAppliedCents > 0 && checkoutCurrency !== 'usd') throw walletError('WALLET_CURRENCY', 'Wallet payments are available for USD orders only.', 400);
         if (walletAppliedCents > 0 && cashAmountCents - walletAppliedCents > 0 && cashAmountCents - walletAppliedCents < 50) walletAppliedCents = Math.max(0, cashAmountCents - 50);
-        if (walletAppliedCents > 0) adaptivePricingEnabled = false;
 
         if (goldRedeemed > 0 && cashAmountCents > 0) {
             await releaseOtherGoldCheckouts(db, order, stripe);
         }
 
-        const clientUrl = getClientUrl(req);
         const availableWallet = await customerWallet.spendable(db, userId, undefined, order.id);
         if (walletAppliedCents > 0 && availableWallet.frozen) throw walletError('WALLET_FROZEN', 'Your wallet is on hold. Please contact support before using it.');
         if (walletAppliedCents > availableWallet.availableBalanceCents) throw walletError('WALLET_INSUFFICIENT', 'Your available wallet balance does not cover this amount. Please review your balance.');
@@ -582,7 +514,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             },
             return_url: `${clientUrl}/checkout/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
             payment_intent_data: { metadata: { orderId: order.id, orderNumber: order.orderNumber, couponCode: order.couponCode || "" } },
-        }, `checkout-adaptive-v2-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}`, createdSessions, order.stripeCheckoutSessionId);
+        }, `checkout-fixed-currency-v3-${order.id}-${cashAmountCents}-${goldRedeemed}-${order.couponSaleId || "none"}-${order.stripeCheckoutSessionId || "new"}`, createdSessions, order.stripeCheckoutSessionId);
 
         await db.order.update({
             where: { id: order.id },
@@ -607,7 +539,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
         });
     } catch (error) {
         if (error.checkoutRecovery) res.checkoutRecovery = error.checkoutRecovery;
-        if (error.code?.startsWith('WALLET_') || ["COUPON_UNAVAILABLE", "GOLD_CHECKOUT_IN_PROGRESS", "GOLD_CHECKOUT_UNAVAILABLE", "CHECKOUT_SESSION_UNAVAILABLE"].includes(error.code)) {
+        if (error.code?.startsWith('WALLET_') || ["COUPON_UNAVAILABLE", "GOLD_CHECKOUT_IN_PROGRESS", "GOLD_CHECKOUT_UNAVAILABLE", "CHECKOUT_SESSION_UNAVAILABLE", "CHECKOUT_URL_UNAVAILABLE"].includes(error.code)) {
             return res.status(error.status).json({ ok: false, code: error.code, message: error.message });
         }
         console.error("createCheckoutSession error:", error);

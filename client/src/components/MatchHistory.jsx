@@ -5,6 +5,7 @@ import MatchHistorySkeleton from './MatchHistorySkeleton';
 import CountHistoryReview from './CountHistoryReview';
 import { Skeleton } from './Skeleton';
 import { TftMatchSummary, TftScoreboard } from './TftMatchContent';
+import { getRankAssetPath } from '../utils/rankAssets';
 import '../styles/MatchHistory.css';
 
 const assetCache = new Map();
@@ -81,10 +82,11 @@ function Roster({ teams, selected, assets }) {
 function Rank({ rank, loading, queueId, checkedAt }) {
     if (loading) return <span className="mh-rank-loading" aria-label="Loading rank"><Skeleton width={72} height={10} /></span>;
     const tier = rank?.unranked ? 'unranked' : rank?.tier?.toLowerCase();
+    const rankAsset = getRankAssetPath(tier);
     const division = { I: 1, II: 2, III: 3, IV: 4 }[rank?.division];
     const label = rank?.unranked ? 'Unranked' : tier ? `${tier[0].toUpperCase()}${tier.slice(1)}${division && !['master', 'grandmaster', 'challenger'].includes(tier) ? ` ${division}` : ''}` : loading ? 'Loading rank…' : 'Rank unavailable';
     return <small className={`mh-rank mh-rank-${tier || 'unknown'}`} title={`Current ${queues[queueId] || 'ranked'} rank${checkedAt ? ` · checked ${new Date(checkedAt).toLocaleString()}` : ''}${rank?.lp !== undefined ? ` · ${rank.lp} LP` : ''}`}>
-        {tier && <img src={`https://fastboost-assets.s3.amazonaws.com/services/ranks/${tier}.${tier === 'unranked' ? 'webp' : 'png'}`} alt="" loading="lazy" />}{label}
+        {rankAsset && <img src={rankAsset} alt="" loading="lazy" />}{label}
     </small>;
 }
 const objectives = [

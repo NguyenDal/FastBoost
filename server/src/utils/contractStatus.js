@@ -1,4 +1,5 @@
 const docusign = require('./docusign');
+const { recordCriticalActivity } = require('./criticalActivity');
 async function syncContract(db, contract) {
     if (contract.signingProvider === 'FASTBOOST' || contract.archivedAt || contract.revokedAt || !contract.envelopeId || contract.signedAt) return contract;
     const status = await docusign.getStatus(contract);
@@ -10,6 +11,31 @@ async function syncContract(db, contract) {
         const current = await tx.boosterContract.findUnique({ where: { id: contract.id } });
         if (current.signedAt || current.archivedAt || current.revokedAt || current.signingProvider === 'FASTBOOST') return current;
         const updated = await tx.boosterContract.update({ where: { id: current.id }, data: { ...status, lastSyncedAt: new Date() } });
+        // A status poll is routine. Only verified new signer timestamps are critical.
+        if (!current.companySignedAt && updated.companySignedAt) {
+            const company = current.companySignerEmail && await tx.user.findFirst({
+                where: { email: { equals: current.companySignerEmail, mode: 'insensitive' }, role: 'ADMIN' },
+                select: { id: true, username: true, role: true, isOwner: true },
+            });
+            await recordCriticalActivity(tx, {
+                actor: company || { username: 'FastBoost signer', role: 'ADMIN' }, allowAdmin: true, allowMissingActor: !company,
+                action: 'contract.sign', targetType: 'contract', targetId: current.id,
+                targetLabel: current.title || 'Booster agreement', requested: { signer: 'FastBoost' },
+                before: { status: current.status, companySignedAt: null },
+                after: { status: updated.status, companySignedAt: updated.companySignedAt },
+            });
+        }
+        if (!current.boosterSignedAt && updated.boosterSignedAt) {
+            const booster = await tx.user.findUnique({ where: { id: current.boosterId },
+                select: { id: true, username: true, role: true, isOwner: true } });
+            await recordCriticalActivity(tx, {
+                actor: booster || { username: 'Former booster', role: 'PROVIDER' }, allowMissingActor: !booster,
+                action: 'contract.sign', targetType: 'contract', targetId: current.id,
+                targetLabel: current.title || 'Booster agreement', requested: { signer: 'Booster' },
+                before: { status: current.status, boosterSignedAt: null },
+                after: { status: updated.status, boosterSignedAt: updated.boosterSignedAt },
+            });
+        }
         if (status.companySignedAt && !current.companySignedAt && !status.signedAt) {
             await tx.notification.updateMany({ where: { id: `contract-${current.id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });
         }

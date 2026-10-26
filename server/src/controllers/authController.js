@@ -317,8 +317,10 @@ const forgotPassword = async (req, res) => {
     });
 
     if (created) {
-      const resetUrl = `${process.env.APP_BASE_URL}/reset-password?token=${rawToken}`;
-      await sendPasswordResetEmail({ to: user.email, resetUrl });
+      const resetUrl = new URL('/reset-password', process.env.APP_BASE_URL);
+      // Fragments stay in the browser and are not sent with the page request.
+      resetUrl.hash = new URLSearchParams({ token: rawToken }).toString();
+      await sendPasswordResetEmail({ to: user.email, resetUrl: resetUrl.href });
     }
 
     return res.status(200).json({

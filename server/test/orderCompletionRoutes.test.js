@@ -7,9 +7,9 @@ function fixture(t, overrides = {}) {
     process.env.ORDER_COMPLETION_EMAILS_ENABLED = 'true';
     const state = { order: { id: 'order', orderNumber: 'TEST-COMPLETE', customerId: 'customer', status: 'IN_PROGRESS', paymentStatus: 'PAID',
         boostType: 'Win Boost', desiredWins: 3, customer: { id: 'customer', email: 'customer@example.test' },
-        assignments: [{ boosterId: 'booster' }], ...overrides }, outbox: new Map(), enqueueCalls: 0, notifications: 0, trustpilotCalls: 0, failEnqueue: false, locks: [] };
+        assignments: [{ boosterId: 'booster' }], ...overrides }, outbox: new Map(), audits: [], enqueueCalls: 0, notifications: 0, trustpilotCalls: 0, failEnqueue: false, locks: [] };
     const db = {
-        user: { findUnique: async () => ({ id: 'booster', role: 'PROVIDER', suspendedAt: null }) },
+        user: { findUnique: async () => ({ id: 'booster', username: 'Starlight', role: 'PROVIDER', suspendedAt: null }) },
         orderAssignment: { findFirst: async () => ({ orderId: 'order', boosterId: 'booster' }) },
         order: {
             findUnique: async () => structuredClone(state.order),
@@ -22,6 +22,7 @@ function fixture(t, overrides = {}) {
             if (!state.outbox.has(where.orderId)) state.outbox.set(where.orderId, structuredClone(create));
             return state.outbox.get(where.orderId);
         } },
+        managementAuditLog: { create: async ({ data }) => { state.audits.push(structuredClone(data)); return data; } },
         $queryRaw: async (strings, id) => {
             assert.match(strings.join('?'), /^SELECT id FROM "(?:User|Order)" WHERE id = \? FOR UPDATE$/);
             state.locks.push(id); return [{ id }];
@@ -30,9 +31,9 @@ function fixture(t, overrides = {}) {
     let tail = Promise.resolve();
     db.$transaction = callback => {
         const run = tail.then(async () => {
-            const oldOrder = structuredClone(state.order), oldOutbox = structuredClone(state.outbox);
+            const oldOrder = structuredClone(state.order), oldOutbox = structuredClone(state.outbox), oldAudits = structuredClone(state.audits);
             try { return await callback(db); }
-            catch (error) { state.order = oldOrder; state.outbox = oldOutbox; throw error; }
+            catch (error) { state.order = oldOrder; state.outbox = oldOutbox; state.audits = oldAudits; throw error; }
         });
         tail = run.catch(() => {});
         return run;
@@ -84,6 +85,8 @@ for (const method of ['updateOrderStatus', 'providerCompleteAssignedOrder']) {
         assert.ok(f.state.trustpilotCalls > 0, 'existing Trustpilot integration still runs');
         assert.equal((await f.invoke(method)).code, 200);
         assert.equal(f.state.enqueueCalls, 1);
+        assert.equal(f.state.audits.length, method === 'providerCompleteAssignedOrder' ? 1 : 0, 'only provider completion writes cross-role activity');
+        if (method === 'providerCompleteAssignedOrder') assert.equal(f.state.audits[0].actorName, 'Starlight');
         const originalPayload = structuredClone(f.state.outbox.get('order').payload);
         f.state.order.status = 'IN_PROGRESS';
         f.state.order.customer.email = 'changed@example.test';

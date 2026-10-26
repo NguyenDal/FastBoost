@@ -1,8 +1,10 @@
 const prisma = require("../prisma");
-const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect } = require("../utils/orderChat");
+const { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect, presentChatMessage } = require("../utils/orderChat");
+const { signProfileImages } = require('../utils/privateProfileImages');
 const {
   uploadChatAttachmentToS3,
   createChatAttachmentSignedUrl,
+  chatAttachmentKeyFromUrl,
 } = require("../utils/s3Upload");
 
 function getUserId(req) {
@@ -178,10 +180,10 @@ exports.getOrCreateOrderConversation = async (req, res) => {
       },
     });
 
-    return res.json({
+    return res.json(await signProfileImages({
       ok: true,
       conversation: refreshedConversation,
-    });
+    }));
   } catch (error) {
     console.error("getOrCreateOrderConversation error:", error);
 
@@ -230,10 +232,10 @@ exports.getMessages = async (req, res) => {
       },
     });
 
-    return res.json({
+    return res.json(await signProfileImages({
       ok: true,
-      messages,
-    });
+      messages: messages.map(presentChatMessage),
+    }));
   } catch (error) {
     console.error("getMessages error:", error);
 
@@ -283,10 +285,10 @@ exports.postMessage = async (req, res) => {
       conversationId, senderId, content: validatedContent,
     });
 
-    return res.status(201).json({
+    return res.status(201).json(await signProfileImages({
       ok: true,
-      message,
-    });
+      message: presentChatMessage(message),
+    }));
   } catch (error) {
     if ([400, 403, 404, 429].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
     console.error("postMessage error:", error);
@@ -351,21 +353,21 @@ exports.uploadAttachmentMessage = async (req, res) => {
 
     const message = await saveOrderChatMessage(prisma, {
       conversationId, senderId, content: formatAttachmentContent(req.file),
-      attachmentKey: uploaded.key, attachmentUrl: uploaded.url,
+      attachmentKey: uploaded.key,
       attachmentName: req.file.originalname || "attachment",
       attachmentMimeType: "application/octet-stream", attachmentSize: req.file.size || 0,
     });
 
-    return res.status(201).json({
+    return res.status(201).json(await signProfileImages({
       ok: true,
       message: {
-        ...message,
+        ...presentChatMessage(message),
         attachmentType: pickAttachmentType(
           message.attachmentMimeType,
           message.attachmentName
         ),
       },
-    });
+    }));
   } catch (error) {
     if ([400, 403, 404, 429].includes(error.status)) return res.status(error.status).json({ ok: false, message: error.message });
     console.error("uploadAttachmentMessage error:", error);
@@ -392,7 +394,7 @@ exports.getAttachmentViewUrl = async (req, res) => {
       },
     });
 
-    if (!message || !message.attachmentKey) {
+    if (!message) {
       return res.status(404).json({
         ok: false,
         message: "Attachment not found",
@@ -408,8 +410,13 @@ exports.getAttachmentViewUrl = async (req, res) => {
       });
     }
 
+    const attachmentKey = message.attachmentKey || chatAttachmentKeyFromUrl(message.attachmentUrl);
+    if (!attachmentKey) {
+      return res.status(404).json({ ok: false, message: 'Attachment not found' });
+    }
+
     const viewUrl = await createChatAttachmentSignedUrl({
-      key: message.attachmentKey,
+      key: attachmentKey,
       filename: message.attachmentName,
     });
 

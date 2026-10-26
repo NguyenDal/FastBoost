@@ -1,14 +1,32 @@
 import { storeAuthSession } from "../utils/authStorage";
 import { notifyAuthChanged } from "../utils/authSession";
-import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLayoutEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
 
 function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  const token = searchParams.get("token") || "";
+  const [token, setToken] = useState(() =>
+    new URLSearchParams(location.hash.slice(1)).get("token") || searchParams.get("token") || "");
+
+  useLayoutEffect(() => {
+    const fragmentParams = new URLSearchParams(location.hash.slice(1));
+    const fragmentToken = fragmentParams.get("token");
+    const queryToken = searchParams.get("token");
+    if (fragmentToken === null && queryToken === null) return;
+    setToken(fragmentToken || queryToken || "");
+    const visibleQuery = new URLSearchParams(searchParams);
+    visibleQuery.delete("token");
+    fragmentParams.delete("token");
+    const remainingQuery = visibleQuery.toString();
+    const remainingHash = fragmentToken === null ? location.hash : fragmentParams.toString();
+    navigate({ pathname: location.pathname, search: remainingQuery ? `?${remainingQuery}` : "",
+      hash: remainingHash ? `#${remainingHash.replace(/^#/, "")}` : "" },
+    { replace: true, state: location.state });
+  }, [location.hash, location.pathname, location.state, navigate, searchParams]);
 
   const [form, setForm] = useState({
     password: "",

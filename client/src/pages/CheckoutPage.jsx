@@ -11,6 +11,7 @@ import PaymentResultPage from "./PaymentResultPage";
 import Navbar from "../components/Navbar";
 import { LiveSaleFooter } from "../components/SaleFooter";
 import CleanIcon from "../components/CleanIcon";
+import { getRankAssetPath } from "../utils/rankAssets";
 import OrderPriceSummary from '../components/OrderPriceSummary';
 import CheckoutSecurity from '../components/CheckoutSecurity';
 import WalletCheckoutOption from '../components/WalletCheckoutOption';
@@ -66,6 +67,16 @@ function OrderCheckout({ orderId }) {
         window.scrollTo({ top: 0, behavior: "instant" });
     }, []);
     const showPaid = paid && !verification;
+    useEffect(() => {
+        // Stripe may return before its payment is final. Keep the session ID in
+        // the URL for recovery until the server confirms the order is paid.
+        if (!paid || !params.has('session_id')) return;
+        setParams(previous => {
+            const next = new URLSearchParams(previous);
+            next.delete('session_id');
+            return next;
+        }, { replace: true });
+    }, [paid, params, setParams]);
     const priceDisplay = checkoutPriceDisplay(data?.summary?.priceSummary, data?.sessionId, displaySession);
     const [attempt, setAttempt] = useState(0);
     const [paymentBusy, setPaymentBusy] = useState(false);
@@ -437,7 +448,7 @@ function OrderCheckout({ orderId }) {
                 <div className={`checkout-grid${showPaid ? " checkout-grid-paid" : ""}${celebratePaid ? " checkout-grid-celebrate" : ""}`}>
                     <section className="checkout-card checkout-payment" inert={Boolean(verification) || showPaid} aria-hidden={showPaid || undefined}>
                         <h2>Payment Method</h2>
-                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError) || walletProcessing || goldConfirmation !== null} suspended={Boolean(fullWallet)} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} onDefinitiveFailure={presence.clearProtection} walletContent={walletContent} allowAdaptivePricing={!(data.summary.walletAppliedCents > 0)} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <>{walletContent}<p role="alert">Card payment is temporarily unavailable. Please reload this page or contact support.</p></>)}
+                        {!showPaid && data?.clientSecret && stripePromise ? <CheckoutPaymentForm key={orderId} email={contactEmail ?? data.summary.email ?? ""} onEmailChange={setContactEmail} sessionId={data.sessionId} clientSecret={data.clientSecret} appearance={appearance} stripePromise={stripePromise} updatingPrice={updatingPrice} paymentBlocked={Boolean(priceUpdateError) || walletProcessing || goldConfirmation !== null} suspended={Boolean(fullWallet)} onBusyChange={setPaymentBusy} onCheckoutChange={setDisplaySession} onSuccess={setVerification} onBeforeConfirm={beforeConfirm} onDefinitiveFailure={presence.clearProtection} walletContent={walletContent} allowAdaptivePricing={false} /> : !showPaid && (verification ? <PaymentFormSkeleton /> : <>{walletContent}<p role="alert">Card payment is temporarily unavailable. Please reload this page or contact support.</p></>)}
                     </section>
                     <OrderSummary summary={data?.summary || { orderId }} priceDisplay={priceDisplay} onApplyGold={applyGold} onApplyCoupon={applyCoupon} onRemoveWallet={() => updatePrice(data?.summary.goldRedeemed || 0, undefined, 0)} paymentBusy={paymentBusy || updatingPrice || paid || Boolean(verification) || goldConfirmation !== null} updatingPrice={updatingPrice} priceUpdateError={priceUpdateError} onRetryPrice={() => updatePrice(priceUpdateError.goldToUse, priceUpdateError.couponCode, priceUpdateError.walletToUseCents)} paid={showPaid} onGoToOrder={() => navigate(`/match/${orderId}`)} />
                 </div>}
@@ -497,11 +508,11 @@ function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, onRem
     const enteredCode = promoCode.trim();
     return <aside className={`checkout-card checkout-summary${paid ? " checkout-summary-confirmed" : ""}`}>
         <div className="checkout-summary-heading"><h2>{paid ? `Order #${summary.orderNumber || "…"}` : "Order Summary"}</h2>{!paid && <Link to={"/order/" + summary.serviceId}>Edit Order</Link>}</div>
-        {!paid && <div className="checkout-game"><CleanIcon src={"https://fastboost-assets.s3.amazonaws.com/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p className="checkout-service-meta">{[summary.serviceType || summary.title?.replace(/^TFT\s+/i, ""), summary.queueType, summary.region].filter(Boolean).map((value, index) => <span key={index}>{value}</span>)}</p></div></div>}
+        {!paid && <div className="checkout-game"><CleanIcon src={"/assets/logos/" + (summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg")} alt="" /><div><strong>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</strong><p className="checkout-service-meta">{[summary.serviceType || summary.title?.replace(/^TFT\s+/i, ""), summary.queueType, summary.region].filter(Boolean).map((value, index) => <span key={index}>{value}</span>)}</p></div></div>}
         {paid ? <div className="checkout-paid-content">
             <div className="checkout-confirmed-layout">
                 <div className="checkout-confirmed-game">
-                    <CleanIcon src={`https://fastboost-assets.s3.amazonaws.com/logos/${summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg"}`} alt="" />
+                    <CleanIcon src={`/assets/logos/${summary.game === "tft" ? "tft-logo.png" : "lol-logo.jpg"}`} alt="" />
                     <div><h3>{summary.game === "tft" ? "Teamfight Tactics" : "League of Legends"}</h3><p>{summary.serviceType || summary.title?.replace(/^TFT\s+/i, "")}</p>
                         <div className="checkout-confirmed-tags">
                             {summary.queueType && <span><CheckoutIcon type="shield" />{summary.queueType}</span>}
@@ -536,9 +547,8 @@ function OrderSummary({ summary, priceDisplay, onApplyGold, onApplyCoupon, onRem
 
 function OrderTracker({ summary }) {
     const rankIcon = rank => {
-        const tier = rank?.split(" ")[0]?.toLowerCase();
-        if (!["unranked", "iron", "bronze", "silver", "gold", "platinum", "emerald", "diamond", "master", "grandmaster", "challenger"].includes(tier)) return null;
-        return <img src={`https://fastboost-assets.s3.amazonaws.com/services/ranks/${tier}.${tier === "unranked" ? "webp" : "png"}`} alt="" />;
+        const asset = getRankAssetPath(rank);
+        return asset ? <img src={asset} alt="" /> : null;
     };
     const quantityLabel = summary.quantity?.label === "Placement Matches" ? "Matches" : summary.quantity?.label === "Ranked Wins" ? "Wins" : "Games";
     const quantityText = summary.quantity ? `${summary.quantity.value} ${Number(summary.quantity.value) === 1 ? quantityLabel.slice(0, quantityLabel === "Matches" ? -2 : -1) : quantityLabel}` : "";

@@ -21,7 +21,7 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
         create:async(args,options)=>{
             creates++;
             assert.equal(args.ui_mode,'elements');
-            assert.deepEqual(args.adaptive_pricing,{enabled:true});
+            assert.deepEqual(args.adaptive_pricing,{enabled:false});
             assert.equal(args.line_items[0].price_data.currency,'usd');
             assert.equal(args.metadata.orderNumber,order.orderNumber);
             assert.equal(args.payment_intent_data.metadata.orderNumber,order.orderNumber);
@@ -130,17 +130,17 @@ test('on-site checkout uses server pricing, reuses sessions, and enforces owners
 
 const { paymentFixture } = require('../test-helpers/paymentFixture');
 
-test('USD checkout replaces older sessions without Adaptive Pricing once, then reuses the replacement', async t => {
-    for (const oldPricing of [{ enabled: false }, undefined]) await t.test(String(oldPricing?.enabled), async context => {
+test('USD checkout replaces older sessions with Adaptive Pricing once, then reuses the replacement', async t => {
+    for (const oldPricing of [{ enabled: true }, undefined]) await t.test(String(oldPricing?.enabled), async context => {
         const f = paymentFixture(context, { orders: [{ id: 'order' }] });
         const first = await f.checkout('order');
         const olderSession = f.sessions.get(first.body.sessionId);
         olderSession.adaptive_pricing = oldPricing;
         const create = f.stripe.checkout.sessions.create;
         f.stripe.checkout.sessions.create = async (parameters, options) => {
-            assert.deepEqual(parameters.adaptive_pricing, { enabled: true });
+            assert.deepEqual(parameters.adaptive_pricing, { enabled: false });
             assert.equal(parameters.line_items[0].price_data.currency, 'usd');
-            assert.ok(options.idempotencyKey.startsWith('checkout-adaptive-v2-'));
+            assert.ok(options.idempotencyKey.startsWith('checkout-fixed-currency-v3-'));
             return create(parameters, options);
         };
         const replacement = await f.checkout('order');

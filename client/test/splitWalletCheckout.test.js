@@ -177,7 +177,7 @@ test('coupon and Gold refreshes preserve the applied wallet quote, while Remove 
     assert.equal(current.requests[1][1], 110); assert.equal(current.requests[1][5].walletToUseCents, 400);
     current.render(); await current.summary().props.onRemoveWallet();
     assert.equal(current.requests[2][5].walletToUseCents, 0);
-    current.render(); assert.equal(current.card().props.allowAdaptivePricing, true);
+    current.render(); assert.equal(current.card().props.allowAdaptivePricing, false);
 });
 
 test('an uncertain quote blocks payment and Retry repeats the selected quote without any wallet debit', async () => {

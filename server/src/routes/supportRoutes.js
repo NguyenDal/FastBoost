@@ -5,6 +5,7 @@ const { protect } = require('../middleware/authMiddleware');
 const { unreadSupportThreads } = require('../utils/supportInbox');
 const { uploadChatAttachmentToS3, createChatAttachmentSignedUrl } = require('../utils/s3Upload');
 const { identitySelect, messageSelect, fail, onlineAdmins, authorizeThread, validateMessage, saveSupportMessage, markSupportRead } = require('../utils/supportChat');
+const { signProfileImages } = require('../utils/privateProfileImages');
 const router = express.Router();
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 router.use(protect, handle(async (req, res, next) => {
@@ -17,7 +18,7 @@ router.use(protect, handle(async (req, res, next) => {
 }));
 
 router.get('/status', handle(async (req, res) => {
-    res.json({ ok: true, admins: await onlineAdmins(db) });
+    res.json(await signProfileImages({ ok: true, admins: await onlineAdmins(db) }));
 }));
 
 router.post('/presence', handle(async (req, res) => {
@@ -49,9 +50,9 @@ router.get('/threads', handle(async (req, res) => {
     const page = threads.slice(0, 30);
     // A later admin reply must not conceal an earlier unread customer message.
     const unread = await unreadSupportThreads(db, page);
-    res.json({ ok: true, threads: page.map(thread => ({ ...thread,
+    res.json(await signProfileImages({ ok: true, threads: page.map(thread => ({ ...thread,
         unread: unread.has(thread.id),
-    })), hasMore: threads.length > 30 });
+    })), hasMore: threads.length > 30 }));
 }));
 
 router.get('/threads/:threadId/messages', handle(async (req, res) => {
@@ -72,8 +73,8 @@ router.get('/threads/:threadId/messages', handle(async (req, res) => {
             createdAt: { gt: req.supportUser.role === 'ADMIN' ? thread.adminReadAt : thread.customerReadAt },
         }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }], select: { id: true },
     }) : null;
-    res.json({ ok: true, thread, messages: messages.slice(0, 50).reverse(), hasMore: messages.length > 50,
-        firstUnreadMessageId: firstUnread?.id || null });
+    res.json(await signProfileImages({ ok: true, thread, messages: messages.slice(0, 50).reverse(), hasMore: messages.length > 50,
+        firstUnreadMessageId: firstUnread?.id || null }));
 }));
 
 router.post('/threads/:threadId/read', handle(async (req, res) => {
@@ -93,7 +94,7 @@ router.post('/threads/:threadId/messages', handle(async (req, res, next) => {
     next();
 }), upload.single('attachment'), handle(async (req, res) => {
     const message = await saveSupportMessage(db, req.supportUser, req.params.threadId, req.body, req.file, uploadChatAttachmentToS3);
-    res.status(201).json({ ok: true, message });
+    res.status(201).json(await signProfileImages({ ok: true, message }));
 }));
 
 router.get('/attachments/:messageId', handle(async (req, res) => {

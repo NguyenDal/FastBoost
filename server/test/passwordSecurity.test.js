@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const bcrypt = require('bcrypt');
+const crypto = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const { signSessionToken, verifySessionToken } = require('../src/utils/sessionToken');
 
@@ -18,6 +19,34 @@ function environment(t) {
     t.after(() => { if (previous === undefined) delete process.env.JWT_SECRET; else process.env.JWT_SECRET = previous; });
 }
 const response = () => ({ code: 200, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } });
+
+test('new password reset emails keep their one-time token out of the HTTP URL', async t => {
+    environment(t);
+    const previousBase = process.env.APP_BASE_URL;
+    process.env.APP_BASE_URL = 'https://www.fastboost.gg/';
+    t.after(() => { if (previousBase === undefined) delete process.env.APP_BASE_URL; else process.env.APP_BASE_URL = previousBase; });
+    let email, stored;
+    const mailerPath = require.resolve('nodemailer');
+    const originalMailer = require.cache[mailerPath];
+    require.cache[mailerPath] = { id: mailerPath, filename: mailerPath, loaded: true,
+        exports: { createTransport: () => ({ sendMail: async message => { email = message; } }) } };
+    t.after(() => { if (originalMailer) require.cache[mailerPath] = originalMailer; else delete require.cache[mailerPath]; });
+    const user = { id: 'customer', email: 'customer@example.test', passwordHash: 'synthetic-hash', suspendedAt: null };
+    const db = { user: { findUnique: async () => user,
+        updateMany: async () => ({ count: 1 }) },
+        passwordResetToken: { deleteMany: async () => {}, create: async ({ data }) => { stored = data; } } };
+    db.$transaction = fn => fn(db);
+    const auth = controller(t, db, 'authController'), res = response();
+    await auth.forgotPassword({ body: { email: user.email } }, res);
+    assert.equal(res.code, 200);
+    const href = /href="([^"]+)"/.exec(email.html)?.[1];
+    const url = new URL(href);
+    assert.equal(url.origin + url.pathname, 'https://www.fastboost.gg/reset-password');
+    assert.equal(url.search, '', 'the page request contains no reset credential');
+    const rawToken = new URLSearchParams(url.hash.slice(1)).get('token');
+    assert.match(rawToken, /^[0-9a-f]{64}$/);
+    assert.equal(stored.tokenHash, crypto.createHash('sha256').update(rawToken).digest('hex'));
+});
 
 test('password change invalidates previous sessions/reset links and returns a replacement with the same remember preference', async t => {
     environment(t);

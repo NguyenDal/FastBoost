@@ -4,6 +4,9 @@ const { createChatMessageNotifications } = require('./chatNotifications');
 const senderSelect = { id: true, username: true, role: true,
     profile: { select: { displayName: true, profileImageUrl: true } } };
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
+// Legacy rows may contain a dead public S3 URL even without an attachment key.
+// Never send that URL to the browser; key-backed rows use the signed endpoint.
+const presentChatMessage = message => message ? { ...message, attachmentUrl: null } : message;
 
 async function canAccessOrderChat(db, user, orderId) {
     const userId = user?.id || user?.userId;
@@ -39,4 +42,4 @@ async function saveOrderChatMessage(db, data) {
     });
 }
 
-module.exports = { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect };
+module.exports = { canAccessOrderChat, validateOrderChatContent, saveOrderChatMessage, senderSelect, presentChatMessage };

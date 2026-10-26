@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const prisma = require("../prisma");
-const { uploadProfileImageToS3 } = require("../utils/s3Upload");
+const { uploadProfileImageToS3, profileKeyFromValue } = require("../utils/s3Upload");
+const { signProfileImages, safeExternalImageUrl } = require('../utils/privateProfileImages');
 
 function getUserId(req) {
   return req.user?.userId || req.user?.id;
@@ -109,7 +110,7 @@ module.exports.me = async (req, res) => {
       });
     }
 
-    const safeUser = sanitizeUser(user);
+    const safeUser = await signProfileImages(sanitizeUser(user));
 
     return res.json({
       ok: true,
@@ -142,7 +143,7 @@ module.exports.updateMyAccount = async (req, res) => {
 
     const username = (req.body.username || "").toString().trim();
     const email = (req.body.email || "").toString().trim().toLowerCase();
-    const profileImageUrl = (req.body.profileImageUrl || "").toString().trim();
+    const requestedImage = req.body.profileImageUrl;
 
     const discord = (req.body.discord || "").toString().trim();
     const country = (req.body.country || "").toString().trim();
@@ -258,6 +259,7 @@ module.exports.updateMyAccount = async (req, res) => {
           email: true,
           passwordHash: true,
           suspendedAt: true,
+          profile: { select: { profileImageUrl: true } },
         },
       });
       if (!currentUser || currentUser.suspendedAt) throw Object.assign(new Error('Account changed'), { code: 'ACCOUNT_CHANGED' });
@@ -266,6 +268,22 @@ module.exports.updateMyAccount = async (req, res) => {
         data: { passwordHash: currentUser.passwordHash },
       });
       if (locked.count !== 1) throw Object.assign(new Error('Account changed'), { code: 'ACCOUNT_CHANGED' });
+
+      const currentImage = currentUser.profile?.profileImageUrl || null;
+      let profileImageUrl = currentImage;
+      if (requestedImage !== undefined) {
+        if (requestedImage !== null && typeof requestedImage !== 'string') throw Object.assign(new Error('Upload a profile image or clear the current one.'), { status: 400, field: 'profileImageUrl' });
+        const candidate = requestedImage?.trim() || '';
+        if (!candidate) profileImageUrl = null;
+        else if (candidate === currentImage || candidate === safeExternalImageUrl(currentImage)) profileImageUrl = profileKeyFromValue(currentImage) || currentImage;
+        else {
+          const candidateKey = profileKeyFromValue(candidate);
+          if (!candidateKey || candidateKey !== profileKeyFromValue(currentImage)) {
+            throw Object.assign(new Error('Upload a profile image or clear the current one.'), { status: 400, field: 'profileImageUrl' });
+          }
+          profileImageUrl = candidateKey;
+        }
+      }
 
       const updated = await tx.user.update({
         where: {
@@ -323,10 +341,11 @@ module.exports.updateMyAccount = async (req, res) => {
     return res.json({
       ok: true,
       message: "Account updated successfully.",
-      user: sanitizeUser(updatedUser),
+      user: await signProfileImages(sanitizeUser(updatedUser)),
     });
   } catch (error) {
     if (error.code === 'ACCOUNT_CHANGED') return res.status(409).json({ ok: false, message: 'Your account changed. Please refresh and try again.' });
+    if (error.status === 400) return res.status(400).json({ ok: false, field: error.field, message: error.message });
     console.error("updateMyAccount error:", error);
 
     return res.status(500).json({
@@ -498,10 +517,10 @@ module.exports.uploadMyProfilePicture = async (req, res) => {
         profile: {
           upsert: {
             create: {
-              profileImageUrl: uploaded.url,
+              profileImageUrl: uploaded.key,
             },
             update: {
-              profileImageUrl: uploaded.url,
+              profileImageUrl: uploaded.key,
             },
           },
         },
@@ -525,12 +544,12 @@ module.exports.uploadMyProfilePicture = async (req, res) => {
       },
     });
 
-    return res.json({
+    return res.json(await signProfileImages({
       ok: true,
       message: "Profile picture uploaded successfully.",
-      imageUrl: uploaded.url,
+      imageUrl: uploaded.key,
       user: sanitizeUser(updatedUser),
-    });
+    }));
   } catch (error) {
     console.error("uploadMyProfilePicture error:", error);
 
@@ -586,7 +605,7 @@ module.exports.listProviders = async (req, res) => {
       },
     });
 
-    return res.json({ ok: true, users });
+    return res.json(await signProfileImages({ ok: true, users }));
   } catch (error) {
     console.error("listProviders error:", error);
 
@@ -766,7 +785,7 @@ module.exports.confirmEmailVerificationCode = async (req, res) => {
     return res.json({
       ok: true,
       message: "Email verified successfully.",
-      user: sanitizeUser(updatedUser),
+      user: await signProfileImages(sanitizeUser(updatedUser)),
     });
   } catch (error) {
     console.error("confirmEmailVerificationCode error:", error);

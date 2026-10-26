@@ -52,6 +52,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/orders", orderRoutes);
+app.use('/api/orders', require('./routes/orderHighlightRoutes').createOrderHighlightRouter());
 app.use("/api/chats", chatRoutes);
 app.use("/api/support", require("./routes/supportRoutes"));
 app.use("/api/assignment-requests", assignmentRequestRoutes);

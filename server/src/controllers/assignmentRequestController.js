@@ -2,6 +2,7 @@ const { canBoost } = require("../utils/boosterAccess");
 const prisma = require("../prisma");
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
 const { withBoosterOrderEmails, queueBoosterAssignmentRequestEmail } = require("../utils/boosterOrderEmail");
+const { recordCriticalActivity } = require("../utils/criticalActivity");
 
 function getOrderTitle(order) {
   if (!order) return "order";
@@ -328,6 +329,12 @@ exports.acceptAssignmentRequest = async (req, res) => {
               data: {
                 status: "IN_PROGRESS",
               },
+            });
+            await recordCriticalActivity(tx, {
+              actor: currentBooster, allowAdmin: true, action: 'assignment.accept', targetType: 'order',
+              targetId: currentOrder.id, targetLabel: currentOrder.orderNumber || 'Order',
+              before: { status: currentOrder.status, booster: currentBooster.username || 'Unknown user', assignment: 'Invited' },
+              after: { status: 'IN_PROGRESS', booster: currentBooster.username || 'Unknown user', assignment: 'Accepted' },
             });
             return { updated, assignment };
         });

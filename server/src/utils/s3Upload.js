@@ -17,10 +17,6 @@ function detectedImageType(buffer) {
   return null;
 }
 
-function makePublicS3Url(key) {
-  return `https://${BUCKET}.s3.amazonaws.com/${key}`;
-}
-
 async function uploadProfileImageToS3({ userId, file }) {
   if (!file) {
     throw Object.assign(new Error("No file provided"), { status: 400 });
@@ -42,14 +38,58 @@ async function uploadProfileImageToS3({ userId, file }) {
       Key: key,
       Body: file.buffer,
       ContentType: contentType,
-      CacheControl: "public, max-age=31536000",
+      CacheControl: "private, no-store",
     })
   );
 
-  return {
-    key,
-    url: makePublicS3Url(key),
-  };
+  return { key };
+}
+
+function keyFromOwnedS3Url(value) {
+  let url;
+  try { url = new URL(value); } catch { return null; }
+  if (url.protocol !== 'https:' || url.username || url.password) return null;
+  const host = url.hostname.toLowerCase();
+  const bucket = BUCKET.toLowerCase();
+  let key;
+  if (host === `${bucket}.s3.amazonaws.com` ||
+      new RegExp(`^${bucket.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\.s3[.-][a-z0-9-]+\\.amazonaws\\.com$`).test(host)) {
+    key = url.pathname.slice(1);
+  } else if (host === 's3.amazonaws.com' || /^s3[.-][a-z0-9-]+\.amazonaws\.com$/.test(host)) {
+    const prefix = `/${BUCKET}/`;
+    if (!url.pathname.startsWith(prefix)) return null;
+    key = url.pathname.slice(prefix.length);
+  } else return null;
+  try { return decodeURIComponent(key); } catch { return null; }
+}
+
+function profileKeyFromValue(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const key = value.trim().startsWith('profiles/') ? value.trim() : keyFromOwnedS3Url(value.trim());
+  if (!key) return null;
+  // Keys written by this service contain only generated segments. Reject path
+  // traversal and arbitrary S3 objects even when a stored URL is malformed.
+  return /^profiles\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9._-]{1,200}\.(?:jpg|jpeg|png|gif|webp)$/i.test(key) ? key : null;
+}
+
+function chatAttachmentKeyFromUrl(value) {
+  if (typeof value !== 'string') return null;
+  const key = keyFromOwnedS3Url(value);
+  // Only recover keys created by this service; never sign arbitrary S3 paths
+  // supplied through a historical database URL.
+  return /^chat-attachments\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9_-]{1,128}\/[0-9]+-[a-f0-9]{24}\.[a-z0-9]{1,6}$/i.test(key || '') ? key : null;
+}
+
+async function createProfileImageSignedUrl(key) {
+  if (profileKeyFromValue(key) !== key) throw new Error('Invalid profile image key');
+  const contentType = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp' }[key.split('.').pop().toLowerCase()];
+  return getSignedUrl(s3, new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    ResponseContentType: contentType,
+    ResponseContentDisposition: 'inline',
+    ResponseCacheControl: 'private, no-store',
+  }), { expiresIn: 60 * 15 });
 }
 
 function getSafeFileExtension(originalName = "") {
@@ -93,10 +133,7 @@ async function uploadChatAttachmentToS3({ conversationId, userId, file }) {
     })
   );
 
-  return {
-    key,
-    url: makePublicS3Url(key),
-  };
+  return { key };
 }
 
 async function createChatAttachmentSignedUrl({ key, filename }) {
@@ -119,6 +156,9 @@ async function createChatAttachmentSignedUrl({ key, filename }) {
 
 module.exports = {
   uploadProfileImageToS3,
+  profileKeyFromValue,
+  chatAttachmentKeyFromUrl,
+  createProfileImageSignedUrl,
   uploadChatAttachmentToS3,
   createChatAttachmentSignedUrl,
 };
