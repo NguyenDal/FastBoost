@@ -1,0 +1,325 @@
+.game-service-dialog-overlay {
+  position: fixed;
+  z-index: 20000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  isolation: isolate;
+}
+
+.game-service-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 5, 17, .76);
+  backdrop-filter: blur(13px) saturate(.72);
+  -webkit-backdrop-filter: blur(13px) saturate(.72);
+}
+
+.game-service-dialog-panel {
+  position: relative;
+  z-index: 1;
+  width: min(1080px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(183, 122, 255, .58);
+  border-radius: 24px;
+  background: #090b20;
+  box-shadow: 0 42px 140px rgba(0, 0, 0, .7), 0 0 42px rgba(101, 41, 215, .16);
+  color: #fff;
+  transform-origin: center center;
+  scrollbar-width: thin;
+  scrollbar-color: #594085 #0b0d24;
+}
+
+.game-service-dialog-panel:focus { outline: none; }
+.game-service-dialog-panel::-webkit-scrollbar { width: 9px; }
+.game-service-dialog-panel::-webkit-scrollbar-track { background: #0b0d24; }
+.game-service-dialog-panel::-webkit-scrollbar-thumb { background: #594085; border: 2px solid #0b0d24; border-radius: 12px; }
+
+.game-service-dialog-hero {
+  position: relative;
+  min-height: 176px;
+  overflow: hidden;
+  background: radial-gradient(circle at 70% 15%, #402061, #08091c 70%);
+}
+
+.game-service-dialog-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 41%;
+}
+
+.game-service-dialog-panel-tft .game-service-dialog-hero-image { object-position: center 48%; }
+
+.game-service-dialog-hero-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 6, 25, .98) 0%, rgba(6, 7, 29, .81) 30%, rgba(7, 8, 28, .22) 73%),
+    linear-gradient(0deg, #090b20 0%, transparent 42%);
+}
+
+.game-service-dialog-topbar {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.game-service-dialog-topbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+}
+
+.game-service-dialog-close {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(212, 186, 255, .45);
+  border-radius: 50%;
+  background: rgba(8, 9, 35, .79);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .3);
+  transition: background .18s ease, transform .18s ease;
+}
+
+.game-service-dialog-close:hover { background: #513479; transform: rotate(90deg); }
+.game-service-dialog-close svg { width: 20px; height: 20px; }
+.game-service-dialog-topbar button:focus-visible,
+.game-service-dialog-card button:focus-visible {
+  outline: 3px solid #dfb6ff;
+  outline-offset: 3px;
+}
+
+.game-service-dialog-heading {
+  position: relative;
+  z-index: 1;
+  padding: 44px 84px 35px 32px;
+}
+
+.game-service-dialog-heading h2 {
+  margin: 0;
+  font-size: clamp(1.85rem, 4.2vw, 3.15rem);
+  font-weight: 900;
+  letter-spacing: -.052em;
+  line-height: 1.02;
+  text-wrap: balance;
+  text-shadow: 0 3px 18px #020315;
+}
+
+.game-service-dialog-heading p {
+  margin: 7px 0 0;
+  color: #d3d2ed;
+  font-size: clamp(1rem, 1.7vw, 1.22rem);
+}
+
+.game-service-dialog-content { padding: 8px 24px 26px; }
+
+.game-service-dialog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.game-service-dialog-grid-tft { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.game-service-dialog-grid-tft .game-service-dialog-card { min-height: 330px; }
+
+.game-service-dialog-card {
+  --card-glow: rgba(30, 172, 247, .3);
+  --card-line: rgba(52, 193, 255, .55);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  min-height: 315px;
+  overflow: hidden;
+  border: 1px solid var(--card-line);
+  border-radius: 17px;
+  background: radial-gradient(ellipse at 61% 36%, var(--card-glow), transparent 59%), #09132f;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, .1);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.game-service-dialog-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 36px rgba(0, 0, 0, .3), inset 0 0 36px var(--card-glow);
+}
+
+.game-service-dialog-card-placement { --card-glow: rgba(181, 196, 216, .24); --card-line: rgba(200, 215, 232, .58); background-color: #1b2330; }
+.game-service-dialog-card-win { --card-glow: rgba(255, 126, 27, .29); --card-line: rgba(255, 161, 55, .62); background-color: #2a1220; }
+.game-service-dialog-card-duo { --card-glow: rgba(176, 62, 255, .32); --card-line: rgba(193, 100, 255, .6); background-color: #1a1035; }
+
+.game-service-dialog-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(118deg, transparent 0 43px, rgba(255, 255, 255, .026) 44px 45px, transparent 46px 94px);
+  pointer-events: none;
+}
+
+.game-service-dialog-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(4, 7, 28, .15) 52%, rgba(4, 7, 28, .95) 89%);
+  pointer-events: none;
+}
+
+.game-service-dialog-art {
+  position: absolute;
+  top: 5px;
+  left: 5%;
+  right: 5%;
+  height: 195px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.game-service-dialog-icon {
+  width: min(68%, 260px);
+  height: 190px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 25px var(--card-glow));
+}
+
+.game-service-dialog-grid-tft .game-service-dialog-art { left: 0; right: 0; height: 205px; }
+.game-service-dialog-grid-tft .game-service-dialog-icon { width: min(83%, 260px); height: 195px; }
+.game-service-dialog-grid-tft .game-service-dialog-card-copy { padding-top: 205px; }
+.game-service-dialog-icon.clean-icon { opacity: 0; transition: opacity .18s ease; }
+.game-service-dialog-icon.clean-icon-ready { opacity: 1; }
+
+.game-service-dialog-card-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 25px 22px;
+}
+
+.game-service-dialog-card h3 {
+  margin: 0;
+  color: white;
+  font-size: clamp(1.45rem, 2vw, 1.86rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
+  line-height: 1.05;
+}
+
+.game-service-dialog-card p {
+  margin: 7px 0 14px;
+  color: #cfcde2;
+  font-size: .83rem;
+  line-height: 1.35;
+  min-height: 2.7em;
+}
+
+.game-service-dialog-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 38px;
+  padding: 8px 17px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #ff5ba9, #aa39ef);
+  color: white;
+  box-shadow: 0 7px 20px rgba(177, 44, 235, .27);
+  cursor: pointer;
+  font-size: .86rem;
+  font-weight: 900;
+  transition: filter .18s ease, transform .18s ease;
+}
+
+.game-service-dialog-card button:hover:not(:disabled) { filter: brightness(1.13); transform: translateY(-1px); }
+.game-service-dialog-card button span { font-size: 1.1rem; line-height: 1; }
+.game-service-dialog-card.is-unavailable { filter: saturate(.43); }
+.game-service-dialog-card button:disabled { background: rgba(126, 120, 156, .35); box-shadow: none; color: #c4bfd2; cursor: not-allowed; }
+
+.game-service-dialog-message {
+  display: flex;
+  min-height: 230px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 26px;
+  border: 1px solid rgba(179, 145, 232, .25);
+  border-radius: 16px;
+  background: #10132d;
+  color: #bbb9d7;
+  text-align: center;
+}
+
+.game-service-dialog-message strong { color: white; font-size: 1.15rem; }
+
+.game-service-dialog-skeleton {
+  display: flex;
+  min-height: 315px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 11px;
+  padding: 22px;
+  border: 1px solid rgba(162, 133, 217, .25);
+  border-radius: 17px;
+  background: #12142e;
+}
+
+.game-service-dialog-skeleton > * {
+  display: block;
+  border-radius: 9px;
+  background: linear-gradient(100deg, #242640 10%, #363052 38%, #242640 65%);
+  background-size: 220% 100%;
+  animation: game-service-dialog-shimmer 1.5s linear infinite;
+}
+
+.game-service-dialog-skeleton span { align-self: center; width: 38%; height: 87px; margin-bottom: auto; border-radius: 50%; }
+.game-service-dialog-skeleton i { width: 54%; height: 23px; }
+.game-service-dialog-skeleton b { width: 72%; height: 13px; }
+.game-service-dialog-skeleton em { width: 108px; height: 35px; margin-top: 5px; }
+@keyframes game-service-dialog-shimmer { to { background-position-x: -220%; } }
+
+@media (max-width: 850px) {
+  .game-service-dialog-grid-tft { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .game-service-dialog-grid-tft .game-service-dialog-card { min-height: 315px; }
+  .game-service-dialog-grid-tft .game-service-dialog-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
+@media (max-width: 620px) {
+  .game-service-dialog-overlay { padding: 0; }
+  .game-service-dialog-panel { width: 100%; max-height: 100dvh; min-height: 100dvh; border-radius: 0; border: 0; }
+  .game-service-dialog-hero { min-height: 155px; }
+  .game-service-dialog-topbar { top: 17px; right: 18px; }
+  .game-service-dialog-heading { padding: 34px 70px 27px 23px; }
+  .game-service-dialog-content { padding: 7px 16px 24px; }
+  .game-service-dialog-grid,
+  .game-service-dialog-grid-tft { grid-template-columns: 1fr; gap: 13px; }
+  .game-service-dialog-grid-tft .game-service-dialog-card:last-child:nth-child(odd) { grid-column: auto; }
+  .game-service-dialog-card,
+  .game-service-dialog-grid-tft .game-service-dialog-card,
+  .game-service-dialog-skeleton { min-height: 285px; }
+  .game-service-dialog-art { height: 175px; }
+  .game-service-dialog-icon { height: 170px; }
+  .game-service-dialog-grid-tft .game-service-dialog-art { height: 175px; }
+  .game-service-dialog-grid-tft .game-service-dialog-icon { height: 170px; }
+  .game-service-dialog-grid-tft .game-service-dialog-card-copy { padding-top: 178px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-service-dialog-card,
+  .game-service-dialog-card button,
+  .game-service-dialog-close,
+  .game-service-dialog-skeleton > * { transition: none; animation: none; }
+}

@@ -23,16 +23,6 @@
         linear-gradient(180deg, rgba(24, 18, 54, 0.96), rgba(12, 14, 28, 0.94));
 }
 
-.admin-with-sidebar .topbar {
-    border-bottom: none;
-    background:
-        linear-gradient(to right,
-            rgba(24, 18, 54, 0.96) 0,
-            rgba(24, 18, 54, 0.96) 280px,
-            rgba(10, 15, 24, 0.86) 280px,
-            rgba(10, 15, 24, 0.86) 100%);
-}
-
 .admin-main {
     min-width: 0;
     padding: 28px;
@@ -145,10 +135,6 @@
 }
 
 @media (max-width: 1180px) {
-    .admin-with-sidebar .topbar {
-        background: #0a0f18;
-    }
-
     .admin-layout {
         grid-template-columns: 1fr;
     }

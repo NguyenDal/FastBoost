@@ -7,16 +7,17 @@ import {
   notifyAuthChanged,
 } from "../utils/authSession";
 
-import { Fragment, useEffect, useMemo, useState, useRef } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
-import CleanIcon from "../components/CleanIcon";
-import { CardGridSkeleton } from "../components/PageSkeletons";
+import GameServiceDialog from "../components/GameServiceDialog";
+import OpeningCountdown from "../components/OpeningCountdown";
 import { API_BASE_URL } from "../api/config";
 import { shouldRefreshAvatarData } from '../utils/signedAvatar';
 import { orderPathForService, searchWithSelectedGame, selectedGameFromSearch } from '../utils/productRoutes';
 import "../styles/HomePage.css";
+import "../styles/HomeLanding.css";
 
 const SERVICES_CACHE_KEY = "fastboost:services:v1";
 const SERVICE_TITLES_BY_GAME = {
@@ -76,20 +77,24 @@ function HomePage() {
   );
 
   const [servicesError, setServicesError] = useState("");
-  const [selectedGame, setSelectedGame] = useState(() => selectedGameFromSearch(location.search));
+  const selectedGame = selectedGameFromSearch(location.search);
   const [visibleGame, setVisibleGame] = useState(() => selectedGameFromSearch(location.search));
+  const [gameSourceElement, setGameSourceElement] = useState(null);
 
-  useEffect(() => {
-    setSelectedGame(selectedGameFromSearch(location.search));
-  }, [location.search]);
-  const [inlineServices, setInlineServices] = useState(() => window.matchMedia("(max-width: 1024px)").matches);
+  // Keep the selected game mounted until its return-to-card animation ends.
+  if (selectedGame && selectedGame !== visibleGame) setVisibleGame(selectedGame);
 
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 1024px)");
-    const updateLayout = () => setInlineServices(media.matches);
-    media.addEventListener("change", updateLayout);
-    return () => media.removeEventListener("change", updateLayout);
-  }, []);
+  const closeGameServices = useCallback(() => {
+    navigate({
+      pathname: location.pathname,
+      search: searchWithSelectedGame(location.search, ""),
+      hash: location.hash,
+    }, { replace: true });
+  }, [location.pathname, location.search, location.hash, navigate]);
+
+  const finishGameClose = useCallback(() => {
+    if (!selectedGame) setVisibleGame("");
+  }, [selectedGame]);
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -396,19 +401,6 @@ function HomePage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (selectedGame) {
-      setVisibleGame(selectedGame);
-      return;
-    }
-
-    const closeTimer = setTimeout(() => {
-      setVisibleGame("");
-    }, 430);
-
-    return () => clearTimeout(closeTimer);
-  }, [selectedGame]);
-
   const servicesByTitle = useMemo(() => {
     const servicesByTitleMap = new Map();
 
@@ -615,7 +607,7 @@ function HomePage() {
           role: data?.user?.role || "CUSTOMER",
         },
       });
-    } catch (error) {
+    } catch {
       setLoginErrors({
         email: true,
         password: true,
@@ -731,7 +723,7 @@ function HomePage() {
           role: loginData?.user?.role || "CUSTOMER",
         },
       });
-    } catch (error) {
+    } catch {
       setRegisterErrors({
         email: true,
         password: true,
@@ -773,7 +765,7 @@ function HomePage() {
       setTimeout(() => {
         closeAuthModal();
       }, 1200);
-    } catch (error) {
+    } catch {
       setForgotError(true);
       setAuthMessage("Could not connect to backend");
     } finally {
@@ -789,76 +781,8 @@ function HomePage() {
     currentUser?.photoUrl ||
     "";
 
-  const servicesPanel = (
-        <section
-          id="services"
-          className={`services-dropdown-section ${selectedGame ? "services-dropdown-section-open" : ""}`}
-        >
-          <div className="services-dropdown-inner page-content">
-            <div className="section-header services-mode-header">
-              <div>
-                <p className="section-label">
-                  {visibleGame === "tft" ? "Teamfight Tactics" : "League of Legends"}
-                </p>
-
-                <h2>
-                  {visibleGame === "tft" ? "Choose Your TFT Service" : "Choose Your LoL Service"}
-                </h2>
-              </div>
-              <p className="section-description">
-                {visibleGame === "tft"
-                  ? "These are the current TFT order modes available on FastBoost."
-                  : "These are the current LoL order modes available on FastBoost."}
-              </p>
-            </div>
-
-            {servicesLoading && <CardGridSkeleton count={3} />}
-            {servicesError && <p className="error-message">{servicesError}</p>}
-
-            {!servicesLoading && !servicesError && featuredServices.length === 0 && (
-              <p className="info-message">
-                {visibleGame === "tft" ? "No TFT services found." : "No LoL services found."}
-              </p>
-            )}
-
-            {!servicesLoading && !servicesError && featuredServices.length > 0 && (
-              <div className="hover-service-grid">
-                {featuredServices.map((service, index) => {
-                  const serviceImage =
-                    serviceImageMap[service.title] ||
-                    fallbackImages[index % fallbackImages.length];
-
-                  return (
-                    <article key={service.id} className={`hover-service-card${service.active === false ? " service-unavailable" : ""}`}>
-
-                      <div className="service-card-icon">
-                        <CleanIcon src={serviceImage} alt={`${service.title} icon`} />
-                      </div>
-
-                      <h3>{service.title}</h3>
-
-                      <p>{service.description || "No description available."}</p>
-
-                      <div className="hover-service-actions">
-                        <button
-                          className="card-btn primary-card-btn"
-                          onClick={() => handleOrderNow(service)}
-                          disabled={service.active === false}
-                        >
-                          {service.active === false ? "Currently unavailable" : "Buy Now"}
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </section>
-  );
-
   return (
-    <div className="app-shell">
+    <div className="app-shell home-shell">
       <Navbar
         hasSession={hasSession}
         currentUser={currentUser}
@@ -876,61 +800,79 @@ function HomePage() {
         handleLogout={handleLogout}
       />
       <main id="home">
-        <section className="hero-section hero-fullscreen-section">
-          <div className="hero-banner">
-
-            <div className="hero-game-picker">
-              <div className="hero-game-heading">
-                <h1>Choose Your Game, Start Your Boost</h1>
-                <p>
-                  FastBoost helps players order game services with a clean, simple, and secure flow.
-                </p>
-              </div>
-
-              <div className="hero-game-grid">
-                {gameOptions.map((game) => (
-                  <Fragment key={game.key}>
-                  <article
-                    className={`hero-game-card ${selectedGame === game.key ? "hero-game-card-active" : ""}`}
-                    onClick={() => {
-                      const nextGame = selectedGame === game.key ? "" : game.key;
-                      setSelectedGame(nextGame);
-                      navigate({ pathname: location.pathname, search: searchWithSelectedGame(location.search, nextGame), hash: location.hash });
-                    }}
-                  >
-                    <img src={game.image} alt={game.title} />
-
-                    <div className="hero-game-card-bottom">
-                      <h3>{game.shortTitle}</h3>
-
-                      <button
-                        type="button"
-                        className="hero-game-select-btn"
-                        aria-expanded={selectedGame === game.key}
-                        aria-controls={visibleGame === game.key ? "services" : undefined}
-                      >
-                        <span className="hero-game-btn-content">
-                          <span
-                            className={`hero-game-btn-arrow ${selectedGame === game.key ? "hero-game-btn-arrow-open" : ""
-                              }`}
-                          />
-                          <span>
-                            {selectedGame === game.key ? "Hide Services" : "Select Game"}
-                          </span>
-                        </span>
-                      </button>
-                    </div>
-                  </article>
-                  {inlineServices && visibleGame === game.key && servicesPanel}
-                  </Fragment>
-                ))}
-              </div>
-            </div>
+        <section className="opening-hero" aria-labelledby="opening-heading">
+          <img
+            className="opening-hero-art"
+            src="/assets/updates/opening-hero.webp"
+            alt=""
+            fetchPriority="high"
+            width="1672"
+            height="941"
+          />
+          <div className="opening-hero-content">
+            <h1 id="opening-heading">The next level<br /><span>starts here.</span></h1>
+            <OpeningCountdown />
+            <Link className="opening-hub-link" to="/hub">
+              Explore the Hub <span aria-hidden="true">↗</span>
+            </Link>
           </div>
         </section>
-
-        {!inlineServices && servicesPanel}
+        <section className="home-arena" aria-labelledby="arena-heading">
+          <div className="home-arena-heading">
+            <div>
+              <p className="home-section-eyebrow">Your game. Your next move.</p>
+              <h2 id="arena-heading">Choose your <span>arena.</span></h2>
+            </div>
+            <p>Select a game to find your service.</p>
+          </div>
+          <div className="home-game-grid">
+            {gameOptions.map((game) => (
+              <button
+                key={game.key}
+                type="button"
+                className={`home-game-card home-game-card--${game.key}`}
+                aria-label={`Choose a ${game.title} service`}
+                aria-haspopup="dialog"
+                aria-expanded={selectedGame === game.key}
+                onClick={(event) => {
+                  setGameSourceElement(event.currentTarget);
+                  navigate({
+                    pathname: location.pathname,
+                    search: searchWithSelectedGame(location.search, game.key),
+                    hash: location.hash,
+                  });
+                }}
+              >
+                <img src={game.image} alt="" loading="lazy" />
+                <span className="home-game-card-content">
+                  <span className="home-game-card-copy">
+                    <span className="home-game-card-label">{game.key === "lol" ? "Summoner’s Rift" : "The Convergence"}</span>
+                    <span className="home-game-card-title">{game.key === "lol" ? <>League of<br />Legends</> : <>Teamfight<br />Tactics</>}</span>
+                    <span className="home-game-card-services">{SERVICE_TITLES_BY_GAME[game.key].length} services <span aria-hidden="true">·</span> Choose your boost</span>
+                  </span>
+                  <span className="home-game-card-arrow" aria-hidden="true">↗</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
       </main>
+
+      {visibleGame && !showAuthModal && (
+        <GameServiceDialog
+          game={gameOptions.find((game) => game.key === visibleGame)}
+          open={Boolean(selectedGame)}
+          services={featuredServices}
+          loading={servicesLoading}
+          error={servicesError}
+          imageMap={serviceImageMap}
+          fallbackImages={fallbackImages}
+          onChoose={handleOrderNow}
+          onClose={closeGameServices}
+          onExited={finishGameClose}
+          sourceElement={gameSourceElement}
+        />
+      )}
 
       <RegisterPage
         onSocialSuccess={finishLogin}

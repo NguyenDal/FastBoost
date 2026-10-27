@@ -17,7 +17,10 @@ const assets = [
   'services/ranks/silver.png', 'services/ranks/gold.png', 'services/ranks/platinum.png',
   'services/ranks/emerald.png', 'services/ranks/diamond.png', 'services/ranks/master.png',
   'services/ranks/grandmaster.png', 'services/ranks/challenger.png',
-  'updates/opening.png',
+  'updates/opening.png', 'updates/opening-hero.webp',
+  'updates/opening-ticket.webp', 'updates/player-guides-hologram.webp', 'updates/grand-opening-velocity.webp',
+  'updates/grand-opening-velocity-hero.webp',
+  'guides/summoners-rift.png',
 ];
 
 test('all migrated public art is checked in with the expected image format', () => {

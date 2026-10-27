@@ -425,7 +425,7 @@ function isSaleActive(sale, now = new Date()) {
 
     if (
         sale.endsAt &&
-        new Date(sale.endsAt) < now
+        new Date(sale.endsAt) <= now
     ) {
         return false;
     }
@@ -437,8 +437,9 @@ function calculateSaleDiscount({
     sale,
     basePrice,
     subtotal,
+    now = new Date(),
 }) {
-    if (!isSaleActive(sale)) {
+    if (!isSaleActive(sale, now)) {
         return 0;
     }
 
@@ -473,6 +474,7 @@ function calculateOrderPrice({
     options,
     sale = null,
     referenceRules = [],
+    now = new Date(),
 }) {
     if (!rule || rule.active === false) {
         throw new Error(
@@ -500,6 +502,7 @@ function calculateOrderPrice({
         sale,
         basePrice,
         subtotal,
+        now,
     });
 
     const totalPrice = Math.max(

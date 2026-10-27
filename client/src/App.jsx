@@ -27,6 +27,7 @@ const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const WalletPage = lazy(() => import('./pages/WalletPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
+const HubPage = lazy(() => import('./pages/HubPage'));
 const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage'));
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
@@ -114,6 +115,9 @@ function App() {
         <Route path="/checkout/:orderId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         <Route path="/r/:referralCode" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/hub" element={<HubPage />} />
+        <Route path="/hub/guides" element={<HubPage guideDirectory />} />
+        <Route path="/hub/:section/:slug" element={<HubPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Navigate to="/" replace state={{ openAuthModal: true, authMode: "register" }} />} />
         <Route path="/support" element={<HomePage />} />

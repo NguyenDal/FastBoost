@@ -115,15 +115,10 @@
 .booster-rating-value > span { color: #f5c16d; font-size: 30px; }
 .booster-rating-value strong { font-size: clamp(21px, 3vw, 30px); white-space: nowrap; }
 .booster-rating .booster-rating-value small { display: inline; color: #aab5c9; font-size: 14px; font-weight: 400; }
-/* Keep the portal navbar uniform at the shared hidden-sidebar breakpoint. */
-@media (max-width: 1180px) {
-    .booster-portal-shell.admin-with-sidebar .topbar { background: #0a0f18; }
-}
 @media (max-width: 850px) { .booster-profile-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) {
     .booster-portal-layout { grid-template-columns: 1fr; }
     .booster-portal-sidebar { display: none; }
-    .booster-portal-shell.admin-with-sidebar .topbar { background: #0a0f18; }
     .booster-portal-grid { grid-template-columns: 1fr; }
     .booster-portal-card h3 { margin-top: 20px; }
 }

@@ -24,7 +24,7 @@ function getSaleTimeWindow(now) {
                     { endsAt: null },
                     {
                         endsAt: {
-                            gte: now,
+                            gt: now,
                         },
                     },
                 ],
@@ -167,5 +167,6 @@ function invalidatePricingCatalog() {
 
 module.exports = {
     getPricingCatalog,
+    getSaleTimeWindow,
     invalidatePricingCatalog,
 };

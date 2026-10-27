@@ -22,16 +22,6 @@
         linear-gradient(180deg, rgba(24, 18, 54, 0.96), rgba(12, 14, 28, 0.94));
 }
 
-.dashboard-with-sidebar .topbar {
-    border-bottom: none;
-    background:
-        linear-gradient(to right,
-            rgba(24, 18, 54, 0.96) 0,
-            rgba(24, 18, 54, 0.96) 280px,
-            rgba(10, 15, 24, 0.86) 280px,
-            rgba(10, 15, 24, 0.86) 100%);
-}
-
 .dashboard-side-nav {
     display: grid;
     gap: 8px;
@@ -671,10 +661,6 @@
 }
 
 @media (max-width: 1180px) {
-    .dashboard-with-sidebar .topbar {
-        background: #0a0f18;
-    }
-
     .dashboard-layout {
         grid-template-columns: 1fr;
     }

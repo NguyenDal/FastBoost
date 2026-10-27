@@ -1,0 +1,76 @@
+.opening-event-card { container-type: inline-size; grid-column: 1 / -1; min-height: 400px; overflow: hidden; border: 1px solid rgba(167, 106, 240, .65); border-radius: 17px; background: #080d1e url('/assets/updates/opening-ticket.webp') center 25% / cover no-repeat; transition: border-color .2s ease, transform .2s ease; }
+.opening-event-card:hover { transform: translateY(-3px); border-color: #f7b1ff; }
+.opening-event-card-link { display: flex; height: 100%; min-height: inherit; flex-direction: column; align-items: flex-start; justify-content: center; padding: 38px 42px; background: linear-gradient(90deg, rgba(5, 8, 21, .28), transparent 72%); }
+.opening-event-poster-label { display: flex; align-items: center; gap: 17px; color: #b077ff; font-size: clamp(11px, 2.2cqw, 17px); font-weight: 650; letter-spacing: .23em; text-transform: uppercase; }
+.opening-event-poster-label::after { content: ''; width: 40px; height: 2px; background: #b077ff; }
+.opening-event-poster-discount { margin: 21px 0 13px; color: #faf8ff; font-size: clamp(42px, 8.7cqw, 88px); font-weight: 850; letter-spacing: -.035em; line-height: .95; white-space: nowrap; }
+.opening-event-poster-dates, .opening-event-poster-services { max-width: 55%; margin: 0; color: #b4d6eb; font-size: clamp(13px, 2.7cqw, 22px); line-height: 1.55; letter-spacing: .025em; }
+.opening-event-poster-dates { text-transform: uppercase; }
+.opening-event-poster-services { margin-top: 2px; }
+.opening-event-eyebrow { color: #ebbaff; font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+.opening-event-status { display: inline-flex; align-items: center; gap: 7px; width: fit-content; padding: 6px 10px; border: 1px solid rgba(237, 161, 255, .45); border-radius: 99px; background: rgba(28, 12, 47, .77); color: #f5ddff; font-size: 12px; font-weight: 740; white-space: nowrap; }
+.opening-event-status > span { width: 7px; height: 7px; border-radius: 50%; background: #d77cff; box-shadow: 0 0 9px #b659e9; }
+.opening-event-status.is-active { border-color: rgba(125, 234, 166, .65); color: #caffdf; }
+.opening-event-status.is-active > span { background: #52e897; box-shadow: 0 0 9px #52e897; }
+.opening-event-status.is-ended { color: #c8bed0; border-color: rgba(180, 171, 188, .3); }
+.opening-event-status.is-ended > span { background: #a8a1ad; box-shadow: none; }
+.opening-event-card-action { display: inline-flex; gap: 13px; align-items: center; justify-content: center; min-height: 44px; margin-top: 29px; padding: 10px 22px; border: 1px solid #a46bea; border-radius: 9px; background: rgba(8, 11, 29, .7); color: #f7f2ff; font-size: clamp(15px, 3cqw, 21px); font-weight: 650; transition: background .2s ease, border-color .2s ease; }
+.opening-event-card-link:hover .opening-event-card-action { border-color: #dcbcff; background: rgba(65, 34, 110, .7); }
+.opening-event-card.is-compact { grid-column: auto; min-height: 320px; background-size: cover; background-position: center; }
+.opening-event-card.is-compact .opening-event-card-link { padding: 30px 28px; }
+.opening-event-card.is-compact .opening-event-poster-discount { font-size: clamp(35px, 8.4cqw, 58px); }
+
+.opening-event-hero { position: relative; isolation: isolate; min-height: 440px; padding: 36px 0 53px; background: #080d1e url('/assets/updates/opening-ticket.webp') center 25% / cover no-repeat; }
+.opening-event-hero::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(5, 5, 20, .95), rgba(5, 5, 20, .69) 49%, rgba(5, 5, 20, .17)), linear-gradient(0deg, #080c19, transparent 42%); }
+.opening-event-hero-content { display: flex; flex-direction: column; align-items: flex-start; gap: 13px; margin-top: 50px; }
+.opening-event-hero-content h1 { margin: 3px 0 0; max-width: 710px; font-size: clamp(54px, 7.4vw, 96px); line-height: .96; letter-spacing: -.075em; }
+.opening-event-hero-content h1 span { color: #f142e4; letter-spacing: -.04em; white-space: nowrap; }
+.opening-event-hero-content > p { margin: 7px 0 0; color: #e7dbef; font-size: 18px; }
+.opening-event-detail-grid { display: grid; grid-template-columns: minmax(0, 1.32fr) minmax(290px, .85fr); gap: 34px; padding: 47px 0 70px; }
+.opening-event-section-label { color: #cf8ff0; font-size: 11px; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
+.opening-event-information h2 { margin: 13px 0; font-size: clamp(30px, 4vw, 45px); line-height: 1.08; letter-spacing: -.05em; }
+.opening-event-information > p { max-width: 660px; margin: 0 0 30px; color: #d2cbdc; font-size: 16px; line-height: 1.7; }
+.opening-event-keypoints { border-top: 1px solid rgba(179, 102, 221, .22); }
+.opening-event-keypoints > div { display: flex; gap: 19px; padding: 20px 0; border-bottom: 1px solid rgba(179, 102, 221, .22); }
+.opening-event-keypoints > div > span { flex: 0 0 34px; color: #df72eb; font-size: 19px; font-weight: 850; }
+.opening-event-keypoints h3 { margin: 0 0 5px; font-size: 17px; }
+.opening-event-keypoints p { max-width: 560px; margin: 0; color: #bfb8cb; font-size: 14px; line-height: 1.6; }
+.opening-event-side { display: grid; align-content: start; gap: 17px; }
+.opening-event-clock, .opening-event-estimator, .opening-event-clock-ended { padding: 23px; border: 1px solid rgba(174, 92, 224, .42); border-radius: 16px; background: radial-gradient(circle at 90% 10%, rgba(175, 53, 202, .17), transparent 62%), #111429; }
+.opening-event-clock-title { color: #c0afd7; font-size: 13px; font-weight: 740; text-transform: uppercase; letter-spacing: .1em; }
+.opening-event-clock > div { display: flex; align-items: center; gap: 9px; margin-top: 12px; }
+.opening-event-clock > div > span { display: flex; min-width: 57px; flex-direction: column; align-items: center; }
+.opening-event-clock strong { font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; }
+.opening-event-clock small { margin-top: 5px; color: #bdb3c9; font-size: 11px; }
+.opening-event-clock i { color: #bf6edb; font-size: 27px; font-style: normal; align-self: flex-start; line-height: 1.1; }
+.opening-event-clock-ended { margin: 0; color: #c9bed5; }
+.opening-event-estimator h2 { margin: 12px 0 7px; font-size: 22px; letter-spacing: -.035em; }
+.opening-event-estimator > p { margin: 0; color: #bfb8cb; font-size: 13px; line-height: 1.55; }
+.opening-event-estimator label { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; color: #e8ddec; font-size: 13px; }
+.opening-event-estimator label strong { color: #fff; font-variant-numeric: tabular-nums; }
+.opening-event-estimator input[type='range'] { width: 100%; margin: 17px 0 0; accent-color: #d147e6; cursor: pointer; }
+.opening-event-range { display: flex; justify-content: space-between; margin: 3px 0 25px; color: #9d91b1; font-size: 11px; }
+.opening-event-estimate-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid rgba(203, 132, 237, .2); color: #d4c9dd; font-size: 13px; }
+.opening-event-estimate-row strong { color: #f5b7f1; font-size: 16px; font-variant-numeric: tabular-nums; }
+.opening-event-estimate-row.is-total { color: #fff; font-weight: 760; }
+.opening-event-estimate-row.is-total strong { color: #fff; }
+.opening-event-estimator .opening-event-estimate-note { margin-top: 15px; color: #a99db8; font-size: 11px; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .opening-event-detail-grid { grid-template-columns: minmax(0, 1fr); }
+  .opening-event-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .opening-event-card, .opening-event-card.is-compact { min-height: 280px; background-size: cover; background-position: center; }
+  .opening-event-card-link, .opening-event-card.is-compact .opening-event-card-link { padding: 25px 20px; background: linear-gradient(90deg, rgba(5, 8, 21, .58), transparent 85%); }
+  .opening-event-poster-label { gap: 11px; }
+  .opening-event-poster-label::after { width: 24px; }
+  .opening-event-poster-dates, .opening-event-poster-services { max-width: 65%; }
+  .opening-event-card-action { margin-top: 22px; }
+  .opening-event-hero { min-height: 435px; padding: 25px 0 43px; }
+  .opening-event-hero-content { margin-top: 45px; }
+  .opening-event-hero-content h1 { font-size: clamp(54px, 13vw, 80px); }
+  .opening-event-detail-grid { padding: 34px 0 50px; }
+  .opening-event-side { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .opening-event-card { transition: none; } }

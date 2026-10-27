@@ -30,6 +30,12 @@ export default function DynamicTitle() {
       title = "Sign Agreement | FastBoost";
     } else if (path === "/contact") {
       title = "Contact | FastBoost";
+    } else if (path === "/hub") {
+      title = "The Hub | FastBoost";
+    } else if (path === "/hub/guides") {
+      title = "Player Guides | FastBoost";
+    } else if (path.startsWith("/hub/")) {
+      title = "The Hub | FastBoost";
     } else if (path.startsWith("/checkout/")) {
       title = "Secure Payment | FastBoost";
     } else if (path.startsWith("/order/")) {
