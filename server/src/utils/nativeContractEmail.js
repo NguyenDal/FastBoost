@@ -6,6 +6,7 @@ const EVENTS = Object.freeze({
     ISSUED: ['BOOSTER'],
     READY: ['BOOSTER'],
     BOOSTER_SIGNED: ['COMPANY'],
+    COMPANY_SIGNED: ['BOOSTER'],
     COMPLETED: ['BOOSTER', 'COMPANY'],
 });
 const pending = { sentAt: null, skippedAt: null };
@@ -25,6 +26,8 @@ function relevant(row, contract) {
     if (row.event === 'ISSUED') return row.recipientRole === 'BOOSTER';
     if (row.event === 'READY') return row.recipientRole === 'BOOSTER' && Boolean(contract.nativePreparedAt);
     if (row.event === 'BOOSTER_SIGNED') return row.recipientRole === 'COMPANY' && Boolean(contract.boosterSignedAt);
+    if (row.event === 'COMPANY_SIGNED') return row.recipientRole === 'BOOSTER' && contract.nativeSnapshot?.version === 'FB-BSA-2.3'
+        && Boolean(contract.nativePreparedAt && contract.companySignedAt);
     if (row.event === 'COMPLETED') return EVENTS.COMPLETED.includes(row.recipientRole) && Boolean(contract.signedAt && contract.boosterSignedAt
         && contract.companySignedAt && contract.nativeCompletedAt && contract.nativePdf && contract.nativePdfHash);
     return false;

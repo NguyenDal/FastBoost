@@ -11,7 +11,8 @@ const HASH = /^[a-f0-9]{64}$/;
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const digest = value => createHash('sha256').update(value).digest('hex');
 const native = contract => contract.signingProvider === PROVIDER;
-const firstSignerRole = snapshot => snapshot.version === 'FB-BSA-2.1' ? 'COMPANY' : 'BOOSTER';
+// Signing order belongs to the saved version, never to the currently published template.
+const firstSignerRole = snapshot => ['FB-BSA-2.1', 'FB-BSA-2.3'].includes(snapshot.version) ? 'COMPANY' : 'BOOSTER';
 const unsignedOldVersion = contract => !contract.archivedAt && !contract.revokedAt && !['voided', 'declined', 'replaced'].includes(contract.status)
     && !contract.companySignedAt && !contract.boosterSignedAt && !contract.signedAt
     && contract.nativeSnapshot?.version !== agreement.VERSION;
@@ -22,8 +23,11 @@ const sameName = (left, right) => left.normalize('NFKC').replace(/\s+/g, ' ').to
 function publicContract(contract) {
     if (!contract) return null;
     const documentAvailable = native(contract) ? Boolean(contract.nativePdf && contract.nativePreparedAt && !unsignedOldVersion(contract)) : Boolean(contract.envelopeId);
+    const signingOrder = native(contract) ? (firstSignerRole({ version: unsignedOldVersion(contract)
+        ? agreement.VERSION : contract.nativeSnapshot?.version }) === 'COMPANY' ? 'COMPANY_FIRST' : 'BOOSTER_FIRST') : undefined;
     const { nativeSnapshot, nativePdf, nativeSignatures, ...record } = contract;
-    return { ...record, signingProvider: record.signingProvider || 'DOCUSIGN', documentAvailable };
+    return { ...record, signingProvider: record.signingProvider || 'DOCUSIGN', documentAvailable,
+        ...(signingOrder && { signingOrder }) };
 }
 async function activeActor(db, actor) {
     const current = actor?.id && await db.user.findUnique({ where: { id: actor.id } });
@@ -49,7 +53,7 @@ async function resolveCompany(db) {
         const owners = await db.user.findMany({ where: { role: 'ADMIN', suspendedAt: null, isOwner: true }, take: 2 });
         if (owners.length === 1) actor = owners[0];
     }
-    if (!actor || !email(actor.email) || name.length < 2 || name.length > 100) fail(503, 'Configure an active FastBoost owner as the agreement countersigner.');
+    if (!actor || !email(actor.email) || name.length < 2 || name.length > 100) fail(503, 'Configure an active FastBoost owner as the agreement signer.');
     return { id: actor.id, name, email: email(actor.email) };
 }
 async function readiness(db) {
@@ -265,7 +269,7 @@ async function signContract(db, id, actor, body, audit = {}) {
         assertOpen(current);
         if (current.signedAt) fail(409, 'This agreement has already been completed.');
         verifyFrozen(current);
-        if (role === 'COMPANY' && unsignedOldVersion(current)) fail(409, 'The agreement version changed. FastBoost must submit the current terms before anyone signs.');
+        if (unsignedOldVersion(current)) fail(409, 'The agreement version changed. FastBoost must submit the current terms before anyone signs.');
         if (input.documentHash !== current.nativeDocumentHash) fail(409, 'The agreement changed. Refresh and review it before signing.');
         verifyChallenge(body.challenge, current, signer, role);
         const signatures = await signaturesFor(tx, id);
@@ -311,9 +315,14 @@ async function signContract(db, id, actor, body, audit = {}) {
                 data: { title: 'Awaiting FastBoost signature', read: true } });
             await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
                 data: { title: 'Agreement ready for your signature', read: false } });
-        } else await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });
+        } else {
+            await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId }, data: { title: 'Contract ready to sign', read: false } });
+            await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
+                data: { title: 'Awaiting provider signature', read: true } });
+        }
         if (completed) await queueNativeContractEmail(tx, id, 'COMPLETED');
         else if (role === 'BOOSTER' && firstRole === 'BOOSTER') await queueNativeContractEmail(tx, id, 'BOOSTER_SIGNED');
+        else if (role === 'COMPANY' && current.nativeSnapshot.version === 'FB-BSA-2.3') await queueNativeContractEmail(tx, id, 'COMPANY_SIGNED');
         return updated;
     }, { timeout: 20000 });
     return signingContext(db, contract, actor);

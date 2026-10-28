@@ -7,7 +7,7 @@ const options = { clientUrl: 'https://www.fastboost.gg', nodeEnv: 'production' }
 const path = `https://www.fastboost.gg/provider/contracts/${contract.id}`;
 
 test('all agreement updates contain the exact agreement, booster, status and authenticated route', () => {
-    assert.deepEqual(Object.keys(nativeContractEmailEvents), ['ISSUED', 'READY', 'BOOSTER_SIGNED', 'COMPLETED']);
+    assert.deepEqual(Object.keys(nativeContractEmailEvents), ['ISSUED', 'READY', 'BOOSTER_SIGNED', 'COMPANY_SIGNED', 'COMPLETED']);
     for (const event of Object.keys(nativeContractEmailEvents)) {
         const mail = buildNativeContractEmail(contract, event, options);
         assert.match(mail.subject, /^FastBoost · /u);
@@ -31,6 +31,8 @@ test('event copy stays truthful when delivery follows a later signing step', () 
     assert.match(ready.text, /filled in the work and payment details.*If it is waiting for your signature/u);
     const boosterSigned = buildNativeContractEmail(contract, 'BOOSTER_SIGNED', options);
     assert.match(boosterSigned.text, /booster signed the agreement.*If FastBoost still needs to sign/u);
+    const companySigned = buildNativeContractEmail(contract, 'COMPANY_SIGNED', options);
+    assert.match(companySigned.text, /FastBoost completed the details and signed.*If your signature is still needed/u);
     const completed = buildNativeContractEmail(contract, 'COMPLETED', options);
     assert.match(completed.text, /signed PDF is attached/u);
     assert.match(completed.html, /signed PDF is attached/u);

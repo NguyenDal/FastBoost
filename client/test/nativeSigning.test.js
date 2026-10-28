@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { transformWithOxc } from 'vite';
-import { agreementSigningPath, hasDrawnSignature, signatureSubmission, signingValuesMatch } from '../src/utils/nativeSigning.js';
+import { agreementSigningPath, hasDrawnSignature, signatureMissingRequirements, signatureSubmission, signingValuesMatch } from '../src/utils/nativeSigning.js';
 import { nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp } from '../src/utils/nativeSigningI18n.js';
+import { nativeContractBoosterFirst, nativeContractPendingStatus } from '../src/utils/contractSigning.js';
 
 test('the built-in agreement route binds the specific contract and retains a safe local destination', () => {
     assert.equal(agreementSigningPath('contract-123'), '/provider/contracts/contract-123/sign');
@@ -62,7 +63,8 @@ async function componentFixture(bindings, initialStates = [], options = {}) {
         createPortal: children => children, translateAgreementHtml: html => html,
         nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp,
         Navbar: 'Navbar', ContractSignaturePad: 'SignaturePad', Link: 'Link',
-        signatureSubmission, signingValuesMatch, hasDrawnSignature, agreementSigningPath,
+        signatureSubmission, signatureMissingRequirements, signingValuesMatch, hasDrawnSignature, agreementSigningPath,
+        nativeContractBoosterFirst, nativeContractPendingStatus,
         CONTRACT_SIGNING_CHANNEL: 'test-signing', date: value => value,
         getStoredUser: () => ({ id: 'company' }), hasValidSession: () => true,
         authStorage: { getItem: () => 'session' }, useNavigate: () => () => {},
@@ -83,6 +85,11 @@ function find(tree, predicate) {
     if (!Array.isArray(tree) && predicate(tree)) return tree;
     for (const child of Array.isArray(tree) ? tree : [tree.props?.children]) { const result = find(child, predicate); if (result) return result; }
     return null;
+}
+function textContent(tree) {
+    if (tree == null || typeof tree === 'boolean') return '';
+    if (typeof tree !== 'object') return String(tree);
+    return (Array.isArray(tree) ? tree : [tree.props?.children]).map(textContent).join('');
 }
 function attachAgreementDocument(fixture, fields = [], frameKey = 'frozen-hash-en') {
     const markerNodes = fields.map(field => ({
@@ -121,7 +128,7 @@ test('the FastBoost owner saves only current agreement fields, including fixed l
     const preparedOwner = { ...readyContext, role: 'company', canPrepare: true, canSign: false, values: draft.values, fields: draft.fields };
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return preparedOwner; } }, [draft, draft.values, true]);
     const tree = attachAgreementDocument(fixture, draft.fields, 'draft-en');
-    const review = find(tree, item => item.type === 'button' && item.props.children === 'Save for booster review');
+    const review = find(tree, item => item.type === 'button' && item.props.children === 'Review completed agreement');
     assert.ok(review, 'assigned FastBoost owner can save terms from within the document');
     assert.equal(find(tree, item => item.type === 'p' && item.props.children === 'Signing is not available for this account at this stage.'), null);
     await review.props.onClick({ preventDefault() {} });
@@ -170,6 +177,38 @@ test('the booster receives a signature form only after owner preparation', async
     const tree = attachAgreementDocument(fixture);
     assert.ok(find(tree, item => item.props?.className === 'native-signature-form'));
     assert.equal(find(tree, item => item.props?.className === 'native-inline-field'), null);
+});
+
+test('FastBoost completes the fields and reviews a plain document before explicitly signing first', async () => {
+    const calls = [];
+    const fields = [{ key: 'PayeeLegalName', label: 'Payee legal name', required: true }];
+    const draft = { ...readyContext, signingOrder: 'COMPANY_FIRST', canPrepare: true, canSign: false, prepared: false, documentHash: null, values: { PayeeLegalName: 'Booster Example' }, fields };
+    const prepared = { ...draft, prepared: true, documentHash: 'frozen-hash', canSign: true };
+    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return prepared; } }, [draft, draft.values, true]);
+    const tree = attachAgreementDocument(fixture, fields, 'draft-en');
+    assert.ok(find(tree, item => item.props?.className === 'native-inline-field'));
+    assert.equal(find(tree, item => item.props?.className === 'native-inline-actions')?.props.children?.type, 'button', 'preparation has a single compact action');
+    await find(tree, item => item.type === 'button' && item.props.children === 'Review completed agreement').props.onClick({ preventDefault() {} });
+    const review = attachAgreementDocument(fixture, fields);
+    assert.equal(find(review, item => item.props?.className === 'native-inline-field'), null, 'completed terms are document text');
+    assert.ok(find(review, item => item.props?.className === 'native-signature-form'));
+    assert.equal(find(review, item => item.type === 'input' && item.props.type === 'checkbox').props.checked, false, 'review requires fresh signing consent');
+    assert.deepEqual(calls.map(call => call[1]), ['prepare'], 'review never signs automatically');
+});
+
+test('the booster only reads completed terms and signs after FastBoost', async () => {
+    const fields = [{ key: 'PayeeLegalName', label: 'Payee legal name' }];
+    const context = { ...readyContext, signingOrder: 'COMPANY_FIRST', role: 'booster', canPrepare: false, canSign: false, fields, values: { PayeeLegalName: 'Booster Example' } };
+    const waiting = await componentFixture({}, [context, context.values, true]);
+    const before = attachAgreementDocument(waiting, fields);
+    assert.equal(find(before, item => item.props?.className === 'native-inline-field'), null, 'stale editing state cannot expose owner fields');
+    assert.equal(find(before, item => item.props?.className === 'native-signature-form'), null);
+    const signedContext = { ...context, canSign: true, contract: { ...context.contract, companySignedAt: '2026-10-27' }, signatures: [{ role: 'COMPANY' }] };
+    const ready = await componentFixture({}, [signedContext, context.values, false]);
+    const after = attachAgreementDocument(ready, fields);
+    assert.equal(find(after, item => item.props?.className === 'native-inline-field'), null);
+    assert.equal(find(after, item => item.type === 'button' && item.props.children === 'Edit details'), null);
+    assert.ok(find(after, item => item.props?.className === 'native-signature-form'));
 });
 
 test('switching to the Vietnamese reading view does not submit a signature', async () => {
@@ -221,6 +260,81 @@ test('rendering a ready agreement never signs it; explicit submit uses the accep
     assert.equal(calls[0][2].documentHash, readyContext.documentHash);
     assert.equal(calls[0][2].challenge, readyContext.challenge);
     assert.equal(calls[0][2].consent, true);
+});
+
+test('the embedded agreement allows form submission while keeping document scripts blocked', async () => {
+    const fixture = await componentFixture({}, [readyContext, readyContext.values, false]);
+    const frame = find(fixture.render(), item => item.type === 'iframe');
+    const permissions = new Set(frame.props.sandbox.split(/\s+/));
+    assert.ok(permissions.has('allow-forms'), 'a browser must be able to dispatch the embedded form submit event');
+    assert.ok(permissions.has('allow-same-origin'), 'the parent must still mount and control the signature form');
+    assert.equal(permissions.has('allow-scripts'), false, 'agreement HTML must not execute its own scripts');
+});
+
+test('missing signing requirements appear beside the disabled button and clear as the signer completes them', async () => {
+    const calls = [];
+    const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); } }, [readyContext, readyContext.values, false]);
+    let form = find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-form');
+    let guidance = find(form, item => item.props?.id === 'native-signature-requirements');
+    let submit = find(form, item => item.type === 'button' && item.props.children === 'Sign agreement');
+    assert.ok(guidance, 'the explanation belongs inside the visible signing form');
+    assert.equal(guidance.props.role, 'status');
+    for (const key of ['signatureNameRequired', 'signatureInitialsRequired', 'signatureConsentRequired']) {
+        assert.ok(textContent(guidance).includes(nativeSigningText('en', key)), `missing ${key} is explained`);
+    }
+    assert.equal(submit.props.disabled, true);
+    assert.equal(submit.props['aria-describedby'], guidance.props.id);
+    find(form, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'C' } });
+    form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
+    guidance = find(form, item => item.props?.id === 'native-signature-requirements');
+    assert.ok(textContent(guidance).includes(nativeSigningText('en', 'signatureNameRequired')), 'a one-character name must still explain the minimum length');
+    find(form, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'Company Signer' } });
+    find(form, item => item.type === 'input' && item.props.name === 'initials').props.onChange({ target: { value: 'CS' } });
+    form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
+    guidance = find(form, item => item.props?.id === 'native-signature-requirements');
+    assert.ok(textContent(guidance).includes(nativeSigningText('en', 'signatureConsentRequired')));
+    assert.equal(textContent(guidance).includes(nativeSigningText('en', 'signatureNameRequired')), false);
+    assert.equal(textContent(guidance).includes(nativeSigningText('en', 'signatureInitialsRequired')), false);
+    find(form, item => item.type === 'input' && item.props.type === 'checkbox').props.onChange({ target: { checked: true } });
+    form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
+    submit = find(form, item => item.type === 'button' && item.props.children === 'Sign agreement');
+    assert.equal(find(form, item => item.props?.id === 'native-signature-requirements'), null);
+    assert.equal(submit.props.disabled, false);
+    assert.equal(Boolean(submit.props['aria-describedby']), false);
+    assert.equal(calls.length, 0, 'completing the prerequisites must not sign automatically');
+});
+
+test('drawn signing explains the missing drawing in the selected language until a stroke is supplied', async () => {
+    const states = [readyContext, readyContext.values, false, 'Company Signer', 'CS', { type: 'drawn', width: 600, height: 180, strokes: [] }, true];
+    states[14] = 'vi';
+    const fixture = await componentFixture({}, states);
+    let form = find(attachAgreementDocument(fixture, [], 'frozen-hash-vi'), item => item.props?.className === 'native-signature-form');
+    const guidance = find(form, item => item.props?.id === 'native-signature-requirements');
+    assert.ok(guidance);
+    const translated = nativeSigningText('vi', 'signatureDrawingRequired');
+    assert.notEqual(translated, nativeSigningText('en', 'signatureDrawingRequired'));
+    assert.ok(textContent(guidance).includes(translated));
+    assert.equal(find(form, item => item.type === 'button' && item.props.children === nativeSigningText('vi', 'signAgreement')).props.disabled, true);
+    find(form, item => item.type === 'SignaturePad').props.onChange({ type: 'drawn', width: 600, height: 180, strokes: [[[1, 1], [10, 10]]] });
+    form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
+    assert.equal(find(form, item => item.props?.id === 'native-signature-requirements'), null);
+    assert.equal(find(form, item => item.type === 'button' && item.props.children === nativeSigningText('vi', 'signAgreement')).props.disabled, false);
+});
+
+test('a rejected signature is explained in the form without a second offscreen alert', async () => {
+    const failureMessage = 'Use the full legal name assigned to your signing invitation.';
+    const fixture = await componentFixture({ nativeContractRequest: async () => { throw Object.assign(new Error(failureMessage), { status: 400 }); } },
+        [readyContext, readyContext.values, false, 'Incorrect Signer', 'IS', { type: 'typed' }, true]);
+    await find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
+    const tree = fixture.render();
+    const form = find(tree, item => item.props?.className === 'native-signature-form');
+    const inlineAlert = find(form, item => item.props?.role === 'alert');
+    assert.ok(inlineAlert, 'a signer at the end of the document must see why submission failed');
+    assert.equal(textContent(inlineAlert), failureMessage);
+    const alerts = [];
+    find(tree, item => { if (item.props?.role === 'alert') alerts.push(item); return false; });
+    assert.deepEqual(alerts, [inlineAlert], 'the same error must not also be announced above the document');
+    assert.equal(find(form, item => item.type === 'input' && item.props.type === 'checkbox').props.checked, false, 'a rejected signing attempt requires renewed consent');
 });
 
 test('uncertain server replies lock editing and retry the identical signing intent', async () => {

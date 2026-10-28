@@ -12,6 +12,15 @@ export function hasDrawnSignature(signature) {
     return signature?.type === 'drawn' && signature.strokes?.some(stroke => stroke.length > 1);
 }
 
+export function signatureMissingRequirements({ legalName, initials, signature, consent }) {
+    return [
+        legalName.trim().length < 2 && 'legalName',
+        !initials.trim() && 'initials',
+        signature.type === 'drawn' && !hasDrawnSignature(signature) && 'signature',
+        !consent && 'consent',
+    ].filter(Boolean);
+}
+
 export function signatureSubmission({ context, legalName, initials, signature, consent }, previous, uuid = () => crypto.randomUUID()) {
     if (!context?.documentHash || !context.challenge || !consent) throw new Error('Review the agreement and accept electronic signing first.');
     const details = {

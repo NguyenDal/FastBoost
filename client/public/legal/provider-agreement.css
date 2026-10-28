@@ -45,7 +45,8 @@ body.fb-signing .native-inline-field small,body.fb-signing .native-fixed-value s
 body.fb-signing .native-inline-field :is(input,textarea):disabled,body.fb-signing .native-signature-form :is(input,button):disabled{opacity:.6;cursor:not-allowed}
 body.fb-signing .native-inline-mirror{color:#e4d9ff;overflow-wrap:anywhere}
 body.fb-signing .native-fixed-value{color:#e4d9ff}
-body.fb-signing .native-inline-actions{margin:24px 0 0;padding:20px 22px;border:1px solid #665384;border-radius:10px;background:#1d1b2c}
+body.fb-signing .native-inline-actions{margin:24px 0 0;padding:0;border:0;background:none}
+body.fb-signing:not(.native-is-editing) [data-native-field],body.fb-signing:not(.native-is-editing) [data-native-value]{display:inline;width:auto;min-height:0;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit}
 body.fb-signing .native-inline-notice{margin:22px 0;padding:12px 16px;border-left:3px solid #a388df;background:#211d32;color:#e3d9f4}
 body.fb-signing .native-inline-notice strong{display:block;font-size:14px;line-height:1.5}
 body.fb-signing .native-inline-notice p{margin:5px 0 0;color:#c7c9dd;font-size:13px;line-height:1.6}
@@ -72,6 +73,8 @@ body.fb-signing .native-signature-pad button{min-height:30px;padding:4px 9px;fon
 body.fb-signing .native-signing-consent{display:flex;align-items:flex-start;gap:10px;color:#d2d6e5;font-size:12px;line-height:1.7}
 body.fb-signing .native-signing-consent input{flex-shrink:0;width:17px;height:17px;accent-color:#9a6ee8;margin:3px 0 0}
 body.fb-signing .native-signature-form>p.native-signing-privacy{color:#aab5c9;font-size:11px;line-height:1.65}
+body.fb-signing .native-signature-form>p.native-signing-requirements{padding:10px 12px;border:1px solid #b69be044;border-radius:8px;background:#8b61dc12;color:#dfd2f6;font-size:12px}
+body.fb-signing .native-signature-form>p.native-signing-error{padding:12px;border:1px solid #e76b7555;border-radius:8px;background:#d13c4b16;color:#ffb9bd;overflow-wrap:anywhere}
 body.fb-signing .native-signature-form>p.native-consent-translation{padding:10px 12px;border-left:3px solid #a78be9;background:#2c2440;color:#dcd2f0;font-size:12px}
 body.fb-signing .native-signing-pending{padding:14px;border:1px solid #d8b46f35;border-radius:9px;background:#bb8c2310}
 body.fb-signing .native-signing-pending p{font-size:12px;line-height:1.5;margin:0 0 10px;color:#ddc998}

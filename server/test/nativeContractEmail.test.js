@@ -23,9 +23,10 @@ test('agreement email events use one stable outbox identity per recipient', asyn
     await queueNativeContractEmail(tx, id, 'ISSUED');
     await queueNativeContractEmail(tx, id, 'READY');
     await queueNativeContractEmail(tx, id, 'BOOSTER_SIGNED');
+    await queueNativeContractEmail(tx, id, 'COMPANY_SIGNED');
     await queueNativeContractEmail(tx, id, 'COMPLETED');
-    assert.deepEqual(writes.map(write => write.data.map(row => row.recipientRole)), [['BOOSTER'], ['BOOSTER'], ['COMPANY'], ['BOOSTER', 'COMPANY']]);
-    assert.equal(new Set(writes.flatMap(write => write.data.map(row => row.id))).size, 5);
+    assert.deepEqual(writes.map(write => write.data.map(row => row.recipientRole)), [['BOOSTER'], ['BOOSTER'], ['COMPANY'], ['BOOSTER'], ['BOOSTER', 'COMPANY']]);
+    assert.equal(new Set(writes.flatMap(write => write.data.map(row => row.id))).size, 6);
     assert.ok(writes.every(write => write.skipDuplicates));
     await assert.rejects(queueNativeContractEmail(tx, id, 'UNKNOWN'), /Unknown/);
 });
@@ -35,6 +36,11 @@ test('only real event transitions are deliverable and the final PDF hash must ma
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: new Date() }), true);
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: null }), false);
     assert.equal(relevant({ event: 'BOOSTER_SIGNED', recipientRole: 'COMPANY' }, contract), true);
+    const ownerFirst = { ...contract, nativeSnapshot: { version: 'FB-BSA-2.3' }, nativePreparedAt: new Date() };
+    assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, ownerFirst), true);
+    assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, companySignedAt: null }), false);
+    assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, nativeSnapshot: { version: 'FB-BSA-2.2' } }), false);
+    assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'COMPANY' }, ownerFirst), false);
     assert.equal(relevant({ event: 'COMPLETED', recipientRole: 'BOOSTER' }, contract), true);
     assert.equal(relevant({ event: 'COMPLETED', recipientRole: 'COMPANY' }, { ...contract, companySignedAt: null }), false);
     assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, { ...contract, revokedAt: new Date() }), false);

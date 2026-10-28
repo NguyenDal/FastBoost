@@ -7,15 +7,14 @@ const contract = {
     providerUsername: 'TestBooster', startsAt: '2026-10-22', companySignerName: 'An Nguyen Nguyen', companySignerEmail: 'owner@example.test',
 };
 const values = () => ({ ...Object.fromEntries(agreement.commercialFields().map(field => [field.key, field.defaultValue])),
-    WorkLocation: 'Manitoba, Canada', PaymentMethod: 'Bank transfer', PayeeLegalName: 'Nguyễn Minh Anh',
-    ProviderTimeZone: 'America/Winnipeg' });
+    WorkLocation: 'Manitoba, Canada', PayeeLegalName: 'Nguyễn Minh Anh' });
 const signature = (role, legalName, initials, time) => ({ role, legalName, initials, signedAt: time,
     signature: { type: 'typed' }, actorId: role.toLowerCase(), requestId: `${role}-test-request`,
     consentText: 'I agree to use electronic signatures and sign this exact agreement and Schedule A.' });
 
 test('issued snapshot is self-contained, current, and hash binds every accepted value', () => {
     const snapshot = agreement.createSnapshot(contract, agreement.validateValues(values()));
-    assert.equal(snapshot.version, 'FB-BSA-2.2');
+    assert.equal(snapshot.version, 'FB-BSA-2.3');
     assert.equal(snapshot.values.AgreementId, contract.id);
     assert.equal(snapshot.values.ProviderLegalName, contract.signerName);
     assert.equal(snapshot.fields.some(field => field.tabLabel === 'ReferenceLanguage'), false, 'fixed languages do not create a PDF entry field');
@@ -29,12 +28,15 @@ test('issued snapshot is self-contained, current, and hash binds every accepted 
 });
 
 test('commercial settings reject missing fields, control characters and forged locked identities', () => {
-    assert.equal(agreement.commercialFields().length, 7);
+    assert.equal(agreement.commercialFields().length, 3);
     assert.equal(agreement.commercialFields().find(field => field.key === 'ReferenceLanguage').defaultValue, 'English/Vietnamese');
     assert.equal(agreement.commercialFields().some(field => ['AuthorizedSignatory', 'ServiceScope', 'JurisdictionAddendum', 'DataAccessCountries'].includes(field.key)), false);
     assert.throws(() => agreement.validateValues({ ...values(), ProviderLegalName: 'Someone Else' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), WorkLocation: ' ' }), /work country/);
-    assert.throws(() => agreement.validateValues({ ...values(), PaymentMethod: 'a'.repeat(71) }), /payment method/);
+    assert.throws(() => agreement.validateValues({ ...values(), PayeeLegalName: 'a'.repeat(121) }), /payee legal name/);
+    for (const key of ['EndDate', 'PaymentMethod', 'TransferFeeVariation', 'ProviderTimeZone']) {
+        assert.throws(() => agreement.validateValues({ ...values(), [key]: 'not in this version' }), /unknown/);
+    }
     assert.throws(() => agreement.validateValues({ ...values(), ServiceScope: 'not in this version' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), AuthorizedSignatory: 'Not applicable' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), DataAccessCountries: 'Canada' }), /unknown/);
@@ -49,14 +51,45 @@ test('HTML preview fills repeated values and escapes names, terms and saved sign
     const html = agreement.renderHtml(snapshot, [signature('BOOSTER', '<svg onload=alert(2)>', 'AB', '2026-10-22T05:00:00Z')]);
     assert.doesNotMatch(html, /<script>|<img src=x|<svg onload|data-download-agreement|data-print\b/);
     assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
-    assert.equal((html.match(/&lt;script&gt;/g) || []).length, 2, 'work location is synchronized in both sections');
-    assert.equal((html.match(/data-native-field="WorkLocation"/g) || []).length, 2, 'repeated agreement values have stable inline field markers');
+    assert.equal((html.match(/&lt;script&gt;/g) || []).length, 1, 'work location appears only in the parties section');
+    assert.equal((html.match(/data-native-field="WorkLocation"/g) || []).length, 1, 'agreement values have stable inline field markers');
     assert.match(html, /data-native-field="ReferenceLanguage"><span data-native-value>/);
     assert.doesNotMatch(html, /data-native-field="ProviderLegalName"/, 'locked identities do not become commercial inputs');
     assert.doesNotMatch(html, /\[PROVIDER_LEGAL_NAME\]|\[WORK_COUNTRY/);
     assert.doesNotMatch(html, /Permitted service scope — required|Jurisdiction addendum \/ variations — required/);
     assert.doesNotMatch(html, /Authorized signatory, if a business|data-native-field="AuthorizedSignatory"|data-native-field="DataAccessCountries"/);
     assert.match(html, /<td>Available languages<\/td><td><span class="fb-template"><span data-native-field="ReferenceLanguage"><span data-native-value>English\/Vietnamese<\/span><\/span><\/span><\/td>/);
+});
+
+test('current document fixes Remitly and company-paid fees, with only the start date and company-first signing', () => {
+    const snapshot = agreement.createSnapshot({ ...contract, startsAt: '2026-11-01' }, agreement.validateValues(values()));
+    const html = agreement.renderHtml(snapshot);
+    assert.equal(snapshot.values.EffectiveDate, '2026-11-01', 'canonical stored date remains ISO');
+    assert.match(html, /<td>Start date<\/td><td><span class="fb-template"><span data-native-date="2026-11-01">November 1, 2026<\/span><\/span><\/td>/);
+    assert.match(html, /Manual transfer via <strong>Remitly<\/strong>/);
+    assert.match(html, /FastBoost pays all fees for the agreed transfer/);
+    assert.match(html, /These are examples, not fixed contractual exchange rates/);
+    assert.match(html, /FastBoost completes all required details and signs the saved agreement first/);
+    assert.ok(html.indexOf('<h3>FASTBOOST</h3>') < html.indexOf('<h3>PROVIDER</h3>'));
+    assert.doesNotMatch(html, /END_DATE_OR_ONGOING|PAYMENT_METHOD|WRITTEN REPLACEMENT RULE|PROVIDER_TIME_ZONE|optional end date|local time zone/);
+    const packageFields = snapshot.fields.filter(field => field.type === 'textTabs');
+    assert.ok(packageFields.every(field => field.role === 'COMPANY'));
+    assert.equal(packageFields.some(field => ['EndDate', 'PaymentMethod', 'TransferFeeVariation', 'ProviderTimeZone'].includes(field.tabLabel)), false);
+});
+
+test('historical snapshots keep their saved payment, fee, end date and timezone terms', () => {
+    const html = agreement.renderHtml({ htmlSource: '<html><head></head><body>[PAYMENT_METHOD];[NONE / WRITTEN REPLACEMENT RULE];[END_DATE_OR_ONGOING];[PROVIDER_TIME_ZONE]</body></html>',
+        values: { PaymentMethod: 'Historical bank transfer', TransferFeeVariation: 'Historical fee rule', EndDate: 'Ongoing', ProviderTimeZone: 'Asia/Ho_Chi_Minh' } });
+    assert.match(html, /Historical bank transfer;Historical fee rule;Ongoing;Asia\/Ho_Chi_Minh/);
+    assert.doesNotMatch(html, /data-native-field|\[PAYMENT_METHOD\]/);
+});
+
+test('historical start dates retain their frozen display format', () => {
+    for (const version of ['FB-BSA-2.1', 'FB-BSA-2.2']) {
+        const html = agreement.renderHtml({ version, htmlSource: '<html><head></head><body>[EFFECTIVE_DATE]</body></html>', values: { EffectiveDate: '2026-11-01' } });
+        assert.match(html, /<body>2026-11-01<\/body>/);
+        assert.doesNotMatch(html, /data-native-date/);
+    }
 });
 
 test('historical signed snapshots still display removed version 2.1 values', () => {

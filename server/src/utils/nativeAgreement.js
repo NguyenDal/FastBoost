@@ -4,16 +4,12 @@ const { createHash } = require('node:crypto');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 
-const VERSION = 'FB-BSA-2.2';
+const VERSION = 'FB-BSA-2.3';
 const root = resolve(__dirname, '../../private/legal');
 const fail = message => Object.assign(new Error(message), { status: 400 });
 const fields = [
     ['WorkLocation', 'Work country and state or province', 120, ''],
-    ['EndDate', 'End date or Ongoing', 50, 'Ongoing'],
-    ['PaymentMethod', 'Agreed payment method', 70, ''],
     ['PayeeLegalName', 'Payee legal name', 120, ''],
-    ['TransferFeeVariation', 'Transfer fee variation', 150, 'None'],
-    ['ProviderTimeZone', 'Provider time zone', 60, ''],
     ['ReferenceLanguage', 'Available languages', 20, 'English/Vietnamese'],
 ].map(([key, label, maxLength, defaultValue]) => ({ key, label, maxLength, defaultValue, required: true }));
 const commercialFieldKeys = new Set(fields.map(field => field.key));
@@ -36,6 +32,14 @@ const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(
         : JSON.stringify(value);
 const snapshotHash = snapshot => createHash('sha256').update(canonical(snapshot)).digest('hex');
 const commercialFields = () => fields.map(field => ({ ...field }));
+
+function displayValue(snapshot, key) {
+    const value = snapshot.values[key] || '';
+    if (snapshot.version !== 'FB-BSA-2.3' || key !== 'EffectiveDate' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const date = new Date(`${value}T00:00:00Z`);
+    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return value;
+    return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(date);
+}
 
 function validateValues(values) {
     if (!values || typeof values !== 'object' || Array.isArray(values)) throw fail('Complete the agreement settings before signing.');
@@ -86,7 +90,10 @@ function renderHtml(snapshot, signatures = []) {
     let html = snapshot.htmlSource.replace(/\[([^\[\]]+)\]/g, (full, key) => {
         const label = placeholders[key];
         if (!label) return full;
-        const value = escape(snapshot.values[label] || full);
+        const value = escape(displayValue(snapshot, label) || full);
+        if (label === 'EffectiveDate' && snapshot.version === 'FB-BSA-2.3') {
+            return `<span data-native-date="${escape(snapshot.values[label])}">${value}</span>`;
+        }
         return commercialFieldKeys.has(label) ? `<span data-native-field="${label}"><span data-native-value>${value}</span></span>` : value;
     });
     html = html.replace(/<div class="fb-signature-card">([\s\S]*?)<\/div>/g, (full, content) => {
@@ -163,7 +170,7 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
         const page = pdf.getPages()[Number(box.pageNumber) - 1];
         if (!page) throw new Error('The saved agreement PDF field layout is invalid.');
         const signature = signatures.find(item => item.role === box.role);
-        if (box.type === 'textTabs') drawBoxText(page, snapshot.values[box.tabLabel] || '', box, font, fields.find(field => field.key === box.tabLabel)?.label);
+        if (box.type === 'textTabs') drawBoxText(page, displayValue(snapshot, box.tabLabel), box, font, fields.find(field => field.key === box.tabLabel)?.label);
         else if (signature && box.type === 'signHereTabs') drawSignature(page, signature, box, font);
         else if (signature && box.type === 'initialHereTabs') drawBoxText(page, signature.initials, { ...box, width: '212', height: '28' }, font);
         else if (signature && box.type === 'dateSignedTabs') drawBoxText(page, new Date(signature.signedAt).toISOString().replace('T', ' ').replace('.000Z', ' UTC'), box, font);
@@ -182,7 +189,7 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
         line('FASTBOOST', 13); line('Electronic signing completion record', 20, 15);
         line(`Agreement: ${snapshot.values.AgreementId}`); line(`Version: ${snapshot.version}`);
         line(`Accepted document SHA-256: ${snapshotHash(snapshot)}`, 8, 14);
-        const signingOrder = snapshot.version === 'FB-BSA-2.1' ? ['COMPANY', 'BOOSTER'] : ['BOOSTER', 'COMPANY'];
+        const signingOrder = snapshot.version === 'FB-BSA-2.2' ? ['BOOSTER', 'COMPANY'] : ['COMPANY', 'BOOSTER'];
         for (const [index, role] of signingOrder.entries()) {
             const item = signatures.find(signature => signature.role === role);
             line(`${index + 1}. ${role === 'COMPANY' ? 'FastBoost' : 'Booster'}`, 12);

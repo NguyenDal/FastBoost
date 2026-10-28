@@ -29,7 +29,7 @@ args = parser.parse_args()
 if args.sandbox_template and args.signing_template:
     parser.error('Choose either a signing template or a sandbox test copy.')
 signing = args.sandbox_template or args.signing_template
-VERSION = 'FB-BSA-2.2' if args.native else 'FB-BSA-2.0'
+VERSION = 'FB-BSA-2.3' if args.native else 'FB-BSA-2.0'
 field_positions = []
 field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
@@ -59,8 +59,11 @@ if args.native:
     field_names.pop('GAMES / SERVICES / REGIONS / PERMITTED METHODS')
     field_names.pop('NONE REQUIRED / IDENTIFIED SIGNED ADDENDUM')
     field_names.pop('COUNTRIES')
-    # The owner prepares the terms, although the Booster signs them first.
-    field_names = {placeholder: (label, caption, '2') for placeholder, (label, caption, _) in field_names.items()}
+    field_names.pop('END_DATE_OR_ONGOING')
+    field_names.pop('PROVIDER_TIME_ZONE')
+    field_names.pop('PAYMENT_METHOD')
+    field_names.pop('NONE / WRITTEN REPLACEMENT RULE')
+    # FastBoost completes the terms and signs first; the Provider signs second.
 names = ['LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf', 'LiberationSans-BoldItalic.ttf']
 if not (args.font_dir / names[0]).exists():
     names = ['arial.ttf', 'arialbd.ttf', 'ariali.ttf', 'arialbi.ttf']
@@ -113,12 +116,15 @@ class SigningField(Flowable):
 
     def draw(self):
         canvas = self.canv
-        canvas.setFont('FB', 7.5)
-        canvas.setFillColor(muted)
-        canvas.drawString(0, self.box_height + 7, self.caption)
-        canvas.setStrokeColor(colors.HexColor('#c8bce3'))
-        canvas.setFillColor(colors.white)
-        canvas.roundRect(0, 0, self.width, self.box_height, 3, stroke=1, fill=1)
+        # Native terms are painted as document text, never editable-looking boxes.
+        # Preserve historical DocuSign field appearance and signature areas.
+        if not args.native or self.tab_type not in ('textTabs', 'fullNameTabs'):
+            canvas.setFont('FB', 7.5)
+            canvas.setFillColor(muted)
+            canvas.drawString(0, self.box_height + 7, self.caption)
+            canvas.setStrokeColor(colors.HexColor('#c8bce3'))
+            canvas.setFillColor(colors.white)
+            canvas.roundRect(0, 0, self.width, self.box_height, 3, stroke=1, fill=1)
         x, y = canvas.absolutePosition(2, self.box_height - 2)
         field_positions.append({'tabLabel': self.label, 'recipientId': self.recipient,
             'documentId': '1', 'pageNumber': str(canvas.getPageNumber()),
@@ -159,7 +165,7 @@ def table(node):
 tree = html.parse(str(ROOT / ('server/private/legal/provider-agreement-native.html' if args.native else 'server/private/legal/provider-agreement.html')))
 story = [Paragraph('FASTBOOST', ParagraphStyle('brand', fontName='FB-Bold', fontSize=13, textColor=purple, spaceAfter=18))]
 story += [para(tree.xpath('//h1')[0], 'title')]
-story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('24 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
+story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('27 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
 if args.sandbox_template:
     story += [Paragraph('<b>SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION.</b> Field layout for integration testing. Commercial settings remain subject to approval.', styles['body'])]
 story += [para(tree.xpath('//p[@class="fb-intro"]')[0])]
@@ -174,9 +180,11 @@ for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)
     heading = section.xpath('.//h2')[0].text_content()
     display_heading = heading if number == 'A' and heading.startswith('Schedule A') else f'{number}  {heading}'
     story.append(Paragraph(entities.escape(clean(display_heading)), styles['heading']))
+    signature_notes = section.xpath('./p[contains(concat(" ",normalize-space(@class)," ")," fb-sources ")]') if args.native and section.get('id') == 'signatures' else []
     for node in section:
         if node.tag == 'p':
-            story.append(para(node, 'small' if 'fb-sources' in node.get('class', '') else 'body'))
+            if node not in signature_notes:
+                story.append(para(node, 'small' if 'fb-sources' in node.get('class', '') else 'body'))
         elif node.tag == 'ul':
             for item in node:
                 story.append(Paragraph('• ' + inline(item), styles['body']))
@@ -186,7 +194,7 @@ for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)
             cards = []
             for card in node:
                 cells = [para(card.find('h3'), 'heading')]
-                recipient = ('2' if args.native else '1') if 'FASTBOOST' in card.find('h3').text_content() else ('1' if args.native else '2')
+                recipient = '1' if 'FASTBOOST' in card.find('h3').text_content() else '2'
                 role_prefix = 'Company' if 'FASTBOOST' in card.find('h3').text_content() else 'Provider'
                 for p in card.findall('p'):
                     if signing and 'fb-signline' in p.get('class', ''):
@@ -204,7 +212,10 @@ for section in tree.xpath('//section[contains(concat(" ",normalize-space(@class)
                 cards.append(cells)
             signatures = Table(list(zip(*cards)), colWidths=[252, 252], hAlign='LEFT')
             signatures.setStyle(TableStyle([('VALIGN', (0,0),(-1,-1),'TOP'),('BOX',(0,0),(-1,-1),.6,colors.HexColor('#dcd7e8')),('LINEAFTER',(0,0),(0,-1),.6,colors.HexColor('#dcd7e8')),('LEFTPADDING',(0,0),(-1,-1),14),('RIGHTPADDING',(0,0),(-1,-1),14),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,-1),(-1,-1),18)]))
-            story.append(KeepTogether([Spacer(1, 10), signatures, Spacer(1, 16)]))
+            # Keep the native completion-record note with its signature block.
+            # The smaller gap avoids a final page containing only this short note.
+            signature_end = [Spacer(1, 6), *[para(note, 'small') for note in signature_notes]] if signature_notes else [Spacer(1, 16)]
+            story.append(KeepTogether([Spacer(1, 10), signatures, *signature_end]))
 
 def page_chrome(canvas, doc):
     canvas.saveState()
@@ -228,7 +239,7 @@ doc = SimpleDocTemplate(str(output), pagesize=letter, topMargin=63, bottomMargin
 doc.build(story, onFirstPage=page_chrome, onLaterPages=page_chrome)
 if signing:
     signers = []
-    signer_order = [('1', 'Booster'), ('2', 'FastBoost')] if args.native else [('1', 'FastBoost'), ('2', 'Booster')]
+    signer_order = [('1', 'FastBoost'), ('2', 'Booster')]
     for recipient, role in signer_order:
         tabs = {}
         for field in field_positions:
@@ -244,7 +255,7 @@ if signing:
             tabs.setdefault(field['type'], []).append(tab)
         signers.append({'recipientId': recipient, 'roleName': role, 'routingOrder': recipient, 'tabs': tabs})
     template = {'version': VERSION, 'name': f'FastBoost Booster Service Agreement {VERSION}' + (' - Sandbox Test' if args.sandbox_template else ''),
-        'description': ('FastBoost completes the commercial settings; the Booster reviews and signs first, then FastBoost countersigns.' if args.native else 'FastBoost completes the required commercial settings and signs first; the Booster then reviews and signs.') + (' Sandbox testing only.' if args.sandbox_template else ''),
+        'description': 'FastBoost completes the required commercial settings and signs first; the Booster then reviews and signs.' + (' Sandbox testing only.' if args.sandbox_template else ''),
         'emailSubject': 'Booster Service Agreement' + (' - SANDBOX TEST' if args.sandbox_template else ''),
         'documents': [{'documentId': '1', 'name': output.name, 'fileExtension': 'pdf', 'documentBase64': base64.b64encode(output.read_bytes()).decode()}],
         'recipients': {'signers': signers}}

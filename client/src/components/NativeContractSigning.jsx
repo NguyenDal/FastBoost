@@ -7,7 +7,7 @@ import { nativeContractRequest } from '../api/nativeContracts';
 import { downloadContract } from '../api/operations';
 import { authStorage } from '../utils/authStorage';
 import { clearExpiredSession, getStoredUser, hasValidSession } from '../utils/authSession';
-import { agreementSigningPath, hasDrawnSignature, signatureSubmission, signingValuesMatch } from '../utils/nativeSigning';
+import { agreementSigningPath, signatureMissingRequirements, signatureSubmission, signingValuesMatch } from '../utils/nativeSigning';
 import { translateAgreementHtml } from '../utils/translateAgreementHtml';
 import { nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp } from '../utils/nativeSigningI18n';
 import { CONTRACT_SIGNING_CHANNEL } from '../utils/contractSigning';
@@ -119,6 +119,8 @@ export default function NativeContractSigning({ id }) {
     const ownSignature = context?.signatures?.find(item => item.role === (company ? 'COMPANY' : 'BOOSTER'));
     const locked = busy || uncertain;
     const t = key => nativeSigningText(language, key);
+    const missingSignatureRequirements = signatureMissingRequirements({ legalName, initials, signature, consent });
+    const signatureRequirementText = { legalName: 'signatureNameRequired', initials: 'signatureInitialsRequired', signature: 'signatureDrawingRequired', consent: 'signatureConsentRequired' };
     const iframeHtml = useMemo(() => context?.html ? translateAgreementHtml(context.html, language) : '', [context?.html, language]);
     const currentFrameKey = `${context?.documentHash || 'draft'}-${language}`;
     const frameReady = frameDocument && loadedFrameKey === currentFrameKey && iframeRef.current?.contentDocument === frameDocument;
@@ -154,7 +156,7 @@ export default function NativeContractSigning({ id }) {
             frameDocument.removeEventListener('pointerup', scheduleResize);
             if (frame) cancelAnimationFrame(frame);
         };
-    }, [frameDocument, frameReady, editable, editing, signature.type, uncertain, reviewed, context?.canSign]);
+    }, [frameDocument, frameReady, editable, editing, signature.type, uncertain, reviewed, context?.canSign, error, missingSignatureRequirements.length]);
 
     useEffect(() => {
         if (!frameReady || !reviewed || !context?.canSign || !pendingJumpRef.current) return;
@@ -233,7 +235,7 @@ export default function NativeContractSigning({ id }) {
         const missingIndex = (context.fields || []).findIndex(field => field.required !== false && !String(values[field.key] || '').trim());
         if (missingIndex >= 0) {
             setError(`${t('completeFieldBeforeReview')} ${nativeSigningFieldLabel(language, context.fields[missingIndex])}`);
-            jumpToField(missingIndex);
+            jumpToField(editableFields.findIndex(field => field.key === context.fields[missingIndex].key));
             return;
         }
         const epoch = epochRef.current;
@@ -245,7 +247,7 @@ export default function NativeContractSigning({ id }) {
             contextRef.current = next; setContext(next); setValues(next.values || {}); setEditing(false); setConsent(false);
             pendingJumpRef.current = Boolean(next.canSign);
             dirtyRef.current = false; pendingRef.current = null;
-            setMessage(t('ownerDetailsSaved'));
+            setMessage(t(next.signingOrder === 'BOOSTER_FIRST' ? 'ownerDetailsSaved' : 'completedAgreementReady'));
         } catch (failure) {
             if (epoch !== epochRef.current || failure.name === 'AbortError') return;
             if ([401, 403, 409].includes(failure.status)) await reloadRef.current?.(true);
@@ -342,14 +344,15 @@ export default function NativeContractSigning({ id }) {
             {archived && contract?.documentAvailable && <button className="native-primary" disabled={busy} onClick={download}>Download PDF</button>}
             {error && <p className="native-signing-error" role="alert">{error}</p>}
         </main> : context && <main className="native-signing-layout">
-            {error && <p className="native-signing-error" role="alert">{error}</p>}
+            {error && !(showSignatureForm && signatureMount) && <p className="native-signing-error" role="alert">{error}</p>}
             {message && <p className="native-signing-message" role="status">{message}</p>}
             {archived ? <div className="native-signing-outcome"><h2>{t('archivedAgreement')}</h2><p>{t('archivedDescription')}</p>{contract?.documentAvailable && <button className="native-primary" disabled={busy} onClick={download}>{completed ? t('downloadSignedPdf') : t('downloadPdf')}</button>}</div>
                 : completed ? <div className="native-signing-outcome"><h2>{t('allSigned')}</h2><p>{t('bothSignedDescription')}</p><button className="native-primary" disabled={busy} onClick={download}>{t('downloadSignedPdf')}</button></div>
                     : ownSignature ? <div className="native-signing-outcome"><h2>{t('thankYou')}</h2><p>{company ? t('boosterCanReview') : t('companyCanCountersign')}</p><Link to={`/provider/contracts/${encodeURIComponent(id)}`}>{t('returnToAgreement')}</Link></div>
                         : !waitingForOwnerDetails && !waitingForBooster && !waitingForCompany && !editing && !editable && !context.canSign && <p className="native-signing-unavailable">{t('signUnavailable')}</p>}
             <section className="native-signing-document" aria-label={t('agreementDocument')}>
-                {iframeHtml && <iframe ref={iframeRef} key={currentFrameKey} data-frame-key={currentFrameKey} title={t('agreementDocument')} srcDoc={iframeHtml} sandbox="allow-same-origin" onLoad={frameLoaded} />}
+                {/* The React form portal needs form submission enabled; document scripts stay sandboxed. */}
+                {iframeHtml && <iframe ref={iframeRef} key={currentFrameKey} data-frame-key={currentFrameKey} title={t('agreementDocument')} srcDoc={iframeHtml} sandbox="allow-same-origin allow-forms" onLoad={frameLoaded} />}
             </section>
             {showEditor && frameReady && embeddedFields.filter(item => !FIXED_DRAFT_FIELDS.has(item.field.key)).flatMap(({ field, targets }, index) => targets.map((target, targetIndex) => createPortal(targetIndex === 0
                 ? <label className="native-inline-field">
@@ -360,7 +363,7 @@ export default function NativeContractSigning({ id }) {
                 </label>
                 : <span className="native-inline-mirror">{values[field.key] || '—'}</span>, target, `${field.key}-${targetIndex}`)))}
             {showEditor && frameReady && embeddedFields.filter(item => FIXED_DRAFT_FIELDS.has(item.field.key)).flatMap(({ field, targets }) => targets.map((target, index) => createPortal(<span className="native-fixed-value">{field.key === 'ReferenceLanguage' && language === 'vi' && values[field.key] === 'English/Vietnamese' ? 'Tiếng Anh/Tiếng Việt' : values[field.key] || field.defaultValue || '—'}</span>, target, `${field.key}-${index}`)))}
-            {showEditor && reviewMount && createPortal(<div className="native-inline-actions"><h3>{t('ownerEnterDetails')}</h3><p>{t('commercialInstruction')} {t('ownerSavesBeforeBooster')}</p><button type="button" className="native-primary" disabled={locked || !allFieldsEmbedded} onClick={prepare}>{busy ? t('savingAgreement') : t('saveForBoosterReview')}</button></div>, reviewMount)}
+            {showEditor && reviewMount && createPortal(<div className="native-inline-actions"><button type="button" className="native-primary" disabled={locked || !allFieldsEmbedded} onClick={prepare}>{busy ? t('savingAgreement') : t('reviewCompletedAgreement')}</button></div>, reviewMount)}
             {waitingForOwnerDetails && reviewMount && createPortal(<div className="native-inline-notice"><strong>{t('waitingForFastBoostDetails')}</strong><p>{t('ownerDetailsDescription')}</p></div>, reviewMount)}
             {waitingForBooster && !editing && signatureMount && createPortal(<div className="native-inline-notice"><strong>{t('waitingForBoosterSignature')}</strong><p>{t('companyCountersignsSecond')}</p>{editable && <button type="button" className="native-text-button" disabled={locked} onClick={() => { dirtyRef.current = true; setEditing(true); setMessage(''); }}>{t('editAgreementDetails')}</button>}</div>, signatureMount)}
             {waitingForCompany && !editing && signatureMount && createPortal(<div className="native-inline-notice"><strong>{t('waitingForFastBoostSignature')}</strong><p>{t('boosterSignsAfterFastBoost')}</p>{editable && <button type="button" className="native-text-button" disabled={locked} onClick={() => { dirtyRef.current = true; setEditing(true); setMessage(''); }}>{t('editAgreementDetails')}</button>}</div>, signatureMount)}
@@ -369,7 +372,7 @@ export default function NativeContractSigning({ id }) {
                 <p>{t('reviewBeforeSigning')}</p>
                 {editable && <button type="button" className="native-text-button" disabled={locked} onClick={() => { dirtyRef.current = true; setEditing(true); setConsent(false); setMessage(''); }}>{t('editAgreementDetails')}</button>}
                 <label>{t('fullLegalName')}<input name="legalName" autoComplete="name" required minLength={2} maxLength={100} disabled={locked} value={legalName} onChange={event => { setLegalName(event.target.value); pendingRef.current = null; }} /></label>
-                <label>{t('scheduleInitials')}<input required minLength={1} maxLength={12} disabled={locked} value={initials} onChange={event => { setInitials(event.target.value); pendingRef.current = null; }} /></label>
+                <label>{t('scheduleInitials')}<input name="initials" required minLength={1} maxLength={12} disabled={locked} value={initials} onChange={event => { setInitials(event.target.value); pendingRef.current = null; }} /></label>
                 <fieldset className="native-signature-method" disabled={locked}><legend>{t('signature')}</legend><div>
                     <label><input type="radio" name="signature-method" checked={signature.type === 'typed'} onChange={() => setSignature({ type: 'typed' })} />{t('type')}</label>
                     <label><input type="radio" name="signature-method" checked={signature.type === 'drawn'} onChange={() => setSignature(emptyDrawing())} />{t('draw')}</label>
@@ -378,13 +381,15 @@ export default function NativeContractSigning({ id }) {
                 {language === 'vi' && <><p className="native-consent-label">{t('viewEnglishConsent')}</p><p className="native-consent-translation">{t('consentVietnameseExplanation')}</p></>}
                 <label className="native-signing-consent"><input type="checkbox" checked={consent} required disabled={locked} onChange={event => setConsent(event.target.checked)} /><span>{context.consentText}</span></label>
                 <p className="native-signing-privacy">{t('signaturePrivacy')}</p>
+                {!uncertain && missingSignatureRequirements.length > 0 && <p id="native-signature-requirements" className="native-signing-requirements" role="status">{t('signingRequirements')} {missingSignatureRequirements.map(key => t(signatureRequirementText[key])).join('; ')}.</p>}
+                {error && <p className="native-signing-error" role="alert">{error}</p>}
                 {uncertain && <div className="native-signing-pending" role="status"><p>{t('confirmationInterrupted')}</p><button type="button" disabled={busy} onClick={() => reloadRef.current?.(true)}>{t('checkSigningStatus')}</button></div>}
-                <button className="native-primary" disabled={busy || (!uncertain && (!consent || !legalName.trim() || !initials.trim() || (signature.type === 'drawn' && !hasDrawnSignature(signature))))}>{busy ? t('recordingSignature') : uncertain ? t('retrySignature') : t('signAgreement')}</button>
+                <button type="submit" className="native-primary" aria-describedby={!uncertain && missingSignatureRequirements.length ? 'native-signature-requirements' : undefined} disabled={busy || (!uncertain && missingSignatureRequirements.length > 0)}>{busy ? t('recordingSignature') : uncertain ? t('retrySignature') : t('signAgreement')}</button>
             </form>, signatureMount)}
             {showEditor && <div className="native-signing-guide" role="navigation" aria-label={t('formNavigation')}>
                 <span>{activeFieldIndex >= 0 ? `${activeFieldIndex + 1} / ${editableFields.length}` : t('ownerEnterDetails')}</span>
                 <button type="button" disabled={!frameReady || !allFieldsEmbedded} onClick={jumpToNextField}>{t('nextField')}</button>
-                <button type="button" disabled={!frameReady || !allFieldsEmbedded} onClick={nextMissingIndex >= 0 ? jumpToNextBlank : prepare}>{nextMissingIndex >= 0 ? t('nextBlankField') : t('saveForBoosterReview')}</button>
+                <button type="button" disabled={!frameReady || !allFieldsEmbedded || locked} onClick={nextMissingIndex >= 0 ? jumpToNextBlank : prepare}>{nextMissingIndex >= 0 ? t('nextBlankField') : t('reviewCompletedAgreement')}</button>
             </div>}
             {showSignatureForm && <div className="native-signing-guide" role="navigation" aria-label={t('formNavigation')}><span>{t('reviewAndSign')}</span><button type="button" onClick={() => scrollToFrameElement(frameDocument?.querySelector('[data-native-signature-mount] input[name="legalName"]'), true)}>{t('jumpToSignature')}</button></div>}
         </main>}
