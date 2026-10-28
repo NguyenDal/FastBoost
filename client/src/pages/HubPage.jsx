@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { OpeningEventCard, OpeningEventDetail } from '../components/OpeningEvent';
@@ -17,7 +18,7 @@ const articles = {
 };
 
 function Arrow() {
-  return <span aria-hidden="true">↗</span>;
+  return <span aria-hidden="true"><ArrowUpRightIcon /></span>;
 }
 
 function OpeningNewsCard() {

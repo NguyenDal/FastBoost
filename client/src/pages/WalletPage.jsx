@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { cancelWalletTopUp, createWalletTopUp, getWallet, verifyWalletTopUp } from '../api/wallet';
@@ -301,7 +302,7 @@ export default function WalletPage() {
 
     return <div className="wallet-page">
         {topUpResult && <WalletTopUpResult {...topUpResult} onClose={() => setTopUpResult(null)} />}
-        <div className="wallet-page-heading"><div><p className="wallet-eyebrow">Your account</p><h1>Wallet</h1><p>Top up once. Pay for your next boost in seconds.</p></div><Link to={returnTo || '/account/dashboard'} className="wallet-secondary-link">{returnTo ? 'Back to checkout' : 'Back to dashboard'} <span aria-hidden="true">↗</span></Link></div>
+        <div className="wallet-page-heading"><div><p className="wallet-eyebrow">Your account</p><h1>Wallet</h1><p>Top up once. Pay for your next boost in seconds.</p></div><Link to={returnTo || '/account/dashboard'} className="wallet-secondary-link">{returnTo ? 'Back to checkout' : 'Back to dashboard'} <span aria-hidden="true"><ArrowUpRightIcon /></span></Link></div>
         <section className="wallet-balance-card" aria-label="Wallet balance" aria-busy={loading}>
             <div><p className="wallet-eyebrow">Available balance</p><strong className="wallet-total" aria-live="polite">{wallet ? walletMoney(availableBalanceCents) : 'Unavailable'}</strong></div><span className="wallet-balance-icon" aria-hidden="true"><WalletIcon /></span>
         </section>

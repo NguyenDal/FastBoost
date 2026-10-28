@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -46,7 +47,7 @@ export function OpeningEventCard({ compact = false }) {
       <h2 className="opening-event-poster-discount">{OPENING_CAMPAIGN.discountPercent}% OFF</h2>
       <p className="opening-event-poster-dates">{openingCampaignWindowLabel({ short: true })}</p>
       <p className="opening-event-poster-services">LoL &amp; TFT base services</p>
-      <span className="opening-event-card-action">View event <span aria-hidden="true">↗</span></span>
+      <span className="opening-event-card-action">View event <span aria-hidden="true"><ArrowUpRightIcon /></span></span>
     </Link>
   </article>;
 }

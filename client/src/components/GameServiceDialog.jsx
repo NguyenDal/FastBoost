@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import CleanIcon from "./CleanIcon";
@@ -237,7 +238,7 @@ function GameServiceDialog({
                   <p>{SERVICE_SUMMARIES[service.title] || service.description || "Find the right boost for your game."}</p>
                   <button type="button" disabled={unavailable} onClick={() => onChoose?.(service)}>
                     {unavailable ? "Currently unavailable" : "Buy now"}
-                    {!unavailable && <span aria-hidden="true">↗</span>}
+                    {!unavailable && <span aria-hidden="true"><ArrowUpRightIcon /></span>}
                   </button>
                 </div>
               </article>;

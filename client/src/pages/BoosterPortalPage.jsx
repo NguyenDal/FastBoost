@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BoosterPortalLayout from '../layouts/BoosterPortalLayout';
@@ -52,7 +53,7 @@ export default function BoosterPortalPage({ section = 'overview' }) {
             {section === 'overview' && <>
                 <section className="booster-portal-grid" aria-label="Your workspace">
                     {cards.map(card => <Link key={card.path} className="booster-portal-card" to={`/provider/${card.path}`}>
-                        <span className="booster-portal-icon">{card.icon}</span><h3>{card.title}</h3><p>{card.text}</p><span className="booster-portal-arrow" aria-hidden="true">↗</span>
+                        <span className="booster-portal-icon">{card.icon}</span><h3>{card.title}</h3><p>{card.text}</p><span className="booster-portal-arrow" aria-hidden="true"><ArrowUpRightIcon /></span>
                     </Link>)}
                 </section>
             </>}
@@ -74,7 +75,7 @@ export default function BoosterPortalPage({ section = 'overview' }) {
                     <h2>{name}</h2>
                 </div>
                     <BoosterPreferences preferences={data.preferences} available={data.preferencesAvailable} onSave={preferences => setState(current => ({ ...current, data: { ...current.data, preferences, preferencesAvailable: true } }))} />
-                    <Link className="booster-profile-edit" to="/account/settings">Edit account profile <span aria-hidden="true">↗</span></Link></section>
+                    <Link className="booster-profile-edit" to="/account/settings">Edit account profile <span aria-hidden="true"><ArrowUpRightIcon /></span></Link></section>
                 <Rating rating={data.rating} />
             </div>}
         </div>

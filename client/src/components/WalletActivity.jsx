@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from './Skeleton';
@@ -38,11 +39,11 @@ export default function WalletActivity({ transactions = [], loading = false, bus
         <div className="wallet-section-heading"><div><h2 id="wallet-history-title" ref={heading} tabIndex={-1}>Recent activity</h2><p>Your top ups, bonuses and order payments.</p></div><button className="wallet-refresh" type="button" aria-label={loading ? 'Refreshing wallet activity' : 'Refresh wallet activity'} title="Refresh activity" disabled={loading || busy || !onRefresh} onClick={onRefresh}><RefreshIcon /></button></div>
         {loading ? <ActivitySkeleton /> : transactions.length ? <>
             <ol className="wallet-history" id={historyId} start={offset + 1}>{transactions.slice(offset, offset + PAGE_SIZE).map(item => <li key={item.id}>
-                <span className={`wallet-history-icon${item.amountCents < 0 ? ' is-payment' : ''}`} aria-hidden="true">{item.amountCents < 0 ? '↗' : '+'}</span>
+                <span className={`wallet-history-icon${item.amountCents < 0 ? ' is-payment' : ''}`} aria-hidden="true">{item.amountCents < 0 ? <ArrowUpRightIcon /> : '+'}</span>
                 <div><strong>{item.description || (item.amountCents < 0 ? 'Order payment' : 'Wallet top up')}</strong><span>{new Date(item.createdAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })}{item.orderId && <> · <Link to={`/match/${encodeURIComponent(item.orderId)}`}>View order</Link></>}</span></div>
                 <strong className={item.amountCents > 0 ? 'wallet-history-credit' : ''}>{item.amountCents > 0 ? '+' : ''}{money(item.amountCents)}</strong>
             </li>)}</ol>
             <div className="wallet-activity-pagination"><p role="status">Showing {offset + 1}–{Math.min(offset + PAGE_SIZE, transactions.length)} of {transactions.length} transactions · {PAGE_SIZE} per page</p><OrderPagination currentPage={currentPage} totalPages={totalPages} onPageChange={changePage} tableId={historyId} label="Wallet activity pages" /></div>
-        </> : <div className="wallet-empty"><span aria-hidden="true">↗</span><strong>Your wallet starts here</strong><p>Completed top ups and wallet payments will appear here.</p></div>}
+        </> : <div className="wallet-empty"><span aria-hidden="true"><ArrowUpRightIcon /></span><strong>Your wallet starts here</strong><p>Completed top ups and wallet payments will appear here.</p></div>}
     </section>;
 }

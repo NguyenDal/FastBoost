@@ -72,7 +72,7 @@ async function walletFixture({ prepare = async () => checkout, verify = async ()
         useRef(initial) { const index = cursor++; return hooks[index] ||= { current: initial }; },
         useEffect: effect, useLayoutEffect: effect, useMemo: memo, useCallback: (callback, deps) => memo(() => callback, deps),
         useSearchParams: () => [params, setParams], useNavigate: () => () => {},
-        Link: 'link', LegalAgreement: 'agreement', Skeleton: 'skeleton', WalletTopUpCheckout: 'wallet-topup-checkout', WalletActivity: 'wallet-activity', WalletTopUpResult: 'wallet-topup-result',
+        Link: 'link', LegalAgreement: 'agreement', Skeleton: 'skeleton', ArrowUpRightIcon: 'arrow-up-right-icon', WalletTopUpCheckout: 'wallet-topup-checkout', WalletActivity: 'wallet-activity', WalletTopUpResult: 'wallet-topup-result',
         sessionStorage: storage, localStorage: storage,
         getStoredUser: () => ({ id: 'synthetic-customer', email: 'customer@example.test' }),
         authStorage: { getItem: key => key === 'user' ? JSON.stringify({ id: 'synthetic-customer', email: 'customer@example.test' }) : 'synthetic-token' },

@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { authStorage } from "../utils/authStorage";
 import { storeAuthSession } from "../utils/authStorage";
 import { authReturnPath } from "../utils/authReturnPath";
@@ -813,7 +814,7 @@ function HomePage() {
             <h1 id="opening-heading">The next level<br /><span>starts here.</span></h1>
             <OpeningCountdown />
             <Link className="opening-hub-link" to="/hub">
-              Explore the Hub <span aria-hidden="true">↗</span>
+              Explore the Hub <span aria-hidden="true"><ArrowUpRightIcon /></span>
             </Link>
           </div>
         </section>
@@ -850,7 +851,7 @@ function HomePage() {
                     <span className="home-game-card-title">{game.key === "lol" ? <>League of<br />Legends</> : <>Teamfight<br />Tactics</>}</span>
                     <span className="home-game-card-services">{SERVICE_TITLES_BY_GAME[game.key].length} services <span aria-hidden="true">·</span> Choose your boost</span>
                   </span>
-                  <span className="home-game-card-arrow" aria-hidden="true">↗</span>
+                  <span className="home-game-card-arrow" aria-hidden="true"><ArrowUpRightIcon /></span>
                 </span>
               </button>
             ))}

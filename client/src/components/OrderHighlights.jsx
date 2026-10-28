@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getOrderHighlightThumbnailUrl, getOrderHighlightViewUrl, listOrderHighlights, uploadOrderHighlight, uploadOrderHighlightThumbnail } from '../api/orderHighlights';
 import { MAX_HIGHLIGHT_BYTES, normalizeHighlightTitle, titleFromFile, validateHighlightFile } from '../utils/orderHighlightValidation';
@@ -434,7 +435,7 @@ export default function OrderHighlights({ orderId, gameMode = 'lol' }) {
             {uploading && <div className="highlight-progress" role="status" aria-label={`Uploading ${progress}%`}><div className="highlight-progress-track"><span style={{ width: `${progress}%` }} /></div><span>{progress}% uploaded</span></div>}
             {formError && <p className="highlight-form-error" role="alert">{formError}</p>}
             {uploadedMessage && <p className="highlight-form-success" role="status">{uploadedMessage}</p>}
-            <div className="highlight-upload-actions"><button type="submit" disabled={uploading || !file || !normalizeHighlightTitle(title)}>{uploading ? 'Uploading…' : 'Add highlight'} <span aria-hidden="true">↗</span></button>{uploading && <button className="highlight-cancel" type="button" onClick={() => uploadAbort.current?.abort()}>Cancel upload</button>}</div>
+            <div className="highlight-upload-actions"><button type="submit" disabled={uploading || !file || !normalizeHighlightTitle(title)}>{uploading ? 'Uploading…' : 'Add highlight'} <span aria-hidden="true"><ArrowUpRightIcon /></span></button>{uploading && <button className="highlight-cancel" type="button" onClick={() => uploadAbort.current?.abort()}>Cancel upload</button>}</div>
           </div>
         </form>}
       </>}

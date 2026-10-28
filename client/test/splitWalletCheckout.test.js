@@ -46,7 +46,7 @@ async function fixture(file, entry, bindings = {}, initial = []) {
         useEffect: callback => effects.push(callback), useLayoutEffect: callback => { const cleanup = callback(); if (cleanup) cleanups.push(cleanup); },
         loadStripe: () => Promise.resolve(null), walletMoney, walletInputCents, walletCheckoutAmounts, walletQuoteMatches, walletCardQuote,
         checkoutPresenceLost, useCheckoutPresence: () => checkoutPresence,
-        Link: 'link', Skeleton: 'skeleton', ...bindings,
+        Link: 'link', Skeleton: 'skeleton', ArrowUpRightIcon: 'arrow-up-right-icon', ...bindings,
     });
     return { render(props) { cursor = refCursor = 0; tree = Component(props); return tree; }, tree: () => tree,
         state: index => states[index], effect(text) { const effect = effects.find(callback => callback.toString().includes(text)); assert.ok(effect); return effect(); },

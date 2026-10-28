@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { operations, money } from '../api/operations';
@@ -34,7 +35,7 @@ function MonthDetails({ month, version, timeZone, onReport }) {
             <ul className="booster-month-entries" id="booster-month-entries" aria-label="Monthly order activity">
                 {entries.slice((currentPage - 1) * 10, currentPage * 10).map(entry => <li key={entry.id}>
                     <div>
-                        {entry.orderId ? <Link to={`/match/${encodeURIComponent(entry.orderId)}?tab=history`} className="booster-month-order-link" aria-label={`View match history for order #${entry.orderNumber}`} title="View match history">#{entry.orderNumber} <span aria-hidden="true">↗</span></Link> : <strong>#{entry.orderNumber}</strong>}
+                        {entry.orderId ? <Link to={`/match/${encodeURIComponent(entry.orderId)}?tab=history`} className="booster-month-order-link" aria-label={`View match history for order #${entry.orderNumber}`} title="View match history">#{entry.orderNumber} <span aria-hidden="true"><ArrowUpRightIcon /></span></Link> : <strong>#{entry.orderNumber}</strong>}
                         <span>{new Date(entry.recognizedAt).toLocaleDateString('en-CA', { timeZone, month: 'short', day: 'numeric' })} · {entry.serviceTitle}{entry.kind === 'ADJUSTMENT' ? ' · Adjustment' : ''}</span>
                     </div>
                     <strong className={entry.amountCents < 0 ? 'booster-amount-negative' : ''}>{money(entry.amountCents, entry.currency)}</strong>

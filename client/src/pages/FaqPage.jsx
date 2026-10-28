@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -33,7 +34,7 @@ function RefundGuide() {
         </div>
         <div className="faq-refund-result" aria-live="polite" aria-atomic="true"><h3>{selected.title}</h3><p>{selected.answer}</p></div>
         <p className="faq-refund-note">Your legal rights still apply. Email support@fastboost.gg with your order number to request cancellation.</p>
-        <Link to="/contact">Contact support <span aria-hidden="true">↗</span></Link>
+        <Link to="/contact">Contact support <span aria-hidden="true"><ArrowUpRightIcon /></span></Link>
     </div>;
 }
 
@@ -83,7 +84,7 @@ export default function FaqPage() {
                         return <article key={item.id} className={open ? 'faq-item is-open' : 'faq-item'}>
                             <h3><button type="button" id={`faq-question-${item.id}`} aria-expanded={open} aria-controls={`faq-answer-${item.id}`} onClick={() => setOpenQuestion(open ? null : item.id)}>{item.question}<span className="faq-expand" aria-hidden="true">+</span></button></h3>
                             <div className="faq-answer" id={`faq-answer-${item.id}`} role="region" aria-labelledby={`faq-question-${item.id}`} hidden={!open}>
-                                {item.interactive === 'refund' ? <RefundGuide /> : <><p>{item.answer}</p>{item.to && <Link to={item.to}>{item.action} <span aria-hidden="true">↗</span></Link>}</>}
+                                {item.interactive === 'refund' ? <RefundGuide /> : <><p>{item.answer}</p>{item.to && <Link to={item.to}>{item.action} <span aria-hidden="true"><ArrowUpRightIcon /></span></Link>}</>}
                             </div>
                         </article>;
                     })}
@@ -96,7 +97,7 @@ export default function FaqPage() {
                     <span className="faq-support-icon"><HelpIcon /></span>
                     <h2>Still need a hand?</h2>
                     <p>Send your order number and we’ll help.</p>
-                    <Link to="/contact" className="faq-contact-link">Contact support <span aria-hidden="true">↗</span></Link>
+                    <Link to="/contact" className="faq-contact-link">Contact support <span aria-hidden="true"><ArrowUpRightIcon /></span></Link>
                 </section>
 
             </aside>

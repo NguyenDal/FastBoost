@@ -1,3 +1,4 @@
+import ArrowUpRightIcon from './ArrowUpRightIcon';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CleanIcon from './CleanIcon';
@@ -257,7 +258,7 @@ export default function RoleGuides() {
     <div className="role-guides-grid">{roleGuides.map(role => <article id={`role-guide-${role.slug}`} className={`role-guides-card role-guides-card-${role.slug}`} key={role.slug}>
       <Link to={`/hub/guides/${role.slug}`} aria-label={`Open ${role.title} guide`}>
         <div className="role-guides-card-art" aria-hidden="true"><CleanIcon src={role.image} alt="" /><span className="role-guides-card-grid" /></div>
-        <div className="role-guides-card-copy"><span>Role guide</span><h3>{role.title}</h3><p>{role.tagline}</p><strong>Explore guide <span aria-hidden="true">↗</span></strong></div>
+        <div className="role-guides-card-copy"><span>Role guide</span><h3>{role.title}</h3><p>{role.tagline}</p><strong>Explore guide <span aria-hidden="true"><ArrowUpRightIcon /></span></strong></div>
       </Link>
     </article>)}</div>
   </section>;
