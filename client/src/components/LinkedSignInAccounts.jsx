@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../api/config';
 import { authStorage } from '../utils/authStorage';
 import { ProviderLogo } from './SocialAuthButtons';
 import PaymentErrorDialog from './PaymentErrorDialog';
+import { socialAuthPopupFeatures } from '../utils/socialAuthPopup';
 
 async function getConnections(signal) {
   const response = await fetch(`${API_BASE_URL}/auth/social/connections`, {
@@ -31,7 +32,7 @@ export default function LinkedSignInAccounts() {
     if (!sessionToken) { setError('Please sign in again.'); return; }
     cleanup.current();
     const url = new URL(`${API_BASE_URL}/auth/social/${provider}/${action}/start`, window.location.origin);
-    const popup = window.open('about:blank', 'fastboost-link-auth', 'popup,width=520,height=720');
+    const popup = window.open('about:blank', 'fastboost-link-auth', socialAuthPopupFeatures(window));
     if (!popup) { setError('Please allow the sign-in popup and try again.'); return; }
     setBusy({ provider, action }); setError('');
     const finish = () => { cleanup.current(); setBusy(null); };

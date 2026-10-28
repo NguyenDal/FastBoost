@@ -26,7 +26,7 @@ function relevant(row, contract) {
     if (row.event === 'ISSUED') return row.recipientRole === 'BOOSTER';
     if (row.event === 'READY') return row.recipientRole === 'BOOSTER' && Boolean(contract.nativePreparedAt);
     if (row.event === 'BOOSTER_SIGNED') return row.recipientRole === 'COMPANY' && Boolean(contract.boosterSignedAt);
-    if (row.event === 'COMPANY_SIGNED') return row.recipientRole === 'BOOSTER' && contract.nativeSnapshot?.version === 'FB-BSA-2.3'
+    if (row.event === 'COMPANY_SIGNED') return row.recipientRole === 'BOOSTER' && ['FB-BSA-2.3', 'FB-BSA-2.4'].includes(contract.nativeSnapshot?.version)
         && Boolean(contract.nativePreparedAt && contract.companySignedAt);
     if (row.event === 'COMPLETED') return EVENTS.COMPLETED.includes(row.recipientRole) && Boolean(contract.signedAt && contract.boosterSignedAt
         && contract.companySignedAt && contract.nativeCompletedAt && contract.nativePdf && contract.nativePdfHash);

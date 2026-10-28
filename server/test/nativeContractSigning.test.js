@@ -135,6 +135,7 @@ function database() {
 }
 
 const currentCommercialValues = { WorkLocation: 'Vietnam', PayeeLegalName: 'Test Booster', ReferenceLanguage: 'English/Vietnamese' };
+const fixedPaymentValues = { WorkLocation: 'Vietnam', ReferenceLanguage: 'English/Vietnamese' };
 
 function agreementStub() {
     const flags = { failPdf: false, pdfCalls: [] };
@@ -145,7 +146,7 @@ function agreementStub() {
         get VERSION() { return version; },
         set VERSION(next) {
             version = next;
-            if (next === 'FB-BSA-2.3') fields = Object.keys(currentCommercialValues).map(key => ({
+            if (['FB-BSA-2.3', 'FB-BSA-2.4'].includes(next)) fields = Object.keys(next === 'FB-BSA-2.4' ? fixedPaymentValues : currentCommercialValues).map(key => ({
                 key, label: key, maxLength: 100, required: true, defaultValue: key === 'ReferenceLanguage' ? 'English/Vietnamese' : '',
             }));
         },
@@ -195,7 +196,7 @@ async function fixture(t) {
         return db.boosterContract.findUnique({ where: { id: input.requestId } });
     };
     const context = async (contractId, user = 'owner') => service.signingContext(db, await db.boosterContract.findUnique({ where: { id: contractId } }), actor(user));
-    const prepare = async (contractId, values = agreement.VERSION === 'FB-BSA-2.3' ? currentCommercialValues : { PaymentMethod: 'Manual transfer' }) => {
+    const prepare = async (contractId, values = agreement.VERSION === 'FB-BSA-2.4' ? fixedPaymentValues : agreement.VERSION === 'FB-BSA-2.3' ? currentCommercialValues : { PaymentMethod: 'Manual transfer' }) => {
         await service.prepareContract(db, contractId, actor('owner'), values);
         return context(contractId);
     };
@@ -475,6 +476,80 @@ test('version 2.3 is finalized and signed by FastBoost before the read-only prov
     assert.deepEqual([...f.db.state().emails.keys()].sort(), [
         `${c.id}:COMPANY_SIGNED:BOOSTER`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`, `${c.id}:ISSUED:BOOSTER`,
     ]);
+});
+
+test('version 2.4 prepares without a payee entry and retains company-first signing and invitations', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    assert.deepEqual(owner.fields.map(field => field.key), ['WorkLocation', 'ReferenceLanguage']);
+    assert.equal('PayeeLegalName' in owner.values, false);
+    assert.equal(owner.canSign, true);
+    assert.equal(owner.signingOrder, 'COMPANY_FIRST');
+    assert.equal((await f.context(c.id, 'booster')).canSign, false);
+    await f.sign(c.id, 'owner', f.body(owner));
+    assert.ok(f.db.state().emails.has(`${c.id}:COMPANY_SIGNED:BOOSTER`));
+    const provider = await f.context(c.id, 'booster');
+    assert.equal(provider.canSign, true);
+    assert.equal(provider.canPrepare, false);
+    assert.equal(require('jsonwebtoken').decode(provider.challenge).consentVersion, 'FB-BSA-2.4');
+    await f.sign(c.id, 'booster', f.body(provider));
+    assert.ok(f.db.state().contracts.get(c.id).signedAt);
+    assert.equal(f.db.state().signatures.size, 2);
+    assert.ok(f.db.state().emails.has(`${c.id}:COMPLETED:BOOSTER`));
+    assert.ok(f.db.state().emails.has(`${c.id}:COMPLETED:COMPANY`));
+});
+
+test('unsigned 2.3 drafts upgrade to 2.4 without carrying the payee field or a stale challenge', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.3';
+    const c = await f.issue();
+    const oldOwner = await f.prepare(c.id);
+    const before = copy(f.db.state());
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const preview = await f.context(c.id);
+    assert.deepEqual(f.db.state(), before, 'preview never changes saved evidence');
+    assert.equal(preview.documentVersion, 'FB-BSA-2.4');
+    assert.equal(preview.prepared, false);
+    assert.equal(preview.canSign, false);
+    assert.equal(preview.signingOrder, 'COMPANY_FIRST');
+    assert.equal('PayeeLegalName' in preview.values, false);
+    assert.deepEqual(preview.fields.map(field => field.key), ['WorkLocation', 'ReferenceLanguage']);
+    assert.equal(preview.values.WorkLocation, currentCommercialValues.WorkLocation);
+    await assert.rejects(f.sign(c.id, 'owner', f.body(oldOwner)), error => error.status === 409 && /version changed/.test(error.message));
+    const owner = await f.prepare(c.id);
+    assert.equal(owner.documentVersion, 'FB-BSA-2.4');
+    assert.equal(owner.canSign, true);
+    assert.equal(owner.values.ProviderLegalName, oldOwner.values.ProviderLegalName);
+    assert.equal(owner.values.EffectiveDate, oldOwner.values.EffectiveDate);
+    assert.equal('PayeeLegalName' in f.db.state().contracts.get(c.id).nativeSnapshot.values, false);
+    assert.notEqual(owner.documentHash, oldOwner.documentHash);
+});
+
+test('company-signed 2.3 agreements retain their accepted payee, document and provider countersignature after 2.4 launches', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.3';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    await f.sign(c.id, 'owner', f.body(owner));
+    const frozen = copy(f.db.state().contracts.get(c.id));
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const provider = await f.context(c.id, 'booster');
+    assert.equal(provider.documentVersion, 'FB-BSA-2.3');
+    assert.equal(provider.signingOrder, 'COMPANY_FIRST');
+    assert.equal(provider.values.PayeeLegalName, currentCommercialValues.PayeeLegalName);
+    assert.equal(provider.documentHash, frozen.nativeDocumentHash);
+    assert.equal(provider.canSign, true);
+    assert.equal(provider.canPrepare, false);
+    assert.deepEqual(f.service.document(f.db.state().contracts.get(c.id)), frozen.nativePdf);
+    await assert.rejects(f.prepare(c.id), error => error.status === 409);
+    await f.sign(c.id, 'booster', f.body(provider));
+    const completed = f.db.state().contracts.get(c.id);
+    assert.deepEqual(completed.nativeSnapshot, frozen.nativeSnapshot);
+    assert.equal(completed.nativeDocumentHash, frozen.nativeDocumentHash);
+    assert.equal(completed.templateId, 'FB-BSA-2.3');
+    assert.ok(completed.signedAt);
 });
 
 test('unsigned 2.2 drafts upgrade to company-first 2.3 and reject an outstanding provider challenge', async t => {

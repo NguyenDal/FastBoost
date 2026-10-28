@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { openContractSigning, nativeContractBoosterFirst, nativeContractPendingStatus } from '../src/utils/contractSigning.js';
 
 test('new and unsigned draft agreements show FastBoost first, while frozen 2.2 keeps its order', () => {
-    for (const templateId of ['FB-BSA-2.1', 'FB-BSA-2.2', 'FB-BSA-2.3']) {
+    for (const templateId of ['FB-BSA-2.1', 'FB-BSA-2.2', 'FB-BSA-2.3', 'FB-BSA-2.4']) {
         assert.equal(nativeContractBoosterFirst({ templateId }), false);
     }
     assert.equal(nativeContractBoosterFirst({ templateId: 'FB-BSA-2.2', boosterSignedAt: '2026-10-24' }), true);
@@ -12,6 +12,8 @@ test('new and unsigned draft agreements show FastBoost first, while frozen 2.2 k
     assert.equal(nativeContractPendingStatus({ documentAvailable: false }), 'Complete agreement');
     assert.equal(nativeContractPendingStatus({ documentAvailable: true, templateId: 'FB-BSA-2.3' }), 'Awaiting FastBoost');
     assert.equal(nativeContractPendingStatus({ documentAvailable: true, templateId: 'FB-BSA-2.3', companySignedAt: '2026-10-24' }), 'Awaiting booster');
+    assert.equal(nativeContractPendingStatus({ documentAvailable: true, templateId: 'FB-BSA-2.4' }), 'Awaiting FastBoost');
+    assert.equal(nativeContractPendingStatus({ documentAvailable: true, templateId: 'FB-BSA-2.4', companySignedAt: '2026-10-28' }), 'Awaiting booster');
 });
 
 function browserFixture() {

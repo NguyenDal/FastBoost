@@ -22,8 +22,9 @@ test('Vietnamese reading view covers the static agreement without changing legal
     assert.match(asset, /FastBoost completes all required details and signs the saved agreement first/u);
     assert.match(asset, /The Provider then reviews the completed document and signs that same version/u);
     assert.match(asset, /<tr><td>Start date<\/td><td><span class="fb-template">\[EFFECTIVE_DATE\]<\/span><\/td><\/tr>/u);
-    assert.doesNotMatch(asset, /Work location \/ local time zone|\[EndDate\]|\[ProviderTimeZone\]|\[PaymentMethod\]|\[FeeRule\]/u);
-    assert.deepEqual(agreement.commercialFields().map(field => field.key), ['WorkLocation', 'PayeeLegalName', 'ReferenceLanguage']);
+    assert.doesNotMatch(asset, /Work location \/ local time zone|\[EndDate\]|\[ProviderTimeZone\]|\[PaymentMethod\]|\[FeeRule\]|\[PayeeLegalName\]/u);
+    assert.deepEqual(agreement.commercialFields().map(field => field.key), ['WorkLocation', 'ReferenceLanguage']);
+    assert.match(asset, /<tr><td>Payment method<\/td><td>Manual transfer via <strong>Remitly<\/strong>\. Recipient and banking details are collected and verified separately through an approved secure process before payment\.<\/td><\/tr>/u);
     assert.match(asset, /FastBoost pays all fees for the agreed transfer/u);
     assert.ok(agreementVietnameseTranslations.has('Permitted service scope — required'), 'historical 2.1 snapshots can still be translated');
     assert.ok(agreementVietnameseTranslations.has('Jurisdiction addendum / variations — required'));
@@ -33,14 +34,14 @@ test('Vietnamese reading view covers the static agreement without changing legal
 
 test('Vietnamese view preserves completed terms and company-first signatures without a notice banner', () => {
     const values = Object.fromEntries(agreement.commercialFields().map(field => [field.key, field.defaultValue || 'Example']));
-    Object.assign(values, { WorkLocation: 'Home', PayeeLegalName: 'Paid' });
+    Object.assign(values, { WorkLocation: 'Home' });
     const snapshot = agreement.createSnapshot(contract, values);
     const html = agreement.renderHtml(snapshot, [{ role: 'COMPANY', legalName: 'Home', initials: 'EN', signedAt: '2026-10-22T12:00:00Z', signature: { type: 'typed' } }]);
     assert.equal(translateAgreementHtml(html, 'en'), html, 'English is the exact server-rendered agreement');
     const vi = translateAgreementHtml(html, 'vi');
     assert.match(vi, /<html lang="vi"/u);
     assert.doesNotMatch(vi, /fb-translation-notice/u);
-    assert.match(vi, /FB-BSA-2\.3/u);
+    assert.match(vi, /FB-BSA-2\.4/u);
     assert.match(vi, /Các bên, ngày bắt đầu và tài liệu hợp đồng/u);
     const companyFirstClause = [...agreementVietnameseTranslations.keys()].find(text => text.includes('FastBoost completes all required details and signs the saved agreement first.'));
     assert.ok(companyFirstClause);
@@ -49,11 +50,12 @@ test('Vietnamese view preserves completed terms and company-first signatures wit
     assert.equal(snapshot.values.EffectiveDate, '2026-11-01', 'the stored effective date stays ISO');
     assert.match(html, /data-native-date="2026-11-01">November 1, 2026<\/span>/u);
     assert.match(vi, /data-native-date="2026-11-01">1 tháng 11 năm 2026<\/span>/u);
-    assert.doesNotMatch(vi, /<input\b|<textarea\b|data-native-field="(?:EndDate|ProviderTimeZone|PaymentMethod|FeeRule)"/u);
+    assert.doesNotMatch(vi, /<input\b|<textarea\b|data-native-field="(?:EndDate|ProviderTimeZone|PaymentMethod|FeeRule|PayeeLegalName)"/u);
     assert.ok(vi.indexOf('<h3>FASTBOOST</h3>') < vi.indexOf('<h3>BÊN CUNG CẤP</h3>'), 'FastBoost signature appears first');
     assert.doesNotMatch(vi, />Parties, start date and contract documents</u);
     assert.match(vi, /data-native-field="WorkLocation"><span data-native-value>Home<\/span>/u);
-    assert.match(vi, /data-native-field="PayeeLegalName"><span data-native-value>Paid<\/span>/u);
+    assert.match(vi, /<td>Phương thức thanh toán<\/td><td>Chuyển tiền thủ công qua <strong>Remitly<\/strong>\. Thông tin người nhận và thông tin ngân hàng được thu thập và xác minh riêng thông qua quy trình bảo mật đã được phê duyệt trước khi thanh toán\.<\/td>/u);
+    assert.match(vi, /FastBoost thanh toán cho Bên Cung cấp qua Remitly bằng thông tin người nhận được xác minh riêng trước khi thanh toán\./u);
     assert.match(html, /data-native-field="ReferenceLanguage"><span data-native-value>English\/Vietnamese<\/span>/u);
     assert.match(vi, /data-native-field="ReferenceLanguage"><span data-native-value>Tiếng Anh\/Tiếng Việt<\/span>/u);
     assert.doesNotMatch(vi, /data-native-field="(?:AuthorizedSignatory|ServiceScope|JurisdictionAddendum|DataAccessCountries)"/u);
@@ -73,6 +75,23 @@ test('Vietnamese dates localize only validated display markers, never saved valu
     assert.match(vi, /data-native-value>November 1, 2026<\/span>/u, 'saved field values are not translated');
     assert.match(vi, /<strong>2026-11-01<\/strong>/u, 'signature date remains unchanged');
     assert.match(vi, /data-native-date="2026-11-01">Keep literal text<\/span>/u);
+});
+
+test('historical 2.3 retains its agreed payee and payment wording in the Vietnamese view', () => {
+    const payment = [...agreementVietnameseTranslations.keys()].find(text => text.startsWith('FastBoost pays by Remitly to the verified payee in Schedule A.'));
+    const language = [...agreementVietnameseTranslations.keys()].find(text => text.startsWith('The signed agreement is the English Booster Service Agreement, version FB-BSA-2.3.'));
+    assert.ok(payment);
+    assert.ok(language);
+    const html = `<html lang="en"><body><p>Agreement version · FB-BSA-2.3</p><p>${payment}</p><p>${language}</p><table><tr><td>Method / payee — required</td><td>Manual transfer via <strong>Remitly</strong>; verified payee <span class="fb-template"><span data-native-field="PayeeLegalName"><span data-native-value>Historical Recipient</span></span></span>. Banking details collected separately and securely.</td></tr></table></body></html>`;
+    const vi = translateAgreementHtml(html, 'vi');
+    assert.equal(translateAgreementHtml(html, 'en'), html);
+    assert.match(vi, /Phiên bản thỏa thuận · FB-BSA-2\.3/u);
+    assert.doesNotMatch(vi, /FB-BSA-2\.4/u);
+    assert.ok(vi.includes(agreementVietnameseTranslations.get(payment)));
+    assert.ok(vi.includes(agreementVietnameseTranslations.get(language)));
+    assert.match(vi, /Phương thức \/ người nhận — bắt buộc/u);
+    assert.match(vi, /data-native-field="PayeeLegalName"><span data-native-value>Historical Recipient<\/span>/u);
+    assert.match(vi, /Thông tin ngân hàng được thu thập riêng và an toàn/u);
 });
 
 test('historical 2.1 snapshots retain their version and removed-row translations without a notice banner', () => {

@@ -12,7 +12,7 @@ const fail = (status, message) => { throw Object.assign(new Error(message), { st
 const digest = value => createHash('sha256').update(value).digest('hex');
 const native = contract => contract.signingProvider === PROVIDER;
 // Signing order belongs to the saved version, never to the currently published template.
-const firstSignerRole = snapshot => ['FB-BSA-2.1', 'FB-BSA-2.3'].includes(snapshot.version) ? 'COMPANY' : 'BOOSTER';
+const firstSignerRole = snapshot => ['FB-BSA-2.1', 'FB-BSA-2.3', 'FB-BSA-2.4'].includes(snapshot.version) ? 'COMPANY' : 'BOOSTER';
 const unsignedOldVersion = contract => !contract.archivedAt && !contract.revokedAt && !['voided', 'declined', 'replaced'].includes(contract.status)
     && !contract.companySignedAt && !contract.boosterSignedAt && !contract.signedAt
     && contract.nativeSnapshot?.version !== agreement.VERSION;
@@ -322,7 +322,7 @@ async function signContract(db, id, actor, body, audit = {}) {
         }
         if (completed) await queueNativeContractEmail(tx, id, 'COMPLETED');
         else if (role === 'BOOSTER' && firstRole === 'BOOSTER') await queueNativeContractEmail(tx, id, 'BOOSTER_SIGNED');
-        else if (role === 'COMPANY' && current.nativeSnapshot.version === 'FB-BSA-2.3') await queueNativeContractEmail(tx, id, 'COMPANY_SIGNED');
+        else if (role === 'COMPANY' && ['FB-BSA-2.3', 'FB-BSA-2.4'].includes(current.nativeSnapshot.version)) await queueNativeContractEmail(tx, id, 'COMPANY_SIGNED');
         return updated;
     }, { timeout: 20000 });
     return signingContext(db, contract, actor);

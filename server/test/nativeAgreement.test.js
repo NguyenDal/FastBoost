@@ -7,14 +7,14 @@ const contract = {
     providerUsername: 'TestBooster', startsAt: '2026-10-22', companySignerName: 'An Nguyen Nguyen', companySignerEmail: 'owner@example.test',
 };
 const values = () => ({ ...Object.fromEntries(agreement.commercialFields().map(field => [field.key, field.defaultValue])),
-    WorkLocation: 'Manitoba, Canada', PayeeLegalName: 'Nguyễn Minh Anh' });
+    WorkLocation: 'Manitoba, Canada' });
 const signature = (role, legalName, initials, time) => ({ role, legalName, initials, signedAt: time,
     signature: { type: 'typed' }, actorId: role.toLowerCase(), requestId: `${role}-test-request`,
     consentText: 'I agree to use electronic signatures and sign this exact agreement and Schedule A.' });
 
 test('issued snapshot is self-contained, current, and hash binds every accepted value', () => {
     const snapshot = agreement.createSnapshot(contract, agreement.validateValues(values()));
-    assert.equal(snapshot.version, 'FB-BSA-2.3');
+    assert.equal(snapshot.version, 'FB-BSA-2.4');
     assert.equal(snapshot.values.AgreementId, contract.id);
     assert.equal(snapshot.values.ProviderLegalName, contract.signerName);
     assert.equal(snapshot.fields.some(field => field.tabLabel === 'ReferenceLanguage'), false, 'fixed languages do not create a PDF entry field');
@@ -28,21 +28,20 @@ test('issued snapshot is self-contained, current, and hash binds every accepted 
 });
 
 test('commercial settings reject missing fields, control characters and forged locked identities', () => {
-    assert.equal(agreement.commercialFields().length, 3);
+    assert.equal(agreement.commercialFields().length, 2);
     assert.equal(agreement.commercialFields().find(field => field.key === 'ReferenceLanguage').defaultValue, 'English/Vietnamese');
     assert.equal(agreement.commercialFields().some(field => ['AuthorizedSignatory', 'ServiceScope', 'JurisdictionAddendum', 'DataAccessCountries'].includes(field.key)), false);
     assert.throws(() => agreement.validateValues({ ...values(), ProviderLegalName: 'Someone Else' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), WorkLocation: ' ' }), /work country/);
-    assert.throws(() => agreement.validateValues({ ...values(), PayeeLegalName: 'a'.repeat(121) }), /payee legal name/);
-    for (const key of ['EndDate', 'PaymentMethod', 'TransferFeeVariation', 'ProviderTimeZone']) {
+    for (const key of ['EndDate', 'PaymentMethod', 'PayeeLegalName', 'TransferFeeVariation', 'ProviderTimeZone']) {
         assert.throws(() => agreement.validateValues({ ...values(), [key]: 'not in this version' }), /unknown/);
     }
     assert.throws(() => agreement.validateValues({ ...values(), ServiceScope: 'not in this version' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), AuthorizedSignatory: 'Not applicable' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), DataAccessCountries: 'Canada' }), /unknown/);
     assert.throws(() => agreement.validateValues({ ...values(), ReferenceLanguage: 'English only' }), /languages cannot be changed/);
-    const normalized = agreement.validateValues({ ...values(), PayeeLegalName: '  Nguyễn Minh Anh  ' });
-    assert.equal(normalized.PayeeLegalName, contract.signerName);
+    const normalized = agreement.validateValues({ ...values(), WorkLocation: '  Việt Nam  ' });
+    assert.equal(normalized.WorkLocation, 'Việt Nam');
 });
 
 test('HTML preview fills repeated values and escapes names, terms and saved signature labels', () => {
@@ -67,14 +66,28 @@ test('current document fixes Remitly and company-paid fees, with only the start 
     assert.equal(snapshot.values.EffectiveDate, '2026-11-01', 'canonical stored date remains ISO');
     assert.match(html, /<td>Start date<\/td><td><span class="fb-template"><span data-native-date="2026-11-01">November 1, 2026<\/span><\/span><\/td>/);
     assert.match(html, /Manual transfer via <strong>Remitly<\/strong>/);
+    assert.match(html, /<td>Payment method<\/td>/);
+    assert.match(html, /Recipient and banking details are collected and verified separately through an approved secure process before payment\./);
+    assert.match(html, /FastBoost pays the Provider by Remitly using recipient details verified separately before payment\./);
+    assert.equal('PayeeLegalName' in snapshot.values, false);
     assert.match(html, /FastBoost pays all fees for the agreed transfer/);
     assert.match(html, /These are examples, not fixed contractual exchange rates/);
     assert.match(html, /FastBoost completes all required details and signs the saved agreement first/);
     assert.ok(html.indexOf('<h3>FASTBOOST</h3>') < html.indexOf('<h3>PROVIDER</h3>'));
-    assert.doesNotMatch(html, /END_DATE_OR_ONGOING|PAYMENT_METHOD|WRITTEN REPLACEMENT RULE|PROVIDER_TIME_ZONE|optional end date|local time zone/);
+    assert.doesNotMatch(html, /END_DATE_OR_ONGOING|PAYMENT_METHOD|PAYEE_LEGAL_NAME|PayeeLegalName|verified payee in Schedule A|Method \/ payee|WRITTEN REPLACEMENT RULE|PROVIDER_TIME_ZONE|optional end date|local time zone/);
     const packageFields = snapshot.fields.filter(field => field.type === 'textTabs');
     assert.ok(packageFields.every(field => field.role === 'COMPANY'));
-    assert.equal(packageFields.some(field => ['EndDate', 'PaymentMethod', 'TransferFeeVariation', 'ProviderTimeZone'].includes(field.tabLabel)), false);
+    assert.equal(packageFields.some(field => ['EndDate', 'PaymentMethod', 'PayeeLegalName', 'TransferFeeVariation', 'ProviderTimeZone'].includes(field.tabLabel)), false);
+});
+
+test('historical 2.3 snapshots retain the accepted payee and formatted start date', () => {
+    const snapshot = { version: 'FB-BSA-2.3', htmlSource: '<html><head></head><body><p>[EFFECTIVE_DATE]</p><p>Manual transfer via <strong>Remitly</strong>; verified payee <span class="fb-template">[PAYEE_LEGAL_NAME]</span>.</p></body></html>',
+        values: { EffectiveDate: '2026-11-01', PayeeLegalName: 'Historical accepted payee' } };
+    const original = JSON.stringify(snapshot);
+    const html = agreement.renderHtml(snapshot);
+    assert.match(html, /data-native-date="2026-11-01">November 1, 2026<\/span>/);
+    assert.match(html, /data-native-field="PayeeLegalName"><span data-native-value>Historical accepted payee<\/span>/);
+    assert.equal(JSON.stringify(snapshot), original, 'rendering never rewrites the historical snapshot');
 });
 
 test('historical snapshots keep their saved payment, fee, end date and timezone terms', () => {

@@ -38,6 +38,7 @@ test('only real event transitions are deliverable and the final PDF hash must ma
     assert.equal(relevant({ event: 'BOOSTER_SIGNED', recipientRole: 'COMPANY' }, contract), true);
     const ownerFirst = { ...contract, nativeSnapshot: { version: 'FB-BSA-2.3' }, nativePreparedAt: new Date() };
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, ownerFirst), true);
+    assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, nativeSnapshot: { version: 'FB-BSA-2.4' } }), true);
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, companySignedAt: null }), false);
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, nativeSnapshot: { version: 'FB-BSA-2.2' } }), false);
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'COMPANY' }, ownerFirst), false);

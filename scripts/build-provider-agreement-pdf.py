@@ -29,7 +29,7 @@ args = parser.parse_args()
 if args.sandbox_template and args.signing_template:
     parser.error('Choose either a signing template or a sandbox test copy.')
 signing = args.sandbox_template or args.signing_template
-VERSION = 'FB-BSA-2.3' if args.native else 'FB-BSA-2.0'
+VERSION = 'FB-BSA-2.4' if args.native else 'FB-BSA-2.0'
 field_positions = []
 field_names = {
     'AGREEMENT_ID': ('AgreementId', 'Agreement reference', '1'),
@@ -62,6 +62,7 @@ if args.native:
     field_names.pop('END_DATE_OR_ONGOING')
     field_names.pop('PROVIDER_TIME_ZONE')
     field_names.pop('PAYMENT_METHOD')
+    field_names.pop('PAYEE_LEGAL_NAME')
     field_names.pop('NONE / WRITTEN REPLACEMENT RULE')
     # FastBoost completes the terms and signs first; the Provider signs second.
 names = ['LiberationSans-Regular.ttf', 'LiberationSans-Bold.ttf', 'LiberationSans-Italic.ttf', 'LiberationSans-BoldItalic.ttf']
@@ -165,7 +166,7 @@ def table(node):
 tree = html.parse(str(ROOT / ('server/private/legal/provider-agreement-native.html' if args.native else 'server/private/legal/provider-agreement.html')))
 story = [Paragraph('FASTBOOST', ParagraphStyle('brand', fontName='FB-Bold', fontSize=13, textColor=purple, spaceAfter=18))]
 story += [para(tree.xpath('//h1')[0], 'title')]
-story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('27 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
+story += [Paragraph(f'ENGLISH  |  {VERSION}  |  ' + ('28 OCTOBER 2026' if args.native else '17 OCTOBER 2026'), styles['small'])]
 if args.sandbox_template:
     story += [Paragraph('<b>SANDBOX TEST COPY - NOT FOR REAL CONTRACT EXECUTION.</b> Field layout for integration testing. Commercial settings remain subject to approval.', styles['body'])]
 story += [para(tree.xpath('//p[@class="fb-intro"]')[0])]

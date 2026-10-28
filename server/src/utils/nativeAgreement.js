@@ -4,15 +4,15 @@ const { createHash } = require('node:crypto');
 const { PDFDocument, rgb } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 
-const VERSION = 'FB-BSA-2.3';
+const VERSION = 'FB-BSA-2.4';
 const root = resolve(__dirname, '../../private/legal');
 const fail = message => Object.assign(new Error(message), { status: 400 });
 const fields = [
     ['WorkLocation', 'Work country and state or province', 120, ''],
-    ['PayeeLegalName', 'Payee legal name', 120, ''],
     ['ReferenceLanguage', 'Available languages', 20, 'English/Vietnamese'],
 ].map(([key, label, maxLength, defaultValue]) => ({ key, label, maxLength, defaultValue, required: true }));
-const commercialFieldKeys = new Set(fields.map(field => field.key));
+// Keep the saved payee marker when rendering historical 2.3 documents.
+const commercialFieldKeys = new Set([...fields.map(field => field.key), 'PayeeLegalName']);
 const placeholders = {
     AGREEMENT_ID: 'AgreementId', PROVIDER_LEGAL_NAME: 'ProviderLegalName', PROVIDER_EMAIL: 'ProviderEmail',
     PROVIDER_USERNAME: 'ProviderUsername', EFFECTIVE_DATE: 'EffectiveDate',
@@ -35,7 +35,7 @@ const commercialFields = () => fields.map(field => ({ ...field }));
 
 function displayValue(snapshot, key) {
     const value = snapshot.values[key] || '';
-    if (snapshot.version !== 'FB-BSA-2.3' || key !== 'EffectiveDate' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    if (!['FB-BSA-2.3', 'FB-BSA-2.4'].includes(snapshot.version) || key !== 'EffectiveDate' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
     const date = new Date(`${value}T00:00:00Z`);
     if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return value;
     return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(date);
@@ -91,7 +91,7 @@ function renderHtml(snapshot, signatures = []) {
         const label = placeholders[key];
         if (!label) return full;
         const value = escape(displayValue(snapshot, label) || full);
-        if (label === 'EffectiveDate' && snapshot.version === 'FB-BSA-2.3') {
+        if (label === 'EffectiveDate' && ['FB-BSA-2.3', 'FB-BSA-2.4'].includes(snapshot.version)) {
             return `<span data-native-date="${escape(snapshot.values[label])}">${value}</span>`;
         }
         return commercialFieldKeys.has(label) ? `<span data-native-field="${label}"><span data-native-value>${value}</span></span>` : value;
