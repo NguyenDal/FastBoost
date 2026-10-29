@@ -140,6 +140,51 @@ test('lists/context/audits/notifications never include full bank details or encr
     assert.equal(f.state().notifications.every(item => item.type === 'BOOSTER_PAYOUT_INFORMATION' && item.data.targetPath === `/provider/payout-information/${id}`), true);
 });
 
+test('every payout audit identifies its actor and snapshots only the target booster public username', async () => {
+    const f = fixture(), targetSelections = [];
+    const lookup = f.db.user.findUnique;
+    f.db.user.findUnique = async args => {
+        if (args.select?.username && !args.select.role) {
+            assert.deepEqual(args.select, { id: true, username: true }, 'audit lookup never selects profile, email or bank fields');
+            targetSelections.push(args.where.id);
+        }
+        return lookup(args);
+    };
+    Object.assign(f.state().users.find(user => user.id === 'provider'), {
+        email: 'PRIVATE-email@example.test', legalName: 'PRIVATE legal name', profile: { displayName: 'PRIVATE display name' },
+    });
+    await f.request();
+    await f.service.changeCountry(actor('admin'), id, { revision: 0, country: 'VN' });
+    await f.submit(vn, 1);
+    await f.service.details(actor('admin'), id);
+    await f.service.review(actor('admin'), id, { revision: 2, decision: 'verify' });
+    const historical = structuredClone(f.state().audit);
+    assert.deepEqual(historical.map(row => row.action), ['payout.request', 'payout.country', 'payout.submit', 'payout.reveal', 'payout.review']);
+    assert.deepEqual(historical.map(row => row.actorName), ['Admin', 'Admin', 'Booster', 'Admin', 'Admin']);
+    assert.ok(historical.every(row => row.targetLabel === 'Booster · Payout information' && row.targetId === id));
+    assert.deepEqual(targetSelections, Array(5).fill('provider'));
+    for (const row of historical) for (const metadata of [row.before, row.after].filter(Boolean)) {
+        assert.deepEqual(Object.keys(metadata).sort(), ['country', 'revision', 'status']);
+    }
+    assert.doesNotMatch(JSON.stringify(historical), /PRIVATE|Vietcombank|Nguyễn Văn An|0000123456789|021000021/);
+    f.state().users.find(user => user.id === 'provider').username = 'RenamedBooster';
+    await f.service.details(actor('admin'), id);
+    assert.equal(f.state().audit.at(-1).targetLabel, 'RenamedBooster · Payout information');
+    assert.deepEqual(f.state().audit.slice(0, historical.length), historical, 'later account rename cannot rewrite audit snapshots');
+});
+
+test('payout audit labels safely fall back when the public username is absent or blank', async () => {
+    for (const username of [undefined, null, '', '   ']) {
+        const f = fixture(); f.state().users.find(user => user.id === 'provider').username = username;
+        await f.request();
+        assert.equal(f.state().audit[0].targetLabel, 'Booster · Payout information');
+    }
+    const f = fixture(), lookup = f.db.user.findUnique;
+    f.db.user.findUnique = args => args.select?.username && !args.select.role ? null : lookup(args);
+    await f.request();
+    assert.equal(f.state().audit[0].targetLabel, 'Booster · Payout information');
+});
+
 test('concurrent and stale submissions cannot overwrite accepted data; failed CAS rolls back metadata and notifications', async () => {
     const f = fixture(); await f.request();
     const outcomes = await Promise.allSettled([f.submit(), f.submit({ ...us, accountNumber: '111122223333' })]);

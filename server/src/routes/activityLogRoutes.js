@@ -60,6 +60,14 @@ function createActivityLogRouter(client = db) {
                     { actorId: { in: ids } },
                     { targetType: { in: ['user', 'booster'] }, targetId: { in: ids } },
                 );
+                // Legacy payout events only recorded the document ID. Resolve
+                // the booster through metadata, without loading banking fields.
+                if (ids.length && client.payoutInformation?.findMany) {
+                    const payouts = await client.payoutInformation.findMany({
+                        where: { boosterId: { in: ids } }, select: { id: true },
+                    });
+                    if (payouts.length) where.OR.push({ targetType: 'payoutInformation', targetId: { in: payouts.map(payout => payout.id) } });
+                }
             }
             const result = await client.$transaction(async tx => {
                 const total = await tx.managementAuditLog.count({ where });

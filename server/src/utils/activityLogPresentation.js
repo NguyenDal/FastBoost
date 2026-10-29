@@ -46,8 +46,15 @@ function presentDetails(value, names) {
     return shown;
 }
 
-function label(item, names, services, orders) {
+function needsPayoutName(item) {
     const recorded = name(item.targetLabel);
+    return item.targetType === 'payoutInformation' && (!recorded || recorded === 'Payout information'
+        || recorded === item.targetId || isOpaqueId(recorded));
+}
+
+function label(item, names, services, orders, payouts) {
+    const recorded = name(item.targetLabel);
+    if (needsPayoutName(item)) return `${payouts.get(item.targetId) || 'Booster'} · Payout information`;
     if (item.targetType === 'user' || item.targetType === 'booster') {
         return recorded && recorded !== item.targetId && !isOpaqueId(recorded)
             ? recorded : names.get(item.targetId) || 'Unknown user';
@@ -78,9 +85,11 @@ async function presentActivityLogItems(db, items) {
     const userIds = new Set();
     const serviceIds = new Set();
     const orderIds = new Set();
+    const payoutIds = new Set();
     for (const item of items) {
         if (item.actorId) userIds.add(item.actorId);
         if (item.targetId && ['user', 'booster'].includes(item.targetType)) userIds.add(item.targetId);
+        if (item.targetId && needsPayoutName(item)) payoutIds.add(item.targetId);
         for (const value of [item.before, item.requested, item.after]) {
             visit(value, () => {}, id => userIds.add(id));
         }
@@ -93,14 +102,18 @@ async function presentActivityLogItems(db, items) {
             if (id) orderIds.add(id);
         }
     }
-    const [users, services, orders] = await Promise.all([
+    const [users, services, orders, payouts] = await Promise.all([
         userIds.size && db.user?.findMany ? db.user.findMany({ where: { id: { in: [...userIds].slice(0, 500) } }, select: { id: true, username: true } }) : [],
         serviceIds.size && db.service?.findMany ? db.service.findMany({ where: { id: { in: [...serviceIds] } }, select: { id: true, title: true } }) : [],
         orderIds.size && db.order?.findMany ? db.order.findMany({ where: { id: { in: [...orderIds] } }, select: { id: true, orderNumber: true } }) : [],
+        payoutIds.size && db.payoutInformation?.findMany ? db.payoutInformation.findMany({
+            where: { id: { in: [...payoutIds] } }, select: { id: true, booster: { select: { username: true } } },
+        }) : [],
     ]);
     const currentNames = new Map(users.map(user => [user.id, name(user.username) || 'Unknown user']));
     const serviceLabels = new Map(services.map(service => [service.id, name(service.title) || 'Service']));
     const orderLabels = new Map(orders.map(order => [order.id, name(order.orderNumber) || 'Order']));
+    const payoutLabels = new Map(payouts.map(payout => [payout.id, name(payout.booster?.username) || 'Booster']));
     return items.map(item => {
         // Names captured with an event belong only to that event. A shared map
         // would let an older row overwrite a renamed user's newer display name.
@@ -118,7 +131,7 @@ async function presentActivityLogItems(db, items) {
         return {
             ...item,
             actorName: item.actorId ? names.get(item.actorId) || 'Unknown user' : name(item.actorName) || 'Unknown user',
-            targetLabel: label(item, names, serviceLabels, orderLabels),
+            targetLabel: label(item, names, serviceLabels, orderLabels, payoutLabels),
             before: presentDetails(item.before, names),
             requested: presentDetails(item.requested, names),
             after: presentDetails(item.after, names),

@@ -176,6 +176,33 @@ test('search finds legacy activity by usernames resolved from current accounts',
     assert.equal(unmatched.total, 0);
 });
 
+test('search finds old payout reviews by the affected booster without loading banking data', async t => {
+    const { db, state } = fixture();
+    state.entries.push({ id: 'old-payout-review', actorId: 'owner', actorName: 'Owner', category: 'boosters',
+        action: 'payout.reveal', outcome: 'SUCCEEDED', targetType: 'payoutInformation', targetId: 'payout-old', targetLabel: 'Payout information',
+        createdAt: new Date('2026-10-12T12:00:00Z') });
+    let metadataReads = 0;
+    db.payoutInformation = { findMany: async ({ where, select }) => {
+        metadataReads++;
+        if (where.boosterId) {
+            assert.deepEqual(select, { id: true });
+            return where.boosterId.in.includes('target') ? [{ id: 'payout-old' }] : [];
+        }
+        assert.deepEqual(select, { id: true, booster: { select: { username: true } } });
+        return [{ id: 'payout-old', booster: { username: 'Teammate' } }];
+    } };
+    const app = express(); app.use('/api/admin/activity-logs', createActivityLogRouter(db));
+    const request = await serve(t, app);
+    const data = await (await request('/api/admin/activity-logs?q=Teammate')).json();
+    assert.equal(data.total, 1);
+    assert.equal(data.items[0].actorName, 'Owner');
+    assert.equal(data.items[0].targetLabel, 'Teammate · Payout information');
+    assert.equal(metadataReads, 2, 'search and display use narrow metadata queries');
+    assert.equal(state.entries[0].targetLabel, 'Payout information', 'history remains unmodified');
+    assert.equal((await request('/api/admin/activity-logs?q=Teammate', 'admin')).status, 403);
+    assert.equal(metadataReads, 2, 'non-owner cannot query payout audit metadata');
+});
+
 test('management coverage is limited to material access, pricing, order, agreement and earnings changes', () => {
     for (const [method, path, action] of [
         ['PATCH', '/admin/users/target/role', 'account.role'], ['PATCH', '/admin/users/target/suspension', 'account.suspension'],

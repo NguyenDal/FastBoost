@@ -40,7 +40,7 @@ export default function BoosterDocumentForm({ boosterId, configured, payoutConfi
             else await operations(`/boosters/${boosterId}/payout-information`, { requestId, country: body.get('country') });
             form.reset();
             setRequestId(crypto.randomUUID());
-            setNotice(agreement ? 'Agreement sent.' : 'Payout information is available in the booster’s Documents.');
+            setNotice(agreement ? 'Agreement sent.' : '');
             reload();
         } catch (error) {
             onError(error.message);
@@ -63,10 +63,9 @@ export default function BoosterDocumentForm({ boosterId, configured, payoutConfi
             <label>Bank country<select name="country" required defaultValue="" disabled={locked}>
                 <option value="" disabled>Select country</option><option value="US">United States</option><option value="VN">Vietnam</option>
             </select></label>
-            <p style={{ gridColumn: '1 / -1', margin: 0, color: '#aeb9ce', lineHeight: 1.6 }}>Request private bank details for Remitly deposits.</p>
             {payoutConfigured === false && <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>Payout information is temporarily unavailable.</p>}
         </>}
         <button className="ops-primary" disabled={!(agreement ? configured : payoutConfigured) || locked}>{busy ? 'Sending…' : agreement ? 'Send agreement' : 'Request payout details'}</button>
-        {notice && <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>{notice}</p>}
+        {agreement && notice && <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>{notice}</p>}
     </form>;
 }

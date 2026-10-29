@@ -65,3 +65,32 @@ test('each activity keeps the usernames recorded when that action happened', asy
         ['NewAdmin', 'NewCustomer'], ['OldAdmin', 'OldCustomer'],
     ]);
 });
+
+test('legacy payout events identify the affected booster using only public account metadata', async () => {
+    const lookups = [];
+    const db = {
+        user: { findMany: async () => [{ id: 'admin-1', username: 'CurrentAdmin' }] },
+        payoutInformation: { findMany: async args => {
+            lookups.push(args);
+            assert.deepEqual(args.select, { id: true, booster: { select: { username: true } } });
+            return [{ id: 'payout-old', booster: { username: 'FastBoost' } }, { id: 'payout-unnamed', booster: { username: null } }];
+        } },
+    };
+    const input = [
+        { actorId: 'admin-1', actorName: 'Starlight', targetType: 'payoutInformation', targetId: 'payout-old', targetLabel: 'Payout information', before: { status: 'SUBMITTED', revision: 1, country: 'VN' } },
+        { actorId: 'admin-1', actorName: 'Starlight', targetType: 'payoutInformation', targetId: 'payout-new', targetLabel: 'NameAtReview · Payout information' },
+        { actorId: 'admin-1', targetType: 'payoutInformation', targetId: 'payout-unnamed', targetLabel: 'Payout information' },
+        { actorId: 'admin-1', targetType: 'payoutInformation', targetId: 'payout-missing', targetLabel: 'Payout information' },
+    ];
+    const original = structuredClone(input);
+    const result = await presentActivityLogItems(db, input);
+    assert.equal(result[0].actorName, 'Starlight', 'actor and subject must remain distinct');
+    assert.equal(result[0].targetLabel, 'FastBoost · Payout information');
+    assert.equal(result[1].targetLabel, 'NameAtReview · Payout information', 'recorded names survive later renames');
+    assert.equal(result[2].targetLabel, 'Booster · Payout information');
+    assert.equal(result[3].targetLabel, 'Booster · Payout information');
+    assert.deepEqual(result[0].before, original[0].before);
+    assert.deepEqual(input, original, 'historical stored entries are not rewritten');
+    assert.equal(lookups.length, 1, 'one batched metadata lookup');
+    assert.deepEqual(lookups[0].where.id.in, ['payout-old', 'payout-unnamed', 'payout-missing']);
+});

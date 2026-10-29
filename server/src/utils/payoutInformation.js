@@ -67,10 +67,12 @@ function createPayoutInformationService(db, vault) {
         return record;
     }
     async function audit(tx, actor, action, record, before) {
+        const booster = await tx.user.findUnique({ where: { id: record.boosterId }, select: { id: true, username: true } });
+        const boosterName = typeof booster?.username === 'string' && booster.username.trim() || 'Booster';
         const state = value => value ? { status: value.status, revision: value.revision, country: value.country } : null;
         await tx.managementAuditLog.create({ data: { actorId: actor.id, actorName: actor.username || 'Account', actorRole: actor.role,
             actorIsOwner: Boolean(actor.isOwner), category: 'boosters', action, targetType: 'payoutInformation', targetId: record.id,
-            targetLabel: 'Payout information', before: state(before), after: state(record), outcome: 'SUCCEEDED', statusCode: 200, finishedAt: new Date() } });
+            targetLabel: `${boosterName} · Payout information`, before: state(before), after: state(record), outcome: 'SUCCEEDED', statusCode: 200, finishedAt: new Date() } });
     }
     async function notify(tx, record, userId, kind, title) {
         await tx.notification.upsert({ where: { id: `payout-${kind}-${record.id}-${record.revision}` }, update: {},
