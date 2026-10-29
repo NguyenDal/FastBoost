@@ -1,0 +1,36 @@
+Self-hosted signature font assets
+
+The style 2 and 3 binaries come unmodified from the official Google Fonts repository.
+Each accompanying *-OFL.txt contains its copyright notice and SIL Open Font
+License 1.1. Keep the license files with redistributed copies.
+
+For styles 2 and 3, the same font bytes are served from client/public/legal/fonts
+and embedded by the backend from server/private/legal/fonts so browser and PDF
+signatures use the same glyphs. Do not replace a font behind an existing signature
+style identifier.
+
+Style 1: Original signature appearance
+Browser: Segoe Print, Bradley Hand, cursive; italic, using available system fonts.
+PDF: Existing NotoSans-Regular.ttf, preserving the original typed-signature PDF.
+No additional style 1 font asset is bundled. No Microsoft font is redistributed.
+
+Style 2: Dancing Script Regular (variable font, default weight 400)
+File: DancingScript.ttf
+Original filename: DancingScript[wght].ttf
+Source: https://raw.githubusercontent.com/google/fonts/main/ofl/dancingscript/DancingScript%5Bwght%5D.ttf
+Metadata: https://github.com/google/fonts/blob/main/ofl/dancingscript/METADATA.pb
+License: dancingscript-OFL.txt
+SHA-256: 21808625578fe8d8cd10cb684be546dca077b27cd03a53a2f1ec11dc743c924c
+
+Style 3: Great Vibes Regular
+File: GreatVibes-Regular.ttf
+Source: https://raw.githubusercontent.com/google/fonts/main/ofl/greatvibes/GreatVibes-Regular.ttf
+Metadata: https://github.com/google/fonts/blob/main/ofl/greatvibes/METADATA.pb
+License: greatvibes-OFL.txt
+SHA-256: 8d509802186f1b51572531ecf313e8098f9a5bfdfaca93f0c9b34467f9982d15
+
+The style 2 and 3 official metadata files include the Vietnamese subset. Local checks
+confirmed all U+1EA0-U+1EF9 precomposed Vietnamese characters, the Vietnamese
+alphabet extensions, and combining marks used by decomposed Vietnamese names.
+Dancing Script and Great Vibes support the installed pdf-lib/fontkit subset
+embedding path and were visually checked with Vietnamese names.

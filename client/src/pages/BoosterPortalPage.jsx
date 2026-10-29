@@ -8,6 +8,7 @@ import AvatarImage from '../components/AvatarImage';
 import { OrdersIcon, UsersIcon, PriceIcon } from '../components/AdminIcons';
 import { operations, date } from '../api/operations';
 import { Contributions } from './OperationsPages';
+import { payoutPath, payoutStatus, PAYOUT_COUNTRIES } from '../utils/payoutInformation';
 import '../styles/Operations.css';
 
 const cards = [
@@ -16,6 +17,23 @@ const cards = [
     { path: 'documents', title: 'Documents', text: 'Review agreements, sign contracts, and download your copies.', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M14 3H5v18h14V8zM14 3v5h5M9 12h6M9 16h6" /></svg> },
     { path: 'profile', title: 'Booster Profile', text: 'View your team profile, preferred champions, and customer rating.', icon: <UsersIcon /> },
 ];
+
+function PayoutDocuments() {
+    const [state, setState] = useState({ data: null, error: '' });
+    const [version, setVersion] = useState(0);
+    useEffect(() => {
+        let active = true;
+        operations('/payout-information?scope=mine').then(data => { if (active) setState({ data, error: '' }); })
+            .catch(error => { if (active) setState({ data: null, error: error.message }); });
+        return () => { active = false; };
+    }, [version]);
+    return <section className="ops-card"><h2>Payout information</h2><p>Your bank details for Remitly deposits.</p>
+        {state.error && <p className="ops-error" role="alert">{state.error} <button type="button" onClick={() => setVersion(value => value + 1)}>Try again</button></p>}
+        {!state.data && !state.error && <p role="status">Loading payout requests…</p>}
+        {state.data?.requests?.map(payout => <Link className="ops-contract-link" to={payoutPath(payout.id)} key={payout.id}><span>Payout Information<small>Remitly · {PAYOUT_COUNTRIES[payout.country]}</small></span><span className={`ops-badge ${payout.status === 'VERIFIED' ? 'approved' : ''}`}>{payoutStatus(payout.status)} →</span></Link>)}
+        {state.data?.requests?.length === 0 && <p>No payout details have been requested yet.</p>}
+    </section>;
+}
 
 function Rating({ rating }) {
     return <section className="ops-card booster-rating">
@@ -62,6 +80,7 @@ export default function BoosterPortalPage({ section = 'overview' }) {
                 <Contributions onChange={() => setVersion(value => value + 1)} />
             </>}
             {section === 'documents' && <>
+                <PayoutDocuments />
                 <section className="ops-card"><h2>Your contracts</h2><p>Review your agreements and keep a copy of your signed documents.</p>
                     {data && (data.contracts.length ? data.contracts.map(contract => <Link className="ops-contract-link" key={contract.id} to={`/provider/contracts/${contract.id}`}>
                         <span>{contract.title}<small>Starts {date(contract.startsAt)}</small></span><span className={`ops-badge ${contract.signedAt && !contract.revokedAt ? 'approved' : ''}`}>{contract.archivedAt ? 'Archived' : contract.revokedAt ? 'Revoked' : contract.signedAt ? 'Signed' : contract.signingProvider === 'FASTBOOST' ? !contract.documentAvailable ? 'Awaiting FastBoost' : !contract.boosterSignedAt ? 'Review & sign' : 'Awaiting FastBoost' : 'Review & sign'} →</span>

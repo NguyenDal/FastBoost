@@ -11,6 +11,7 @@ import PageLoadBoundary from './components/PageLoadBoundary';
 // React only requests each module when its authorized route is rendered.
 const LegalDocumentPage = lazy(() => import('./pages/LegalDocumentPage'));
 const ProviderAgreementPage = lazy(() => import('./pages/ProviderAgreementPage'));
+const PayoutInformationPage = lazy(() => import('./pages/PayoutInformationPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const OrderPage = lazy(() => import('./pages/OrderPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
@@ -126,6 +127,7 @@ function App() {
         <Route path="/provider/documents" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="documents" /></ProtectedRoute>} />
         <Route path="/provider/profile" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterPortalPage section="profile" /></ProtectedRoute>} />
         <Route path="/provider/workspace" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><Navigate to="/provider/portal" replace /></ProtectedRoute>} />
+        <Route path="/provider/payout-information/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><PayoutInformationPage /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><BoosterContractPage /></ProtectedRoute>} />
         <Route path="/provider/contracts/:id/signing-return" element={<ContractSigningReturnPage />} />
         <Route path="/provider/contracts/:id/sign" element={<ProtectedRoute allowedRoles={['PROVIDER', 'ADMIN']}><ProviderAgreementPage /></ProtectedRoute>} />

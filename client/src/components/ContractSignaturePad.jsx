@@ -2,23 +2,10 @@ import { useEffect, useRef } from 'react';
 
 const WIDTH = 600, HEIGHT = 180, MAX_POINTS = 2000;
 
-export default function ContractSignaturePad({ signature, onChange, disabled }) {
-    const canvasRef = useRef(null);
+export default function ContractSignaturePad({ signature, onChange, disabled, label = 'Draw your signature', clearLabel = 'Clear' }) {
     const strokeRef = useRef(null);
     const signatureRef = useRef(signature);
     useEffect(() => { signatureRef.current = signature; }, [signature]);
-    useEffect(() => {
-        const context = canvasRef.current?.getContext('2d');
-        if (!context) return;
-        context.clearRect(0, 0, WIDTH, HEIGHT);
-        context.strokeStyle = '#252039'; context.lineWidth = 2.5; context.lineCap = 'round'; context.lineJoin = 'round';
-        for (const stroke of signature.strokes || []) {
-            if (!stroke.length) continue;
-            context.beginPath(); context.moveTo(...stroke[0]);
-            for (const point of stroke.slice(1)) context.lineTo(...point);
-            context.stroke();
-        }
-    }, [signature]);
     function point(event) {
         const bounds = event.currentTarget.getBoundingClientRect();
         return [Math.max(0, Math.min(WIDTH, Math.round((event.clientX - bounds.left) / bounds.width * WIDTH * 100) / 100)),
@@ -42,10 +29,20 @@ export default function ContractSignaturePad({ signature, onChange, disabled }) 
         signatureRef.current = next; onChange(next);
     }
     const stop = () => { strokeRef.current = null; };
+    function clear() {
+        if (disabled) return;
+        stop();
+        const next = { type: 'drawn', width: WIDTH, height: HEIGHT, strokes: [] };
+        signatureRef.current = next;
+        onChange(next);
+    }
+    const hasMarks = signature.strokes.some(stroke => stroke.length > 0);
     return <div className="native-signature-pad">
-        <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Draw your signature" aria-describedby="native-drawing-help"
-            onPointerDown={start} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop} onLostPointerCapture={stop} />
-        <div><p id="native-drawing-help">Draw with your mouse, pen or finger. You can use a typed signature instead.</p>
-            <button type="button" disabled={disabled || !signature.strokes.length} onClick={() => { stop(); onChange({ type: 'drawn', width: WIDTH, height: HEIGHT, strokes: [] }); }}>Clear</button></div>
+        <svg data-native-signature-drawing width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="none" role="img" tabIndex={disabled ? -1 : 0} aria-label={label} aria-disabled={disabled || undefined}
+            onPointerDown={start} onPointerMove={move} onPointerUp={stop} onPointerCancel={stop} onLostPointerCapture={stop}>
+            {signature.strokes.map((stroke, index) => <polyline key={index} points={stroke.map(point => point.join(',')).join(' ')} fill="none" stroke="#e5d9fa" strokeWidth={2.5} vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" />)}
+        </svg>
+        {!hasMarks && <span className="native-signature-pad-placeholder" aria-hidden="true">{label}</span>}
+        <button type="button" className="native-signature-clear" aria-label={clearLabel} title={clearLabel} disabled={disabled || !hasMarks} onClick={clear}>×</button>
     </div>;
 }

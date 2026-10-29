@@ -7,6 +7,7 @@ import { getStoredUser, hasValidSession } from '../utils/authSession';
 import { formatChatDateDivider, shouldRenderDateDivider } from '../utils/chatDates';
 import { loadSupportMessageTarget, supportAdminDestination } from '../utils/supportMessageLink';
 import AvatarImage from './AvatarImage';
+import { supportIdentityName, supportIdentityHasName, supportIdentityImage } from '../utils/supportIdentity';
 import '../styles/SupportChat.css';
 
 export function SupportIcon({ type = 'chat' }) {
@@ -14,10 +15,12 @@ export function SupportIcon({ type = 'chat' }) {
     return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[type] || paths.chat} /></svg>;
 }
 export function SupportAvatar({ user }) {
-    const name = user?.username || user?.profile?.displayName || 'Support';
-    return <span className="support-avatar"><AvatarImage src={user?.profile?.profileImageUrl} alt="" fallback={name.slice(0, 1).toUpperCase()} /></span>;
+    const name = supportIdentityName(user);
+    const fallback = supportIdentityHasName(user) ? name.slice(0, 1).toUpperCase()
+        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21v-2a8 8 0 0 1 16 0v2" /></svg>;
+    return <span className="support-avatar"><AvatarImage src={supportIdentityImage(user)} alt="" fallback={fallback} /></span>;
 }
-const nameOf = user => user?.username || user?.profile?.displayName || 'Support';
+const nameOf = user => supportIdentityName(user);
 const mergeMessages = (old, fresh) => [...new Map([...old, ...fresh].map(m => [m.id, m])).values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 
 export function SupportConversation({ threadId, user, active = true, online = null, targetMessageId = null }) {

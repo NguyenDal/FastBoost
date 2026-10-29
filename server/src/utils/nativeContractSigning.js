@@ -5,7 +5,9 @@ const { queueNativeContractEmail } = require('./nativeContractEmail');
 const { recordCriticalActivity } = require('./criticalActivity');
 
 const PROVIDER = 'FASTBOOST';
-const CONSENT_TEXT = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature and initials to bind me to this exact agreement. I can download and retain a completed copy.';
+const CONSENT_TEXT = 'The signer explicitly submitted Sign agreement to apply their electronic signature to this completed agreement and Schedule A.';
+const NAME_ONLY_CONSENT_TEXT = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature to bind me to this exact agreement. I can download and retain a completed copy.';
+const LEGACY_CONSENT_TEXT = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature and initials to bind me to this exact agreement. I can download and retain a completed copy.';
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const HASH = /^[a-f0-9]{64}$/;
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -131,7 +133,8 @@ function document(contract) {
 }
 function challengeFor(contract, actor, role) {
     return jwt.sign({ purpose: 'fastboost-contract-signature-v1', contractId: contract.id, actorId: actor.id, role,
-        documentHash: contract.nativeDocumentHash, pdfHash: contract.nativePdfHash, consentVersion: contract.nativeSnapshot.version }, secret(),
+        documentHash: contract.nativeDocumentHash, pdfHash: contract.nativePdfHash, consentVersion: contract.nativeSnapshot.version,
+        consentHash: digest(CONSENT_TEXT) }, secret(),
     { algorithm: 'HS256', expiresIn: '15m', issuer: 'FastBoost', audience: 'contract-signing' });
 }
 function currentDraftSnapshot(contract, values = {}) {
@@ -216,9 +219,15 @@ async function prepareContract(db, id, actor, values) {
 }
 function normalizeSignature(value) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) fail(400, 'Choose a typed or drawn signature.');
-    if (value.type === 'typed' && Object.keys(value).every(key => key === 'type')) return { type: 'typed' };
+    if (value.type === 'typed') {
+        const hasStyle = Object.prototype.hasOwnProperty.call(value, 'style');
+        if (Object.keys(value).some(key => !['type', 'style'].includes(key))
+            || (hasStyle && (!Number.isInteger(value.style) || value.style < 1 || value.style > 3))) fail(400, 'Choose one of the three signature styles.');
+        // An omitted style is historical evidence, not an implicit new style.
+        return { type: 'typed', ...(hasStyle && { style: value.style }) };
+    }
     if (value.type !== 'drawn' || value.width !== 600 || value.height !== 180 || !Array.isArray(value.strokes)
-        || !value.strokes.length || value.strokes.length > 100 || Object.keys(value).some(key => !['type', 'width', 'height', 'strokes'].includes(key))) fail(400, 'Draw your signature within the signature box.');
+        || !value.strokes.length || value.strokes.length > 100 || Object.keys(value).some(key => !['type', 'width', 'height', 'strokes', 'style'].includes(key))) fail(400, 'Draw your signature within the signature box.');
     let points = 0, distance = 0;
     for (const stroke of value.strokes) {
         if (!Array.isArray(stroke) || !stroke.length) fail(400, 'Draw your signature within the signature box.');
@@ -239,7 +248,10 @@ function signingInput(body) {
     if (body.consent !== true) fail(400, 'Confirm your agreement to electronic signing before signing.');
     const legalName = typeof body.legalName === 'string' ? body.legalName.trim() : '';
     const initials = typeof body.initials === 'string' ? body.initials.trim() : '';
-    if (legalName.length < 2 || legalName.length > 100 || initials.length < 1 || initials.length > 16 || /[\u0000-\u001f\u007f]/.test(legalName + initials)) fail(400, 'Enter your full legal name and Schedule A initials.');
+    if (legalName.length < 2 || legalName.length > 100 || /[\u0000-\u001f\u007f]/.test(legalName)) fail(400, 'Enter your full legal name.');
+    // Keep initials supplied by older clients as evidence; never manufacture them
+    // from the name for the inline, name-only signing flow.
+    if ((body.initials != null && typeof body.initials !== 'string') || initials.length > 16 || /[\u0000-\u001f\u007f]/.test(initials)) fail(400, 'Check your Schedule A initials.');
     const signature = normalizeSignature(body.signature);
     const payload = { requestId: body.requestId.toLowerCase(), documentHash: body.documentHash, legalName, initials, consent: true, signature };
     return { ...payload, requestHash: digest(JSON.stringify(payload)) };
@@ -248,9 +260,22 @@ function verifyChallenge(token, contract, actor, role) {
     let claims;
     try { claims = jwt.verify(token, secret(), { algorithms: ['HS256'], issuer: 'FastBoost', audience: 'contract-signing' }); }
     catch { fail(409, 'Your signing review has expired. Refresh and review the agreement again.'); }
+    const consentText = claims.consentHash === undefined ? LEGACY_CONSENT_TEXT
+        : [CONSENT_TEXT, NAME_ONLY_CONSENT_TEXT].find(text => digest(text) === claims.consentHash);
     if (claims.purpose !== 'fastboost-contract-signature-v1' || claims.contractId !== contract.id || claims.actorId !== actor.id
         || claims.role !== role || claims.documentHash !== contract.nativeDocumentHash || claims.pdfHash !== contract.nativePdfHash
-        || claims.consentVersion !== contract.nativeSnapshot.version) fail(409, 'The agreement changed. Refresh and review it before signing.');
+        || claims.consentVersion !== contract.nativeSnapshot.version || !consentText) fail(409, 'The agreement changed. Refresh and review it before signing.');
+    // Preserve the evidence wording for an already-issued review. New reviews
+    // record the explicit submit action, without claiming a separate checkbox or
+    // duplicated affirmation was displayed outside the frozen agreement.
+    return consentText;
+}
+function legacyInitialsConstraint(error) {
+    const cause = error?.meta?.driverAdapterError?.cause || error?.cause;
+    if (![error?.code, error?.meta?.code, cause?.originalCode, cause?.code].includes('23514')) return false;
+    if ([error?.constraint, error?.meta?.constraint, cause?.constraint].includes('NativeContractSignature_name_check')) return true;
+    return [error?.message, error?.meta?.message, cause?.originalMessage, cause?.message].some(message => typeof message === 'string'
+        && /check constraint ["`]NativeContractSignature_name_check["`]/i.test(message));
 }
 async function signContract(db, id, actor, body, audit = {}) {
     const input = signingInput(body);
@@ -271,7 +296,8 @@ async function signContract(db, id, actor, body, audit = {}) {
         verifyFrozen(current);
         if (unsignedOldVersion(current)) fail(409, 'The agreement version changed. FastBoost must submit the current terms before anyone signs.');
         if (input.documentHash !== current.nativeDocumentHash) fail(409, 'The agreement changed. Refresh and review it before signing.');
-        verifyChallenge(body.challenge, current, signer, role);
+        const consentText = verifyChallenge(body.challenge, current, signer, role);
+        if (consentText === LEGACY_CONSENT_TEXT && !input.initials) fail(409, 'Refresh the agreement to review the current signing confirmation.');
         const signatures = await signaturesFor(tx, id);
         if (signatures.some(value => value.role === role)) fail(409, 'Your signature has already been recorded.');
         const firstRole = firstSignerRole(current.nativeSnapshot);
@@ -283,14 +309,22 @@ async function signContract(db, id, actor, body, audit = {}) {
         if (!sameName(input.legalName, expectedName)) fail(400, 'Use the full legal name assigned to your signing invitation.');
         const signedAt = new Date();
         const signature = { contractId: id, role, actorId: signer.id, actorEmail: email(signer.email), legalName: input.legalName,
-            initials: input.initials, consentText: CONSENT_TEXT, signature: input.signature, documentHash: input.documentHash,
+            initials: input.initials, consentText, signature: input.signature, documentHash: input.documentHash,
             requestId: input.requestId, requestHash: input.requestHash, signedAt,
             clientIp: typeof audit.ip === 'string' ? audit.ip.slice(0, 128) : null,
             userAgent: typeof audit.userAgent === 'string' ? audit.userAgent.slice(0, 500) : null };
         const completed = role !== firstRole;
         const pdf = await agreement.renderPdf(current.nativeSnapshot, [...signatures, signature], { completed });
         if (!Buffer.isBuffer(pdf) || pdf.subarray(0, 5).toString() !== '%PDF-') fail(503, 'The signed PDF could not be saved. Your signature was not recorded.');
-        await tx.nativeContractSignature.create({ data: signature });
+        try {
+            await tx.nativeContractSignature.create({ data: signature });
+        } catch (error) {
+            if (input.initials || !legacyInitialsConstraint(error)) throw error;
+            // Older databases still require initials. Roll back the full signing
+            // transaction and preserve the client's same-intent retry.
+            throw Object.assign(new Error('Agreement signing needs a service update. Please contact FastBoost support, then retry your signature.',
+                { cause: error }), { status: 503 });
+        }
         const updated = await tx.boosterContract.update({ where: { id }, data: {
             [role === 'COMPANY' ? 'companySignedAt' : 'boosterSignedAt']: signedAt,
             nativePdf: pdf, nativePdfHash: digest(pdf), ...(completed && { signedAt,

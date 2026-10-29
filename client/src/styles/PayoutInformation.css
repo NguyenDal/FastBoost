@@ -1,0 +1,36 @@
+.payout-page{max-width:860px;padding-top:30px;gap:18px}
+.payout-back{font-size:13px;text-decoration:none;justify-self:start;padding:4px 0}
+.payout-icon{flex:0 0 42px;height:42px;display:grid;place-items:center;border:1px solid #b68af530;border-radius:13px;background:#8a4cdd16;color:#c9b5f9}
+.payout-icon svg{width:24px;height:24px}.payout-card{padding:28px}
+.payout-card-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.payout-identity{display:flex;align-items:center;gap:14px;min-width:0}.payout-identity>div:last-child{min-width:0}
+.payout-card-heading h1{font-size:27px;line-height:1.25;margin:0;letter-spacing:-.6px}.payout-card-heading p{font-size:13px;color:#aab5c9;margin:5px 0 0;line-height:1.5;overflow-wrap:anywhere}
+.payout-card-heading .ops-badge{flex-shrink:0}
+.payout-card>.payout-method{display:flex;flex-wrap:wrap;gap:6px 18px;margin:21px 0 24px;padding-bottom:20px;border-bottom:1px solid #ffffff12;font-size:12px;color:#aab5c9}
+.payout-method span+span{position:relative}.payout-method span+span::before{content:'·';position:absolute;left:-11px;color:#7d7890}
+.payout-form fieldset{border:0;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.payout-form label,.payout-country-change label,.payout-review label{display:grid;gap:9px;color:#dce1ef;font-size:13px}
+.payout-wide{grid-column:1/-1}.payout-form input:not([type=checkbox]),.payout-form select{width:100%;min-height:47px;box-sizing:border-box}
+.payout-form input:focus,.payout-form select:focus,.payout-country-change select:focus,.payout-review select:focus{outline:2px solid #b391ef;outline-offset:2px}
+.payout-form .payout-check{display:flex;align-items:center;gap:11px;line-height:1.7;font-size:12px;color:#b9c3d6}
+.payout-form .payout-check{cursor:pointer}
+.payout-check input[type=checkbox]{appearance:none;display:grid;place-content:center;box-sizing:border-box;width:17px;height:17px;flex:0 0 17px;padding:0;margin:0;border:1px solid #647087;border-radius:4px;background:#171c2a;color:#fff;accent-color:#8b5cf6;cursor:pointer}
+.payout-check input[type=checkbox]:checked{background:#7c3aed;border-color:#a78bfa}
+.payout-check input[type=checkbox]:checked::after{content:'';width:4px;height:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.payout-check input[type=checkbox]:disabled{opacity:.5;cursor:default}
+.payout-check input[type=checkbox]:focus-visible{outline:2px solid #c4b5fd;outline-offset:3px}
+.payout-form-actions,.payout-actions{display:flex;flex-wrap:wrap;gap:12px}.payout-page button{min-height:42px}
+.payout-page .payout-form .ops-error{margin:0}.payout-form small{font-size:12px;color:#aab5c9;line-height:1.6}
+.payout-details{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:0 0 24px}
+.payout-details>div{min-width:0}.payout-details dt{font-size:12px;color:#aab5c9;margin-bottom:8px}.payout-details dd{font-size:16px;margin:0;color:#e9e6f4;overflow-wrap:anywhere;line-height:1.5}
+.payout-details .payout-number{font-variant-numeric:tabular-nums;letter-spacing:1px}
+.payout-card>.payout-waiting{margin:0 0 24px;color:#aab5c9;font-size:14px;line-height:1.7}
+.payout-country-change{display:flex;gap:14px;align-items:end;padding-top:20px;border-top:1px solid #ffffff12}.payout-country-change label{flex:1}
+.payout-review{border-top:1px solid #ffffff14;margin-top:24px;padding-top:22px}.payout-help{color:#aab5c9;font-size:12px;line-height:1.7}
+.payout-review-actions{display:flex;align-items:end;flex-wrap:wrap;gap:12px}.payout-review-actions label{flex:1;min-width:190px}
+.payout-footer{display:flex;flex-wrap:wrap;gap:6px 22px;border-top:1px solid #ffffff12;margin-top:24px;padding-top:18px;color:#929fb6;font-size:11px;line-height:1.7}
+.payout-card>.payout-notice{padding:13px 16px;border-radius:10px;border:1px solid #dbb67530;background:#c6933010;color:#e0c390;margin:0 0 22px;font-size:13px;line-height:1.7}
+.payout-correction{padding:14px 16px;border-radius:12px;border:1px solid #dbb67530;background:#c6933010;color:#e0c390;font-size:13px;line-height:1.7;margin:0 0 24px}
+.payout-page .ops-error button{margin-left:16px}
+@media(max-width:640px){.payout-page{padding:22px 16px 35px}.payout-card{padding:22px 20px}.payout-card-heading{flex-wrap:wrap;gap:14px}.payout-card-heading h1{font-size:23px}.payout-icon{flex-basis:36px;height:36px;border-radius:11px}.payout-icon svg{width:22px;height:22px}.payout-identity{gap:11px}.payout-card>.payout-method{margin-top:18px}.payout-form fieldset,.payout-details{grid-template-columns:1fr;gap:19px}.payout-wide{grid-column:auto}.payout-form-actions>button,.payout-actions>button{flex:1}.payout-review-actions{align-items:stretch;flex-direction:column}.payout-review-actions label{min-width:0}.payout-country-change{flex-wrap:wrap}.payout-country-change button{flex:1}}
+@media(forced-colors:active){.payout-check input[type=checkbox]{appearance:auto}.payout-check input[type=checkbox]::after{content:none}}

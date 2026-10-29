@@ -15,7 +15,7 @@ test('all agreement updates contain the exact agreement, booster, status and aut
         assert.match(mail.text, /Nguyễn Minh Anh/u);
         assert.match(mail.text, /Update:/u);
         assert.match(mail.text, new RegExp(path, 'u'));
-        assert.match(mail.html, new RegExp(`href="${path}"`, 'u'));
+        assert.match(mail.html, new RegExp(`href="${path}${event === 'COMPANY_SIGNED' ? '/sign' : ''}"`, 'u'));
         assert.match(mail.html, /Fast<span style="color:#cc8aff">Boost<\/span>/u);
         assert.match(mail.html, /AGREEMENT UPDATE/u);
         assert.equal(Object.hasOwn(mail, 'to'), false, 'recipient selection belongs to the outbox');
@@ -32,11 +32,21 @@ test('event copy stays truthful when delivery follows a later signing step', () 
     const boosterSigned = buildNativeContractEmail(contract, 'BOOSTER_SIGNED', options);
     assert.match(boosterSigned.text, /booster signed the agreement.*If FastBoost still needs to sign/u);
     const companySigned = buildNativeContractEmail(contract, 'COMPANY_SIGNED', options);
-    assert.match(companySigned.text, /FastBoost completed the details and signed.*If your signature is still needed/u);
+    assert.match(companySigned.text, /\n\nOpen it to review the finalized terms\. If your signature is still needed, you can sign here\./u);
+    assert.doesNotMatch(companySigned.html, /FASTBOOST SIGNED|FastBoost completed the details and signed/u);
+    assert.match(companySigned.html, new RegExp(`href="${path}/sign"`, 'u'));
     const completed = buildNativeContractEmail(contract, 'COMPLETED', options);
     assert.match(completed.text, /signed PDF is attached/u);
     assert.match(completed.html, /signed PDF is attached/u);
     assert.match(completed.text, /Both parties signed/u);
+});
+
+test('development agreement emails use a public logo while retaining their direct local review link', () => {
+    const mail = buildNativeContractEmail(contract, 'COMPANY_SIGNED', { clientUrl: 'http://localhost:5173', nodeEnv: 'development' });
+    assert.match(mail.html, /src="https:\/\/www\.fastboost\.gg\/assets\/logos\/fastboost-logo\.png"/u);
+    assert.doesNotMatch(mail.html, /src="http:\/\/localhost/u);
+    assert.match(mail.html, new RegExp(`href="http://localhost:5173/provider/contracts/${contract.id}/sign"`, 'u'));
+    assert.match(mail.text, new RegExp(`http://localhost:5173/provider/contracts/${contract.id}/sign`, 'u'));
 });
 
 test('dynamic details are escaped in HTML and unsafe links are rejected', () => {

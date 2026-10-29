@@ -1,11 +1,10 @@
 .home-shell { background: #070a14; }
-#home { min-height: calc(100vh - 76px); overflow: clip; background: #070a14; }
+#home { min-height: 100vh; min-height: 100svh; overflow: clip; background: #070a14; }
 .home-shell > .topbar { margin-bottom: -76px; }
 
 .opening-hero {
   position: relative;
   isolation: isolate;
-  min-height: clamp(520px, 42vw, 650px);
   padding-top: 76px;
   display: flex;
   align-items: flex-start;
@@ -16,9 +15,10 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(90deg, rgba(5, 8, 20, .76) 0%, rgba(5, 8, 20, .45) 36%, rgba(5, 8, 20, .04) 68%), linear-gradient(0deg, #070a14 0%, rgba(7, 10, 20, .1) 30%, transparent 74%);
+  pointer-events: none;
+  background: linear-gradient(0deg, #070a14 0%, rgba(7, 10, 20, .1) 30%, transparent 74%), linear-gradient(90deg, rgba(5, 8, 20, .76) 0%, rgba(5, 8, 20, .45) 36%, rgba(5, 8, 20, .04) 68%);
 }
-.opening-hero-content { width: min(1280px, 100%); margin: 0 auto; padding: 36px 48px 84px; }
+.opening-hero-content { width: min(1280px, 100%); margin: 0 auto; padding: 36px 48px 56px; }
 .opening-hero h1 { max-width: 690px; margin: 0; color: #f6f4ff; font-size: clamp(48px, 5.7vw, 82px); font-weight: 850; line-height: 1.04; letter-spacing: -.055em; text-wrap: balance; }
 .opening-hero h1 > span {
   color: #c379fb; background: linear-gradient(100deg, #f37dd2 0%, #cd62f3 48%, #9466fc 100%);
@@ -57,7 +57,7 @@
 .opening-countdown.is-open .opening-countdown-dot { background: #89e2c8; box-shadow: 0 0 8px rgba(137, 226, 200, .34); }
 .opening-countdown-open { color: #f6f1ff; font-size: 20px; font-weight: 750; }
 
-.home-arena { position: relative; width: min(1280px, 100%); margin: -28px auto 0; padding: 0 48px 90px; }
+.home-arena { position: relative; width: min(1280px, 100%); margin: 0 auto; padding: 0 48px 64px; }
 .home-arena-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 26px; }
 .home-section-eyebrow { margin: 0 0 12px; color: #a9a0c7; font-size: 10px; font-weight: 750; letter-spacing: .19em; text-transform: uppercase; }
 .home-arena h2 { margin: 0; color: #f3f1fb; font-size: clamp(30px, 3.5vw, 46px); font-weight: 800; line-height: 1.15; letter-spacing: -.045em; }
@@ -84,13 +84,12 @@
 .home-game-card:hover .home-game-card-arrow { transform: rotate(45deg); background: rgba(91, 47, 137, .45); }
 
 @media (min-width: 1600px) {
-  .opening-hero { min-height: 670px; }
   .opening-hero-art { object-position: center 58%; }
 }
 @media (max-width: 900px) {
-  .opening-hero-content { padding: 34px 30px 80px; }
+  .opening-hero-content { padding: 34px 30px 44px; }
   .opening-hero-art { object-position: 57% center; }
-  .opening-hero::before { background: linear-gradient(90deg, rgba(5,8,20,.85), rgba(5,8,20,.44) 55%, rgba(5,8,20,.1)), linear-gradient(0deg, #070a14, transparent 40%); }
+  .opening-hero::before { background: linear-gradient(0deg, #070a14, transparent 40%), linear-gradient(90deg, rgba(5,8,20,.85), rgba(5,8,20,.44) 55%, rgba(5,8,20,.1)); }
   .home-arena { padding: 0 30px 65px; }
   .home-arena-heading > p { display: none; }
   .home-game-grid { gap: 18px; }
@@ -99,10 +98,9 @@
   .home-game-card-arrow { width: 38px; height: 38px; flex-basis: 38px; font-size: 22px; }
 }
 @media (max-width: 600px) {
-  .opening-hero { min-height: 530px; }
   .opening-hero-art { object-position: 65% center; }
   .opening-hero::before { background: linear-gradient(0deg, #070a14 0%, rgba(5,8,20,.81) 30%, rgba(5,8,20,.38) 65%, rgba(5,8,20,.05)); }
-  .opening-hero-content { padding: 38px 22px 64px; }
+  .opening-hero-content { padding: 38px 20px 36px; }
   .opening-hero h1 { font-size: clamp(40px, 10.5vw, 60px); }
   .opening-hub-link { min-height: 48px; margin-top: 24px; padding: 11px 20px; font-size: 14px; }
   .opening-countdown { margin-top: 17px; }
@@ -111,7 +109,7 @@
   .opening-countdown-unit strong { font-size: 27px; }
   .opening-countdown-unit small { font-size: 8px; }
   .opening-countdown-separator { margin-top: 9px; font-size: 24px; }
-  .home-arena { margin-top: -5px; padding: 0 20px 48px; }
+  .home-arena { padding: 0 20px 48px; }
   .home-arena-heading { margin-bottom: 20px; }
   .home-section-eyebrow { font-size: 9px; margin-bottom: 10px; }
   .home-game-grid { grid-template-columns: minmax(0, 1fr); }

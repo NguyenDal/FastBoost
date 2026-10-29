@@ -31,6 +31,34 @@ test('agreement email events use one stable outbox identity per recipient', asyn
     await assert.rejects(queueNativeContractEmail(tx, id, 'UNKNOWN'), /Unknown/);
 });
 
+test('a missing agreement email table returns an actionable unavailable error without hiding unrelated failures', async () => {
+    const missing = [
+        { code: 'P2021', meta: { table: 'public.NativeContractEmail' } },
+        { code: 'P2021', meta: { table: '"public"."NativeContractEmail"' } },
+        { code: '42P01', message: 'relation "NativeContractEmail" does not exist' },
+        { code: 'P2010', meta: { code: '42P01', message: 'relation "public.NativeContractEmail" does not exist' } },
+        { code: 'P2021', meta: { driverAdapterError: { cause: { kind: 'TableDoesNotExist', table: 'public.NativeContractEmail' } } } },
+        { cause: { originalCode: '42P01', originalMessage: 'relation "NativeContractEmail" does not exist' } },
+    ];
+    for (const failure of missing) {
+        const tx = { nativeContractEmail: { createMany: async () => { throw failure; } } };
+        await assert.rejects(queueNativeContractEmail(tx, id, 'COMPANY_SIGNED'), error => {
+            assert.equal(error.status, 503);
+            assert.match(error.message, /contact FastBoost support.*then retry/);
+            assert.equal(error.cause, failure);
+            return true;
+        });
+    }
+    for (const failure of [
+        { code: 'P2021', meta: { table: 'public.User', modelName: 'NativeContractEmail' } },
+        { code: '42P01', message: 'relation "NativeContractEmailSecret" does not exist' },
+        { code: 'P1001', message: 'Cannot reach the database' },
+    ]) {
+        const tx = { nativeContractEmail: { createMany: async () => { throw failure; } } };
+        await assert.rejects(queueNativeContractEmail(tx, id, 'COMPANY_SIGNED'), error => error === failure);
+    }
+});
+
 test('only real event transitions are deliverable and the final PDF hash must match', () => {
     assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, contract), true);
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: new Date() }), true);

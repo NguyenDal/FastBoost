@@ -263,6 +263,26 @@ exports.Prisma.BoosterPreferencesScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PayoutInformationScalarFieldEnum = {
+  id: 'id',
+  boosterId: 'boosterId',
+  issuedById: 'issuedById',
+  reviewedById: 'reviewedById',
+  status: 'status',
+  revision: 'revision',
+  country: 'country',
+  currency: 'currency',
+  accountLast4: 'accountLast4',
+  encryptedDetails: 'encryptedDetails',
+  detailsRevision: 'detailsRevision',
+  correctionReason: 'correctionReason',
+  submittedAt: 'submittedAt',
+  confirmedAt: 'confirmedAt',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.BoosterEarningsLedgerStateScalarFieldEnum = {
   id: 'id',
   activatedAt: 'activatedAt'
@@ -597,6 +617,20 @@ exports.Prisma.BoosterOrderEmailScalarFieldEnum = {
   lastError: 'lastError'
 };
 
+exports.Prisma.AdminOrderEmailScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  adminId: 'adminId',
+  payload: 'payload',
+  createdAt: 'createdAt',
+  attempts: 'attempts',
+  nextAttemptAt: 'nextAttemptAt',
+  claim: 'claim',
+  sentAt: 'sentAt',
+  skippedAt: 'skippedAt',
+  lastError: 'lastError'
+};
+
 exports.Prisma.CouponUseScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
@@ -814,6 +848,7 @@ exports.VerificationCodeType = exports.$Enums.VerificationCodeType = {
 };
 
 exports.NotificationType = exports.$Enums.NotificationType = {
+  BOOSTER_PAYOUT_INFORMATION: 'BOOSTER_PAYOUT_INFORMATION',
   BOOSTER_CONTRACT: 'BOOSTER_CONTRACT',
   FIRST_PURCHASE_DISCOUNT: 'FIRST_PURCHASE_DISCOUNT',
   REFERRAL_REWARD: 'REFERRAL_REWARD',
@@ -842,6 +877,7 @@ exports.Prisma.ModelName = {
   RegistrationConsent: 'RegistrationConsent',
   BoosterProfile: 'BoosterProfile',
   BoosterPreferences: 'BoosterPreferences',
+  PayoutInformation: 'PayoutInformation',
   BoosterEarningsLedgerState: 'BoosterEarningsLedgerState',
   BoosterEarningsBalance: 'BoosterEarningsBalance',
   BoosterEarningsEntry: 'BoosterEarningsEntry',
@@ -864,6 +900,7 @@ exports.Prisma.ModelName = {
   OrderConfirmationEmail: 'OrderConfirmationEmail',
   OrderCompletionEmail: 'OrderCompletionEmail',
   BoosterOrderEmail: 'BoosterOrderEmail',
+  AdminOrderEmail: 'AdminOrderEmail',
   CouponUse: 'CouponUse',
   OrderNumberReservation: 'OrderNumberReservation',
   OrderAssignment: 'OrderAssignment',

@@ -1,21 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
-import { OPENING_CAMPAIGN } from '../data/openingCampaign';
-
-const openingTime = Date.parse(OPENING_CAMPAIGN.startsAt);
-const openingDate = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric',
-}).format(openingTime);
-
-function countdownParts(now) {
-  const total = Math.max(0, Math.ceil((openingTime - now) / 1000));
-  return {
-    days: Math.floor(total / 86400),
-    hours: Math.floor((total % 86400) / 3600),
-    minutes: Math.floor((total % 3600) / 60),
-    seconds: total % 60,
-    total,
-  };
-}
+import { SITE_OPENING_AT, openingCountdownParts, openingLocalTimeLabel } from '../utils/openingCountdown';
+import { resolveUserTimeZone } from '../utils/userTimeZone';
 
 function SlidingDigit({ digit }) {
   const [display, setDisplay] = useState(() => ({ current: digit, previous: null }));
@@ -45,7 +30,9 @@ function SlidingNumber({ value }) {
 
 export default function OpeningCountdown() {
   const [now, setNow] = useState(() => Date.now());
-  const remaining = countdownParts(now);
+  const remaining = openingCountdownParts(now);
+  const timeZone = resolveUserTimeZone();
+  const openingLabel = openingLocalTimeLabel({ timeZone });
   const isOpen = remaining.total === 0;
 
   useEffect(() => {
@@ -71,10 +58,10 @@ export default function OpeningCountdown() {
     className="opening-countdown"
     role="timer"
     aria-live="off"
-    aria-label={`FastBoost opens ${openingDate} at 00:00 UTC. Opens in ${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes, and ${remaining.seconds} seconds`}
+    aria-label={`FastBoost opens ${openingLabel}. Opens in ${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes, and ${remaining.seconds} seconds`}
   >
     <span className="opening-countdown-label" aria-hidden="true"><span className="opening-countdown-dot" />Opens in</span>
     <span className="opening-countdown-units" aria-hidden="true">{units.map(([label, value], index) => <Fragment key={label}>{index > 0 && <span className="opening-countdown-separator">:</span>}<span className="opening-countdown-unit"><SlidingNumber value={value} /><small>{label}</small></span></Fragment>)}</span>
-    <time className="opening-countdown-time" dateTime={OPENING_CAMPAIGN.startsAt} aria-hidden="true">{openingDate} · 00:00 UTC</time>
+    <time className="opening-countdown-time" dateTime={SITE_OPENING_AT} data-time-zone={timeZone} aria-hidden="true">{openingLabel}</time>
   </div>;
 }

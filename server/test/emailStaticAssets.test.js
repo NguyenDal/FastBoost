@@ -15,7 +15,7 @@ test('email images use the site asset origin instead of public S3', () => {
         buildNativeContractEmail({ id: '3b41a71d-36ec-4a90-a311-f436a50de6bd', signerName: 'Example Booster' }, 'ISSUED', { clientUrl: 'https://fastboost.gg', nodeEnv: 'production' }).html,
     ];
     for (const html of pages) {
-        assert.match(html, /https:\/\/fastboost\.gg\/assets\/logos\/fastboost-logo\.png/);
+        assert.match(html, /https:\/\/(?:www\.)?fastboost\.gg\/assets\/logos\/fastboost-logo\.png/);
         assert.doesNotMatch(html, /fastboost-assets\.s3/);
     }
     assert.match(pages[0], /https:\/\/fastboost\.gg\/assets\/services\/ranks\/gold\.png/);

@@ -158,6 +158,7 @@ router.patch('/boosters/:id', admin, handle(async (req, res) => {
     res.json({ ok: true });
 }));
 router.use(require('./contractRoutes'));
+router.use(require('./payoutInformationRoutes'));
 router.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
     res.status(error.status || 500).json({ ok: false,

@@ -59,8 +59,13 @@ test('Vietnamese view preserves completed terms and company-first signatures wit
     assert.match(html, /data-native-field="ReferenceLanguage"><span data-native-value>English\/Vietnamese<\/span>/u);
     assert.match(vi, /data-native-field="ReferenceLanguage"><span data-native-value>Tiếng Anh\/Tiếng Việt<\/span>/u);
     assert.doesNotMatch(vi, /data-native-field="(?:AuthorizedSignatory|ServiceScope|JurisdictionAddendum|DataAccessCountries)"/u);
-    assert.match(vi, /Chữ ký: <strong>Home<\/strong>/u, 'saved signer name remains unchanged');
-    assert.match(vi, /Alex Example, kinh doanh dưới tên FastBoost/u, 'the company identity is kept while its fixed descriptor is translated');
+    assert.match(vi, /Người ký<\/span>\s*<strong>Home, kinh doanh dưới tên FastBoost<\/strong>/u, 'saved signer name remains unchanged');
+    assert.match(vi, /class="fb-signature-script" data-native-value>Home<\/span>/u, 'typed signature is never translated');
+    assert.match(vi, /datetime="2026-10-22T12:00:00.000Z"/u, 'exact signing timestamp is retained');
+    assert.match(vi, />22\/10\/2026 · 12:00 UTC<\/time>/u);
+    assert.match(vi, /Người ký|Chữ viết tắt · Phụ lục A/u);
+    assert.match(vi, /Chưa có chữ ký/u);
+    assert.match(vi, /Home, kinh doanh dưới tên FastBoost/u, 'the recorded signer is kept while its fixed descriptor is translated');
     assert.equal((vi.match(/data-native-field="WorkLocation"/gu) || []).length, 1);
     assert.match(vi, /href="mailto:support@fastboost\.gg"/u);
 });

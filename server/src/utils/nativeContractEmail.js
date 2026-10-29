@@ -12,11 +12,28 @@ const EVENTS = Object.freeze({
 const pending = { sentAt: null, skippedAt: null };
 const digest = value => createHash('sha256').update(value).digest('hex');
 
+function missingEmailTable(error) {
+    const cause = error?.meta?.driverAdapterError?.cause || error?.cause;
+    if (![error?.code, error?.meta?.code, cause?.originalCode, cause?.code].some(code => code === 'P2021' || code === '42P01')) return false;
+    if ([error?.meta?.table, error?.table, cause?.table].some(table => typeof table === 'string' &&
+        /^(?:[\w]+\.)?NativeContractEmail$/.test(table.replace(/["`]/g, '')))) return true;
+    return [error?.message, error?.meta?.message, cause?.originalMessage].some(message => typeof message === 'string' &&
+        /relation ["`](?:[\w]+\.)?NativeContractEmail["`] does not exist/i.test(message));
+}
+
 async function queueNativeContractEmail(tx, contractId, event) {
     if (!Object.hasOwn(EVENTS, event)) throw new Error('Unknown native agreement email event.');
-    await tx.nativeContractEmail.createMany({ skipDuplicates: true, data: EVENTS[event].map(recipientRole => ({
-        id: `${contractId}:${event}:${recipientRole}`, contractId, event, recipientRole,
-    })) });
+    try {
+        await tx.nativeContractEmail.createMany({ skipDuplicates: true, data: EVENTS[event].map(recipientRole => ({
+            id: `${contractId}:${event}:${recipientRole}`, contractId, event, recipientRole,
+        })) });
+    } catch (error) {
+        if (!missingEmailTable(error)) throw error;
+        // Keep the signature and its email notification atomic while the
+        // required migration is pending; never accept a partial signing result.
+        throw Object.assign(new Error('Agreement changes are temporarily unavailable. Please contact FastBoost support to finish the service update, then retry.',
+            { cause: error }), { status: 503 });
+    }
 }
 
 function relevant(row, contract) {

@@ -19,6 +19,7 @@ server.listen(PORT, () => {
   startConfirmationWorker(require("./prisma"));
   require("./utils/orderCompletionEmail").startCompletionWorker(require("./prisma"));
   require("./utils/boosterOrderEmail").startBoosterOrderEmailWorker(require("./prisma"));
+  require("./utils/adminOrderEmail").startAdminOrderEmailWorker(require("./prisma"));
   require("./utils/nativeContractEmail").startNativeContractEmailWorker(require("./prisma"));
   require("./utils/supportEmail").startSupportEmailWorker(require("./prisma"));
   require('./utils/abandonedWalletCheckout').startCheckoutPresenceWorker(require('./prisma'), require('./utils/stripeClient'),

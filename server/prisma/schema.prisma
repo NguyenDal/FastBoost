@@ -23,6 +23,9 @@ model User {
   matchReviews OrderMatchReview[]
   boosterContracts BoosterContract[] @relation("BoosterContracts")
   issuedBoosterContracts BoosterContract[] @relation("IssuedBoosterContracts")
+  payoutInformation PayoutInformation? @relation("BoosterPayoutInformation")
+  issuedPayoutInformation PayoutInformation[] @relation("IssuedPayoutInformation")
+  reviewedPayoutInformation PayoutInformation[] @relation("ReviewedPayoutInformation")
   supportThread SupportThread?
   supportMessages SupportMessage[]
   supportPresence SupportPresence[]
@@ -34,6 +37,7 @@ model User {
   submittedOrderRatings OrderRating[]
   receivedOrderRatings OrderRatingRecipient[]
   boosterOrderEmails BoosterOrderEmail[]
+  adminOrderEmails AdminOrderEmail[]
   id                  String               @id @default(cuid())
   email               String               @unique
   username            String?              @unique
@@ -234,6 +238,33 @@ model BoosterPreferences {
   secondRole String?
   championIds String[] @default([])
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Recipient bank details remain separate from signed agreements and earnings.
+// Only the encrypted envelope contains full names, bank names and bank numbers.
+model PayoutInformation {
+  id String @id
+  boosterId String @unique
+  booster User @relation("BoosterPayoutInformation", fields: [boosterId], references: [id], onDelete: Restrict)
+  issuedById String
+  issuedBy User @relation("IssuedPayoutInformation", fields: [issuedById], references: [id], onDelete: Restrict)
+  reviewedById String?
+  reviewedBy User? @relation("ReviewedPayoutInformation", fields: [reviewedById], references: [id], onDelete: Restrict)
+  status String @default("REQUESTED")
+  revision Int @default(0)
+  country String
+  currency String?
+  accountLast4 String?
+  encryptedDetails Json?
+  detailsRevision Int?
+  correctionReason String?
+  submittedAt DateTime?
+  confirmedAt DateTime?
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([status, updatedAt])
 }
 
 // Snapshot IDs deliberately have no cascading relation: historical recognition
@@ -527,6 +558,7 @@ model Order {
   confirmationEmail OrderConfirmationEmail?
   completionEmail   OrderCompletionEmail?
   boosterEmails     BoosterOrderEmail[]
+  adminEmails       AdminOrderEmail[]
   id                String      @id @default(cuid())
   orderNumber       String      @unique @default(dbgenerated())
   customerId        String
@@ -710,6 +742,25 @@ model BoosterOrderEmail {
 
   @@index([sentAt, skippedAt, nextAttemptAt])
   @@index([orderId, boosterId])
+}
+
+model AdminOrderEmail {
+  id String @id
+  orderId String
+  adminId String
+  payload Json
+  createdAt DateTime @default(now())
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  claim String?
+  sentAt DateTime?
+  skippedAt DateTime?
+  lastError String?
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, adminId])
+  @@index([sentAt, skippedAt, nextAttemptAt])
 }
 
 model CouponUse {
@@ -960,6 +1011,7 @@ enum PaymentStatus {
 }
 
 enum NotificationType {
+  BOOSTER_PAYOUT_INFORMATION
   BOOSTER_CONTRACT
   FIRST_PURCHASE_DISCOUNT
   REFERRAL_REWARD

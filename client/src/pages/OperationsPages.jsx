@@ -4,6 +4,7 @@ import { operations, downloadContract, date, tenure } from '../api/operations';
 import { loadChampions } from '../api/champions';
 import BoosterPreferenceSummary from '../components/BoosterPreferenceSummary';
 import BoosterDocumentForm from '../components/BoosterDocumentForm';
+import { payoutPath, payoutStatus, PAYOUT_COUNTRIES } from '../utils/payoutInformation';
 import OrderPagination from '../components/OrderPagination';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
@@ -73,16 +74,20 @@ function BoosterRating({ rating }) {
         <span>{average.toFixed(1)}/5</span><span className="ops-booster-rating-count">({rating.count} {rating.count === 1 ? 'review' : 'reviews'})</span>
     </> : <span className="ops-booster-rating-count">Rating unavailable</span>}</span>;
 }
-function BoosterDetails({ booster, champions, preferencesAvailable, reload, configured, onError }) {
+function BoosterDetails({ booster, champions, preferencesAvailable, reload, configured, payoutConfigured, payouts = [], onError }) {
     return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><span className="ops-booster-title"><strong>{booster.profile?.displayName || booster.username}</strong><BoosterRating rating={booster.rating} /></span><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
-            <h3>Send a document</h3><BoosterDocumentForm boosterId={booster.id} configured={configured} suspended={booster.suspendedAt} reload={reload} onError={onError} />
-            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.archivedAt ? 'Archived' : c.signedAt ? `Signed ${date(c.signedAt)}` : c.signingProvider === 'FASTBOOST' ? nativeContractPendingStatus(c) : 'Awaiting signature'} →</span></Link>) : <p>No documents sent yet.</p>}</div>
+            <h3>Send a document</h3><BoosterDocumentForm boosterId={booster.id} configured={configured} payoutConfigured={payoutConfigured} suspended={booster.suspendedAt} reload={reload} onError={onError} />
+            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.archivedAt ? 'Archived' : c.signedAt ? `Signed ${date(c.signedAt)}` : c.signingProvider === 'FASTBOOST' ? nativeContractPendingStatus(c) : 'Awaiting signature'} →</span></Link>) : !payouts.length && <p>No documents sent yet.</p>}
+            {payouts.map(payout => <Link className="ops-contract-link" to={payoutPath(payout.id)} key={payout.id}><span>Payout Information<small>Remitly · {PAYOUT_COUNTRIES[payout.country]} · {date(payout.createdAt)}</small></span><span className={`ops-badge ${payout.status === 'VERIFIED' ? 'approved' : ''}`}>{payoutStatus(payout.status)} →</span></Link>)}</div>
     </details>;
 }
 export function BoosterManagementPage() {
     const { data, error, reload } = useData('/boosters');
     const { data: signing } = useData('/contracts/configuration');
+    const { data: payoutConfiguration } = useData('/payout-information/configuration');
+    const { data: payoutData, error: payoutError, reload: reloadPayouts } = useData('/payout-information');
+    const reloadDocuments = () => { reload(); reloadPayouts(); };
     const [query, setQuery] = useState('');
     const [actionError, setActionError] = useState('');
     const [champions, setChampions] = useState([]);
@@ -96,9 +101,9 @@ export function BoosterManagementPage() {
         return () => { active = false; };
     }, [needsChampions]);
     const championsById = new Map(champions.map(champion => [champion.id, champion]));
-    return <div className="ops-page"><Heading title="Booster Management">Your team and documents in one place.</Heading><Feedback error={error || actionError} loading={!data} />
+    return <div className="ops-page"><Heading title="Booster Management">Your team and documents in one place.</Heading><Feedback error={error || actionError || payoutError} loading={!data} />
         <div className="ops-toolbar"><h2 className="ops-team-heading">Your team {data && <span className="ops-team-count" aria-label={`${data.boosters.length} ${data.boosters.length === 1 ? 'booster' : 'boosters'}`}>{data.boosters.length}</span>}</h2><input aria-label="Search boosters" placeholder="Search boosters…" value={query} onChange={e => setQuery(e.target.value)} /></div>
-        {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} champions={championsById} preferencesAvailable={data.preferencesAvailable} reload={reload} configured={signing?.configured} onError={setActionError} />)}
+        {data?.boosters.filter(b => `${b.username} ${b.email} ${b.profile?.displayName || ''}`.toLowerCase().includes(query.toLowerCase())).map(b => <BoosterDetails key={b.id} booster={b} champions={championsById} preferencesAvailable={data.preferencesAvailable} reload={reloadDocuments} configured={signing?.configured} payoutConfigured={payoutConfiguration?.configured} payouts={payoutData?.requests?.filter(payout => payout.boosterId === b.id)} onError={setActionError} />)}
         {data?.boosters.length === 0 && <section className="ops-card ops-empty">Add booster access in <Link to="/admin/accounts">Account Management</Link> to grow your team.</section>}</div>;
 }
 export function BoosterContractPage() {

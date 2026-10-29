@@ -52,7 +52,7 @@ async function saveSupportMessage(db, user, threadId, body, file, upload) {
         const recipients = await tx.user.findMany({ where: user.role === 'CUSTOMER'
             ? { role: 'ADMIN', suspendedAt: null }
             : { id: thread.customerId, role: 'CUSTOMER', suspendedAt: null }, select: { id: true } });
-        const senderName = message.sender.username || message.sender.profile?.displayName || 'Support';
+        const senderName = message.sender.username?.trim() || message.sender.profile?.displayName?.trim() || (user.role === 'ADMIN' ? 'Support' : 'Customer');
         if (recipients.length) await tx.notification.createMany({ data: recipients.map(recipient => ({
             id: supportNotificationId(message.id, recipient.id), userId: recipient.id,
             type: 'CHAT_MESSAGE', title: senderName,

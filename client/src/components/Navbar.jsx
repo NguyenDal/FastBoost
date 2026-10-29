@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import CleanIcon from "./CleanIcon";
 import AvatarImage from './AvatarImage';
 import ProfileMenuLayer from './ProfileMenuLayer';
+import { notificationDocumentPath } from '../utils/notificationDocumentPath';
 import {
     listMyNotifications,
     clearNotifications,
@@ -1066,8 +1067,8 @@ function MessagePanelContent({ messages, onClosePanel, clearMode, clearBusy, rem
 function NotificationCard({ notification, onRefresh, onClosePanel }) {
     const navigate = useNavigate();
     const [actionLoading, setActionLoading] = useState(false);
-    const contractPath = notification.type === 'BOOSTER_CONTRACT' && /^\/provider\/contracts\/[a-zA-Z0-9-]+$/.test(notification.data?.targetPath || '') ? notification.data.targetPath : null;
-    const Card = contractPath ? Link : 'div';
+    const documentPath = notificationDocumentPath(notification);
+    const Card = documentPath ? Link : 'div';
 
     const isAssignmentRequest =
         notification.type === "ASSIGNMENT_REQUEST" &&
@@ -1107,7 +1108,7 @@ function NotificationCard({ notification, onRefresh, onClosePanel }) {
     };
 
     return (
-        <Card className={`notification-card ${contractPath ? 'notification-card-link' : ''} ${notification.read ? "" : "unread"}`} {...(contractPath ? { to: contractPath, onClick: () => onClosePanel?.() } : {})}>
+        <Card className={`notification-card ${documentPath ? 'notification-card-link' : ''} ${notification.read ? "" : "unread"}`} {...(documentPath ? { to: documentPath, onClick: () => onClosePanel?.() } : {})}>
             <div className="notification-card-top">
                 <div>
                     <h4>{notification.title}</h4>

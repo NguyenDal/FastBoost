@@ -4,6 +4,7 @@ const express = require('express');
 const { signSessionToken } = require('../src/utils/sessionToken');
 const { authorizeThread, onlineAdmins, validateMessage, saveSupportMessage, markSupportRead, EMAIL_DELAY_MS } = require('../src/utils/supportChat');
 const { deliverSupportAlerts, buildSupportEmail, shouldDeliver } = require('../src/utils/supportEmail');
+const { signProfileImages } = require('../src/utils/privateProfileImages');
 
 function fixture() {
     const messages = [];
@@ -75,6 +76,12 @@ test('support message rate limit applies before a new message commits', async ()
     const f = fixture(); f.db.supportMessage.count = async () => 12;
     await assert.rejects(saveSupportMessage(f.db, f.customer, 'thread', { clientId: 'test-rate-limit-001', text: 'Hi' }), { status: 429 });
     assert.equal(f.messages.length, 0); assert.equal(f.alerts.length, 0);
+});
+
+test('legacy customers without a saved username are never labelled as Support in notifications', async () => {
+    const f = fixture(); f.customer.username = null; f.customer.profile = null;
+    await saveSupportMessage(f.db, f.customer, 'thread', { clientId: 'legacy-customer-001', text: 'Hello' });
+    assert.equal(f.notifications[0].data.senderName, 'Customer');
 });
 
 function emailFixture(toCustomer = false) {
@@ -180,7 +187,7 @@ test('opening support marks only authorized conversation notifications through t
 });
 
 test('HTTP support routes require sign-in, current role and ownership before reading/uploading', async t => {
-    const paths = [require.resolve('../src/prisma'), require.resolve('../src/utils/s3Upload')];
+    const paths = [require.resolve('../src/prisma'), require.resolve('../src/utils/s3Upload'), require.resolve('../src/utils/privateProfileImages')];
     const saved = paths.map(path => require.cache[path]);
     let currentRole = 'CUSTOMER'; let suspended = false; let signed = 0;
     const f = fixture();
@@ -189,6 +196,8 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     f.db.supportMessage.findUnique = async () => ({ id: 'file', threadId: 'private-thread', attachmentKey: 'private', attachmentName: 'proof.pdf' });
     require.cache[paths[0]] = { exports: f.db, loaded: true };
     require.cache[paths[1]] = { exports: { createChatAttachmentSignedUrl: async args => { signed++; assert.deepEqual(args, { key: 'private', filename: 'proof.pdf' }); return 'https://example.test/inline-file'; }, uploadChatAttachmentToS3: async () => assert.fail('Do not upload unauthorized file') }, loaded: true };
+    const signedAvatars = [];
+    require.cache[paths[2]] = { exports: { signProfileImages: value => signProfileImages(value, async key => { signedAvatars.push(key); return 'https://example.test/private-avatar?signature=test-only'; }) }, loaded: true };
     const route = require.resolve('../src/routes/supportRoutes'); delete require.cache[route];
     const oldSecret = process.env.JWT_SECRET; process.env.JWT_SECRET = 'support-test-only';
     const app = express(); app.use(express.json()); app.use('/support', require(route));
@@ -200,6 +209,8 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     assert.equal((await fetch(`${base}/threads`, { headers })).status, 403);
     assert.equal((await fetch(`${base}/presence`, { method: 'POST', headers, body: JSON.stringify({ sessionId: 'test-presence-id-001' }) })).status, 403);
     assert.equal((await fetch(`${base}/threads/private-thread/messages`, { headers })).status, 404);
+    assert.equal((await fetch(`${base}/threads/private-thread`, { headers })).status, 404);
+    assert.equal(signedAvatars.length, 0, 'Unauthorized metadata must not sign customer photos');
     assert.equal((await fetch(`${base}/threads/private-thread/messages`, { method: 'POST', headers, body: '{}' })).status, 404);
     assert.equal((await fetch(`${base}/attachments/file`, { headers })).status, 404);
     assert.equal(signed, 0);
@@ -240,4 +251,27 @@ test('HTTP support routes require sign-in, current role and ownership before rea
     assert.equal((await fetch(`${base}/threads/private-thread/messages?focus=unread`, { headers })).status, 200);
     assert.deepEqual(unreadQueries[1].where, { threadId: 'private-thread', senderId: 'customer', createdAt: { gt: readAt } });
     assert.deepEqual(unreadQueries[1].orderBy, [{ createdAt: 'asc' }, { id: 'asc' }]);
+
+    let identityReads = 0;
+    f.db.user.findUnique = async ({ where, select }) => {
+        if (!select.profile) return { id: 'customer', role: currentRole, suspendedAt: null };
+        identityReads++;
+        assert.equal(where.id, 'customer');
+        assert.deepEqual(Object.keys(select).sort(), ['id', 'profile', 'role', 'username']);
+        assert.deepEqual(select.profile.select, { displayName: true, profileImageUrl: true });
+        return { id: 'customer', role: 'CUSTOMER', username: 'PlayerExample', profile: { displayName: 'Other display name', profileImageUrl: 'profiles/customer/avatar.png' } };
+    };
+    const metadata = await fetch(`${base}/threads/private-thread`, { headers });
+    assert.equal(metadata.status, 200);
+    assert.equal(metadata.headers.get('cache-control'), 'no-store');
+    const identity = (await metadata.json()).thread.customer;
+    assert.equal(identity.username, 'PlayerExample');
+    assert.equal(identity.profile.profileImageUrl, 'https://example.test/private-avatar?signature=test-only');
+    assert.deepEqual(signedAvatars, ['profiles/customer/avatar.png']);
+    assert.equal(identity.email, undefined);
+    assert.equal(identity.passwordHash, undefined);
+    assert.equal(identityReads, 1);
+    currentRole = 'PROVIDER';
+    assert.equal((await fetch(`${base}/threads/private-thread`, { headers })).status, 403);
+    assert.equal(identityReads, 1, 'A demoted admin must not read customer identity');
 });

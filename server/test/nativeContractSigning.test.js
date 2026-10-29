@@ -34,6 +34,8 @@ function database() {
     let pending = Promise.resolve();
     const db = {
         emailFailureEvent: null,
+        emailFailureError: null,
+        signatureFailureError: null,
         state: () => state,
         $queryRawUnsafe: async () => [],
         user: {
@@ -73,6 +75,7 @@ function database() {
             findFirst: async ({ where }) => copy(rows('signatures', where)[0] || null),
             findMany: async ({ where }) => copy(rows('signatures', where)),
             create: async ({ data }) => {
+                if (db.signatureFailureError) throw db.signatureFailureError;
                 if (rows('signatures', { contractId: data.contractId }).some(row => row.role === data.role || row.requestId === data.requestId)) {
                     throw Object.assign(new Error('duplicate signature'), { code: 'P2002' });
                 }
@@ -102,7 +105,7 @@ function database() {
         nativeContractEmail: {
             createMany: async ({ skipDuplicates, data }) => {
                 assert.equal(skipDuplicates, true);
-                if (data[0]?.event === db.emailFailureEvent) throw new Error('synthetic email outbox failure');
+                if (data[0]?.event === db.emailFailureEvent) throw db.emailFailureError || new Error('synthetic email outbox failure');
                 for (const row of data) {
                     if (!state.emails.has(row.id)) state.emails.set(row.id, copy(row));
                 }
@@ -619,6 +622,29 @@ test('a failed 2.3 company-signed invitation enqueue rolls back the signature an
     assert.ok(f.db.state().emails.has(`${c.id}:COMPANY_SIGNED:BOOSTER`));
 });
 
+test('a missing email migration rolls back a 2.4 company signature and the same submission succeeds after recovery', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id, fixedPaymentValues);
+    const payload = f.body(owner);
+    const before = copy(f.db.state());
+    f.db.emailFailureEvent = 'COMPANY_SIGNED';
+    f.db.emailFailureError = Object.assign(new Error('Missing agreement email table'), {
+        code: 'P2021', meta: { table: 'public.NativeContractEmail' },
+    });
+    await assert.rejects(f.sign(c.id, 'owner', payload), error => error.status === 503 && /contact FastBoost support/.test(error.message));
+    assert.deepEqual(f.db.state(), before, 'signature evidence, signed timestamp, PDF, notifications and email all roll back');
+    assert.equal(f.db.state().signatures.size, 0);
+    f.db.emailFailureEvent = null;
+    await f.sign(c.id, 'owner', payload);
+    await f.sign(c.id, 'owner', payload);
+    assert.equal(f.db.state().signatures.size, 1, 'retrying the same submission records one signature');
+    assert.ok(f.db.state().contracts.get(c.id).companySignedAt);
+    assert.ok(f.db.state().emails.has(`${c.id}:COMPANY_SIGNED:BOOSTER`));
+    assert.equal([...f.db.state().emails.values()].filter(row => row.event === 'COMPANY_SIGNED').length, 1);
+});
+
 test('owner corrections replace the provider signing challenge without duplicate READY email', async t => {
     const f = await fixture(t);
     f.agreement.VERSION = 'FB-BSA-2.2';
@@ -657,10 +683,12 @@ test('consent, identity, signer-bound challenge and bounded drawing payloads are
     const c = await f.issue();
     const ctx = await f.prepare(c.id);
     for (const extra of [
-        { consent: false }, { legalName: 'Another Person' }, { initials: '' }, { challenge: '' },
+        { consent: false }, { legalName: 'Another Person' }, { initials: 12 }, { initials: 'x'.repeat(17) }, { initials: 'A\u0000B' }, { challenge: '' },
         { signature: { type: 'drawn', width: 600, height: 180, strokes: [[[0, 0], [601, 20]]] } },
         { signature: { type: 'drawn', width: 600, height: 180, strokes: [[[0, 0], [10, Infinity]]] } },
         { signature: { type: 'image', content: '<svg onload=alert(1)>' } },
+        ...[0, 4, 1.5, '1', null].map(style => ({ signature: { type: 'typed', style } })),
+        { signature: { type: 'typed', style: 1, font: '<svg onload=alert(1)>' } },
     ]) {
         await assert.rejects(f.sign(c.id, 'owner', f.body(ctx, extra)), error => [400, 401, 403, 409].includes(error.status));
     }
@@ -668,10 +696,137 @@ test('consent, identity, signer-bound challenge and bounded drawing payloads are
     const claims = jwt.decode(ctx.challenge);
     const expired = jwt.sign({ ...claims, exp: Math.floor(Date.now() / 1000) - 2 }, process.env.JWT_SECRET);
     await assert.rejects(f.sign(c.id, 'owner', f.body(ctx, { challenge: expired })), error => [401, 403, 409].includes(error.status));
+    const changedConsent = jwt.sign({ ...claims, consentHash: '0'.repeat(64) }, process.env.JWT_SECRET);
+    await assert.rejects(f.sign(c.id, 'owner', f.body(ctx, { challenge: changedConsent })), error => error.status === 409);
     const otherContract = await f.issue();
     const otherCtx = await f.prepare(otherContract.id);
     await assert.rejects(f.sign(c.id, 'owner', f.body(ctx, { challenge: otherCtx.challenge })), error => [401, 403, 409].includes(error.status));
     assert.equal(f.db.state().signatures.size, 0);
+});
+
+test('name-only signatures complete the frozen agreement without inventing initials and retries preserve evidence', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    const frozen = copy(f.db.state().contracts.get(c.id).nativeSnapshot);
+    assert.match(owner.consentText, /agreement and Schedule A/);
+    assert.doesNotMatch(owner.consentText, /initials/);
+    assert.match(owner.consentText, /explicitly submitted Sign agreement/);
+    assert.doesNotMatch(owner.consentText, /I have reviewed|checkbox/);
+    assert.equal(require('jsonwebtoken').decode(owner.challenge).consentHash,
+        createHash('sha256').update(owner.consentText).digest('hex'));
+    const payload = f.body(owner);
+    delete payload.initials;
+    await f.sign(c.id, 'owner', payload);
+    const firstEvidence = copy([...f.db.state().signatures.values()][0]);
+    assert.equal(firstEvidence.initials, '');
+    assert.equal(firstEvidence.consentText, owner.consentText);
+    await f.sign(c.id, 'owner', payload);
+    assert.equal(f.db.state().signatures.size, 1);
+    assert.deepEqual([...f.db.state().signatures.values()][0], firstEvidence);
+    await assert.rejects(f.sign(c.id, 'owner', { ...payload, initials: 'TO' }), error => error.status === 409);
+    const provider = await f.context(c.id, 'booster');
+    assert.equal(provider.canSign, true);
+    assert.equal(provider.signatures[0].initials, '');
+    await f.sign(c.id, 'booster', f.body(provider, { initials: '' }));
+    assert.equal(f.db.state().signatures.size, 2);
+    for (const evidence of f.db.state().signatures.values()) {
+        assert.equal(evidence.initials, '');
+        assert.equal(evidence.consentText, owner.consentText);
+    }
+    const saved = f.db.state().contracts.get(c.id);
+    assert.ok(saved.signedAt);
+    assert.deepEqual(saved.nativeSnapshot, frozen);
+    assert.equal(saved.nativeDocumentHash, owner.documentHash);
+    const rendered = f.agreement.flags.pdfCalls.at(-1);
+    assert.equal(rendered.options.completed, true);
+    assert.ok(rendered.signatures.every(signature => signature.initials === ''));
+});
+
+test('the old initials check rolls back a drawn final signature and its same-intent retry succeeds after migration', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    await f.sign(c.id, 'owner', f.body(owner));
+    const provider = await f.context(c.id, 'booster');
+    const signature = { type: 'drawn', width: 600, height: 180, strokes: [[[12, 80], [100, 40], [220, 110]]] };
+    const payload = f.body(provider, { initials: '', signature });
+    const before = copy(f.db.state());
+    const message = 'new row for relation "NativeContractSignature" violates check constraint "NativeContractSignature_name_check"';
+    const errors = [
+        Object.assign(new Error(message), { code: '23514', constraint: 'NativeContractSignature_name_check' }),
+        Object.assign(new Error(message), { code: 'P2039', meta: { driverAdapterError: { cause: {
+            originalCode: '23514', code: '23514', originalMessage: message, kind: 'postgres',
+        } } } }),
+    ];
+    for (const error of errors) {
+        f.db.signatureFailureError = error;
+        await assert.rejects(f.sign(c.id, 'booster', payload), caught => caught.status === 503 && caught.cause === error
+            && /contact FastBoost support/.test(caught.message));
+        assert.deepEqual(f.db.state(), before, 'failed final signing saves no signature, PDF, tenure, audit or email');
+    }
+    const unrelated = Object.assign(new Error('violates check constraint "NativeContractSignature_payload_check"'), { code: '23514' });
+    f.db.signatureFailureError = unrelated;
+    await assert.rejects(f.sign(c.id, 'booster', payload), error => error === unrelated && error.status === undefined);
+    f.db.signatureFailureError = null;
+    await f.sign(c.id, 'booster', payload);
+    const saved = [...f.db.state().signatures.values()].find(item => item.role === 'BOOSTER');
+    assert.equal(saved.requestId, payload.requestId);
+    assert.equal(saved.initials, '');
+    assert.deepEqual(saved.signature, signature);
+    assert.ok(f.db.state().contracts.get(c.id).signedAt);
+    await f.sign(c.id, 'booster', payload);
+    assert.equal(f.db.state().signatures.size, 2);
+});
+
+test('a pending legacy challenge retains its original initials and consent when countersigned with the new flow', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    const jwt = require('jsonwebtoken');
+    const claims = jwt.decode(owner.challenge);
+    delete claims.consentHash;
+    const legacyPayload = f.body(owner, { challenge: jwt.sign(claims, process.env.JWT_SECRET) });
+    await assert.rejects(f.sign(c.id, 'owner', { ...legacyPayload, initials: '' }),
+        error => error.status === 409 && /current signing confirmation/.test(error.message));
+    await f.sign(c.id, 'owner', legacyPayload);
+    const oldEvidence = copy([...f.db.state().signatures.values()][0]);
+    assert.equal(oldEvidence.initials, 'TO');
+    assert.match(oldEvidence.consentText, /my signature and initials/);
+    const provider = await f.context(c.id, 'booster');
+    const providerPayload = f.body(provider);
+    delete providerPayload.initials;
+    await f.sign(c.id, 'booster', providerPayload);
+    await f.sign(c.id, 'owner', legacyPayload);
+    assert.deepEqual([...f.db.state().signatures.values()][0], oldEvidence);
+    assert.equal([...f.db.state().signatures.values()][1].initials, '');
+    assert.equal([...f.db.state().signatures.values()][1].consentText, provider.consentText);
+});
+
+test('an already-issued name-only review retains its displayed affirmation after the duplicate paragraph is removed', async t => {
+    const f = await fixture(t);
+    f.agreement.VERSION = 'FB-BSA-2.4';
+    const c = await f.issue();
+    const owner = await f.prepare(c.id);
+    const priorConsent = 'I have reviewed this completed agreement and Schedule A, agree to use electronic signatures, and intend my signature to bind me to this exact agreement. I can download and retain a completed copy.';
+    const jwt = require('jsonwebtoken');
+    const claims = jwt.decode(owner.challenge);
+    const payload = f.body(owner, { initials: '', challenge: jwt.sign({ ...claims,
+        consentHash: createHash('sha256').update(priorConsent).digest('hex') }, process.env.JWT_SECRET) });
+    await f.sign(c.id, 'owner', payload);
+    const original = copy([...f.db.state().signatures.values()][0]);
+    assert.equal(original.consentText, priorConsent);
+    assert.equal(original.initials, '');
+    const provider = await f.context(c.id, 'booster');
+    await f.sign(c.id, 'booster', f.body(provider, { initials: '' }));
+    await f.sign(c.id, 'owner', payload);
+    const signatures = [...f.db.state().signatures.values()];
+    assert.deepEqual(signatures[0], original, 'retry preserves the exact prior consent evidence');
+    assert.equal(signatures[1].consentText, provider.consentText);
+    assert.match(signatures[1].consentText, /explicitly submitted Sign agreement/);
 });
 
 test('company signature freezes the exact terms, records consent, and unlocks only the assigned booster', async t => {
@@ -740,6 +895,37 @@ test('a valid drawn signature is retained as bounded vector data with its consen
     assert.equal(rendered.options.completed, false);
 });
 
+test('typed styles are retained in saved evidence and retries cannot change the chosen style', async t => {
+    const f = await fixture(t);
+    for (const style of [1, 2, 3]) {
+        const c = await f.issue();
+        const prepared = await f.prepare(c.id);
+        const payload = f.body(prepared, { initials: '', signature: { type: 'typed', style } });
+        const signed = await f.sign(c.id, 'owner', payload);
+        const record = [...f.db.state().signatures.values()].find(item => item.contractId === c.id);
+        const original = copy(record);
+        assert.deepEqual(record.signature, { type: 'typed', style });
+        assert.deepEqual(signed.signatures[0].signature, record.signature);
+        assert.deepEqual(f.agreement.flags.pdfCalls.at(-1).signatures[0].signature, record.signature);
+        await f.sign(c.id, 'owner', payload);
+        await assert.rejects(f.sign(c.id, 'owner', { ...payload, signature: { type: 'typed', style: style % 3 + 1 } }),
+            error => error.status === 409);
+        assert.deepEqual([...f.db.state().signatures.values()].find(item => item.contractId === c.id), original);
+    }
+});
+
+test('drawn signatures discard an inactive typed style and retain only the actual stroke evidence', async t => {
+    const f = await fixture(t);
+    const c = await f.issue();
+    const prepared = await f.prepare(c.id);
+    const signature = { type: 'drawn', width: 600, height: 180, strokes: [[[12, 80], [100, 40], [220, 110]]] };
+    const payload = f.body(prepared, { signature: { ...signature, style: 3 } });
+    await f.sign(c.id, 'owner', payload);
+    assert.deepEqual([...f.db.state().signatures.values()][0].signature, signature);
+    await f.sign(c.id, 'owner', { ...payload, signature });
+    assert.equal(f.db.state().signatures.size, 1, 'an inactive style is not another signing intent');
+});
+
 test('identical signature retries are idempotent and cannot replace signed evidence', async t => {
     const f = await fixture(t);
     const c = await f.issue();
@@ -747,6 +933,7 @@ test('identical signature retries are idempotent and cannot replace signed evide
     const payload = f.body(prepared);
     await f.sign(c.id, 'owner', payload);
     const evidence = copy([...f.db.state().signatures.values()][0]);
+    assert.deepEqual(evidence.signature, { type: 'typed' }, 'legacy styleless signatures remain styleless');
     const companySignedAt = f.db.state().contracts.get(c.id).companySignedAt;
     await f.sign(c.id, 'owner', payload);
     assert.equal(f.db.state().signatures.size, 1);

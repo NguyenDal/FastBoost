@@ -20,16 +20,19 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
         serviceId: 'service', status: 'PENDING', paymentStatus: 'PENDING', currency: 'usd',
         amountCents: 2000, totalPrice: 20, basePrice: 20, goldRedeemed: 0, goldDiscountCents: 0, cashbackPercent: null,
         stripeCheckoutSessionId: null, customer: { email: 'unused@example.test' }, service: { title: 'Test service' }, ...order })),
-    redemptions: [], queued: [], referrals: [], expired: [], created: [], walletHolds: [], walletPresences: [], failRetrieve: false, failExpire: false, failQueue: false, failReferral: false };
+    redemptions: [], queued: [], adminQueued: [], adminWakes: 0, referrals: [], expired: [], created: [], walletHolds: [], walletPresences: [], failRetrieve: false, failExpire: false, failQueue: false, failAdminQueue: false, failReferral: false };
     const sessions = new Map();
     let transactions = Promise.resolve();
+    let inTransaction = false;
     const db = {
         $queryRaw: async () => [],
         $transaction: callback => {
             const result = transactions.then(async () => {
-                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued, referrals: state.referrals, walletHolds: state.walletHolds, walletPresences: state.walletPresences });
+                const snapshot = structuredClone({ orders: state.orders, redemptions: state.redemptions, queued: state.queued, adminQueued: state.adminQueued, referrals: state.referrals, walletHolds: state.walletHolds, walletPresences: state.walletPresences });
+                inTransaction = true;
                 try { return await callback(db); }
                 catch (error) { Object.assign(state, snapshot); throw error; }
+                finally { inTransaction = false; }
             });
             transactions = result.catch(() => {});
             return result;
@@ -120,6 +123,20 @@ function paymentFixture(t, { orders = [], initialGold = 100 } = {}) {
                 if (state.failQueue) throw new Error('Simulated confirmation queue failure');
                 assert.equal((await tx.order.findUnique({ where: { id } })).paymentStatus, 'PAID');
                 state.queued.push({ id, email });
+            },
+        }],
+        [require.resolve('../src/utils/adminOrderEmail'), {
+            queueAdminOrderEmail: async (tx, id) => {
+                assert.equal(tx, db, 'admin notification must share the payment transaction');
+                assert.equal(inTransaction, true);
+                assert.equal((await tx.order.findUnique({ where: { id } })).paymentStatus, 'PAID');
+                if (state.failAdminQueue) throw new Error('Simulated admin queue failure');
+                state.adminQueued.push(id);
+            },
+            wakeAdminOrderEmailWorker: client => {
+                assert.equal(client, db);
+                assert.equal(inTransaction, false, 'email delivery cannot start before payment commits');
+                state.adminWakes++;
             },
         }],
     ]);

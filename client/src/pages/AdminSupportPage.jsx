@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { supportRequest } from '../api/support';
 import { getStoredUser } from '../utils/authSession';
 import { SupportAvatar, SupportConversation, SupportIcon } from '../components/SupportChat';
+import { supportIdentityName } from '../utils/supportIdentity';
 
 export default function AdminSupportPage() {
     const [params, setParams] = useSearchParams();
@@ -12,8 +13,20 @@ export default function AdminSupportPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [moreBusy, setMoreBusy] = useState(false);
+    const [selectedThread, setSelectedThread] = useState(null);
     const loadedMore = useRef(false);
     const user = getStoredUser();
+    useEffect(() => {
+        if (!selected) return;
+        let stopped = false;
+        const load = () => supportRequest(`/threads/${encodeURIComponent(selected)}`)
+            .then(data => { if (!stopped) setSelectedThread(data.thread); })
+            .catch(err => { if (!stopped) setError(err.message); });
+        void load();
+        window.addEventListener('avatar:refresh', load);
+        window.addEventListener('focus', load);
+        return () => { stopped = true; window.removeEventListener('avatar:refresh', load); window.removeEventListener('focus', load); };
+    }, [selected]);
     useEffect(() => {
         let stopped = false;
         let timer;
@@ -49,16 +62,17 @@ export default function AdminSupportPage() {
         } catch (err) { setError(err.message); }
         finally { setMoreBusy(false); }
     }
-    const active = threads.find(thread => thread.id === selected);
+    // A linked conversation can be older than the first inbox page.
+    const active = threads.find(thread => thread.id === selected) || (selectedThread?.id === selected ? selectedThread : null);
     return <div className="support-admin-page"><div className="support-admin-title"><h1>Support inbox</h1><p><i className="support-status-dot" />You’re available while this tab is visible</p></div>
         {error && <p className="support-error" role="alert">{error}</p>}
         <div className={`support-inbox ${selected ? 'has-selection' : ''}`}>
             <aside className="support-thread-list" aria-label="Customer conversations"><h2>Conversations</h2>{loading && <p className="support-muted">Loading inbox…</p>}{!loading && !threads.length && <div className="support-empty"><SupportIcon /><p>All quiet for now.</p><small>Customer messages will appear here.</small></div>}{threads.map(thread => {
                 const message = thread.messages[0];
                 const unread = thread.unread ?? (message?.senderId === thread.customerId && message.createdAt > thread.adminReadAt);
-                return <button key={thread.id} className={`support-thread ${selected === thread.id ? 'selected' : ''} ${unread ? 'unread' : ''}`} aria-pressed={selected === thread.id} onClick={() => setParams({ thread: thread.id })}><SupportAvatar user={thread.customer} /><span><strong>{thread.customer.username || thread.customer.profile?.displayName || 'Customer'}</strong><small>{message?.content || message?.attachmentName || 'New conversation'}</small></span>{unread && <span className="support-unread-badge" aria-label="Unread messages">New</span>}</button>;
+                return <button key={thread.id} className={`support-thread ${selected === thread.id ? 'selected' : ''} ${unread ? 'unread' : ''}`} aria-pressed={selected === thread.id} onClick={() => setParams({ thread: thread.id })}><SupportAvatar user={thread.customer} /><span><strong>{supportIdentityName(thread.customer)}</strong><small>{message?.content || message?.attachmentName || 'New conversation'}</small></span>{unread && <span className="support-unread-badge" aria-label="Unread messages">New</span>}</button>;
             })}{hasMore && <button className="support-older" onClick={more} disabled={moreBusy}>{moreBusy ? 'Loading…' : 'More conversations'}</button>}</aside>
-            <section className="support-inbox-conversation" aria-label="Selected conversation">{selected ? <><header className="support-inbox-header"><button className="support-icon-button" aria-label="Back to conversations" onClick={() => setParams({})}><SupportIcon type="back" /></button><SupportAvatar user={active?.customer} /><div><strong>{active?.customer.username || active?.customer.profile?.displayName || 'Customer'}</strong><small>Private support conversation</small></div></header><SupportConversation key={`${selected}:${params.get("message") || ""}`} threadId={selected} targetMessageId={params.get("message")} user={user} /></> : <div className="support-empty"><span className="support-welcome-icon"><SupportIcon /></span><h2>Every conversation starts here.</h2><p>Choose a customer to read their messages and reply.</p></div>}</section>
+            <section className="support-inbox-conversation" aria-label="Selected conversation">{selected ? <><header className="support-inbox-header"><button className="support-icon-button" aria-label="Back to conversations" onClick={() => setParams({})}><SupportIcon type="back" /></button><SupportAvatar user={active?.customer} /><div><strong>{supportIdentityName(active?.customer)}</strong><small>Private support conversation</small></div></header><SupportConversation key={`${selected}:${params.get("message") || ""}`} threadId={selected} targetMessageId={params.get("message")} user={user} /></> : <div className="support-empty"><span className="support-welcome-icon"><SupportIcon /></span><h2>Every conversation starts here.</h2><p>Choose a customer to read their messages and reply.</p></div>}</section>
         </div>
     </div>;
 }

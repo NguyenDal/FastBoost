@@ -25,9 +25,10 @@ const definitions = [
     ['POST', '/operations/match-history/:id/confirm', 'earnings', 'matches.confirm', 'order', ['revision']],
     ['POST', '/operations/match-history/:id/reopen', 'earnings', 'matches.reopen', 'order', ['revision']],
 ];
-// Two material provider events use their own transaction-bound journal rather
+// These events use their own transaction-bound, metadata-only journal rather
 // than the ADMIN-only HTTP middleware. Keep them visible in the owner feed.
-const visibleActions = Object.freeze([...new Set([...definitions.map(([, , , action]) => action), 'assignment.accept', 'order.leave'])]);
+const visibleActions = Object.freeze([...new Set([...definitions.map(([, , , action]) => action), 'assignment.accept', 'order.leave',
+    'payout.request', 'payout.submit', 'payout.review', 'payout.reveal', 'payout.country'])]);
 const actions = {
     'account.role': 'Changed account role', 'account.suspension': 'Changed account suspension',
     'account.booster-access': 'Changed booster access', 'service.availability': 'Changed service availability', 'pricing.update': 'Updated pricing',
@@ -35,6 +36,9 @@ const actions = {
     'order.status': 'Changed order status', 'order.assign': 'Assigned booster', 'order.unassign': 'Unassigned booster',
     'order.complete': 'Completed assigned order', 'order.leave': 'Left assigned order',
     'assignment.accept': 'Accepted order assignment',
+    'payout.request': 'Requested payout information', 'payout.submit': 'Submitted payout information',
+    'payout.review': 'Reviewed payout information', 'payout.reveal': 'Viewed private payout details',
+    'payout.country': 'Changed payout country',
     'contract.create': 'Issued booster contract', 'contract.retry': 'Delivered booster contract',
     'contract.prepare': 'Prepared agreement for signing', 'contract.sign': 'Signed agreement', 'contract.native-replacement': 'Replaced unsigned sandbox agreement',
     'contribution.review': 'Reviewed match count', 'matches.manual-count': 'Approved manual match count',

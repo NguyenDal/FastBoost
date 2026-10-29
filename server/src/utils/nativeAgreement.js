@@ -6,6 +6,10 @@ const fontkit = require('@pdf-lib/fontkit');
 
 const VERSION = 'FB-BSA-2.4';
 const root = resolve(__dirname, '../../private/legal');
+// Style 1 is the original presentation; only the two additional styles need
+// bundled fonts. Never redistribute the system handwriting fonts used in CSS.
+const signatureFonts = Object.freeze({ 2: 'DancingScript.ttf', 3: 'GreatVibes-Regular.ttf' });
+const validSignatureStyle = style => Number.isInteger(style) && style >= 1 && style <= 3;
 const fail = message => Object.assign(new Error(message), { status: 400 });
 const fields = [
     ['WorkLocation', 'Work country and state or province', 120, ''],
@@ -67,6 +71,7 @@ function assetPackage() {
 function assertAssets() {
     assetPackage();
     readFileSync(resolve(root, 'fonts/NotoSans-Regular.ttf'));
+    for (const filename of Object.values(signatureFonts)) readFileSync(resolve(root, 'fonts', filename));
 }
 
 function createSnapshot(contract, values = {}) {
@@ -101,17 +106,25 @@ function renderHtml(snapshot, signatures = []) {
         const role = heading === 'FASTBOOST' ? 'COMPANY' : heading === 'PROVIDER' ? 'BOOSTER' : null;
         if (!role) throw new Error('The agreement has an unrecognized signature card.');
         const signature = signatures.find(item => item.role === role);
-        let line = 0;
-        const labels = ['Signature', 'Date', 'Schedule A approval / initials'];
-        const values = signature ? [signature.legalName, new Date(signature.signedAt).toISOString(), signature.initials] : ['Awaiting signature', '—', '—'];
-        content = content.replace(/<p class="fb-signline">[\s\S]*?<\/p>/g, () => {
-            const index = line++;
-            const drawing = index === 0 && signature?.signature?.type === 'drawn'
-                ? `<svg viewBox="0 0 600 180" role="img" aria-label="Drawn signature" style="display:block;width:100%;max-width:300px;height:90px">${signature.signature.strokes.map(stroke => `<polyline points="${escape(stroke.map(point => point.map(Number).join(',')).join(' '))}" fill="none" stroke="#241a40" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>` : '';
-            return `<p class="fb-signline">${labels[index]}: <strong>${escape(values[index])}</strong>${drawing}</p>`;
-        });
-        if (role === 'COMPANY') content = content.replace('An Nguyen Nguyen, trading as FastBoost', `${escape(snapshot.company.name)}, trading as FastBoost`);
-        return `<div class="fb-signature-card">${content}</div>`;
+        const signedIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m3.5 8 3 3 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        const mark = !signature ? '<span class="fb-signature-placeholder">Signature pending</span>'
+            : signature.signature?.type === 'drawn'
+                ? `<svg class="fb-signature-drawing" viewBox="0 0 600 180" role="img" aria-label="Drawn signature">${signature.signature.strokes.map(stroke => `<polyline points="${escape(stroke.map(point => point.map(Number).join(',')).join(' '))}" fill="none" stroke="#241a40" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>`
+                : `<span class="fb-signature-script${validSignatureStyle(signature.signature?.style) ? ` fb-signature-style-${signature.signature.style}` : ''}" data-native-value>${escape(signature.legalName)}</span>`;
+        let dateValue = '—';
+        if (signature) {
+            const signedAt = new Date(signature.signedAt);
+            const iso = signedAt.toISOString();
+            const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(signedAt);
+            const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }).format(signedAt);
+            dateValue = `<time datetime="${iso}" data-native-date-time="${iso}" title="${iso}">${date} · ${time} UTC</time>`;
+        }
+        return `<div class="fb-signature-card ${signature ? 'is-signed' : 'is-pending'}" data-native-signature-role="${role}">`
+            + `<div class="fb-signature-card-header"><h3>${heading}</h3><span class="fb-signature-status">${signature ? `${signedIcon}Signed` : 'Awaiting signature'}</span></div>`
+            + `<div class="fb-signature-mark">${mark}</div><div class="fb-signature-details">`
+            + `<p class="fb-signline"><span>Signed by</span><strong>${signature ? `${escape(signature.legalName)}${role === 'COMPANY' ? ', trading as FastBoost' : ''}` : '—'}</strong></p>`
+            + `<p class="fb-signline"><span>Date</span><strong>${dateValue}</strong></p>`
+            + '</div></div>';
     });
     // Contract-specific download controls live in the authenticated FastBoost shell.
     html = html.replace(/<button\b[^>]*data-download-agreement[^>]*>[\s\S]*?<\/button>/g, '');
@@ -146,7 +159,25 @@ function drawBoxText(page, text, box, font, label) {
 }
 
 function drawSignature(page, item, box, font) {
-    if (item.signature?.type !== 'drawn') return drawBoxText(page, item.legalName, { ...box, width: '212', height: '42' }, font, 'the signature name');
+    if (item.signature?.type !== 'drawn') {
+        if (item.signature?.style === undefined || item.signature.style === 1) return drawBoxText(page, item.legalName, { ...box, width: '212', height: '42' }, font, 'the signature name');
+        // Fit the actual handwriting metrics, including accents and descenders,
+        // inside the saved signing rectangle without modifying its layout.
+        const width = 204, height = 36;
+        let size = 25, lines, lineHeight;
+        do {
+            lines = wrapText(item.legalName, font, size, width);
+            lineHeight = font.heightAtSize(size) * 1.05;
+            if (lines.length * lineHeight <= height) break;
+            size -= .5;
+        } while (size >= 6);
+        if (size < 6) throw fail('The signature name does not fit this style. Choose a different style or draw your signature.');
+        const top = page.getHeight() - Number(box.yPosition) - 3;
+        page.drawText(lines.join('\n'), { x: Number(box.xPosition) + 4,
+            y: top - font.heightAtSize(size, { descender: false }),
+            font, size, lineHeight, color: rgb(.10, .09, .18) });
+        return;
+    }
     const width = 208, height = 38, x = Number(box.xPosition) + 2, top = page.getHeight() - Number(box.yPosition) - 2;
     for (const stroke of item.signature.strokes || []) {
         for (let i = 1; i < stroke.length; i++) page.drawLine({
@@ -165,14 +196,27 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
         if (Array.from(String(text)).some(character => character !== '\n' && !supported.has(character.codePointAt(0)))) throw fail('An agreement value contains a character the PDF font cannot render. Contact support before signing.');
     };
     for (const value of Object.values(snapshot.values)) checkCharacters(value);
-    for (const signature of signatures) { checkCharacters(signature.legalName); checkCharacters(signature.initials); }
+    for (const signature of signatures) { checkCharacters(signature.legalName); checkCharacters(signature.initials || ''); }
+    const styledFonts = new Map();
+    for (const signature of signatures) {
+        if (signature.signature?.type !== 'typed' || signature.signature.style === undefined) continue;
+        const style = signature.signature.style;
+        if (!validSignatureStyle(style)) throw fail('Choose one of the three signature styles.');
+        if (style === 1) continue;
+        if (!styledFonts.has(style)) styledFonts.set(style,
+            await pdf.embedFont(readFileSync(resolve(root, 'fonts', signatureFonts[style])), { subset: true }));
+        const supportedStyle = new Set(styledFonts.get(style).getCharacterSet());
+        if (Array.from(signature.legalName).some(character => !supportedStyle.has(character.codePointAt(0)))) {
+            throw fail('This signature style cannot display every character in your name. Choose a different style or draw your signature.');
+        }
+    }
     for (const box of snapshot.fields) {
         const page = pdf.getPages()[Number(box.pageNumber) - 1];
         if (!page) throw new Error('The saved agreement PDF field layout is invalid.');
         const signature = signatures.find(item => item.role === box.role);
         if (box.type === 'textTabs') drawBoxText(page, displayValue(snapshot, box.tabLabel), box, font, fields.find(field => field.key === box.tabLabel)?.label);
-        else if (signature && box.type === 'signHereTabs') drawSignature(page, signature, box, font);
-        else if (signature && box.type === 'initialHereTabs') drawBoxText(page, signature.initials, { ...box, width: '212', height: '28' }, font);
+        else if (signature && box.type === 'signHereTabs') drawSignature(page, signature, box, styledFonts.get(signature.signature?.style) || font);
+        else if (signature?.initials && box.type === 'initialHereTabs') drawBoxText(page, signature.initials, { ...box, width: '212', height: '28' }, font);
         else if (signature && box.type === 'dateSignedTabs') drawBoxText(page, new Date(signature.signedAt).toISOString().replace('T', ' ').replace('.000Z', ' UTC'), box, font);
         else if (box.type === 'fullNameTabs') drawBoxText(page, signature?.legalName || (box.role === 'COMPANY' ? snapshot.company.name : snapshot.booster.name), box, font);
     }
@@ -195,7 +239,7 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
             line(`${index + 1}. ${role === 'COMPANY' ? 'FastBoost' : 'Booster'}`, 12);
             line(`Signed by: ${item.legalName}`); line(`Account email: ${item.actorEmail || item.email || (role === 'COMPANY' ? snapshot.company.email : snapshot.booster.email)}`);
             line(`Account reference: ${item.actorId}`); line(`Signed at (UTC): ${new Date(item.signedAt).toISOString()}`);
-            line(`Schedule A initials: ${item.initials} | Signature: ${item.signature?.type === 'drawn' ? 'Drawn electronically' : 'Typed electronically'}`);
+            line(`${item.initials ? `Schedule A initials: ${item.initials}` : 'Schedule A approval: Accepted with agreement signature'} | Signature: ${item.signature?.type === 'drawn' ? 'Drawn electronically' : `Typed electronically${item.signature?.style ? ` (style ${item.signature.style})` : ''}`}`);
             line(`Signing request: ${item.requestId}`);
             line(`Electronic consent: ${item.consentText}`, 8, 13);
         }

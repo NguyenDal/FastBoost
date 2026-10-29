@@ -55,6 +55,12 @@ router.get('/threads', handle(async (req, res) => {
     })), hasMore: threads.length > 30 }));
 }));
 
+router.get('/threads/:threadId', handle(async (req, res) => {
+    const thread = await authorizeThread(db, req.supportUser, req.params.threadId);
+    const customer = await db.user.findUnique({ where: { id: thread.customerId }, select: identitySelect });
+    res.json(await signProfileImages({ ok: true, thread: { ...thread, customer } }));
+}));
+
 router.get('/threads/:threadId/messages', handle(async (req, res) => {
     const thread = await authorizeThread(db, req.supportUser, req.params.threadId);
     if (req.query.target) {

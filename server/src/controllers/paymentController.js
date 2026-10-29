@@ -2,6 +2,7 @@ const { normalizeGoldToUse } = require("../utils/goldRedemption");
 const { createHash } = require("node:crypto");
 const prisma = require("../prisma");
 const { queueOrderConfirmation, validEmail } = require("../utils/orderConfirmationEmail");
+const { queueAdminOrderEmail, wakeAdminOrderEmailWorker } = require("../utils/adminOrderEmail");
 const { retrieveReceiptPaymentMethod } = require("../utils/receiptPaymentMethod");
 const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger");
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
@@ -154,12 +155,14 @@ async function completeCheckoutSessionPayment(order, session) {
             }
 
             await queueOrderConfirmation(transaction, order.id, session.customer_details?.email || session.customer_email, paymentMethod);
+            await queueAdminOrderEmail(transaction, order.id);
             await grantReferralCompletionRewards(order.id, transaction);
             return true;
         });
     }));
 
     if (paymentApplied) {
+        wakeAdminOrderEmailWorker(prisma);
         console.log(`Stripe payment completed for order ${order.id}.`);
     }
 
@@ -424,6 +427,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
             if (goldRedeemed > 0) await db.rewardHistory.create({ data: { userId, type: 'ORDER_REDEMPTION', goldAmount: -goldRedeemed,
                 title: 'Gold redeemed for order', description: `Used ${goldRedeemed} gold for order #${order.orderNumber}.`, sourceUserId: order.id } });
             await queueOrderConfirmation(db, order.id, contactEmail, { type: 'account_balance' });
+            await queueAdminOrderEmail(db, order.id);
             await grantReferralCompletionRewards(order.id, db);
             return res.json({ ok: true, paidWithWallet: true, orderId: order.id,
                 summary: { ...checkoutTenderSummary({ ...order, ...walletFields }, goldRedeemed, goldDiscountCents, cashAmountCents, cashAmountCents), availableGold: Math.max(0, availableGold - goldRedeemed) },
@@ -466,6 +470,7 @@ const buildCheckoutSession = async (req, res, db, createdSessions) => {
                     });
                 }
                 await queueOrderConfirmation(transaction, order.id, contactEmail);
+                await queueAdminOrderEmail(transaction, order.id);
                 await grantReferralCompletionRewards(order.id, transaction);
                 return true;
             })(db);
@@ -812,6 +817,7 @@ const createCheckoutSession = async (req, res) => {
         }
         return res.status(response.code).json(response.body);
     }
+    if (response.body?.paidWithWallet || response.body?.paidWithGoldOnly) wakeAdminOrderEmailWorker(prisma);
     if (response.walletCheckoutHoldId) {
         try {
             const hold = await prisma.walletCheckoutHold.findUnique({ where: { id: response.walletCheckoutHoldId } });

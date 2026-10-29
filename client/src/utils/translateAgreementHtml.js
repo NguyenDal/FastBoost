@@ -13,18 +13,28 @@ function vietnameseDisplayDate(value) {
     return `${date.getUTCDate()} tháng ${date.getUTCMonth() + 1} năm ${date.getUTCFullYear()}`;
 }
 
+function vietnameseSignatureDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(value || '')) return null;
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime()) || date.toISOString() !== value) return null;
+    const pad = number => String(number).padStart(2, '0');
+    return `${pad(date.getUTCDate())}/${pad(date.getUTCMonth() + 1)}/${date.getUTCFullYear()} · ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())} UTC`;
+}
+
 function translateText(text, stack) {
-    // Only explicitly marked display dates are localized. Saved terms and signature
-    // timestamps remain unchanged, even when they happen to contain date text.
+    // Only marked display dates are localized. Stored terms and exact signature
+    // timestamps in datetime/title attributes remain unchanged.
     const displayDate = stack.at(-1)?.displayDate;
     if (displayDate && !stack.some(entry => entry.literalContent)) {
         return `${text.match(/^\s*/u)?.[0] || ''}${displayDate}${text.match(/\s*$/u)?.[0] || ''}`;
     }
-    if (stack.some(entry => entry.blocked)) return text;
     const key = text.trim();
-    if (stack.some(entry => entry.classes.includes('fb-signature-card')) && key.endsWith(', trading as FastBoost')) {
+    if (!stack.some(entry => entry.literalContent) && stack.at(-1)?.tag === 'strong'
+        && stack.some(entry => entry.classes.includes('fb-signline'))
+        && stack.some(entry => entry.classes.includes('fb-signature-card')) && key.endsWith(', trading as FastBoost')) {
         return text.replace(/, trading as FastBoost(?=\s*$)/u, ', kinh doanh dưới tên FastBoost');
     }
+    if (stack.some(entry => entry.blocked)) return text;
     const translated = translations.get(key);
     if (!translated) return text;
     return `${text.match(/^\s*/u)?.[0] || ''}${translated}${text.match(/\s*$/u)?.[0] || ''}`;
@@ -53,9 +63,10 @@ function translateNodes(html) {
         if (voidTags.has(tag) || /\/>$/u.test(token)) continue;
         const classes = /\bclass\s*=\s*["']([^"']*)["']/u.exec(token)?.[1]?.split(/\s+/u) || [];
         const literalContent = ['script', 'style', 'textarea', 'template'].includes(tag);
-        const displayDate = tag === 'span' ? vietnameseDisplayDate(/\bdata-native-date\s*=\s*["']([^"']*)["']/u.exec(token)?.[1]) : null;
+        const displayDate = tag === 'span' ? vietnameseDisplayDate(/\bdata-native-date\s*=\s*["']([^"']*)["']/u.exec(token)?.[1])
+            : tag === 'time' ? vietnameseSignatureDate(/\bdata-native-date-time\s*=\s*["']([^"']*)["']/u.exec(token)?.[1]) : null;
         const blocked = literalContent
-            || /\bdata-native-(?:field|value)\s*=/u.test(token)
+            || /\bdata-native-(?:field|value)(?:\s*=|\s|>)/u.test(token)
             || classes.includes('fb-template')
             || (tag === 'strong' && stack.some(entry => entry.classes.includes('fb-signline')));
         stack.push({ tag, classes, blocked, literalContent, displayDate });
