@@ -10,6 +10,7 @@ import { authStorage } from '../utils/authStorage';
 import { clearExpiredSession, getStoredUser, hasValidSession } from '../utils/authSession';
 import { agreementSigningPath, formatLocalSignatureTime, signatureMissingRequirements, signatureSubmission, signingValuesMatch } from '../utils/nativeSigning';
 import { translateAgreementHtml } from '../utils/translateAgreementHtml';
+import { buildNativeAgreementFrameHtml } from '../utils/nativeAgreementFrame';
 import { nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp } from '../utils/nativeSigningI18n';
 import { CONTRACT_SIGNING_CHANNEL } from '../utils/contractSigning';
 import '../styles/NativeContractSigning.css';
@@ -57,6 +58,8 @@ export default function NativeContractSigning({ id }) {
             try {
                 const next = await nativeContractRequest(id, 'signing', undefined, controller.signal);
                 if (!active || ticket !== sequence || controller.signal.aborted || epoch !== epochRef.current) return;
+                // A focus refresh may finish after the signer has started typing.
+                if (!force && (busyRef.current || dirtyRef.current)) return;
                 contextRef.current = next; setContext(next);
                 setValues({ ...next.values, ...(!next.prepared ? { ReferenceLanguage: 'English/Vietnamese' } : {}) });
                 setEditing(next.role === 'company' && !next.prepared && next.canPrepare === true);
@@ -123,7 +126,7 @@ export default function NativeContractSigning({ id }) {
     const locked = busy || uncertain;
     const t = key => nativeSigningText(language, key);
     const missingSignatureRequirements = signatureMissingRequirements({ legalName: signingLegalName, signature });
-    const iframeHtml = useMemo(() => context?.html ? translateAgreementHtml(context.html, language) : '', [context?.html, language]);
+    const iframeHtml = useMemo(() => context?.html ? buildNativeAgreementFrameHtml(translateAgreementHtml(context.html, language)) : '', [context?.html, language]);
     const currentFrameKey = `${context?.documentHash || 'draft'}-${language}`;
     const frameReady = frameDocument && loadedFrameKey === currentFrameKey && iframeRef.current?.contentDocument === frameDocument;
     const fieldMarkers = frameReady ? [...frameDocument.querySelectorAll('[data-native-field]')] : [];
@@ -399,8 +402,9 @@ export default function NativeContractSigning({ id }) {
                 : completed ? <div className="native-signing-outcome"><h2>{t('allSigned')}</h2><p>{t('bothSignedDescription')}</p><button className="native-primary" disabled={busy} onClick={download}>{t('downloadSignedPdf')}</button></div>
                     : !ownSignature && !waitingForOwnerDetails && !waitingForBooster && !waitingForCompany && !editing && !editable && !context.canSign && <p className="native-signing-unavailable">{t('signUnavailable')}</p>}
             <section className="native-signing-document" aria-label={t('agreementDocument')}>
-                {/* The React form portal needs form submission enabled; document scripts stay sandboxed. */}
-                {iframeHtml && <iframe ref={iframeRef} key={currentFrameKey} data-frame-key={currentFrameKey} title={t('agreementDocument')} srcDoc={iframeHtml} sandbox="allow-same-origin allow-forms" onLoad={frameLoaded} />}
+                {/* Safari requires allow-scripts for parent React event handlers. The
+                    sanitized srcDoc's CSP still blocks all document-owned scripts. */}
+                {iframeHtml && <iframe ref={iframeRef} key={currentFrameKey} data-frame-key={currentFrameKey} title={t('agreementDocument')} srcDoc={iframeHtml} sandbox="allow-same-origin allow-forms allow-scripts" onLoad={frameLoaded} />}
             </section>
             {showEditor && frameReady && embeddedFields.filter(item => !FIXED_DRAFT_FIELDS.has(item.field.key)).flatMap(({ field, targets }, index) => targets.map((target, targetIndex) => createPortal(targetIndex === 0
                 ? <label className="native-inline-field">

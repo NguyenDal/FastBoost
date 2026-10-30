@@ -105,6 +105,7 @@ async function componentFixture(bindings, initialStates = [], options = {}) {
         useRef(value) { return refs[refCursor++] ||= { current: value }; },
         useEffect(effect) { effects.push(effect); }, useMemo: factory => factory(), useCallback: callback => callback,
         createPortal: (children, target) => ({ ...children, portalTarget: target }), translateAgreementHtml: html => html,
+        buildNativeAgreementFrameHtml: html => html,
         nativeSigningText, nativeSigningFieldLabel, nativeSigningFieldHelp,
         Navbar: 'Navbar', Link: 'Link', ContractSignaturePad: 'SignaturePad', NativeSigningProgress: 'SigningProgress',
         signatureSubmission, signatureMissingRequirements, signingValuesMatch, hasDrawnSignature, agreementSigningPath, formatLocalSignatureTime,
@@ -906,13 +907,18 @@ test('rendering a ready agreement never signs it; explicit submit uses the accep
     assert.equal(find(fixture.render(), item => item.props?.className === 'native-signing-message'), null, 'saving does not add another success panel above the agreement');
 });
 
-test('the embedded agreement allows form submission while keeping document scripts blocked', async () => {
-    const fixture = await componentFixture({}, [readyContext, readyContext.values, false]);
+test('the embedded agreement enables Safari parent event handlers only with the protected presentation', async () => {
+    const protectedHtml = '<html><head><meta http-equiv="Content-Security-Policy" content="script-src &apos;none&apos;"></head><body>Protected agreement</body></html>';
+    const fixture = await componentFixture({ buildNativeAgreementFrameHtml: html => {
+        assert.equal(html, readyContext.html);
+        return protectedHtml;
+    } }, [readyContext, readyContext.values, false]);
     const frame = find(fixture.render(), item => item.type === 'iframe');
     const permissions = new Set(frame.props.sandbox.split(/\s+/));
     assert.ok(permissions.has('allow-forms'), 'a browser must be able to dispatch the embedded form submit event');
     assert.ok(permissions.has('allow-same-origin'), 'the parent must still mount and control the signature form');
-    assert.equal(permissions.has('allow-scripts'), false, 'agreement HTML must not execute its own scripts');
+    assert.ok(permissions.has('allow-scripts'), 'Safari must dispatch parent-installed input, click and submit handlers');
+    assert.equal(frame.props.srcDoc, protectedHtml, 'raw agreement HTML must never be used with script permission');
 });
 
 test('typing a name enables signing but never submits until the user explicitly signs', async () => {
@@ -1018,5 +1024,26 @@ test('an account switch clears the document and rejects the previous pending res
     assert.equal(fixture.state(0), null, 'previous account document cannot reappear');
     pending[1]({ ...readyContext, contract: { id: 'other' }, role: 'booster' }); await Promise.resolve(); await Promise.resolve();
     assert.equal(fixture.state(0).contract.id, 'other');
+    fixture.cleanup();
+});
+
+test('a delayed focus refresh cannot overwrite location entered while it was loading', async () => {
+    const browser = eventHub(), pending = [];
+    const draft = { ...readyContext, role: 'company', signingOrder: 'COMPANY_FIRST', canPrepare: true, canSign: false,
+        prepared: false, documentHash: null, values: { WorkLocation: '', ReferenceLanguage: 'English/Vietnamese' },
+        fields: [{ key: 'WorkLocation', label: 'Work location', required: true }] };
+    const fixture = await componentFixture({ window: browser,
+        nativeContractRequest: () => new Promise(resolve => pending.push(resolve)),
+    });
+    fixture.render(); fixture.runEffects();
+    pending.shift()(draft); await nextTurn();
+    const tree = attachAgreementDocument(fixture, draft.fields, 'draft-en');
+    browser.dispatch('focus');
+    assert.equal(pending.length, 1, 'the background refresh has started before typing');
+    find(tree, item => item.type === 'input' && item.props['aria-label'] === 'Work location').props.onChange({ target: { value: 'Canada, Manitoba' } });
+    pending.shift()({ ...draft, values: { ...draft.values } }); await nextTurn();
+    assert.equal(fixture.state(1).WorkLocation, 'Canada, Manitoba');
+    const progress = find(fixture.render(), item => item.type === 'SigningProgress');
+    assert.equal(progress.props.steps.filter(step => !step.complete).length, 1, 'location stays complete after a stale response');
     fixture.cleanup();
 });
