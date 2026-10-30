@@ -8,7 +8,7 @@ const PAGE_SIZE = 10;
 const visibleCategories = Object.fromEntries(Object.entries(categories).filter(([key]) => definitions.some(definition => definition[2] === key && visibleActions.includes(definition[3]))));
 const fail = message => { throw Object.assign(new Error(message), { status: 400 }); };
 function filters(query) {
-    // Keep older routine records in storage, but exclude them from the owner's
+    // Keep older routine records in storage, but exclude them from the admin
     // critical-change list and total, along with failed and unchanged requests.
     const where = { action: { in: visibleActions }, outcome: 'SUCCEEDED' };
     const q = String(query.q || '').trim();
@@ -41,8 +41,8 @@ function createActivityLogRouter(client = db) {
     router.use(protect, async (req, res, next) => {
         res.set('Cache-Control', 'no-store');
         try {
-            const user = await client.user.findUnique({ where: { id: req.user.id || req.user.userId }, select: { role: true, isOwner: true, suspendedAt: true } });
-            if (!user?.isOwner || user.role !== 'ADMIN' || user.suspendedAt) return res.status(403).json({ message: 'Only the owner can view activity logs.' });
+            const user = await client.user.findUnique({ where: { id: req.user.id || req.user.userId }, select: { role: true, suspendedAt: true } });
+            if (user?.role !== 'ADMIN' || user.suspendedAt) return res.status(403).json({ message: 'Only admins can view activity logs.' });
             next();
         } catch (error) { next(error); }
     });
@@ -53,7 +53,7 @@ function createActivityLogRouter(client = db) {
             const search = String(req.query.q || '').trim();
             if (search) {
                 // Older entries can hold a generic actor label or a target ID.
-                // Include account IDs whose current username is what the owner sees.
+                // Include account IDs whose current username is what the admin sees.
                 const users = await client.user.findMany({ where: { username: { contains: search, mode: 'insensitive' } }, select: { id: true } });
                 const ids = users.map(user => user.id);
                 if (ids.length) where.OR.push(

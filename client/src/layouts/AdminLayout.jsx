@@ -1,5 +1,5 @@
 import { OrdersIcon, UsersIcon, PriceIcon, ActivityIcon } from "../components/AdminIcons";
-import useOwnerAccess from '../hooks/useOwnerAccess';
+import useActivityLogAccess from '../hooks/useActivityLogAccess';
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { SupportIcon } from "../components/SupportChat";
@@ -28,8 +28,8 @@ const adminLinks = [
 
 export default function AdminLayout() {
     const location = useLocation();
-    const isOwner = useOwnerAccess();
-    const links = isOwner ? [...adminLinks, { label: 'Activity Logs', path: '/admin/activity-logs', icon: <ActivityIcon /> }] : adminLinks;
+    const canViewActivityLogs = useActivityLogAccess();
+    const links = canViewActivityLogs ? [...adminLinks, { label: 'Activity Logs', path: '/admin/activity-logs', icon: <ActivityIcon /> }] : adminLinks;
 
     return (
         <div className="admin-shell admin-with-sidebar">

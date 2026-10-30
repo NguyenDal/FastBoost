@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { OrdersIcon, UsersIcon, PriceIcon, ActivityIcon } from "../components/AdminIcons";
-import useOwnerAccess from '../hooks/useOwnerAccess';
+import useActivityLogAccess from '../hooks/useActivityLogAccess';
 import { SupportIcon } from "../components/SupportChat";
 import "../styles/Admin.css";
 
@@ -38,7 +38,7 @@ const managementCards = [
 ];
 
 export default function AdminManagementPage() {
-    const isOwner = useOwnerAccess();
+    const canViewActivityLogs = useActivityLogAccess();
     return (
         <div className="page-shell">
             <Navbar />
@@ -79,8 +79,8 @@ export default function AdminManagementPage() {
                             </div>
                         </Link>
                     ))}
-                    {isOwner && <Link to="/admin/activity-logs" className="management-card management-card-active management-audit-card">
-                        <div className="management-card-top"><div className="management-icon"><ActivityIcon /></div><span className="management-owner-badge">Owner only</span></div>
+                    {canViewActivityLogs && <Link to="/admin/activity-logs" className="management-card management-card-active management-audit-card">
+                        <div className="management-card-top"><div className="management-icon"><ActivityIcon /></div><span className="management-access-badge">Read only</span></div>
                         <div><h2>Activity Logs</h2><p>See who changed what across management. Review admin actions, outcomes, and change details.</p></div>
                         <div className="management-card-footer"><span className="management-arrow">→</span></div>
                     </Link>}

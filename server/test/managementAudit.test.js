@@ -14,6 +14,7 @@ const actors = {
     customer: { id: 'customer', username: 'Customer', role: 'CUSTOMER', isOwner: false },
     booster: { id: 'booster', username: 'Booster', role: 'PROVIDER', isOwner: false },
     suspended: { id: 'suspended', role: 'ADMIN', isOwner: true, suspendedAt: new Date() },
+    suspendedAdmin: { id: 'suspendedAdmin', role: 'ADMIN', isOwner: false, suspendedAt: new Date() },
     downgraded: { id: 'downgraded', role: 'CUSTOMER', isOwner: true },
 };
 function project(value, select) {
@@ -129,25 +130,35 @@ test('only material admin changes enter the owner feed; failures and no-ops rema
     assert.equal(state.target.role, 'ADMIN');
 });
 
-test('log list and access are owner-only using current database permissions, with bounded filtering and pagination', async t => {
+test('log list and access allow every active admin using current database permissions, with bounded filtering and pagination', async t => {
     const { db, state } = fixture();
     for (let i = 0; i < 23; i++) state.entries.push({ id: `log-${i}`, actorId: i % 2 ? 'admin' : 'owner', actorName: i % 2 ? 'Manager' : 'Owner', category: 'accounts', action: 'account.role', outcome: i === 0 ? 'FAILED' : 'SUCCEEDED', targetLabel: `Teammate ${i}`, targetId: `user-${i}`, createdAt: new Date('2026-10-12T12:00:00Z') });
     state.entries.push({ id: 'management-audit-enabled', actorId: null, actorName: 'System', category: 'system', action: 'logging.enabled', outcome: 'SUCCEEDED', createdAt: new Date('2026-10-12T00:00:00Z') });
     state.entries.push({ id: 'old-signing-view', actorId: 'admin', actorName: 'Manager', category: 'boosters', action: 'contract.signing-view', outcome: 'SUCCEEDED', createdAt: new Date('2026-10-12T00:00:00Z') });
     const app = express(); app.use('/api/admin/activity-logs', createActivityLogRouter(db));
     const request = await serve(t, app);
-    for (const actor of ['admin', 'customer', 'booster', 'suspended', 'downgraded']) {
-        assert.equal((await request('/api/admin/activity-logs/access', actor)).status, actor === 'suspended' ? 401 : 403);
-        assert.equal((await request('/api/admin/activity-logs', actor)).status, actor === 'suspended' ? 401 : 403);
+    for (const actor of ['customer', 'booster', 'suspended', 'suspendedAdmin', 'downgraded']) {
+        const expectedStatus = actor.startsWith('suspended') ? 401 : 403;
+        assert.equal((await request('/api/admin/activity-logs/access', actor)).status, expectedStatus);
+        assert.equal((await request('/api/admin/activity-logs', actor)).status, expectedStatus);
     }
     assert.equal((await request('/api/admin/activity-logs', null)).status, 401);
-    assert.equal((await request('/api/admin/activity-logs/access')).status, 200);
-    let response = await request('/api/admin/activity-logs?page=3');
+    assert.equal((await request('/api/admin/activity-logs/access', null)).status, 401);
+    for (const actor of ['admin', 'owner']) {
+        const response = await request('/api/admin/activity-logs/access', actor);
+        assert.equal(response.status, 200);
+        assert.equal(response.headers.get('cache-control'), 'no-store');
+        assert.deepEqual(await response.json(), { canView: true });
+    }
+    let response = await request('/api/admin/activity-logs?page=3', 'admin');
+    assert.equal(response.status, 200);
     assert.equal(response.headers.get('cache-control'), 'no-store');
     let data = await response.json(); assert.equal(data.total, 22); assert.equal(data.items.length, 2); assert.equal(data.page, 3); assert.equal(data.actors.length, 2);
     assert.equal(data.items[0].actionLabel, 'Changed account role');
     assert.equal(Object.hasOwn(data, 'recordingSince'), false);
     assert.equal(Object.hasOwn(data.categories, 'system'), false);
+    const ownerData = await (await request('/api/admin/activity-logs?page=3', 'owner')).json();
+    assert.deepEqual(ownerData, data, 'admins receive the same existing read-only view as the owner');
     data = await (await request('/api/admin/activity-logs?q=System')).json();
     assert.equal(data.total, 0, 'internal metadata and old routine events are excluded before counting and pagination');
     data = await (await request('/api/admin/activity-logs?actor=admin&q=teammate&category=accounts&from=2026-10-12&to=2026-10-12&page=999')).json();
@@ -156,7 +167,30 @@ test('log list and access are owner-only using current database permissions, wit
     for (const query of ['page=-1', 'page=1.5', 'category=constructor', 'outcome=deleted', 'from=2026-02-30', 'from=2026-10-13&to=2026-10-12']) {
         assert.equal((await request(`/api/admin/activity-logs?${query}`)).status, 400, query);
     }
-    for (const method of ['POST', 'PATCH', 'DELETE']) assert.equal((await request('/api/admin/activity-logs/log-1', 'owner', method)).status, 404, 'logs have no editing/deletion API');
+    const before = JSON.stringify(state.entries);
+    for (const actor of ['admin', 'owner']) {
+        for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
+            for (const path of ['/api/admin/activity-logs', '/api/admin/activity-logs/log-1']) {
+                assert.equal((await request(path, actor, method)).status, 404, 'logs have no editing/deletion API');
+            }
+        }
+    }
+    assert.equal(JSON.stringify(state.entries), before, 'read access never grants log mutation');
+});
+
+test('an admin loses activity-log access immediately after database demotion or suspension', async t => {
+    const { db } = fixture();
+    const findUser = db.user.findUnique;
+    let currentRole = 'ADMIN', suspendedAt = null;
+    db.user.findUnique = args => args.where.id === 'admin'
+        ? Promise.resolve(project({ ...actors.admin, role: currentRole, suspendedAt }, args.select)) : findUser(args);
+    const app = express(); app.use('/api/admin/activity-logs', createActivityLogRouter(db));
+    const request = await serve(t, app);
+    assert.equal((await request('/api/admin/activity-logs', 'admin')).status, 200);
+    currentRole = 'CUSTOMER';
+    for (const path of ['', '/access']) assert.equal((await request(`/api/admin/activity-logs${path}`, 'admin')).status, 403);
+    currentRole = 'ADMIN'; suspendedAt = new Date();
+    for (const path of ['', '/access']) assert.equal((await request(`/api/admin/activity-logs${path}`, 'admin')).status, 401);
 });
 
 test('search finds legacy activity by usernames resolved from current accounts', async t => {
@@ -199,8 +233,10 @@ test('search finds old payout reviews by the affected booster without loading ba
     assert.equal(data.items[0].targetLabel, 'Teammate · Payout information');
     assert.equal(metadataReads, 2, 'search and display use narrow metadata queries');
     assert.equal(state.entries[0].targetLabel, 'Payout information', 'history remains unmodified');
-    assert.equal((await request('/api/admin/activity-logs?q=Teammate', 'admin')).status, 403);
-    assert.equal(metadataReads, 2, 'non-owner cannot query payout audit metadata');
+    const adminResponse = await request('/api/admin/activity-logs?q=Teammate', 'admin');
+    assert.equal(adminResponse.status, 200);
+    assert.deepEqual(await adminResponse.json(), data, 'admins can read payout audit metadata without banking details');
+    assert.equal(metadataReads, 4, 'admin reads use the same narrow metadata queries');
 });
 
 test('management coverage is limited to material access, pricing, order, agreement and earnings changes', () => {
