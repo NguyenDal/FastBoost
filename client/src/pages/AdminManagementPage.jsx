@@ -80,7 +80,7 @@ export default function AdminManagementPage() {
                         </Link>
                     ))}
                     {canViewActivityLogs && <Link to="/admin/activity-logs" className="management-card management-card-active management-audit-card">
-                        <div className="management-card-top"><div className="management-icon"><ActivityIcon /></div><span className="management-access-badge">Read only</span></div>
+                        <div className="management-card-top"><div className="management-icon"><ActivityIcon /></div></div>
                         <div><h2>Activity Logs</h2><p>See who changed what across management. Review admin actions, outcomes, and change details.</p></div>
                         <div className="management-card-footer"><span className="management-arrow">→</span></div>
                     </Link>}

@@ -1,5 +1,4 @@
 /* Admin UI styles */
-.management-access-badge { color: #c4b5fd; border: 1px solid #a78bfa40; background: #8b5cf618; border-radius: 999px; padding: 6px 11px; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
 .management-audit-card { grid-column: 1 / -1; }
 .management-audit-card .management-card-top { display: flex; align-items: center; justify-content: space-between; }
 

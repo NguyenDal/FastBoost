@@ -115,18 +115,14 @@ function textContent(tree) {
     return textContent(tree.props?.children);
 }
 
-test('management navigation and card follow log access, with a read-only admin label', async () => {
+test('management navigation and card follow log access without permission badges', async () => {
     for (const canView of [false, true]) {
         const layout = await renderComponent('layouts', 'AdminLayout', canView);
         const management = await renderComponent('pages', 'AdminManagementPage', canView);
         for (const tree of [layout, management]) {
             const links = elements(tree).filter(node => node.type === 'Link' && node.props.to === '/admin/activity-logs');
             assert.equal(links.length, canView ? 1 : 0);
-            assert.doesNotMatch(textContent(tree), /Owner only/u);
-        }
-        if (canView) {
-            const card = elements(management).find(node => node.type === 'Link' && node.props.to === '/admin/activity-logs');
-            assert.match(textContent(card), /Read only/u);
+            assert.doesNotMatch(textContent(tree), /Owner only|Read only/iu);
         }
     }
 });

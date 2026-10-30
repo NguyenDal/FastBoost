@@ -80,7 +80,7 @@ export default function ActivityLogsPage() {
     const totalPages = Math.max(1, Math.ceil((data?.total || 0) / (data?.pageSize || 10)));
     const currentPage = data?.page || 1;
     return <div className="audit-page">
-        <header className="audit-heading"><div><p className="audit-eyebrow">Management activity</p><h1>Activity Logs</h1><p>Review important changes to services and operations.</p></div><span className="audit-access-label">Read only</span></header>
+        <header className="audit-heading"><div><p className="audit-eyebrow">Management activity</p><h1>Activity Logs</h1><p>Review important changes to services and operations.</p></div></header>
         <form className="audit-filters" onSubmit={apply}>
             <label className="audit-search">Search<input value={draft.q} onChange={change('q')} placeholder="Username or record name…" maxLength={100} /></label>
             <label>User<select value={draft.actor} onChange={change('actor')}><option value="">All users</option>{data?.actors.map(actor => <option key={actor.actorId} value={actor.actorId}>{actor.actorName?.trim() || 'Unknown user'}</option>)}</select></label>
