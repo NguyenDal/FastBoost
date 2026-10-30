@@ -135,6 +135,12 @@ function textContent(tree) {
     if (typeof tree !== 'object') return String(tree);
     return (Array.isArray(tree) ? tree : [tree.props?.children]).map(textContent).join('');
 }
+function activateAutoSignature(fixture, tree = fixture.render()) {
+    const control = find(tree, item => item.type === 'button' && item.props?.className === 'native-signature-auto');
+    assert.ok(control, 'an untouched Auto signature requires explicit activation');
+    control.props.onClick();
+    return fixture.render();
+}
 function attachAgreementDocument(fixture, fields = [], frameKey = 'frozen-hash-en', times = []) {
     const markerNodes = fields.map(field => ({
         getAttribute: name => name === 'data-native-field' ? field.key : null,
@@ -439,7 +445,7 @@ test('each signer enters their name inside only their own eligible signature car
     for (const [role, expectedCard] of [['company', 'COMPANY'], ['booster', 'BOOSTER']]) {
         const context = { ...readyContext, role };
         const fixture = await componentFixture({}, [context, context.values, false]);
-        const tree = attachAgreementDocument(fixture);
+        const tree = activateAutoSignature(fixture, attachAgreementDocument(fixture));
         const forms = [];
         find(tree, item => { if (item.props?.className === 'native-signature-form') forms.push(item); return false; });
         assert.equal(forms.length, 1);
@@ -454,42 +460,99 @@ test('each signer enters their name inside only their own eligible signature car
     }
 });
 
-test('focusing the signature box fills the assigned name for each role without signing', async () => {
+test('each role must explicitly activate Auto before its assigned signature appears', async () => {
     for (const [role, expectedName] of [['company', 'Company Signer'], ['booster', 'Booster']]) {
         const calls = [];
         const context = { ...readyContext, role };
         const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [context, context.values, false]);
-        const input = find(attachAgreementDocument(fixture), item => item.type === 'input' && item.props.name === 'legalName');
-        assert.equal(input.props.value, '', 'the signature box remains empty until the signer chooses it');
-        input.props.onFocus();
-        const tree = fixture.render();
-        assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName').props.value, expectedName);
+        let tree = attachAgreementDocument(fixture);
+        const prompt = find(tree, item => item.props?.className === 'native-signature-auto');
+        assert.equal(prompt.type, 'button', 'native button supports click, Enter and Space activation');
+        assert.equal(prompt.props.type, 'button', 'activation cannot submit the agreement form');
+        assert.equal(textContent(prompt), nativeSigningText('en', 'typeFullName'));
+        assert.equal(prompt.props.onFocus, undefined, 'focus alone cannot generate a signature');
+        assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName'), null, 'no input is available for browser autofill before activation');
+        assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
+        tree = activateAutoSignature(fixture, tree);
+        const input = find(tree, item => item.type === 'input' && item.props.name === 'legalName');
+        assert.equal(input.props.value, expectedName);
+        assert.equal(input.props.autoComplete, 'off');
+        assert.equal(input.props.onFocus, undefined);
         assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, false);
         assert.equal(calls.length, 0, 'choosing the signature box cannot accept an agreement');
     }
 });
 
-test('refocusing the signature box preserves a name the signer has edited', async () => {
+test('Auto and font choices leave an untouched signature empty for both roles', async () => {
+    for (const role of ['company', 'booster']) {
+        const calls = [], context = { ...readyContext, role };
+        const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [context, context.values, false]);
+        let tree = attachAgreementDocument(fixture);
+        for (const style of [2, 3, 1]) {
+            find(tree, item => item.type === 'button' && item.props['aria-label'] === `Signature style ${style}`).props.onClick();
+            tree = fixture.render();
+            find(tree, item => item.type === 'button' && item.props.children === 'Auto').props.onClick();
+            tree = fixture.render();
+            assert.ok(find(tree, item => item.props?.className === 'native-signature-auto'));
+            assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName'), null);
+            assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
+            assert.equal(fixture.state(3), '');
+        }
+        assert.equal(calls.length, 0);
+    }
+});
+
+test('checklist navigation focuses the Auto prompt without adding a signature for either role', async () => {
+    for (const role of ['company', 'booster']) {
+        const calls = [], focused = [];
+        const context = { ...readyContext, role };
+        const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [context, context.values, false]);
+        const tree = attachAgreementDocument(fixture);
+        const prompt = find(tree, item => item.props?.className === 'native-signature-auto');
+        fixture.ref(0).current.contentDocument.querySelector('[data-native-signature-mount]').querySelector = selector => {
+            assert.match(selector, /\[data-native-signature-auto\]/);
+            return { focus() { focused.push('Auto prompt'); prompt.props.onFocus?.(); }, getBoundingClientRect: () => ({ top: 100 }) };
+        };
+        find(tree, item => item.type === 'SigningProgress').props.steps.find(step => step.id === 'signature').onSelect();
+        assert.deepEqual(focused, ['Auto prompt']);
+        assert.ok(find(fixture.render(), item => item.props?.className === 'native-signature-auto'));
+        assert.equal(fixture.state(3), '');
+        assert.equal(calls.length, 0);
+    }
+});
+
+test('an activated and edited signature survives mode and font choices without being replaced', async () => {
     const calls = [];
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [readyContext, readyContext.values, false]);
-    let input = find(attachAgreementDocument(fixture), item => item.type === 'input' && item.props.name === 'legalName');
-    input.props.onFocus();
-    input = find(fixture.render(), item => item.type === 'input' && item.props.name === 'legalName');
+    let tree = activateAutoSignature(fixture, attachAgreementDocument(fixture));
+    let input = find(tree, item => item.type === 'input' && item.props.name === 'legalName');
     input.props.onChange({ target: { value: 'Company Legal Signer' } });
+    tree = fixture.render();
+    find(tree, item => item.type === 'button' && item.props.children === 'Draw').props.onClick();
+    tree = fixture.render();
+    find(tree, item => item.type === 'button' && item.props.children === 'Auto').props.onClick();
+    tree = fixture.render();
+    find(tree, item => item.type === 'button' && item.props['aria-label'] === 'Signature style 3').props.onClick();
     input = find(fixture.render(), item => item.type === 'input' && item.props.name === 'legalName');
-    input.props.onFocus();
-    assert.equal(find(fixture.render(), item => item.type === 'input' && item.props.name === 'legalName').props.value, 'Company Legal Signer');
+    assert.equal(input.props.value, 'Company Legal Signer');
+    assert.equal(input.props['data-signature-style'], 3);
+    input.props.onChange({ target: { value: '' } });
+    tree = fixture.render();
+    assert.ok(find(tree, item => item.type === 'input' && item.props.name === 'legalName'), 'clearing an activated field leaves it editable');
+    assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
     assert.equal(calls.length, 0);
 });
 
-test('a locked signature box cannot refill the name during submission or uncertain confirmation', async () => {
+test('a locked Auto prompt cannot activate during submission or uncertain confirmation', async () => {
     for (const [busy, uncertain] of [[true, false], [false, true]]) {
         const calls = [];
         const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [readyContext, readyContext.values, false, '', busy, '', uncertain]);
-        const input = find(attachAgreementDocument(fixture), item => item.type === 'input' && item.props.name === 'legalName');
-        assert.equal(input.props.disabled, true);
-        input.props.onFocus();
-        assert.equal(find(fixture.render(), item => item.type === 'input' && item.props.name === 'legalName').props.value, '');
+        const control = find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-auto');
+        assert.equal(control.props.disabled, true);
+        control.props.onClick();
+        assert.equal(fixture.state(3), '');
+        assert.equal(fixture.state(12), false);
+        assert.ok(find(fixture.render(), item => item.props?.className === 'native-signature-auto'));
         assert.equal(calls.length, 0);
     }
 });
@@ -522,6 +585,26 @@ test('Draw requires a real mark and records it only after explicit signing', asy
     assert.equal(Object.hasOwn(calls[0][2], 'initials'), false);
 });
 
+test('drawn signatures use each assigned signer without populating or replacing their Auto name', async () => {
+    for (const [role, expectedName] of [['company', 'Company Signer'], ['booster', 'Booster']]) {
+        const calls = [], context = { ...readyContext, role };
+        const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return {}; } }, [context, context.values, false]);
+        let tree = activateAutoSignature(fixture, attachAgreementDocument(fixture));
+        find(tree, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'Edited Auto name' } });
+        tree = fixture.render();
+        find(tree, item => item.type === 'button' && item.props.children === 'Draw').props.onClick();
+        tree = fixture.render();
+        assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
+        find(tree, item => item.type === 'SignaturePad').props.onChange({ type: 'drawn', width: 600, height: 180, strokes: [[[20, 80], [60, 40], [100, 80]]] });
+        tree = fixture.render();
+        await find(tree, item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
+        assert.equal(calls.length, 1);
+        assert.equal(calls[0][2].legalName, expectedName);
+        assert.equal(calls[0][2].signature.type, 'drawn');
+        assert.equal(fixture.state(3), 'Edited Auto name', 'drawing uses its assigned identity without overwriting the separate typed choice');
+    }
+});
+
 test('Auto and Draw preserve an unfinished drawing while mode changes never sign', async () => {
     const calls = [];
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => calls.push(args) }, [readyContext, readyContext.values, false]);
@@ -536,8 +619,10 @@ test('Auto and Draw preserve an unfinished drawing while mode changes never sign
     find(tree, item => item.type === 'button' && item.props.children === 'Auto').props.onClick();
     tree = fixture.render();
     assert.equal(find(tree, item => item.type === 'SignaturePad'), null);
-    assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName').props.value, readyContext.contract.companySignerName);
-    assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName').props['data-signature-style'], 2);
+    assert.ok(find(tree, item => item.props?.className === 'native-signature-auto'), 'drawing does not activate the separate Auto signature');
+    assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName'), null);
+    assert.equal(fixture.state(11).style, 2);
+    assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
     find(tree, item => item.type === 'button' && item.props.children === 'Draw').props.onClick();
     tree = fixture.render();
     assert.equal(find(tree, item => item.type === 'button' && item.props.children === 'Draw').props['aria-pressed'], true);
@@ -545,7 +630,7 @@ test('Auto and Draw preserve an unfinished drawing while mode changes never sign
     assert.equal(calls.length, 0);
 });
 
-test('selecting a signature style fills the name but records that style only on explicit signing', async () => {
+test('a selected style is used when Auto is activated and recorded only on explicit signing', async () => {
     const calls = [];
     const fixture = await componentFixture({ nativeContractRequest: async (...args) => { calls.push(args); return {}; } }, [readyContext, readyContext.values, false]);
     let tree = attachAgreementDocument(fixture);
@@ -557,6 +642,8 @@ test('selecting a signature style fills the name but records that style only on 
     }
     find(box, item => item.type === 'button' && item.props['aria-label'] === 'Signature style 3').props.onClick();
     tree = fixture.render();
+    assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName'), null);
+    tree = activateAutoSignature(fixture, tree);
     const input = find(tree, item => item.type === 'input' && item.props.name === 'legalName');
     assert.equal(input.props.value, readyContext.contract.companySignerName);
     assert.equal(input.props['data-signature-style'], 3);
@@ -586,7 +673,8 @@ test('clearing a drawing keeps the selected typed style for returning to Auto', 
     assert.equal(find(tree, item => item.type === 'button' && item.props.type === 'submit').props.disabled, true);
     find(tree, item => item.type === 'button' && item.props.children === 'Auto').props.onClick();
     tree = fixture.render();
-    assert.equal(find(tree, item => item.type === 'input' && item.props.name === 'legalName').props['data-signature-style'], 3);
+    assert.ok(find(tree, item => item.props?.className === 'native-signature-auto'));
+    assert.equal(fixture.state(11).style, 3);
     assert.equal(calls.length, 0);
 });
 
@@ -736,6 +824,7 @@ test('an account switch while preparing prevents the former signer from submitti
     });
     fixture.render(); fixture.runEffects(); await nextTurn();
     let tree = attachAgreementDocument(fixture, directDraft.fields, 'draft-en');
+    tree = activateAutoSignature(fixture, tree);
     find(tree, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'Company Signer' } });
     tree = fixture.render();
     const pending = find(tree, item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
@@ -839,6 +928,7 @@ test('typing a name enables signing but never submits until the user explicitly 
     assert.equal(find(form, item => item.props?.id === 'native-signature-consent'), null, 'the card does not repeat the agreement instructions');
     assert.equal(textContent(form).includes(readyContext.consentText), false);
     assert.equal(submit.props['aria-describedby'], undefined, 'the button must not refer to a removed instruction');
+    form = find(activateAutoSignature(fixture), item => item.props?.className === 'native-signature-form');
     find(form, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'C' } });
     form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
     assert.equal(find(form, item => item.type === 'button' && item.props.children === 'Sign agreement').props.disabled, true);
@@ -857,6 +947,9 @@ test('the Vietnamese view keeps the same single-name signing action and does not
     let form = find(attachAgreementDocument(fixture, [], 'frozen-hash-vi'), item => item.props?.className === 'native-signature-form');
     assert.equal(find(form, item => item.props?.id === 'native-signature-requirements'), null);
     assert.equal(find(form, item => item.type === 'button' && item.props.children === nativeSigningText('vi', 'signAgreement')).props.disabled, true);
+    const prompt = find(form, item => item.props?.className === 'native-signature-auto');
+    assert.equal(textContent(prompt), nativeSigningText('vi', 'typeFullName'));
+    form = find(activateAutoSignature(fixture), item => item.props?.className === 'native-signature-form');
     find(form, item => item.type === 'input' && item.props.name === 'legalName').props.onChange({ target: { value: 'Nguyễn An' } });
     form = find(fixture.render(), item => item.props?.className === 'native-signature-form');
     assert.equal(find(form, item => item.type === 'button' && item.props.children === nativeSigningText('vi', 'signAgreement')).props.disabled, false);
@@ -888,7 +981,7 @@ test('uncertain server replies lock editing and retry the identical signing inte
     await find(attachAgreementDocument(fixture), item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
     assert.equal(fixture.state(6), true);
     const retry = fixture.render();
-    assert.equal(find(retry, item => item.type === 'input' && item.props?.autoComplete === 'name').props.disabled, true);
+    assert.equal(find(retry, item => item.type === 'input' && item.props?.name === 'legalName').props.disabled, true);
     await find(retry, item => item.props?.className === 'native-signature-form').props.onSubmit({ preventDefault() {} });
     assert.equal(calls.length, 2);
     assert.equal(calls[0][2], calls[1][2]);
@@ -910,7 +1003,7 @@ test('an account switch clears the document and rejects the previous pending res
     const fixture = await componentFixture({ window: browser, document: page,
         getStoredUser: () => ({ id: account }), authStorage: { getItem: () => token },
         nativeContractRequest: () => new Promise(resolve => pending.push(resolve)),
-    }, [null, {}, false, 'Previous Person', false, '', false, '', null, '', 'en', { type: 'drawn', style: 3, width: 600, height: 180, strokes: [[[1, 2], [3, 4]]] }]);
+    }, [null, {}, false, 'Previous Person', false, '', false, '', null, '', 'en', { type: 'drawn', style: 3, width: 600, height: 180, strokes: [[[1, 2], [3, 4]]] }, true]);
     fixture.render(); fixture.runEffects();
     assert.equal(pending.length, 1);
     account = 'another-person'; token = 'token-two'; browser.dispatch('auth:changed');
@@ -919,6 +1012,7 @@ test('an account switch clears the document and rejects the previous pending res
     assert.equal(fixture.state(11).type, 'typed');
     assert.equal(fixture.state(11).style, 1);
     assert.equal(fixture.state(11).strokes.length, 0, 'another account must not inherit a previous drawing');
+    assert.equal(fixture.state(12), false, 'another account must explicitly activate their own Auto signature');
     assert.equal(pending.length, 2);
     pending[0](readyContext); await Promise.resolve(); await Promise.resolve();
     assert.equal(fixture.state(0), null, 'previous account document cannot reappear');

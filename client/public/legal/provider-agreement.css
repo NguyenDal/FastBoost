@@ -109,6 +109,8 @@ body.fb-signing .native-signature-form{display:grid;gap:16px;min-width:0;margin:
 body.fb-signing .native-signature-name{position:relative;display:block}
 body.fb-signing :is(.native-signature-name,.native-signature-pad)::after{content:"";position:absolute;bottom:20px;left:20px;right:20px;height:1px;background:#82719e40;pointer-events:none}
 body.fb-signing .native-signature-form .native-signature-name input{height:148px;padding:36px 18px 24px;border:1px solid #82719e60;border-radius:10px;background:#100e1c;color:#e5d9fa;text-align:center;font-family:'Segoe Print','Bradley Hand',cursive;font-size:clamp(28px,2.4vw,36px);font-style:normal;line-height:1.6}
+body.fb-signing .native-signature-form button.native-signature-auto{box-sizing:border-box;display:block;width:100%;height:148px;padding:36px 18px 24px;border:1px solid #82719e60;border-radius:10px;background:#100e1c;color:#a69ab7;text-align:center;font-family:Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.6}
+body.fb-signing .native-signature-form button.native-signature-auto:focus-visible{border-color:#bca6fa;box-shadow:0 0 0 2px #8b61dc50;outline:0}
 body.fb-signing .native-signature-name input[data-signature-style="1"]{font-family:FastBoostSignature2,'Segoe Print','Bradley Hand',cursive;font-style:italic;font-size:clamp(24px,2.2vw,32px)}
 body.fb-signing .native-signature-name input[data-signature-style="2"]{font-family:FastBoostSignature2,cursive}
 body.fb-signing .native-signature-name input[data-signature-style="3"]{font-family:FastBoostSignature3,cursive}

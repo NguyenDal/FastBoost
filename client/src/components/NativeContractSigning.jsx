@@ -31,6 +31,7 @@ export default function NativeContractSigning({ id }) {
     const [loadedFrameKey, setLoadedFrameKey] = useState('');
     const [language, setLanguage] = useState('en');
     const [signature, setSignature] = useState({ type: 'typed', style: 1, width: 600, height: 180, strokes: [] });
+    const [autoSignatureActivated, setAutoSignatureActivated] = useState(false);
     const iframeRef = useRef(null);
     const pendingJumpRef = useRef(false);
     const epochRef = useRef(0);
@@ -84,6 +85,7 @@ export default function NativeContractSigning({ id }) {
                 dirtyRef.current = false; busyRef.current = false;
                 setContext(null); setValues({}); setFrameDocument(null); setLoadedFrameKey('');
                 setLegalName('');
+                setAutoSignatureActivated(false);
                 setSignature({ type: 'typed', style: 1, width: 600, height: 180, strokes: [] });
                 setBusy(false); setUncertain(false); setMessage(''); setError('');
                 load(true);
@@ -116,9 +118,11 @@ export default function NativeContractSigning({ id }) {
     const directSigning = editable && editing && context?.signingOrder === 'COMPANY_FIRST';
     const showSignatureForm = (directSigning || (reviewed && context?.canSign)) && !ownSignature && !archived;
     const assignedLegalName = (company ? contract?.companySignerName : contract?.signerName) || '';
+    const signingLegalName = signature.type === 'drawn' ? assignedLegalName : legalName;
+    const showAutoSignaturePrompt = !autoSignatureActivated && !legalName;
     const locked = busy || uncertain;
     const t = key => nativeSigningText(language, key);
-    const missingSignatureRequirements = signatureMissingRequirements({ legalName, signature });
+    const missingSignatureRequirements = signatureMissingRequirements({ legalName: signingLegalName, signature });
     const iframeHtml = useMemo(() => context?.html ? translateAgreementHtml(context.html, language) : '', [context?.html, language]);
     const currentFrameKey = `${context?.documentHash || 'draft'}-${language}`;
     const frameReady = frameDocument && loadedFrameKey === currentFrameKey && iframeRef.current?.contentDocument === frameDocument;
@@ -161,7 +165,7 @@ export default function NativeContractSigning({ id }) {
     useEffect(() => {
         if (!frameReady || !reviewed || !context?.canSign || !pendingJumpRef.current) return;
         const timer = window.setTimeout(() => {
-            const target = frameDocument.querySelector('[data-native-signature-mount] input[name="legalName"], [data-native-signature-mount] [data-native-signature-drawing]');
+            const target = frameDocument.querySelector('[data-native-signature-mount] [data-native-signature-auto], [data-native-signature-mount] input[name="legalName"], [data-native-signature-mount] [data-native-signature-drawing]');
             if (target) { scrollToFrameElement(target, true); pendingJumpRef.current = false; }
         }, 80);
         return () => window.clearTimeout(timer);
@@ -288,7 +292,7 @@ export default function NativeContractSigning({ id }) {
             // Only this explicit click authorizes saving the displayed details and
             // signing that exact saved version, using its fresh hash/challenge.
             const intent = uncertain && pendingRef.current ? pendingRef.current
-                : signatureSubmission({ context: signingContext, legalName, signature, consent: true }, pendingRef.current);
+                : signatureSubmission({ context: signingContext, legalName: signingLegalName, signature, consent: true }, pendingRef.current);
             pendingRef.current = intent;
             signAttempted = true;
             await nativeContractRequest(id, 'sign', intent.body);
@@ -363,7 +367,7 @@ export default function NativeContractSigning({ id }) {
             onSelect: () => scrollToFrameElement(progressComplete ? frameDocument?.querySelector(`[data-native-signature-role="${company ? 'COMPANY' : 'BOOSTER'}"]`)
                 : showEditor && !directSigning ? reviewMount?.querySelector('button')
                     : signatureMount?.querySelector(missingSignatureRequirements.length && !uncertain
-                        ? 'input[name="legalName"], [data-native-signature-drawing]' : 'button[type="submit"]'), !progressComplete),
+                        ? '[data-native-signature-auto], input[name="legalName"], [data-native-signature-drawing]' : 'button[type="submit"]'), !progressComplete),
         },
     ];
     return <div className="native-signing-page">
@@ -417,7 +421,6 @@ export default function NativeContractSigning({ id }) {
                         {['typed', 'drawn'].map(type => <button key={type} type="button" disabled={locked} aria-pressed={signature.type === type} onClick={() => {
                             if (locked) return;
                             setSignature(previous => ({ ...previous, type }));
-                            if (type === 'drawn' || !legalName.trim()) setLegalName(assignedLegalName);
                             pendingRef.current = null;
                         }}>{t(type === 'typed' ? 'autoSignature' : 'drawSignature')}</button>)}
                     </div>
@@ -425,11 +428,18 @@ export default function NativeContractSigning({ id }) {
                         {[t('originalSignature'), 'Dancing Script', 'Great Vibes'].map((font, index) => <button key={font} type="button" title={font} aria-label={`${t('signatureStyle')} ${index + 1}`} aria-pressed={(signature.style || 1) === index + 1} disabled={locked} onClick={() => {
                             if (locked) return;
                             setSignature(previous => ({ ...previous, style: index + 1 }));
-                            if (!legalName.trim()) setLegalName(assignedLegalName);
                             pendingRef.current = null;
                         }}>{index + 1}</button>)}
                     </div>}
-                    {signature.type === 'typed' ? <label className="native-signature-name"><span className="fb-sr-only">{t('fullLegalName')}</span><input name="legalName" data-signature-style={signature.style || 1} autoComplete="name" placeholder={t('typeFullName')} required minLength={2} maxLength={100} disabled={locked} value={legalName} onFocus={() => { if (!locked && !legalName.trim()) { setLegalName(assignedLegalName); pendingRef.current = null; } }} onChange={event => { setLegalName(event.target.value); pendingRef.current = null; }} /></label>
+                    {signature.type === 'typed' ? <div className="native-signature-name">
+                        {showAutoSignaturePrompt ? <button type="button" className="native-signature-auto" data-native-signature-auto="" disabled={locked} onClick={() => {
+                            if (locked) return;
+                            setLegalName(assignedLegalName);
+                            setAutoSignatureActivated(true);
+                            pendingRef.current = null;
+                        }}>{t('typeFullName')}</button>
+                            : <label><span className="fb-sr-only">{t('fullLegalName')}</span><input name="legalName" data-signature-style={signature.style || 1} autoComplete="off" autoFocus={autoSignatureActivated} placeholder={t('typeFullName')} required minLength={2} maxLength={100} disabled={locked} value={legalName} onChange={event => { setLegalName(event.target.value); pendingRef.current = null; }} /></label>}
+                    </div>
                         : <ContractSignaturePad signature={signature} disabled={locked} label={t('drawYourSignature')} clearLabel={t('clearSignature')} onChange={next => { setSignature(previous => ({ ...next, style: previous.style || 1 })); pendingRef.current = null; }} />}
                 </div>
                 {error && <p className="native-signing-error" role="alert">{error}</p>}

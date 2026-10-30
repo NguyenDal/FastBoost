@@ -2,6 +2,7 @@ const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { PDFDocument, PDFArray, PDFName, decodePDFRawStream, rgb, degrees } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
+const { renderAgreementFlow } = require('./nativeAgreementFlow');
 
 const fontRoot = resolve(__dirname, '../../private/legal/fonts');
 const fail = message => Object.assign(new Error(message), { status: 400 });
@@ -127,21 +128,6 @@ function fit(text, font, { width, height, size, minimum = 6, leading = 1.2 }) {
     throw fail('An agreement value is too long for its PDF display. Contact support.');
 }
 
-// Commercial values retain the canonical renderer's fitting, baseline and
-// leading. A presentation change must not reject a previously accepted field.
-function drawSavedField(page, text, field, font) {
-    const width = Number(field.width) || 212, height = Number(field.height) || 28;
-    let size = 9, lines;
-    do {
-        lines = wrap(text, font, size, width - 8);
-        if (lines.length * size * 1.22 <= height - 5) break;
-        size -= .5;
-    } while (size >= 6);
-    if (size < 6) throw fail('An agreement value is too long for its saved PDF field. Contact support.');
-    page.drawText(lines.join('\n'), { x: Number(field.xPosition) + 3, y: page.getHeight() - Number(field.yPosition) - size - 2,
-        font, size, lineHeight: size * 1.22, color: rgb(.10, .09, .18) });
-}
-
 function textBox(page, text, font, { x, top, width, height, size = 9, minimum = 6, color = ink, center = false, italic = false }) {
     // Reserve both sides for slanted ascenders/descenders before fitting. In
     // pdf-lib, ySkew changes the horizontal glyph slant while keeping baselines level.
@@ -162,16 +148,16 @@ function roundedBox(page, x, top, width, height, radius, color, borderColor, bor
         { x, y: top, color, borderColor, borderWidth });
 }
 
-function dateLines(value) {
+function dateLine(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) throw fail('The saved signature date is invalid.');
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(date)
-        + '\n' + new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }).format(date) + ' UTC';
+        + ' · ' + new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }).format(date) + ' UTC';
 }
 
 function drawCard(page, anchor, layout, signature, bodyFont, scriptFont) {
-    const x = Number(anchor.xPosition) - 12, top = page.getHeight() - layout.top - 2;
-    const width = 244, height = 283, padding = 14, inner = width - padding * 2;
+    const x = Number(anchor.xPosition), top = page.getHeight() - layout.top;
+    const width = 244, height = layout.height, padding = 14, inner = width - padding * 2;
     roundedBox(page, x, top, width, height, 10, rgb(.987, .982, 1), rgb(.80, .76, .87));
     textBox(page, anchor.role === 'COMPANY' ? 'FASTBOOST' : 'PROVIDER', bodyFont,
         { x: x + padding, top: top - 15, width: 112, height: 20, size: 10, color: accent });
@@ -186,15 +172,15 @@ function drawCard(page, anchor, layout, signature, bodyFont, scriptFont) {
     }
     textBox(page, status, bodyFont, { x: badgeLeft + (signature ? 19 : 8), top: top - 16, width: badgeWidth - (signature ? 24 : 16), height: 12, size: 7.5,
         color: signature ? rgb(.19, .40, .29) : muted });
-    const markX = x + padding, markTop = top - 46, markHeight = 112;
+    const markX = x + padding, markTop = top - 42, markHeight = 64;
     roundedBox(page, markX, markTop, inner, markHeight, 7, rgb(1, 1, 1), rgb(.83, .80, .89));
-    page.drawLine({ start: { x: markX + 14, y: markTop - markHeight + 15 }, end: { x: markX + inner - 14, y: markTop - markHeight + 15 },
+    page.drawLine({ start: { x: markX + 14, y: markTop - markHeight + 10 }, end: { x: markX + inner - 14, y: markTop - markHeight + 10 },
         thickness: .5, color: rgb(.86, .84, .91) });
     if (!signature) {
-        textBox(page, 'Signature pending', bodyFont, { x: markX + 12, top: markTop - 12, width: inner - 24, height: 80, size: 10, color: muted, center: true });
+        textBox(page, 'Signature pending', bodyFont, { x: markX + 12, top: markTop - 6, width: inner - 24, height: 44, size: 10, color: muted, center: true });
     } else if (signature.signature?.type === 'drawn') {
-        const scale = Math.min((inner - 28) / 600, 76 / 180);
-        const left = markX + (inner - 600 * scale) / 2, drawingTop = markTop - 10 - (76 - 180 * scale) / 2;
+        const scale = Math.min((inner - 28) / 600, 42 / 180);
+        const left = markX + (inner - 600 * scale) / 2, drawingTop = markTop - 6 - (42 - 180 * scale) / 2;
         let points = 0;
         for (const stroke of signature.signature.strokes || []) {
             if (!Array.isArray(stroke)) throw fail('The saved drawn signature is invalid.');
@@ -209,25 +195,20 @@ function drawCard(page, anchor, layout, signature, bodyFont, scriptFont) {
         }
         if (!points) throw fail('The saved drawn signature is empty.');
     } else {
-        textBox(page, signature.legalName, scriptFont, { x: markX + 12, top: markTop - 10, width: inner - 24, height: 80, size: 26, minimum: 8, center: true,
+        textBox(page, signature.legalName, scriptFont, { x: markX + 12, top: markTop - 6, width: inner - 24, height: 44, size: 24, minimum: 6, center: true,
             italic: (signature.signature?.style ?? 1) === 1 });
     }
-    const detailTop = top - 174, nameWidth = 121, dateX = x + padding + 133;
-    textBox(page, 'Signed by', bodyFont, { x: x + padding, top: detailTop, width: nameWidth, height: 12, size: 7.5, color: muted });
-    textBox(page, 'Date', bodyFont, { x: dateX, top: detailTop, width: 83, height: 12, size: 7.5, color: muted });
-    const signer = signature ? signature.legalName + (anchor.role === 'COMPANY' ? ', trading as FastBoost' : '') : '—';
-    textBox(page, signer, bodyFont, { x: x + padding, top: detailTop - 16, width: nameWidth, height: 61, size: 8.5, minimum: 6.5 });
-    textBox(page, signature ? dateLines(signature.signedAt) : '—', bodyFont, { x: dateX, top: detailTop - 16, width: 83, height: 40, size: 8.2 });
+    const detailTop = top - 120, valueX = x + padding + 45, valueWidth = inner - 45;
+    const signer = signature?.legalName || '—';
+    const nameHeight = wrap(signer, bodyFont, 8, valueWidth).length * Math.max(bodyFont.heightAtSize(8), 8) * 1.2;
+    textBox(page, 'Signed by', bodyFont, { x: x + padding, top: detailTop, width: 42, height: 14, size: 7.5, color: muted });
+    textBox(page, signer, bodyFont, { x: valueX, top: detailTop, width: valueWidth, height: nameHeight + .1, size: 8, minimum: 8 });
+    const dateTop = detailTop - nameHeight - 6;
+    textBox(page, 'Date', bodyFont, { x: x + padding, top: dateTop, width: 42, height: 14, size: 7.5, color: muted });
+    textBox(page, signature ? dateLine(signature.signedAt) : '—', bodyFont,
+        { x: valueX, top: dateTop, width: valueWidth, height: 14, size: 7.8, minimum: 7 });
     if (signature?.initials) textBox(page, `Schedule A initials: ${signature.initials}`, bodyFont,
-        { x: x + padding, top: top - height + 22, width: inner, height: 17, size: 7.5, color: muted });
-}
-
-function displayValue(snapshot, key) {
-    const value = snapshot.values[key] || '';
-    if (!['FB-BSA-2.3', 'FB-BSA-2.4'].includes(snapshot.version) || key !== 'EffectiveDate' || !/^\d{4}-\d{2}-\d{2}$/u.test(value)) return value;
-    const date = new Date(`${value}T00:00:00Z`);
-    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return value;
-    return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(date);
+        { x: x + padding, top: dateTop - 18, width: inner, height: 17, size: 7.5, color: muted });
 }
 
 async function renderPresentationPdf(snapshot, signatures = [], { completed = false } = {}) {
@@ -235,11 +216,21 @@ async function renderPresentationPdf(snapshot, signatures = [], { completed = fa
         throw fail('The saved agreement signatures are invalid.');
     }
     if (completed && !['COMPANY', 'BOOSTER'].every(role => signatures.some(item => item.role === role))) throw fail('Both signatures are required for a completed agreement.');
-    const pdf = await PDFDocument.load(Buffer.from(snapshot.documentBase64, 'base64'), { updateMetadata: false });
-    const layout = layoutFor(snapshot, pdf);
-    removeSavedSignatureTable(pdf, layout);
+    // Validate the retained package before making a separate, flowing display
+    // copy. The canonical PDF, snapshot and signature evidence are untouched.
+    const source = await PDFDocument.load(Buffer.from(snapshot.documentBase64, 'base64'), { updateMetadata: false });
+    removeSavedSignatureTable(source, layoutFor(snapshot, source));
+    source.registerFontkit(fontkit);
+    const fontBytes = readFileSync(resolve(fontRoot, 'NotoSans-Regular.ttf'));
+    const metrics = await source.embedFont(fontBytes, { subset: true });
+    const nameHeight = Math.max(...[...signatures.map(item => item.legalName), '—'].map(name =>
+        wrap(name, metrics, 8, 171).length * Math.max(metrics.heightAtSize(8), 8) * 1.2));
+    const signatureHeight = Math.ceil(120 + nameHeight + 6 + 14 + 14 + (signatures.some(item => item.initials) ? 20 : 0));
+    const flowing = await renderAgreementFlow(snapshot, { signatureHeight });
+    const pdf = await PDFDocument.load(flowing.pdf, { updateMetadata: false });
+    const layout = { ...flowing.signatureLayout, page: pdf.getPages()[flowing.signatureLayout.pageNumber - 1] };
     pdf.registerFontkit(fontkit);
-    const font = await pdf.embedFont(readFileSync(resolve(fontRoot, 'NotoSans-Regular.ttf')), { subset: true });
+    const font = await pdf.embedFont(fontBytes, { subset: true });
     const supports = (text, selectedFont) => {
         const characters = new Set(selectedFont.getCharacterSet());
         return Array.from(String(text)).every(character => character === '\n' || characters.has(character.codePointAt(0)));
@@ -263,12 +254,6 @@ async function renderPresentationPdf(snapshot, signatures = [], { completed = fa
         const selectedFont = style === 1 && !supports(signature.legalName, scripts.get(filename)) ? font : scripts.get(filename);
         check(signature.legalName, selectedFont);
         signatureFonts.set(signature.role, selectedFont);
-    }
-    for (const field of snapshot.fields) {
-        if (field.type !== 'textTabs') continue;
-        const page = pdf.getPages()[Number(field.pageNumber) - 1];
-        if (!page) throw fail('The saved agreement PDF field layout is invalid.');
-        drawSavedField(page, displayValue(snapshot, field.tabLabel), field, font);
     }
     for (const anchor of layout.ordered) {
         const signature = signatures.find(item => item.role === anchor.role);
