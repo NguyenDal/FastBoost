@@ -1846,10 +1846,17 @@ function OrderPage() {
                         <div className="ranked-wins-big-number">{formData.desiredWins}</div>
 
                         <div>
-                          <h3>Number of Wins</h3>
-                          <p>Select desired games</p>
+                          <h3>Number of Net Wins</h3>
+                          <p>Select your win target</p>
                         </div>
                       </div>
+
+                      <p className="ranked-wins-completion-rule">
+                        {isTftService
+                          ? "TFT: 1st–4th adds 1 win; 5th–8th subtracts 1."
+                          : "LoL: each win adds 1; each loss subtracts 1."}
+                        {" "}Your booster makes up losses at no extra charge until your net-win target is reached.
+                      </p>
 
                       <div className="ranked-wins-slider-wrap">
                         <input
@@ -2142,7 +2149,7 @@ function OrderPage() {
                     <div className="order-rank-track-main">
                       <strong>
                         {formData.desiredWins}{" "}
-                        {Number(formData.desiredWins) === 1 ? "win" : "wins"} in {formatWinsRankDisplay(formData.currentRank)}
+                        {Number(formData.desiredWins) === 1 ? "net win" : "net wins"} in {formatWinsRankDisplay(formData.currentRank)}
                       </strong>
                     </div>
                   </div>

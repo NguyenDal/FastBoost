@@ -35,6 +35,10 @@
 .faq-answer:not([hidden]) { animation: faq-answer-in .2s ease-out; }
 .faq-answer p { margin: 0 0 16px; max-width: 68ch; color: #b5bfd2; font-size: 14px; line-height: 1.7; }
 .faq-answer p:last-child { margin-bottom: 0; }
+.faq-answer-details { margin: 0 0 16px; padding-left: 20px; max-width: 68ch; color: #b5bfd2; font-size: 14px; line-height: 1.7; }
+.faq-answer-details li + li { margin-top: 10px; }
+.faq-answer-details li::marker { color: #a78bfa; }
+.faq-answer-details:last-child { margin-bottom: 0; }
 .faq-answer a { color: #c4b5fd; font-size: 13px; font-weight: 650; }
 .faq-answer a span { margin-left: 8px; }
 .faq-answer .faq-refund-prompt { font-size: 13px; margin-bottom: 12px; }

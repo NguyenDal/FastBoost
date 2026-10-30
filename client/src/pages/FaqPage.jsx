@@ -50,7 +50,7 @@ export default function FaqPage() {
     const [openQuestion, setOpenQuestion] = useState(null);
     const search = query.trim().toLowerCase();
     const visible = faqQuestions.filter(item => search
-        ? [item.question, item.answer, item.topic, ...(item.interactive === 'refund' ? refundStages.map(stage => stage.answer) : [])].join(' ').toLowerCase().includes(search)
+        ? [item.question, item.answer, ...(item.details || []), item.note, item.topic, ...(item.interactive === 'refund' ? refundStages.flatMap(stage => [stage.label, stage.title, stage.answer]) : [])].join(' ').toLowerCase().includes(search)
         : topic === 'Popular' ? item.popular : item.topic === topic);
     const chooseTopic = value => { setTopic(value); setQuery(''); setOpenQuestion(null); };
 
@@ -68,7 +68,7 @@ export default function FaqPage() {
 
         <div className="faq-search">
             <HelpIcon search />
-            <input type="search" aria-label="Search frequently asked questions" placeholder="Search refunds, orders, account safety…" value={query} onChange={event => { setQuery(event.target.value); setOpenQuestion(null); }} />
+            <input type="search" aria-label="Search frequently asked questions" placeholder="Search wins, losses, refunds…" value={query} onChange={event => { setQuery(event.target.value); setOpenQuestion(null); }} />
             {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search">×</button>}
         </div>
 
@@ -84,7 +84,12 @@ export default function FaqPage() {
                         return <article key={item.id} className={open ? 'faq-item is-open' : 'faq-item'}>
                             <h3><button type="button" id={`faq-question-${item.id}`} aria-expanded={open} aria-controls={`faq-answer-${item.id}`} onClick={() => setOpenQuestion(open ? null : item.id)}>{item.question}<span className="faq-expand" aria-hidden="true">+</span></button></h3>
                             <div className="faq-answer" id={`faq-answer-${item.id}`} role="region" aria-labelledby={`faq-question-${item.id}`} hidden={!open}>
-                                {item.interactive === 'refund' ? <RefundGuide /> : <><p>{item.answer}</p>{item.to && <Link to={item.to}>{item.action} <span aria-hidden="true"><ArrowUpRightIcon /></span></Link>}</>}
+                                {item.interactive === 'refund' ? <RefundGuide /> : <>
+                                    <p>{item.answer}</p>
+                                    {item.details?.length > 0 && <ul className="faq-answer-details">{item.details.map(detail => <li key={detail}>{detail}</li>)}</ul>}
+                                    {item.note && <p>{item.note}</p>}
+                                    {item.to && <Link to={item.to}>{item.action} <span aria-hidden="true"><ArrowUpRightIcon /></span></Link>}
+                                </>}
                             </div>
                         </article>;
                     })}
