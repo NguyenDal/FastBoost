@@ -40,7 +40,7 @@ export default function BoosterDocumentForm({ boosterId, configured, payoutConfi
             else await operations(`/boosters/${boosterId}/payout-information`, { requestId, country: body.get('country') });
             form.reset();
             setRequestId(crypto.randomUUID());
-            setNotice(agreement ? 'Agreement sent.' : '');
+            setNotice(agreement ? 'Agreement created.' : '');
             reload();
         } catch (error) {
             onError(error.message);
@@ -65,7 +65,7 @@ export default function BoosterDocumentForm({ boosterId, configured, payoutConfi
             </select></label>
             {payoutConfigured === false && <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>Payout information is temporarily unavailable.</p>}
         </>}
-        <button className="ops-primary" disabled={!(agreement ? configured : payoutConfigured) || locked}>{busy ? 'Sending…' : agreement ? 'Send agreement' : 'Request payout details'}</button>
+        <button className="ops-primary" disabled={!(agreement ? configured : payoutConfigured) || locked}>{busy ? agreement ? 'Creating…' : 'Sending…' : agreement ? 'Create agreement' : 'Request payout details'}</button>
         {agreement && notice && <p role="status" style={{ gridColumn: '1 / -1', margin: 0 }}>{notice}</p>}
     </form>;
 }

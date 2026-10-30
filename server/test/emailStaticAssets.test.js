@@ -12,7 +12,7 @@ test('email images use the site asset origin instead of public S3', () => {
         renderConfirmation({ orderNumber: 'ORDER-1', summary: { serviceType: 'Rank Boost', currentRank: 'Gold IV', targetRank: 'Platinum IV' }, rows: [], url }),
         renderCompletion({ orderNumber: 'ORDER-1', rows: [], ratingUrl: url, orderUrl: url }),
         renderBoosterOrderEmail({ copy: { title: 'Assigned', subject: 'Assigned', badge: 'ASSIGNED', text: 'Order assigned', action: 'Open order' }, orderNumber: 'ORDER-1', rows: [], url }),
-        buildNativeContractEmail({ id: '3b41a71d-36ec-4a90-a311-f436a50de6bd', signerName: 'Example Booster' }, 'ISSUED', { clientUrl: 'https://fastboost.gg', nodeEnv: 'production' }).html,
+        buildNativeContractEmail({ id: '3b41a71d-36ec-4a90-a311-f436a50de6bd', signerName: 'Example Booster' }, 'COMPANY_SIGNED', { clientUrl: 'https://fastboost.gg', nodeEnv: 'production' }).html,
     ];
     for (const html of pages) {
         assert.match(html, /https:\/\/(?:www\.)?fastboost\.gg\/assets\/logos\/fastboost-logo\.png/);

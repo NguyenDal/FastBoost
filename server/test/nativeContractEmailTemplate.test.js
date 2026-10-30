@@ -7,7 +7,7 @@ const options = { clientUrl: 'https://www.fastboost.gg', nodeEnv: 'production' }
 const path = `https://www.fastboost.gg/provider/contracts/${contract.id}`;
 
 test('all agreement updates contain the exact agreement, booster, status and authenticated route', () => {
-    assert.deepEqual(Object.keys(nativeContractEmailEvents), ['ISSUED', 'READY', 'BOOSTER_SIGNED', 'COMPANY_SIGNED', 'COMPLETED']);
+    assert.deepEqual(Object.keys(nativeContractEmailEvents), ['BOOSTER_SIGNED', 'COMPANY_SIGNED', 'COMPLETED']);
     for (const event of Object.keys(nativeContractEmailEvents)) {
         const mail = buildNativeContractEmail(contract, event, options);
         assert.match(mail.subject, /^FastBoost · /u);
@@ -23,22 +23,23 @@ test('all agreement updates contain the exact agreement, booster, status and aut
     }
 });
 
-test('event copy stays truthful when delivery follows a later signing step', () => {
-    const issued = buildNativeContractEmail(contract, 'ISSUED', options);
-    assert.match(issued.text, /created your agreement.*latest status/u);
-    assert.doesNotMatch(issued.text, /awaiting your signature|sign now/u);
-    const ready = buildNativeContractEmail(contract, 'READY', options);
-    assert.match(ready.text, /filled in the work and payment details.*If it is waiting for your signature/u);
+test('invitation copy says ready to sign without announcing the company signature', () => {
     const boosterSigned = buildNativeContractEmail(contract, 'BOOSTER_SIGNED', options);
     assert.match(boosterSigned.text, /booster signed the agreement.*If FastBoost still needs to sign/u);
     const companySigned = buildNativeContractEmail(contract, 'COMPANY_SIGNED', options);
-    assert.match(companySigned.text, /\n\nOpen it to review the finalized terms\. If your signature is still needed, you can sign here\./u);
-    assert.doesNotMatch(companySigned.html, /FASTBOOST SIGNED|FastBoost completed the details and signed/u);
+    assert.equal(companySigned.subject, 'FastBoost · Your agreement is ready to sign');
+    assert.match(companySigned.text, /Your Booster Service Agreement is ready for your signature/u);
+    assert.match(companySigned.text, /Update: Ready to sign/u);
+    assert.match(companySigned.html, />Your agreement is ready to sign<\/h1>/u);
+    assert.match(companySigned.html, /Review &amp; sign/u);
+    assert.doesNotMatch(companySigned.text + companySigned.html, /FastBoost signed|FASTBOOST SIGNED|FastBoost completed|If your signature is still needed/u);
     assert.match(companySigned.html, new RegExp(`href="${path}/sign"`, 'u'));
     const completed = buildNativeContractEmail(contract, 'COMPLETED', options);
     assert.match(completed.text, /signed PDF is attached/u);
     assert.match(completed.html, /signed PDF is attached/u);
     assert.match(completed.text, /Both parties signed/u);
+    assert.throws(() => buildNativeContractEmail(contract, 'ISSUED', options), /Unknown/u);
+    assert.throws(() => buildNativeContractEmail(contract, 'READY', options), /Unknown/u);
 });
 
 test('development agreement emails use a public logo while retaining their direct local review link', () => {
@@ -51,14 +52,14 @@ test('development agreement emails use a public logo while retaining their direc
 
 test('dynamic details are escaped in HTML and unsafe links are rejected', () => {
     const unsafe = { ...contract, signerName: '<img src=x onerror=alert(1)>' };
-    const mail = buildNativeContractEmail(unsafe, 'ISSUED', options);
+    const mail = buildNativeContractEmail(unsafe, 'COMPANY_SIGNED', options);
     assert.doesNotMatch(mail.html, /<img src=x onerror/u);
     assert.match(mail.html, /&lt;img src=x onerror=alert\(1\)&gt;/u);
-    assert.throws(() => buildNativeContractEmail(contract, 'ISSUED', { clientUrl: 'http://fastboost.gg', nodeEnv: 'production' }), /HTTPS/u);
-    assert.throws(() => buildNativeContractEmail(contract, 'ISSUED', { clientUrl: 'http://localhost:5173', nodeEnv: 'production' }), /HTTPS/u);
-    assert.throws(() => buildNativeContractEmail(contract, 'ISSUED', { clientUrl: 'https://user:password@fastboost.gg', nodeEnv: 'production' }), /HTTPS/u);
-    assert.match(buildNativeContractEmail(contract, 'ISSUED', { clientUrl: 'http://localhost:5173', nodeEnv: 'development' }).text, /http:\/\/localhost:5173\/provider\/contracts\//u);
+    assert.throws(() => buildNativeContractEmail(contract, 'COMPANY_SIGNED', { clientUrl: 'http://fastboost.gg', nodeEnv: 'production' }), /HTTPS/u);
+    assert.throws(() => buildNativeContractEmail(contract, 'COMPANY_SIGNED', { clientUrl: 'http://localhost:5173', nodeEnv: 'production' }), /HTTPS/u);
+    assert.throws(() => buildNativeContractEmail(contract, 'COMPANY_SIGNED', { clientUrl: 'https://user:password@fastboost.gg', nodeEnv: 'production' }), /HTTPS/u);
+    assert.match(buildNativeContractEmail(contract, 'COMPANY_SIGNED', { clientUrl: 'http://localhost:5173', nodeEnv: 'development' }).text, /http:\/\/localhost:5173\/provider\/contracts\//u);
     assert.throws(() => buildNativeContractEmail(contract, 'UNKNOWN', options), /Unknown/u);
-    assert.throws(() => buildNativeContractEmail({ ...contract, id: '../other' }, 'ISSUED', options), /Agreement ID/u);
-    assert.throws(() => buildNativeContractEmail({ ...contract, signerName: 'Name\r\nBcc: test@example.test' }, 'ISSUED', options), /Booster legal name/u);
+    assert.throws(() => buildNativeContractEmail({ ...contract, id: '../other' }, 'COMPANY_SIGNED', options), /Agreement ID/u);
+    assert.throws(() => buildNativeContractEmail({ ...contract, signerName: 'Name\r\nBcc: test@example.test' }, 'COMPANY_SIGNED', options), /Booster legal name/u);
 });

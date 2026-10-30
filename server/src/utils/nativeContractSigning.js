@@ -95,7 +95,6 @@ async function issue(db, input, company) {
         id: `contract-company-${contract.id}`, userId: contract.nativeCompanySignerId, type: 'BOOSTER_CONTRACT', title: 'Complete the agreement details',
         message: contract.title, data: { targetPath: `/provider/contracts/${contract.id}` },
     } });
-    await queueNativeContractEmail(db, contract.id, 'ISSUED');
     return contract;
 }
 async function createContract(db, input) {
@@ -206,7 +205,6 @@ async function prepareContract(db, id, actor, values) {
                 data: { title: 'Awaiting provider signature', read: true } });
             await tx.notification.updateMany({ where: { id: `contract-${id}`, userId: current.boosterId },
                 data: { title: 'Agreement ready for your signature', read: false } });
-            await queueNativeContractEmail(tx, id, 'READY');
         } else {
             await tx.notification.updateMany({ where: { id: `contract-company-${id}`, userId: current.nativeCompanySignerId },
                 data: { title: 'Agreement ready for your signature', read: false } });

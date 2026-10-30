@@ -16,19 +16,23 @@ const contract = {
     signedAt: new Date('2026-10-24T02:00:00Z'), nativeCompletedAt: new Date('2026-10-24T02:00:00Z'),
     nativePdf: pdf, nativePdfHash: digest(pdf), status: 'completed',
 };
+const readyContract = {
+    ...contract, nativeSnapshot: { version: 'FB-BSA-2.4' }, nativePreparedAt: new Date('2026-10-24T00:30:00Z'),
+    nativeDocumentHash: 'a'.repeat(64), status: 'sent', boosterSignedAt: null, signedAt: null, nativeCompletedAt: null,
+};
 
 test('agreement email events use one stable outbox identity per recipient', async () => {
     const writes = [];
     const tx = { nativeContractEmail: { createMany: async input => { writes.push(input); return { count: input.data.length }; } } };
-    await queueNativeContractEmail(tx, id, 'ISSUED');
-    await queueNativeContractEmail(tx, id, 'READY');
     await queueNativeContractEmail(tx, id, 'BOOSTER_SIGNED');
     await queueNativeContractEmail(tx, id, 'COMPANY_SIGNED');
     await queueNativeContractEmail(tx, id, 'COMPLETED');
-    assert.deepEqual(writes.map(write => write.data.map(row => row.recipientRole)), [['BOOSTER'], ['BOOSTER'], ['COMPANY'], ['BOOSTER'], ['BOOSTER', 'COMPANY']]);
-    assert.equal(new Set(writes.flatMap(write => write.data.map(row => row.id))).size, 6);
+    assert.deepEqual(writes.map(write => write.data.map(row => row.recipientRole)), [['COMPANY'], ['BOOSTER'], ['BOOSTER', 'COMPANY']]);
+    assert.equal(new Set(writes.flatMap(write => write.data.map(row => row.id))).size, 4);
     assert.ok(writes.every(write => write.skipDuplicates));
     await assert.rejects(queueNativeContractEmail(tx, id, 'UNKNOWN'), /Unknown/);
+    await assert.rejects(queueNativeContractEmail(tx, id, 'ISSUED'), /Unknown/);
+    await assert.rejects(queueNativeContractEmail(tx, id, 'READY'), /Unknown/);
 });
 
 test('a missing agreement email table returns an actionable unavailable error without hiding unrelated failures', async () => {
@@ -60,11 +64,11 @@ test('a missing agreement email table returns an actionable unavailable error wi
 });
 
 test('only real event transitions are deliverable and the final PDF hash must match', () => {
-    assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, contract), true);
-    assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: new Date() }), true);
+    assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, contract), false);
+    assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: new Date() }), false);
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: null }), false);
     assert.equal(relevant({ event: 'BOOSTER_SIGNED', recipientRole: 'COMPANY' }, contract), true);
-    const ownerFirst = { ...contract, nativeSnapshot: { version: 'FB-BSA-2.3' }, nativePreparedAt: new Date() };
+    const ownerFirst = { ...readyContract, nativeSnapshot: { version: 'FB-BSA-2.3' } };
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, ownerFirst), true);
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, nativeSnapshot: { version: 'FB-BSA-2.4' } }), true);
     assert.equal(relevant({ event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' }, { ...ownerFirst, companySignedAt: null }), false);
@@ -77,6 +81,74 @@ test('only real event transitions are deliverable and the final PDF hash must ma
     assert.equal(attachment.contentType, 'application/pdf');
     assert.deepEqual(attachment.content, pdf);
     assert.throws(() => completedAttachment({ ...contract, nativePdfHash: '0'.repeat(64) }), /verified/);
+});
+
+test('booster invitations require a prepared company-signed agreement still awaiting the booster', () => {
+    const invitation = { event: 'COMPANY_SIGNED', recipientRole: 'BOOSTER' };
+    assert.equal(relevant(invitation, readyContract), true);
+    for (const event of ['ISSUED', 'READY']) {
+        for (const state of [readyContract, contract, { ...readyContract, companySignedAt: null }]) {
+            assert.equal(relevant({ event, recipientRole: 'BOOSTER' }, state), false, `${event} stays retired at every stage`);
+        }
+    }
+    for (const [key, value] of [
+        ['nativePreparedAt', null], ['nativeDocumentHash', null], ['nativePdf', null], ['nativePdfHash', null],
+        ['companySignedAt', null], ['boosterSignedAt', new Date()], ['signedAt', new Date()], ['nativeCompletedAt', new Date()],
+        ['revokedAt', new Date()], ['archivedAt', new Date()], ['status', 'completed'], ['status', 'voided'],
+        ['status', 'declined'], ['status', 'replaced'], ['signingProvider', 'DOCUSIGN'],
+        ['nativeSnapshot', { version: 'FB-BSA-2.2' }],
+    ]) assert.equal(relevant(invitation, { ...readyContract, [key]: value }), false, `${key}: ${value}`);
+});
+
+function invitationOutbox(events, readContract) {
+    const now = new Date('2026-10-24T03:00:00Z');
+    const rows = events.map(event => ({ id: `${id}:${event}:BOOSTER`, contractId: id, event, recipientRole: 'BOOSTER',
+        attempts: 0, nextAttemptAt: now, sentAt: null, skippedAt: null, claim: null }));
+    const sent = [];
+    const db = { nativeContractEmail: {
+        findMany: async () => rows.filter(row => !row.sentAt && !row.skippedAt && row.nextAttemptAt <= now).map(row => ({ ...row })),
+        updateMany: async ({ where, data }) => {
+            const row = rows.find(candidate => candidate.id === where.id);
+            if (!row || row.sentAt || row.skippedAt || (where.claim && row.claim !== where.claim)) return { count: 0 };
+            const attempts = row.attempts + (data.attempts?.increment || 0);
+            Object.assign(row, data, { attempts });
+            return { count: 1 };
+        },
+        findUnique: async ({ where }) => ({ ...rows.find(row => row.id === where.id), contract: readContract() }),
+    } };
+    return { rows, sent, db, now, transport: { sendMail: async mail => { sent.push(mail); return { accepted: [mail.to.address] }; } } };
+}
+
+test('queued creation/preparation notices are discarded and only the ready invitation is sent once', async t => {
+    const oldUrl = process.env.CLIENT_URL;
+    process.env.CLIENT_URL = 'https://fastboost.gg';
+    t.after(() => { if (oldUrl === undefined) delete process.env.CLIENT_URL; else process.env.CLIENT_URL = oldUrl; });
+    const f = invitationOutbox(['ISSUED', 'READY', 'COMPANY_SIGNED'], () => readyContract);
+    await deliverPendingNativeContractEmails(f.db, f.transport, () => f.now);
+    await deliverPendingNativeContractEmails(f.db, f.transport, () => f.now);
+    assert.equal(f.sent.length, 1);
+    assert.equal(f.sent[0].to.address, 'booster@example.test');
+    assert.equal(f.sent[0].subject, 'FastBoost · Your agreement is ready to sign');
+    assert.match(f.sent[0].text, new RegExp(`/provider/contracts/${id}/sign`));
+    assert.doesNotMatch(f.sent[0].text, /FastBoost signed/);
+    assert.equal(f.sent[0].attachments, undefined);
+    assert.ok(f.rows.find(row => row.event === 'COMPANY_SIGNED').sentAt);
+    assert.ok(f.rows.filter(row => row.event !== 'COMPANY_SIGNED').every(row => row.skippedAt && row.lastError === 'EVENT_SUPERSEDED'));
+});
+
+test('delivery rechecks the agreement and skips an invitation after the booster has signed', async () => {
+    let current = readyContract;
+    const f = invitationOutbox(['COMPANY_SIGNED'], () => current);
+    const findMany = f.db.nativeContractEmail.findMany;
+    f.db.nativeContractEmail.findMany = async () => {
+        const rows = await findMany();
+        current = { ...readyContract, boosterSignedAt: new Date() };
+        return rows;
+    };
+    await deliverPendingNativeContractEmails(f.db, f.transport, () => f.now);
+    assert.equal(f.sent.length, 0);
+    assert.ok(f.rows[0].skippedAt);
+    assert.equal(f.rows[0].lastError, 'EVENT_SUPERSEDED');
 });
 
 test('completion mail goes to both accounts with the same saved PDF and authenticated agreement link', async () => {

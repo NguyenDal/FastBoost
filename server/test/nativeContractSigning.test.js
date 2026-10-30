@@ -224,10 +224,10 @@ test('native contracts snapshot saved identities and keep private signing eviden
     assert.ok(c.nativeDocumentHash == null, 'an unprepared agreement has no accepted document hash');
     assert.equal(f.db.state().notifications.get(`contract-${c.id}`).title, 'Awaiting FastBoost agreement details');
     assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).title, 'Complete the agreement details');
-    assert.deepEqual([...f.db.state().emails.keys()], [`${c.id}:ISSUED:BOOSTER`]);
+    assert.equal(f.db.state().emails.size, 0, 'creating an unsigned agreement does not email the booster');
     await f.service.createContract(f.db, { requestId: c.id, boosterId: 'booster', issuedById: 'owner',
         signerName: 'Test Booster', startsAt: '2026-10-01' });
-    assert.deepEqual([...f.db.state().emails.keys()], [`${c.id}:ISSUED:BOOSTER`], 'retrying issuance does not queue a second email');
+    assert.equal(f.db.state().emails.size, 0, 'retrying issuance still does not email the booster');
     const publicValue = f.service.publicContract({ ...c, nativePdf: Buffer.from('private bytes'), nativePdfHash: 'a'.repeat(64), nativeDocumentHash: 'b'.repeat(64), nativeSignatures: [{ clientIp: '192.0.2.12', userAgent: 'private browser', requestHash: 'c'.repeat(64) }] });
     const encoded = JSON.stringify(publicValue);
     for (const secret of ['private bytes', 'htmlSource', 'documentBase64', '192.0.2.12', 'private browser', 'requestHash']) assert.ok(!encoded.includes(secret), secret);
@@ -358,7 +358,7 @@ test('a provider can complete a company-signed 2.1 agreement after 2.3 becomes c
     assert.equal(saved.templateId, 'FB-BSA-2.1');
     assert.ok(saved.signedAt);
     assert.deepEqual([...f.db.state().emails.keys()].sort(), [
-        `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`, `${c.id}:ISSUED:BOOSTER`,
+        `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`,
     ], 'historical company-first completion queues only the final copies');
 });
 
@@ -380,7 +380,7 @@ test('version 2.2 has owner preparation, provider signature, then FastBoost coun
     assert.equal(provider.canPrepare, false);
     assert.equal(ownerBefore.canSign, false);
     assert.equal(ownerBefore.canPrepare, true);
-    assert.ok(f.db.state().emails.has(`${c.id}:READY:BOOSTER`));
+    assert.equal(f.db.state().emails.size, 0, 'preparing legacy details does not send a booster email');
     assert.equal(require('jsonwebtoken').decode(provider.challenge).consentVersion, 'FB-BSA-2.2');
     const fakeOwnerChallenge = require('jsonwebtoken').sign({ purpose: 'fastboost-contract-signature-v1', contractId: c.id,
         actorId: 'owner', role: 'COMPANY', documentHash: ownerBefore.documentHash,
@@ -401,7 +401,7 @@ test('version 2.2 has owner preparation, provider signature, then FastBoost coun
     assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).title, 'Agreement ready for your signature');
     assert.equal(f.db.state().notifications.get(`contract-${c.id}`).title, 'Awaiting FastBoost signature');
     assert.deepEqual([...f.db.state().emails.keys()].sort(), [
-        `${c.id}:BOOSTER_SIGNED:COMPANY`, `${c.id}:ISSUED:BOOSTER`, `${c.id}:READY:BOOSTER`,
+        `${c.id}:BOOSTER_SIGNED:COMPANY`,
     ], 'a provider signature retry does not queue a second owner alert');
     await assert.rejects(f.prepare(c.id, { PaymentMethod: 'Changed after first signature' }), error => error.status === 409);
     const owner = await f.context(c.id);
@@ -420,7 +420,6 @@ test('version 2.2 has owner preparation, provider signature, then FastBoost coun
     assert.equal(f.db.state().notifications.get(`contract-company-${c.id}`).read, true);
     assert.deepEqual([...f.db.state().emails.keys()].sort(), [
         `${c.id}:BOOSTER_SIGNED:COMPANY`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`,
-        `${c.id}:ISSUED:BOOSTER`, `${c.id}:READY:BOOSTER`,
     ], 'the final signature queues one completed copy per signer');
 });
 
@@ -449,7 +448,7 @@ test('version 2.3 is finalized and signed by FastBoost before the read-only prov
     { algorithm: 'HS256', expiresIn: '15m', issuer: 'FastBoost', audience: 'contract-signing' });
     await assert.rejects(f.sign(c.id, 'booster', f.body(prematureProvider, { challenge: prematureChallenge })),
         error => error.status === 409 && /FastBoost must sign/.test(error.message));
-    assert.equal(f.db.state().emails.has(`${c.id}:READY:BOOSTER`), false, 'preparation alone does not invite the provider to sign');
+    assert.equal(f.db.state().emails.size, 0, 'preparation alone does not invite the provider to sign');
     const frozenSnapshot = copy(f.db.state().contracts.get(c.id).nativeSnapshot);
     const ownerPayload = f.body(owner);
     await f.sign(c.id, 'owner', ownerPayload);
@@ -477,7 +476,7 @@ test('version 2.3 is finalized and signed by FastBoost before the read-only prov
     assert.equal(f.db.state().signatures.size, 2);
     assert.equal(f.db.state().profiles.size, 1);
     assert.deepEqual([...f.db.state().emails.keys()].sort(), [
-        `${c.id}:COMPANY_SIGNED:BOOSTER`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`, `${c.id}:ISSUED:BOOSTER`,
+        `${c.id}:COMPANY_SIGNED:BOOSTER`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`,
     ]);
 });
 
@@ -485,23 +484,36 @@ test('version 2.4 prepares without a payee entry and retains company-first signi
     const f = await fixture(t);
     f.agreement.VERSION = 'FB-BSA-2.4';
     const c = await f.issue();
+    assert.equal(f.db.state().emails.size, 0, 'issuance does not send an agreement that cannot yet be signed');
     const owner = await f.prepare(c.id);
     assert.deepEqual(owner.fields.map(field => field.key), ['WorkLocation', 'ReferenceLanguage']);
     assert.equal('PayeeLegalName' in owner.values, false);
     assert.equal(owner.canSign, true);
     assert.equal(owner.signingOrder, 'COMPANY_FIRST');
     assert.equal((await f.context(c.id, 'booster')).canSign, false);
-    await f.sign(c.id, 'owner', f.body(owner));
-    assert.ok(f.db.state().emails.has(`${c.id}:COMPANY_SIGNED:BOOSTER`));
+    assert.equal(f.db.state().emails.size, 0, 'completing the details does not yet invite the booster');
+    await f.prepare(c.id);
+    assert.equal(f.db.state().emails.size, 0, 'retrying the same preparation stays silent');
+    const corrected = await f.prepare(c.id, { ...fixedPaymentValues, WorkLocation: 'Canada' });
+    assert.notEqual(corrected.documentHash, owner.documentHash);
+    assert.equal(f.db.state().emails.size, 0, 'correcting an unsigned agreement stays silent');
+    const companyPayload = f.body(corrected);
+    await f.sign(c.id, 'owner', companyPayload);
+    await f.sign(c.id, 'owner', companyPayload);
+    assert.deepEqual([...f.db.state().emails.keys()], [`${c.id}:COMPANY_SIGNED:BOOSTER`],
+        'successful company signing and its retry queue exactly one ready-to-sign invitation');
     const provider = await f.context(c.id, 'booster');
     assert.equal(provider.canSign, true);
     assert.equal(provider.canPrepare, false);
     assert.equal(require('jsonwebtoken').decode(provider.challenge).consentVersion, 'FB-BSA-2.4');
-    await f.sign(c.id, 'booster', f.body(provider));
+    const providerPayload = f.body(provider);
+    await f.sign(c.id, 'booster', providerPayload);
+    await f.sign(c.id, 'booster', providerPayload);
     assert.ok(f.db.state().contracts.get(c.id).signedAt);
     assert.equal(f.db.state().signatures.size, 2);
-    assert.ok(f.db.state().emails.has(`${c.id}:COMPLETED:BOOSTER`));
-    assert.ok(f.db.state().emails.has(`${c.id}:COMPLETED:COMPANY`));
+    assert.deepEqual([...f.db.state().emails.keys()].sort(), [
+        `${c.id}:COMPANY_SIGNED:BOOSTER`, `${c.id}:COMPLETED:BOOSTER`, `${c.id}:COMPLETED:COMPANY`,
+    ], 'completed signing still queues one signed copy for each party');
 });
 
 test('unsigned 2.3 drafts upgrade to 2.4 without carrying the payee field or a stale challenge', async t => {
@@ -645,7 +657,7 @@ test('a missing email migration rolls back a 2.4 company signature and the same 
     assert.equal([...f.db.state().emails.values()].filter(row => row.event === 'COMPANY_SIGNED').length, 1);
 });
 
-test('owner corrections replace the provider signing challenge without duplicate READY email', async t => {
+test('owner corrections replace the legacy provider signing challenge without sending an early email', async t => {
     const f = await fixture(t);
     f.agreement.VERSION = 'FB-BSA-2.2';
     const c = await f.issue();
@@ -654,7 +666,7 @@ test('owner corrections replace the provider signing challenge without duplicate
     await f.prepare(c.id, { PaymentMethod: 'Correct bank account' });
     const provider = await f.context(c.id, 'booster');
     assert.notEqual(provider.documentHash, oldProvider.documentHash);
-    assert.equal(f.db.state().emails.size, 2, 'ISSUED and READY each have one fixed outbox ID');
+    assert.equal(f.db.state().emails.size, 0, 'preparing and correcting details do not send booster emails');
     await assert.rejects(f.sign(c.id, 'booster', f.body(oldProvider)), error => error.status === 409);
     assert.equal(f.db.state().signatures.size, 0);
     await f.sign(c.id, 'booster', f.body(provider));

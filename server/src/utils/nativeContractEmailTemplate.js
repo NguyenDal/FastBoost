@@ -7,18 +7,12 @@ const logoUrl = publicAssetUrl('https://www.fastboost.gg', 'logos/fastboost-logo
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/iu;
 
 const nativeContractEmailEvents = Object.freeze({
-    ISSUED: Object.freeze({ badge: 'AGREEMENT CREATED', subject: 'Your Booster Service Agreement', title: 'Your agreement was created',
-        text: 'FastBoost created your agreement. Open it to read the terms and see the latest status. We will let you know when the work and payment details are ready for review.',
-        status: 'Agreement created', action: 'Open agreement' }),
-    READY: Object.freeze({ badge: 'DETAILS ADDED', subject: 'Agreement details are ready', title: 'The details are ready',
-        text: 'FastBoost filled in the work and payment details. Open the agreement to review them. If it is waiting for your signature, you can sign there.',
-        status: 'Details completed', action: 'Open agreement' }),
     BOOSTER_SIGNED: Object.freeze({ badge: 'BOOSTER SIGNED', subject: 'The booster signed the agreement', title: 'The booster signed',
         text: 'The booster signed the agreement. Open it to review the saved terms and see the latest status. If FastBoost still needs to sign, you can do that there.',
         status: 'Booster signed', action: 'Open agreement' }),
-    COMPANY_SIGNED: Object.freeze({ subject: 'Your agreement is ready to sign', title: 'FastBoost signed your agreement',
-        text: 'Open it to review the finalized terms. If your signature is still needed, you can sign here.',
-        status: 'FastBoost signed', action: 'Review agreement' }),
+    COMPANY_SIGNED: Object.freeze({ subject: 'Your agreement is ready to sign', title: 'Your agreement is ready to sign',
+        text: 'Your Booster Service Agreement is ready for your signature. Review the finalized terms and sign in your FastBoost account.',
+        status: 'Ready to sign', action: 'Review & sign' }),
     COMPLETED: Object.freeze({ badge: 'SIGNED BY BOTH SIDES', subject: 'Your signed Booster Service Agreement', title: 'Your agreement is signed',
         text: 'Both parties have signed. The signed PDF is attached, and you can also sign in to view or download it.',
         status: 'Both parties signed', action: 'View or download PDF' }),

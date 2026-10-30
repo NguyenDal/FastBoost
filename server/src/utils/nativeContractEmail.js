@@ -3,8 +3,6 @@ const { validEmail, createConfirmationTransport } = require('./orderConfirmation
 const { buildNativeContractEmail } = require('./nativeContractEmailTemplate');
 
 const EVENTS = Object.freeze({
-    ISSUED: ['BOOSTER'],
-    READY: ['BOOSTER'],
     BOOSTER_SIGNED: ['COMPANY'],
     COMPANY_SIGNED: ['BOOSTER'],
     COMPLETED: ['BOOSTER', 'COMPANY'],
@@ -40,11 +38,13 @@ function relevant(row, contract) {
     if (!contract || contract.signingProvider !== 'FASTBOOST' || contract.revokedAt
         || ['voided', 'declined', 'replaced'].includes(contract.status)) return false;
     if (contract.archivedAt && row.event !== 'COMPLETED') return false;
-    if (row.event === 'ISSUED') return row.recipientRole === 'BOOSTER';
-    if (row.event === 'READY') return row.recipientRole === 'BOOSTER' && Boolean(contract.nativePreparedAt);
+    // Retired creation/preparation emails may still exist in the outbox. Never
+    // turn them into invitations: the signing transition queues its own event.
+    if (row.event === 'ISSUED' || row.event === 'READY') return false;
     if (row.event === 'BOOSTER_SIGNED') return row.recipientRole === 'COMPANY' && Boolean(contract.boosterSignedAt);
     if (row.event === 'COMPANY_SIGNED') return row.recipientRole === 'BOOSTER' && ['FB-BSA-2.3', 'FB-BSA-2.4'].includes(contract.nativeSnapshot?.version)
-        && Boolean(contract.nativePreparedAt && contract.companySignedAt);
+        && Boolean(contract.nativePreparedAt && contract.companySignedAt && contract.nativeDocumentHash && contract.nativePdf && contract.nativePdfHash)
+        && !contract.boosterSignedAt && !contract.signedAt && !contract.nativeCompletedAt && contract.status !== 'completed';
     if (row.event === 'COMPLETED') return EVENTS.COMPLETED.includes(row.recipientRole) && Boolean(contract.signedAt && contract.boosterSignedAt
         && contract.companySignedAt && contract.nativeCompletedAt && contract.nativePdf && contract.nativePdfHash);
     return false;
