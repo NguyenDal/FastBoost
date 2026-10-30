@@ -2,6 +2,8 @@ import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import RegisterPage from "./RegisterPage";
+import useAuthModal from "../hooks/useAuthModal";
 import "../styles/Faq.css";
 import { faqQuestions, refundStages } from "../data/faq";
 
@@ -45,6 +47,7 @@ function HelpIcon({ search = false }) {
 }
 
 export default function FaqPage() {
+    const auth = useAuthModal();
     const [query, setQuery] = useState("");
     const [topic, setTopic] = useState("Popular");
     const [openQuestion, setOpenQuestion] = useState(null);
@@ -56,7 +59,7 @@ export default function FaqPage() {
 
 
     return <div className="faq-shell">
-        <Navbar />
+        <Navbar {...auth.navbarProps} />
         <main className="faq-page">
         <header className="faq-hero">
             <div className="faq-hero-copy">
@@ -108,5 +111,6 @@ export default function FaqPage() {
             </aside>
         </div>
         </main>
+        <RegisterPage {...auth.modalProps} />
     </div>;
 }

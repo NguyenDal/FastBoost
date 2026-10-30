@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
+const { createHash } = require('node:crypto');
 
 test('document creation defaults to website signing, rejects unavailable types and preserves legacy retry snapshots', async () => {
     const paths = ['../src/prisma', '../src/utils/docusign', '../src/routes/contractRoutes', '../src/utils/nativeContractSigning'].map(value => require.resolve(value));
@@ -127,6 +128,98 @@ test('document creation defaults to website signing, rejects unavailable types a
         assert.equal((await request({ ...payload, requestId: 'd9af842e-b36c-4eb0-87b9-ecc9e8ad3704' })).status, 404);
     } finally {
         if (server) await new Promise(resolve => server.close(resolve));
+        for (const [path, value] of saved) { if (value) require.cache[path] = value; else delete require.cache[path]; }
+    }
+});
+
+test('native downloads render verified display copies while retaining authorization and original-version guards', async t => {
+    const paths = ['../src/prisma', '../src/utils/docusign', '../src/routes/contractRoutes', '../src/utils/nativeContractSigning'].map(value => require.resolve(value));
+    const saved = paths.map(path => [path, require.cache[path]]);
+    const agreement = require('../src/utils/nativeAgreement');
+    const originalRenderer = agreement.renderPresentationPdf;
+    const originalPdf = Buffer.from('%PDF-1.7\noriginal retained signed document');
+    const displayPdf = Buffer.from('%PDF-1.7\nmodern display copy');
+    const snapshot = { version: 'FB-BSA-2.1', values: { WorkLocation: 'Original location' }, documentBase64: 'saved original base', fields: [] };
+    const record = {
+        id: 'contract', boosterId: 'booster', signingProvider: 'FASTBOOST', companySignerEmail: 'owner@example.test',
+        nativeSnapshot: snapshot, nativeDocumentHash: agreement.snapshotHash(snapshot), nativePreparedAt: new Date('2026-10-24T00:00:00Z'),
+        nativePdf: originalPdf, nativePdfHash: createHash('sha256').update(originalPdf).digest('hex'),
+        companySignedAt: new Date('2026-10-24T01:00:00Z'), boosterSignedAt: new Date('2026-10-24T02:00:00Z'),
+        signedAt: new Date('2026-10-24T02:00:00Z'), nativeCompletedAt: new Date('2026-10-24T02:00:00Z'),
+    };
+    const signatures = ['COMPANY', 'BOOSTER'].map(role => ({ contractId: record.id, role, documentHash: record.nativeDocumentHash,
+        signedAt: role === 'COMPANY' ? record.companySignedAt : record.boosterSignedAt, legalName: `${role} signer`, signature: { type: 'typed' } }));
+    let returnedSignatures = signatures, verificationCalls = 0, signatureReads = 0, renderCalls = 0, legacyCalls = 0, staleUnsigned = false, server;
+    const db = {
+        boosterContract: { findUnique: async ({ where }) => where.id === record.id ? record : null },
+        nativeContractSignature: { findMany: async query => {
+            signatureReads++;
+            assert.deepEqual(query, { where: { contractId: record.id }, orderBy: [{ signedAt: 'asc' }, { role: 'asc' }] });
+            return returnedSignatures;
+        } },
+    };
+    try {
+        agreement.renderPresentationPdf = async (savedSnapshot, savedSignatures, options) => {
+            renderCalls++;
+            assert.deepEqual(savedSnapshot, snapshot);
+            assert.deepEqual(savedSignatures, signatures);
+            assert.equal(options.completed, true);
+            return displayPdf;
+        };
+        require.cache[paths[0]] = { exports: db };
+        require.cache[paths[1]] = { exports: { document: async () => { legacyCalls++; return Buffer.from('%PDF-legacy'); } } };
+        require.cache[paths[3]] = { exports: { PROVIDER: 'FASTBOOST', document: contract => {
+            verificationCalls++;
+            if (staleUnsigned) throw Object.assign(new Error('FastBoost must submit the current agreement before its PDF is available.'), { status: 409 });
+            assert.equal(contract.nativePdf, originalPdf);
+            return originalPdf;
+        } } };
+        delete require.cache[paths[2]];
+        const app = express();
+        app.use((req, res, next) => { req.actor = { id: req.headers['x-actor'] || 'booster', role: req.headers['x-role'] || 'PROVIDER' }; next(); });
+        app.use(require(paths[2]));
+        app.use((error, req, res, next) => res.status(error.status || 500).json({ message: error.message }));
+        server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
+        const request = headers => fetch(`http://127.0.0.1:${server.address().port}/contracts/contract/document`, { headers });
+
+        assert.equal((await request({ 'x-actor': 'foreign' })).status, 404);
+        assert.equal(verificationCalls, 0);
+        const downloaded = await request();
+        assert.equal(downloaded.status, 200);
+        assert.match(downloaded.headers.get('content-type'), /application\/pdf/);
+        assert.equal(await downloaded.text(), displayPdf.toString());
+        assert.equal(verificationCalls, 1);
+        assert.equal(signatureReads, 1);
+        assert.equal(renderCalls, 1);
+        assert.equal(record.nativePdf, originalPdf);
+        assert.equal(record.nativeDocumentHash, agreement.snapshotHash(snapshot));
+
+        staleUnsigned = true;
+        assert.equal((await request({ 'x-role': 'ADMIN' })).status, 409);
+        assert.equal(signatureReads, 1, 'the original unsigned-version check runs before fetching signatures');
+        staleUnsigned = false;
+        const originalCompanyDate = record.companySignedAt;
+        record.companySignedAt = null;
+        assert.equal((await request()).status, 403);
+        assert.equal(signatureReads, 1, 'boosters cannot download before FastBoost signs');
+        record.companySignedAt = originalCompanyDate;
+
+        returnedSignatures = [signatures[0]];
+        assert.equal((await request()).status, 503);
+        assert.equal(renderCalls, 1, 'inconsistent rows cannot be presented as a completed agreement');
+        returnedSignatures = signatures;
+        record.archivedAt = new Date('2026-10-25T00:00:00Z');
+        assert.equal((await request()).status, 200, 'archived originals remain available as modern display copies');
+        assert.equal(record.nativePdf, originalPdf);
+
+        record.signingProvider = 'DOCUSIGN'; record.envelopeId = 'original-envelope';
+        const legacy = await request();
+        assert.equal(legacy.status, 200);
+        assert.equal(await legacy.text(), '%PDF-legacy');
+        assert.equal(legacyCalls, 1, 'DocuSign keeps its original document path');
+    } finally {
+        if (server) await new Promise(resolve => server.close(resolve));
+        if (originalRenderer === undefined) delete agreement.renderPresentationPdf; else agreement.renderPresentationPdf = originalRenderer;
         for (const [path, value] of saved) { if (value) require.cache[path] = value; else delete require.cache[path]; }
     }
 });

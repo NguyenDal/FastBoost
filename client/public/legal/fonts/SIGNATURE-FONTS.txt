@@ -9,10 +9,14 @@ and embedded by the backend from server/private/legal/fonts so browser and PDF
 signatures use the same glyphs. Do not replace a font behind an existing signature
 style identifier.
 
-Style 1: Original signature appearance
-Browser: Segoe Print, Bradley Hand, cursive; italic, using available system fonts.
-PDF: Existing NotoSans-Regular.ttf, preserving the original typed-signature PDF.
-No additional style 1 font asset is bundled. No Microsoft font is redistributed.
+Style 1: Original handwriting presentation
+Browser and refreshed display PDFs: bundled Dancing Script with an italic slant.
+Retained original signing PDFs keep their existing NotoSans representation; signed
+records, selected style identifiers, and frozen PDF bytes are never rewritten.
+Styleless historical typed marks use the same refreshed handwriting presentation.
+Display PDFs fall back to NotoSans for style 1/styleless names containing glyphs
+outside Dancing Script, preserving support for previously accepted signatures.
+No additional font asset or Microsoft font is redistributed.
 
 Style 2: Dancing Script Regular (variable font, default weight 400)
 File: DancingScript.ttf

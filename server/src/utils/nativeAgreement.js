@@ -251,4 +251,6 @@ async function renderPdf(snapshot, signatures = [], { completed = false } = {}) 
     return Buffer.from(await pdf.save());
 }
 
-module.exports = { VERSION, commercialFields, validateValues, assertAssets, createSnapshot, snapshotHash, renderHtml, renderPdf };
+const renderPresentationPdf = (...args) => require('./nativeAgreementPresentation').renderPresentationPdf(...args);
+
+module.exports = { VERSION, commercialFields, validateValues, assertAssets, createSnapshot, snapshotHash, renderHtml, renderPdf, renderPresentationPdf };

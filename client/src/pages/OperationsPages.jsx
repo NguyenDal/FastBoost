@@ -4,7 +4,7 @@ import { operations, downloadContract, date, tenure } from '../api/operations';
 import { loadChampions } from '../api/champions';
 import BoosterPreferenceSummary from '../components/BoosterPreferenceSummary';
 import BoosterDocumentForm from '../components/BoosterDocumentForm';
-import { payoutPath, payoutStatus, PAYOUT_COUNTRIES } from '../utils/payoutInformation';
+import BoosterDocuments from '../components/BoosterDocuments';
 import OrderPagination from '../components/OrderPagination';
 import Navbar from '../components/Navbar';
 import { getStoredUser } from '../utils/authSession';
@@ -78,8 +78,7 @@ function BoosterDetails({ booster, champions, preferencesAvailable, reload, conf
     return <details className="ops-card ops-booster"><summary><span className="ops-avatar">{(booster.profile?.displayName || booster.username || 'B')[0]}</span><span className="ops-booster-identity"><span className="ops-booster-title"><strong>{booster.profile?.displayName || booster.username}</strong><BoosterRating rating={booster.rating} /></span><small>{tenure(booster.boosterProfile?.startedAt)}</small></span>{booster.suspendedAt && <span className="ops-badge">Suspended</span>}<BoosterPreferenceSummary preferences={booster.preferences} champions={champions} available={preferencesAvailable} /><svg className="ops-booster-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
         <div className="ops-detail">
             <h3>Send a document</h3><BoosterDocumentForm boosterId={booster.id} configured={configured} payoutConfigured={payoutConfigured} suspended={booster.suspendedAt} reload={reload} onError={onError} />
-            <h3>Documents</h3>{booster.boosterContracts.length ? booster.boosterContracts.map(c => <Link className="ops-contract-link" to={`/provider/contracts/${c.id}`} key={c.id}><span>{c.title}<small>{date(c.createdAt)}</small></span><span className={`ops-badge ${c.signedAt ? 'approved' : ''}`}>{c.archivedAt ? 'Archived' : c.signedAt ? `Signed ${date(c.signedAt)}` : c.signingProvider === 'FASTBOOST' ? nativeContractPendingStatus(c) : 'Awaiting signature'} →</span></Link>) : !payouts.length && <p>No documents sent yet.</p>}
-            {payouts.map(payout => <Link className="ops-contract-link" to={payoutPath(payout.id)} key={payout.id}><span>Payout Information<small>Remitly · {PAYOUT_COUNTRIES[payout.country]} · {date(payout.createdAt)}</small></span><span className={`ops-badge ${payout.status === 'VERIFIED' ? 'approved' : ''}`}>{payoutStatus(payout.status)} →</span></Link>)}</div>
+            <BoosterDocuments boosterId={booster.id} contracts={booster.boosterContracts} payouts={payouts} /></div>
     </details>;
 }
 export function BoosterManagementPage() {

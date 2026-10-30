@@ -9,13 +9,13 @@ const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/iu;
 const nativeContractEmailEvents = Object.freeze({
     BOOSTER_SIGNED: Object.freeze({ badge: 'BOOSTER SIGNED', subject: 'The booster signed the agreement', title: 'The booster signed',
         text: 'The booster signed the agreement. Open it to review the saved terms and see the latest status. If FastBoost still needs to sign, you can do that there.',
-        status: 'Booster signed', action: 'Open agreement' }),
+        action: 'Open agreement' }),
     COMPANY_SIGNED: Object.freeze({ subject: 'Your agreement is ready to sign', title: 'Your agreement is ready to sign',
         text: 'Your Booster Service Agreement is ready for your signature. Review the finalized terms and sign in your FastBoost account.',
-        status: 'Ready to sign', action: 'Review & sign' }),
+        action: 'Review & sign' }),
     COMPLETED: Object.freeze({ badge: 'SIGNED BY BOTH SIDES', subject: 'Your signed Booster Service Agreement', title: 'Your agreement is signed',
         text: 'Both parties have signed. The signed PDF is attached, and you can also sign in to view or download it.',
-        status: 'Both parties signed', action: 'View or download PDF' }),
+        action: 'View or download PDF' }),
 });
 
 function safeOrigin(clientUrl, nodeEnv) {
@@ -57,7 +57,7 @@ function buildNativeContractEmail(contract, event, { clientUrl = process.env.CLI
     const boosterName = singleLine(contract?.signerName, 'Booster legal name');
     const url = new URL(`/provider/contracts/${encodeURIComponent(id)}${event === 'COMPANY_SIGNED' ? '/sign' : ''}`, safeOrigin(clientUrl, nodeEnv)).href;
     const copy = nativeContractEmailEvents[event];
-    const rows = [['Agreement reference', id], ['Booster', boosterName], ['Update', copy.status]];
+    const rows = [['Agreement reference', id], ['Booster', boosterName]];
     return {
         subject: `FastBoost · ${copy.subject}`,
         text: [`FastBoost · ${copy.subject}`, '', copy.text, '', ...rows.map(([label, value]) => `${label}: ${value}`),

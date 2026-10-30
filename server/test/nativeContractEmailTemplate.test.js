@@ -6,14 +6,15 @@ const contract = { id: 'd4d8b681-1533-4eec-ba38-a8dbefb4c733', signerName: 'Nguy
 const options = { clientUrl: 'https://www.fastboost.gg', nodeEnv: 'production' };
 const path = `https://www.fastboost.gg/provider/contracts/${contract.id}`;
 
-test('all agreement updates contain the exact agreement, booster, status and authenticated route', () => {
+test('all agreement updates contain the exact agreement, booster and authenticated route without a duplicate status row', () => {
     assert.deepEqual(Object.keys(nativeContractEmailEvents), ['BOOSTER_SIGNED', 'COMPANY_SIGNED', 'COMPLETED']);
     for (const event of Object.keys(nativeContractEmailEvents)) {
         const mail = buildNativeContractEmail(contract, event, options);
         assert.match(mail.subject, /^FastBoost · /u);
         assert.match(mail.text, new RegExp(contract.id, 'u'));
         assert.match(mail.text, /Nguyễn Minh Anh/u);
-        assert.match(mail.text, /Update:/u);
+        assert.doesNotMatch(mail.text, /Update:/u);
+        assert.doesNotMatch(mail.html, />Update<\/td>/u);
         assert.match(mail.text, new RegExp(path, 'u'));
         assert.match(mail.html, new RegExp(`href="${path}${event === 'COMPANY_SIGNED' ? '/sign' : ''}"`, 'u'));
         assert.match(mail.html, /Fast<span style="color:#cc8aff">Boost<\/span>/u);
@@ -29,7 +30,7 @@ test('invitation copy says ready to sign without announcing the company signatur
     const companySigned = buildNativeContractEmail(contract, 'COMPANY_SIGNED', options);
     assert.equal(companySigned.subject, 'FastBoost · Your agreement is ready to sign');
     assert.match(companySigned.text, /Your Booster Service Agreement is ready for your signature/u);
-    assert.match(companySigned.text, /Update: Ready to sign/u);
+    assert.doesNotMatch(companySigned.text, /Update: Ready to sign/u);
     assert.match(companySigned.html, />Your agreement is ready to sign<\/h1>/u);
     assert.match(companySigned.html, /Review &amp; sign/u);
     assert.doesNotMatch(companySigned.text + companySigned.html, /FastBoost signed|FASTBOOST SIGNED|FastBoost completed|If your signature is still needed/u);
@@ -37,7 +38,7 @@ test('invitation copy says ready to sign without announcing the company signatur
     const completed = buildNativeContractEmail(contract, 'COMPLETED', options);
     assert.match(completed.text, /signed PDF is attached/u);
     assert.match(completed.html, /signed PDF is attached/u);
-    assert.match(completed.text, /Both parties signed/u);
+    assert.match(completed.text, /Both parties have signed/u);
     assert.throws(() => buildNativeContractEmail(contract, 'ISSUED', options), /Unknown/u);
     assert.throws(() => buildNativeContractEmail(contract, 'READY', options), /Unknown/u);
 });

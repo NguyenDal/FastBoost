@@ -113,7 +113,8 @@
 .support-empty h2 { font-size: 19px; color: #e3dbed; }
 .support-empty small { font-size: 11px; }
 @media (max-width: 700px) {
- .support-widget { left: 12px; right: 12px; bottom: max(var(--support-bottom, 12px), env(safe-area-inset-bottom)); }
+ .support-widget { left: 12px; right: 12px; bottom: max(var(--support-bottom, 12px), env(safe-area-inset-bottom)); pointer-events: none; }
+ .support-widget > .support-launcher, .support-widget > .support-panel { pointer-events: auto; }
  .support-launcher { height: 48px; width: 48px; padding: 0; justify-content: center; border-radius: 17px; }
  .support-launcher span { display: none; }
  .support-panel { width: min(390px, 100%); height: min(610px, calc(100dvh - var(--support-bottom, 20px) - 16px)); bottom: 0; border-radius: 20px; }

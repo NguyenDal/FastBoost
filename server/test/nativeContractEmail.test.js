@@ -1,11 +1,14 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
+const agreement = require('../src/utils/nativeAgreement');
 const { queueNativeContractEmail, relevant, completedAttachment, deliverPendingNativeContractEmails } = require('../src/utils/nativeContractEmail');
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 const id = '00000000-0000-4000-8000-000000000088';
 const pdf = Buffer.from('%PDF-1.7\ncompleted agreement');
+const displayPdf = Buffer.from('%PDF-1.7\nmodern signature presentation without completion appendix');
+const snapshot = { version: 'FB-BSA-2.2', values: { WorkLocation: 'Original location' }, documentBase64: 'retained base PDF', fields: [] };
 const contract = {
     id, title: 'Booster Service Agreement', signingProvider: 'FASTBOOST',
     signerName: 'Jordan Example', signerEmail: 'booster@example.test',
@@ -15,11 +18,25 @@ const contract = {
     companySignedAt: new Date('2026-10-24T02:00:00Z'),
     signedAt: new Date('2026-10-24T02:00:00Z'), nativeCompletedAt: new Date('2026-10-24T02:00:00Z'),
     nativePdf: pdf, nativePdfHash: digest(pdf), status: 'completed',
+    nativeSnapshot: snapshot, nativeDocumentHash: agreement.snapshotHash(snapshot), nativePreparedAt: new Date('2026-10-24T00:30:00Z'),
 };
+contract.nativeSignatures = ['BOOSTER', 'COMPANY'].map(role => ({
+    contractId: id, role, documentHash: contract.nativeDocumentHash,
+    signedAt: role === 'COMPANY' ? contract.companySignedAt : contract.boosterSignedAt,
+    legalName: role === 'COMPANY' ? contract.companySignerName : contract.signerName, signature: { type: 'typed', style: 1 },
+}));
 const readyContract = {
     ...contract, nativeSnapshot: { version: 'FB-BSA-2.4' }, nativePreparedAt: new Date('2026-10-24T00:30:00Z'),
     nativeDocumentHash: 'a'.repeat(64), status: 'sent', boosterSignedAt: null, signedAt: null, nativeCompletedAt: null,
 };
+
+function stubPresentation(t) {
+    const original = agreement.renderPresentationPdf;
+    const calls = [];
+    agreement.renderPresentationPdf = async (...args) => { calls.push(args); return displayPdf; };
+    t.after(() => { if (original === undefined) delete agreement.renderPresentationPdf; else agreement.renderPresentationPdf = original; });
+    return calls;
+}
 
 test('agreement email events use one stable outbox identity per recipient', async () => {
     const writes = [];
@@ -63,7 +80,8 @@ test('a missing agreement email table returns an actionable unavailable error wi
     }
 });
 
-test('only real event transitions are deliverable and the final PDF hash must match', () => {
+test('only real event transitions are deliverable and presentation attachments verify original evidence', async t => {
+    const renders = stubPresentation(t);
     assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, contract), false);
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: new Date() }), false);
     assert.equal(relevant({ event: 'READY', recipientRole: 'BOOSTER' }, { ...contract, nativePreparedAt: null }), false);
@@ -77,10 +95,13 @@ test('only real event transitions are deliverable and the final PDF hash must ma
     assert.equal(relevant({ event: 'COMPLETED', recipientRole: 'BOOSTER' }, contract), true);
     assert.equal(relevant({ event: 'COMPLETED', recipientRole: 'COMPANY' }, { ...contract, companySignedAt: null }), false);
     assert.equal(relevant({ event: 'ISSUED', recipientRole: 'BOOSTER' }, { ...contract, revokedAt: new Date() }), false);
-    const attachment = completedAttachment(contract)[0];
+    const attachment = (await completedAttachment(contract))[0];
     assert.equal(attachment.contentType, 'application/pdf');
-    assert.deepEqual(attachment.content, pdf);
-    assert.throws(() => completedAttachment({ ...contract, nativePdfHash: '0'.repeat(64) }), /verified/);
+    assert.deepEqual(attachment.content, displayPdf);
+    assert.deepEqual(renders[0], [snapshot, contract.nativeSignatures, { completed: true }]);
+    assert.deepEqual(contract.nativePdf, pdf, 'delivery never replaces the retained PDF');
+    await assert.rejects(completedAttachment({ ...contract, nativePdfHash: '0'.repeat(64) }), /verified/);
+    assert.equal(renders.length, 1, 'bad original evidence cannot be rendered');
 });
 
 test('booster invitations require a prepared company-signed agreement still awaiting the booster', () => {
@@ -151,7 +172,8 @@ test('delivery rechecks the agreement and skips an invitation after the booster 
     assert.equal(f.rows[0].lastError, 'EVENT_SUPERSEDED');
 });
 
-test('completion mail goes to both accounts with the same saved PDF and authenticated agreement link', async () => {
+test('completion mail sends modern copies to both accounts without replacing the saved PDF or resending sent mail', async t => {
+    const renders = stubPresentation(t);
     const oldUrl = process.env.CLIENT_URL;
     process.env.CLIENT_URL = 'https://fastboost.gg';
     try {
@@ -169,7 +191,10 @@ test('completion mail goes to both accounts with the same saved PDF and authenti
                 if (data.sentAt) marked.push(row.id);
                 return { count: 1 };
             },
-            findUnique: async ({ where }) => ({ ...rows.find(row => row.id === where.id), contract }),
+            findUnique: async ({ where, include }) => {
+                assert.deepEqual(include.contract.include.nativeSignatures.orderBy, [{ signedAt: 'asc' }, { role: 'asc' }]);
+                return { ...rows.find(row => row.id === where.id), contract };
+            },
         } };
         const transport = { sendMail: async mail => { emails.push(mail); return { accepted: [mail.to.address] }; } };
         await deliverPendingNativeContractEmails(db, transport, () => now);
@@ -178,11 +203,32 @@ test('completion mail goes to both accounts with the same saved PDF and authenti
         for (const mail of emails) {
             assert.match(mail.html, new RegExp(`/provider/contracts/${id}`));
             assert.equal(mail.attachments.length, 1);
-            assert.deepEqual(mail.attachments[0].content, pdf);
+            assert.deepEqual(mail.attachments[0].content, displayPdf);
             assert.equal(mail.disableFileAccess, true);
         }
+        assert.equal(renders.length, 2);
+        assert.deepEqual(contract.nativePdf, pdf);
+        assert.equal(contract.nativePdfHash, digest(pdf));
+        await deliverPendingNativeContractEmails(db, transport, () => now);
+        assert.equal(emails.length, 2, 'an already-sent completion notice is never sent again for a new presentation');
     } finally {
         if (oldUrl === undefined) delete process.env.CLIENT_URL;
         else process.env.CLIENT_URL = oldUrl;
     }
+});
+
+test('completion delivery fails closed when signature rows are missing or no longer match the retained snapshot', async t => {
+    const renders = stubPresentation(t);
+    t.mock.method(console, 'error', () => {});
+    const oldUrl = process.env.CLIENT_URL;
+    process.env.CLIENT_URL = 'https://fastboost.gg';
+    t.after(() => { if (oldUrl === undefined) delete process.env.CLIENT_URL; else process.env.CLIENT_URL = oldUrl; });
+    for (const nativeSignatures of [undefined, [], [{ ...contract.nativeSignatures[0], documentHash: '0'.repeat(64) }, contract.nativeSignatures[1]]]) {
+        const f = invitationOutbox(['COMPLETED'], () => ({ ...contract, nativeSignatures }));
+        await deliverPendingNativeContractEmails(f.db, f.transport, () => f.now);
+        assert.equal(f.sent.length, 0);
+        assert.equal(f.rows[0].sentAt, null);
+        assert.equal(f.rows[0].lastError, 'DELIVERY_FAILED');
+    }
+    assert.equal(renders.length, 0);
 });

@@ -3,6 +3,7 @@ const router = require('express').Router();
 const db = require('../prisma');
 const docusign = require('../utils/docusign');
 const nativeSigning = require('../utils/nativeContractSigning');
+const { presentationDocument } = require('../utils/nativeContractDocument');
 const { syncContract } = require('../utils/contractStatus');
 const handle = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -116,7 +117,13 @@ router.get('/contracts/:id/document', handle(async (req, res) => {
     const contract = await authorized(req);
     if (contract.signingProvider !== nativeSigning.PROVIDER && !contract.envelopeId) fail(409, 'The contract has not been sent yet.');
     if (req.actor.role !== 'ADMIN' && contract.companySignerEmail && !contract.companySignedAt) fail(403, 'The agreement will be available after FastBoost signs.');
-    const buffer = contract.signingProvider === nativeSigning.PROVIDER ? nativeSigning.document(contract) : await docusign.document(contract);
+    let buffer;
+    if (contract.signingProvider === nativeSigning.PROVIDER) {
+        // Preserve the original verification and unsigned-old-version guard.
+        nativeSigning.document(contract);
+        const signatures = await db.nativeContractSignature.findMany({ where: { contractId: contract.id }, orderBy: [{ signedAt: 'asc' }, { role: 'asc' }] });
+        buffer = await presentationDocument(contract, signatures);
+    } else buffer = await docusign.document(contract);
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="FastBoost-contract.pdf"' }).send(buffer);
 }));
 module.exports = router;

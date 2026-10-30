@@ -179,10 +179,10 @@ function RegisterPage({
 
             <p className="section-description modal-description">
               {authMode === "login"
-                ? "Sign in without leaving the homepage."
+                ? "Sign in without leaving this page."
                 : authMode === "forgot"
                   ? "Enter your registered email to receive a reset link."
-                  : "Create an account without leaving the homepage."}
+                  : "Create an account without leaving this page."}
             </p>
 
             {authMode === "login" ? (

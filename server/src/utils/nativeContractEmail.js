@@ -1,6 +1,7 @@
 const { randomUUID, createHash } = require('node:crypto');
 const { validEmail, createConfirmationTransport } = require('./orderConfirmationEmail');
 const { buildNativeContractEmail } = require('./nativeContractEmailTemplate');
+const { presentationDocument } = require('./nativeContractDocument');
 
 const EVENTS = Object.freeze({
     BOOSTER_SIGNED: ['COMPANY'],
@@ -54,11 +55,8 @@ function recipientFor(contract, role) {
     return role === 'BOOSTER' ? contract.signerEmail : role === 'COMPANY' ? contract.companySignerEmail : null;
 }
 
-function completedAttachment(contract) {
-    const pdf = Buffer.from(contract.nativePdf || []);
-    if (pdf.subarray(0, 5).toString() !== '%PDF-' || digest(pdf) !== contract.nativePdfHash) {
-        throw new Error('The completed agreement PDF could not be verified.');
-    }
+async function completedAttachment(contract) {
+    const pdf = await presentationDocument(contract, contract.nativeSignatures);
     return [{ filename: `FastBoost-Booster-Service-Agreement-${contract.id}.pdf`, content: pdf,
         contentType: 'application/pdf', contentDisposition: 'attachment' }];
 }
@@ -73,7 +71,8 @@ async function deliverPendingNativeContractEmails(db, transport, clock = () => n
             nextAttemptAt: { lte: now } }, data: { claim, attempts: { increment: 1 }, nextAttemptAt: new Date(now.getTime() + 5 * 60000) } });
         if (!claimed.count) continue;
         try {
-            const fresh = await db.nativeContractEmail.findUnique({ where: { id: row.id }, include: { contract: true } });
+            const fresh = await db.nativeContractEmail.findUnique({ where: { id: row.id },
+                include: { contract: { include: { nativeSignatures: { orderBy: [{ signedAt: 'asc' }, { role: 'asc' }] } } } } });
             if (!fresh || fresh.claim !== claim || fresh.sentAt || fresh.skippedAt) continue;
             const contract = fresh.contract;
             if (!relevant(fresh, contract)) {
@@ -86,7 +85,7 @@ async function deliverPendingNativeContractEmails(db, transport, clock = () => n
             const mail = buildNativeContractEmail(contract, fresh.event);
             const info = await transport.sendMail({ ...mail, to: { address: recipient.trim() },
                 from: process.env.SMTP_FROM || process.env.SMTP_USER,
-                ...(fresh.event === 'COMPLETED' ? { attachments: completedAttachment(contract) } : {}),
+                ...(fresh.event === 'COMPLETED' ? { attachments: await completedAttachment(contract) } : {}),
                 messageId: `<fastboost-agreement-${digest(fresh.id)}@${new URL(process.env.CLIENT_URL).hostname}>`,
                 disableFileAccess: true, disableUrlAccess: true });
             if (!info.accepted?.some(address => String(address).toLowerCase() === recipient.trim().toLowerCase())) throw new Error('Recipient not accepted.');
