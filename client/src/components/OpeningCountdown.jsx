@@ -28,7 +28,7 @@ function SlidingNumber({ value }) {
   return <strong className="opening-countdown-number">{String(value).padStart(2, '0').split('').map((digit, index) => <SlidingDigit key={index} digit={digit} />)}</strong>;
 }
 
-export default function OpeningCountdown() {
+export default function OpeningCountdown({ afterOpen }) {
   const [now, setNow] = useState(() => Date.now());
   const remaining = openingCountdownParts(now);
   const timeZone = resolveUserTimeZone();
@@ -42,6 +42,7 @@ export default function OpeningCountdown() {
   }, [isOpen]);
 
   if (isOpen) {
+    if (afterOpen) return afterOpen;
     return <div className="opening-countdown is-open" role="status">
       <span className="opening-countdown-label"><span className="opening-countdown-dot" aria-hidden="true" />Now live</span>
       <strong className="opening-countdown-open">We’re open</strong>

@@ -11,6 +11,7 @@ const assets = [
   'logos/fastboost-logo.svg', 'logos/fastboost-logo.png', 'logos/lol-logo.jpg', 'logos/tft-logo.png',
   'roles/top.png', 'roles/jungle.png', 'roles/mid.png', 'roles/bot.png', 'roles/support.png', 'roles/fill.png',
   'services/lol-card.jpg', 'services/tft-card.jpg',
+  'home/league-gameplay.jpg',
   'services/rank-boost-transparent.png', 'services/placement-boost-transparent.png',
   'services/win-boost-transparent.png', 'services/pro-duo-transparent.png',
   'services/ranks/unranked.webp', 'services/ranks/iron.png', 'services/ranks/bronze.png',

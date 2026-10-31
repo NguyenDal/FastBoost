@@ -14,6 +14,7 @@ import Navbar from "../components/Navbar";
 import RegisterPage from "./RegisterPage";
 import GameServiceDialog from "../components/GameServiceDialog";
 import OpeningCountdown from "../components/OpeningCountdown";
+import HomeFeatureShowcase from "../components/HomeFeatureShowcase";
 import { API_BASE_URL } from "../api/config";
 import { shouldRefreshAvatarData } from '../utils/signedAvatar';
 import { orderPathForService, searchWithSelectedGame, selectedGameFromSearch } from '../utils/productRoutes';
@@ -812,7 +813,7 @@ function HomePage() {
           />
           <div className="opening-hero-content">
             <h1 id="opening-heading">The next level<br /><span>starts here.</span></h1>
-            <OpeningCountdown />
+            <OpeningCountdown afterOpen={<HomeFeatureShowcase />} />
             <Link className="opening-hub-link" to="/hub">
               Explore the Hub <span aria-hidden="true"><ArrowUpRightIcon /></span>
             </Link>
