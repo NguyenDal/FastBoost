@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { browserCorsOptions } = require('./config/browserCors');
 
 const authRoutes = require("./routes/authRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
@@ -27,7 +28,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors());
+// Browser callers must come from the configured site. Direct clients still work.
+app.use(cors(browserCorsOptions));
 
 // Stripe webhook must use raw body and must be mounted before express.json()
 app.post(
