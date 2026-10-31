@@ -13,6 +13,7 @@
 .wallet-payment-credit dd { color: #e7d3ff; font-weight: 700; }
 .wallet-payment-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 22px; border-top: 1px solid #33334a; font-size: 20px; }
 .wallet-payment-total > strong:last-child { color: #bd80ff; }
+.wallet-package-summary .checkout-security { margin-top: 12px; }
 .wallet-payment-error { color: #fecdd3; font-size: 14px; line-height: 1.6; }
 .wallet-payment-error .wallet-primary { margin-top: 12px; }
 .wallet-payment-back:focus-visible { outline: 2px solid #d9b7ff; outline-offset: 4px; }
