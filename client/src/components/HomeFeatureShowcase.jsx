@@ -5,8 +5,8 @@ const SCENES = [['goal', 7500], ['chat', 7000], ['highlights', 6500], ['rewards'
 const CYCLE_DURATION = SCENES.reduce((total, [, duration]) => total + duration, 0);
 const ease = value => 1 - Math.pow(1 - Math.min(1, Math.max(0, value)), 3);
 
-function Heading({ children, gold = false }) {
-  return <div className="hfs-card-heading"><span className="hfs-card-title"><span className={`hfs-status-light${gold ? ' hfs-gold-light' : ''}`} />{children}</span></div>;
+function Heading({ children }) {
+  return <div className="hfs-card-heading"><span className="hfs-card-title"><span className="hfs-status-light" />{children}</span></div>;
 }
 
 export default function HomeFeatureShowcase() {
@@ -143,7 +143,7 @@ export default function HomeFeatureShowcase() {
         </div>
       </section>
       <section className="hfs-feature-scene" data-scene="rewards">
-        <Heading gold>Every climb gives back</Heading>
+        <Heading>Every climb gives back</Heading>
         <div className="hfs-tier-route"><span className="hfs-tier-label">LOYALTY TIER</span><span className="hfs-tier-from">Silver</span><span className="hfs-tier-arrow">→</span><strong className="hfs-tier-goal" data-part="tier"><span>✦</span> Gold</strong></div>
         <div className="hfs-tier-benefits" data-part="tier-benefits">
           <div><strong className="hfs-tier-gold"><span data-part="count">+0</span> Gold</strong><small>Tier bonus</small></div>
