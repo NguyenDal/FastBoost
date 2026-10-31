@@ -60,7 +60,7 @@ export function DashboardQuickActions() {
         <CardHeading title="Quick Actions" icon="lightning" />
         <div className="dashboard-quick-actions">
             {[ ["Browse Services", "View all services", "/", "▦"], ["Account Settings", "Update your profile", "/account/settings", "⚙"], ["Contact Support", "Get help", "/contact", "☏"] ].map(([title, detail, to, icon]) => <Link key={title} to={to}><span aria-hidden="true">{icon}</span><div><strong>{title}</strong><small>{detail}</small></div></Link>)}
-            <Link to="/faq"><span aria-hidden="true">?</span><div><strong>FAQ</strong><small>Common questions</small></div></Link>
+            <Link to="/hub"><span aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg></span><div><strong>The Hub</strong><small>News &amp; guides</small></div></Link>
         </div>
     </section>;
 }
