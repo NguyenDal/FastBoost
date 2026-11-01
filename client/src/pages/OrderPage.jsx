@@ -1846,7 +1846,7 @@ function OrderPage() {
                         <div className="ranked-wins-big-number">{formData.desiredWins}</div>
 
                         <div>
-                          <h3>Number of Net Wins</h3>
+                          <h3>Net Wins</h3>
                           <p>Select your win target</p>
                         </div>
                       </div>
