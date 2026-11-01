@@ -20,7 +20,7 @@ function CouponCode({ code }) {
         }
     };
     return <span className="sale-footer-coupon">
-        <span>Use code</span>
+        <span className="sale-footer-mobile-detail">Use code</span>
         <button type="button" className="sale-footer-copy" onClick={copyCode} aria-label={`Copy coupon code ${code}`} title="Copy code to use at checkout">
             <b>{code}</b>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg>
@@ -44,13 +44,13 @@ export function SaleBanner({ promotion, now, preview = false }) {
     const seconds = timer ? Math.max(0, Math.ceil((end - currentTime) / 1000)) : 0;
     const parts = [Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24, Math.floor(seconds / 60) % 60, seconds % 60];
     return <aside className={`sale-footer-bar${timer ? "" : " sale-footer-no-timer"}${preview ? " sale-footer-preview" : ""}`} aria-label="Current sale">
-        <strong className="sale-footer-title">{promotion.title}</strong>
+        <strong className="sale-footer-title sale-footer-mobile-detail">{promotion.title}</strong>
         <div className="sale-footer-offer">
-            <span className="sale-footer-discount">{Number(promotion.discountPercent)}% OFF {promotion.scope === "GLOBAL" ? "ALL SERVICES" : promotion.service?.title || "THIS SERVICE"}</span>
+            <span className="sale-footer-discount">{Number(promotion.discountPercent)}% OFF<span className="sale-footer-mobile-detail"> {promotion.scope === "GLOBAL" ? "ALL SERVICES" : promotion.service?.title || "THIS SERVICE"}</span></span>
             {promotion.couponCode && <CouponCode key={promotion.couponCode} code={promotion.couponCode} />}
         </div>
         {timer && <div className="sale-footer-timer" role="timer" aria-label="Time until sale ends">
-            {parts.map((value, index) => <span className="sale-footer-time" key={index}><b>{String(value).padStart(2, "0")}</b><small>{["DAYS", "HRS", "MIN", "SEC"][index]}</small></span>)}
+            {parts.map((value, index) => <span className="sale-footer-time" key={index}><b>{String(value).padStart(2, "0")}</b><small className="sale-footer-time-label">{["DAYS", "HRS", "MIN", "SEC"][index]}</small><small className="sale-footer-time-short" aria-hidden="true">{["d", "h", "m", "s"][index]}</small></span>)}
         </div>}
     </aside>;
 }
