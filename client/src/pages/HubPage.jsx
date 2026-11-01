@@ -1,6 +1,8 @@
 import ArrowUpRightIcon from '../components/ArrowUpRightIcon';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import RegisterPage from './RegisterPage';
+import useAuthModal from '../hooks/useAuthModal';
 import { OpeningEventCard, OpeningEventDetail } from '../components/OpeningEvent';
 import OpeningIntroduction from '../components/OpeningIntroduction';
 import RoleGuides, { RoleGuidePage } from '../components/RoleGuides';
@@ -75,6 +77,7 @@ function GuideDirectoryView() {
 }
 
 export default function HubPage({ guideDirectory = false }) {
+  const auth = useAuthModal();
   const { section, slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedCategory = searchParams.get('category');
@@ -84,7 +87,7 @@ export default function HubPage({ guideDirectory = false }) {
 
   const chooseCategory = next => setSearchParams(next === 'all' ? {} : { category: next });
   return <div className="hub-shell">
-    <Navbar />
+    <Navbar {...auth.navbarProps} />
     <main id="hub-main">
       {article ? <ArticleView article={article} /> : role ? <RoleGuidePage role={role} /> : guideDirectory ? <GuideDirectoryView /> : section === 'events' && slug === OPENING_CAMPAIGN.slug ? <OpeningEventDetail /> : section ? <div className="hub-not-found"><h1>That story isn’t here</h1><p>It may have moved. Explore what’s available in the Hub.</p><Link to="/hub" className="hub-primary-link">Return to the Hub <Arrow /></Link></div> : <>
         <div className="hub-landing-hero"><div className="hub-page-inner">
@@ -100,5 +103,6 @@ export default function HubPage({ guideDirectory = false }) {
         </div>
       </>}
     </main>
+    <RegisterPage {...auth.modalProps} />
   </div>;
 }

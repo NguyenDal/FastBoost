@@ -166,8 +166,34 @@ export function SupportConversation({ threadId, user, active = true, online = nu
     </div>;
 }
 
+function useSaleFooterHeight() {
+    const [footerHeight, setFooterHeight] = useState(0);
+    const { pathname } = useLocation();
+    useEffect(() => {
+        let footer = null;
+        const measureFooter = () => setFooterHeight(footer?.getBoundingClientRect().height || 0);
+        const resizeObserver = new ResizeObserver(measureFooter);
+        const observeFooter = () => {
+            const nextFooter = document.querySelector('.sale-footer-dock');
+            if (nextFooter === footer) return;
+            if (footer) resizeObserver.unobserve(footer);
+            footer = nextFooter;
+            if (footer) resizeObserver.observe(footer);
+            measureFooter();
+        };
+        // Order routes can mount the sale dock after the service lookup finishes.
+        const mountObserver = new MutationObserver(observeFooter);
+        mountObserver.observe(document.body, { childList: true, subtree: true });
+        observeFooter();
+        measureFooter();
+        return () => { resizeObserver.disconnect(); mountObserver.disconnect(); };
+    }, [pathname]);
+    return footerHeight;
+}
+
 function AdminAvailability() {
     const location = useLocation();
+    const footerHeight = useSaleFooterHeight();
     const [error, setError] = useState(false);
     const [unread, setUnread] = useState(false);
     useEffect(() => {
@@ -187,7 +213,7 @@ function AdminAvailability() {
         return () => { clearInterval(timer); document.removeEventListener('visibilitychange', update); queue.finally(() => supportRequest(`/presence/${sessionId}`, { method: 'DELETE', token }).catch(() => {})); };
     }, []);
     if (location.pathname === '/admin/support') return null;
-    return <Link className={`support-admin-launcher ${error ? 'unavailable' : ''}`} to="/admin/support"><SupportIcon /><span>{error ? 'Support reconnecting' : unread ? 'New support message' : 'Support inbox'}</span><i aria-label={unread ? 'Unread support message' : 'Support availability'} /></Link>;
+    return <Link className={`support-admin-launcher${footerHeight > 0 ? ' has-sale-footer' : ''}${error ? ' unavailable' : ''}`} style={{ '--support-bottom': `${footerHeight + 20}px` }} to="/admin/support"><SupportIcon /><span>{error ? 'Support reconnecting' : unread ? 'New support message' : 'Support inbox'}</span><i aria-label={unread ? 'Unread support message' : 'Support availability'} /></Link>;
 }
 
 function CustomerSupport({ user }) {
@@ -198,7 +224,7 @@ function CustomerSupport({ user }) {
     const [unread, setUnread] = useState(false);
     const trigger = useRef(null);
     const closeButton = useRef(null);
-    const [footerHeight, setFooterHeight] = useState(0);
+    const footerHeight = useSaleFooterHeight();
     const location = useLocation();
     const targetMessageId = new URLSearchParams(location.search).get('message');
     useEffect(() => {
@@ -207,25 +233,6 @@ function CustomerSupport({ user }) {
     useEffect(() => {
         if (user && new URLSearchParams(location.search).get('support') === 'open') setOpen(true);
     }, [location.key, location.search, user]);
-    useEffect(() => {
-        let footer = null;
-        const measureFooter = () => setFooterHeight(footer?.getBoundingClientRect().height || 0);
-        const resizeObserver = new ResizeObserver(measureFooter);
-        const observeFooter = () => {
-            const nextFooter = document.querySelector('.sale-footer-dock');
-            if (nextFooter === footer) return;
-            if (footer) resizeObserver.unobserve(footer);
-            footer = nextFooter;
-            if (footer) resizeObserver.observe(footer);
-            measureFooter();
-        };
-        // Order routes can mount the sale dock after the service lookup finishes.
-        const mountObserver = new MutationObserver(observeFooter);
-        mountObserver.observe(document.body, { childList: true, subtree: true });
-        observeFooter();
-        measureFooter();
-        return () => { resizeObserver.disconnect(); mountObserver.disconnect(); };
-    }, [location.pathname]);
     useEffect(() => {
         if (!user) return;
         let stopped = false;
