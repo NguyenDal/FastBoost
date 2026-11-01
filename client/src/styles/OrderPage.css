@@ -1716,6 +1716,88 @@
   }
 }
 
+/* Keep League selectors compact and contained on phones. */
+@media (max-width: 700px) {
+  .order-page-lol .order-form-panel,
+  .order-page-lol .rank-selector-card {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .order-page-lol .rank-tier-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .order-page-lol .rank-tier-btn {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: 14px 4px;
+  }
+
+  .order-page-lol .rank-tier-btn img {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .order-page-lol .ranked-wins-tier-rows,
+  .order-page-lol .ranked-wins-tier-row {
+    gap: 8px;
+  }
+
+  .order-page-lol .rank-division-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: 292px;
+  }
+
+  .order-page-lol .rank-division-btn {
+    min-width: 0;
+  }
+
+  .order-page-lol .placement-tier-rows {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  /* Flatten the desktop 6 + 5 groups into mobile rows of 4 + 4 + 3. */
+  .order-page-lol .placement-tier-row {
+    display: contents;
+  }
+
+  .order-page-lol .placement-tier-row .rank-tier-btn {
+    grid-column: span 3;
+  }
+
+  .order-page-lol .placement-tier-row:last-child .rank-tier-btn:nth-last-child(-n + 3) {
+    grid-column: span 4;
+  }
+
+  .order-page-lol .placement-games-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: 368px;
+  }
+
+  .order-page-lol .placement-game-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .order-page-lol .order-form-panel,
+  .order-page-lol .rank-selector-card {
+    padding: 12px;
+  }
+
+  .order-page-lol .ranked-wins-tier-row {
+    gap: 6px;
+  }
+}
+
 .rank-tooltip-wrap {
   position: relative;
 }
