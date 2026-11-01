@@ -1716,85 +1716,125 @@
   }
 }
 
-/* Keep League selectors compact and contained on phones. */
+/* TFT also needs shrinkable, centered icons in narrow desktop columns. */
+.order-page-tft .rank-tier-btn {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.order-page-tft .rank-tier-btn img {
+  max-width: 100%;
+  margin: 0;
+}
+
+.order-page-tft .boost-type-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.order-page-tft .boost-type-tab {
+  min-width: 0;
+  padding-inline: 8px;
+  white-space: nowrap;
+}
+
+/* Keep both games' selectors compact and contained on phones. */
 @media (max-width: 700px) {
-  .order-page-lol .order-form-panel,
-  .order-page-lol .rank-selector-card {
+  :is(.order-page-lol, .order-page-tft) .order-form-panel,
+  :is(.order-page-lol, .order-page-tft) .rank-selector-card {
     min-width: 0;
     padding: 16px;
   }
 
-  .order-page-lol .rank-tier-grid {
+  :is(.order-page-lol, .order-page-tft) .rank-tier-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .order-page-lol .rank-tier-btn {
+  :is(.order-page-lol, .order-page-tft) .rank-tier-btn {
     display: grid;
     place-items: center;
     min-width: 0;
     padding: 14px 4px;
   }
 
-  .order-page-lol .rank-tier-btn img {
+  :is(.order-page-lol, .order-page-tft) .rank-tier-btn img {
     max-width: 100%;
     margin: 0;
   }
 
-  .order-page-lol .ranked-wins-tier-rows,
-  .order-page-lol .ranked-wins-tier-row {
+  :is(.order-page-lol, .order-page-tft) .ranked-wins-tier-rows,
+  :is(.order-page-lol, .order-page-tft) .ranked-wins-tier-row {
     gap: 8px;
   }
 
-  .order-page-lol .rank-division-row {
+  :is(.order-page-lol, .order-page-tft) .rank-division-row {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     max-width: 292px;
   }
 
-  .order-page-lol .rank-division-btn {
+  :is(.order-page-lol, .order-page-tft) .rank-division-btn {
     min-width: 0;
   }
 
-  .order-page-lol .placement-tier-rows {
+  :is(.order-page-lol, .order-page-tft) .placement-tier-rows {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 8px;
   }
 
   /* Flatten the desktop 6 + 5 groups into mobile rows of 4 + 4 + 3. */
-  .order-page-lol .placement-tier-row {
+  :is(.order-page-lol, .order-page-tft) .placement-tier-row {
     display: contents;
   }
 
-  .order-page-lol .placement-tier-row .rank-tier-btn {
+  :is(.order-page-lol, .order-page-tft) .placement-tier-row .rank-tier-btn {
     grid-column: span 3;
   }
 
-  .order-page-lol .placement-tier-row:last-child .rank-tier-btn:nth-last-child(-n + 3) {
+  :is(.order-page-lol, .order-page-tft) .placement-tier-row:last-child .rank-tier-btn:nth-last-child(-n + 3) {
     grid-column: span 4;
   }
 
-  .order-page-lol .placement-games-row {
+  :is(.order-page-lol, .order-page-tft) .placement-games-row {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px;
     width: 100%;
     max-width: 368px;
   }
 
-  .order-page-lol .placement-game-btn {
+  :is(.order-page-lol, .order-page-tft) .placement-game-btn {
     width: 100%;
     min-width: 0;
+  }
+
+  .order-page-tft .boost-type-panel {
+    padding-inline: 12px;
+  }
+
+  .order-page-tft .boost-type-tabs {
+    gap: 6px;
+  }
+
+  .order-page-tft .boost-type-tab {
+    padding-inline: 4px;
+    font-size: clamp(0.75rem, 3.1vw, 1rem);
   }
 }
 
 @media (max-width: 400px) {
-  .order-page-lol .order-form-panel,
-  .order-page-lol .rank-selector-card {
+  :is(.order-page-lol, .order-page-tft) .order-form-panel,
+  :is(.order-page-lol, .order-page-tft) .rank-selector-card {
     padding: 12px;
   }
 
-  .order-page-lol .ranked-wins-tier-row {
+  :is(.order-page-lol, .order-page-tft) .ranked-wins-tier-row {
     gap: 6px;
+  }
+
+  .order-page-tft .boost-type-tabs {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.25fr);
   }
 }
 

@@ -315,6 +315,40 @@
   .game-service-dialog-grid-tft .game-service-dialog-art { height: 175px; }
   .game-service-dialog-grid-tft .game-service-dialog-icon { height: 170px; }
   .game-service-dialog-grid-tft .game-service-dialog-card-copy { padding-top: 178px; }
+
+  .game-service-dialog-panel-lol .game-service-dialog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .game-service-dialog-panel-lol .game-service-dialog-card { min-width: 0; }
+  .game-service-dialog-panel-lol .game-service-dialog-art { height: 108px; }
+  .game-service-dialog-panel-lol .game-service-dialog-icon { width: min(88%, 120px); height: 104px; }
+
+  .game-service-dialog-panel-lol .game-service-dialog-card-copy {
+    flex: 1;
+    min-width: 0;
+    padding: 116px 12px 14px;
+  }
+
+  .game-service-dialog-panel-lol .game-service-dialog-card h3 {
+    min-height: 2.1em;
+    font-size: clamp(1rem, 3.9vw, 1.35rem);
+  }
+
+  .game-service-dialog-panel-lol .game-service-dialog-card p { font-size: .78rem; }
+
+  .game-service-dialog-panel-lol .game-service-dialog-card button {
+    width: 100%;
+    min-height: 44px;
+    margin-top: auto;
+    gap: 6px;
+    padding: 8px;
+    font-size: .78rem;
+  }
+
+  .game-service-dialog-panel-lol .game-service-dialog-skeleton { min-width: 0; padding: 12px; }
+  .game-service-dialog-panel-lol .game-service-dialog-skeleton > * { max-width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
