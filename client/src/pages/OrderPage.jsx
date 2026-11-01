@@ -11,6 +11,7 @@ import { orderCashbackEstimate } from "../utils/orderCashbackEstimate";
 import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRoles";
 import { orderPathForService, serviceTitleFromOrderRoute, uniqueServiceForTitle } from "../utils/productRoutes";
 import Navbar from "../components/Navbar";
+import { GoldCoinIcon } from "../components/RewardIcons";
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
 
@@ -2416,7 +2417,7 @@ function OrderPage() {
               <p className="summary-coins-label">You'll earn from this order:</p>
 
               <div className="summary-coins-main">
-                <span className="summary-coins-icon">🪙</span>
+                <span className="summary-coins-icon"><GoldCoinIcon /></span>
                 <strong>{coinCount} gold</strong>
               </div>
 
@@ -2424,7 +2425,7 @@ function OrderPage() {
             </div>
 
             <p className="summary-coins-footnote">
-              🪙 10 gold = $1.00 | Earn gold with every order
+              <GoldCoinIcon /> 10 gold = $1.00 | Earn gold with every order
             </p>
 
             {referralDiscount > 0 && (

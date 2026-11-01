@@ -16,6 +16,7 @@ import {
 } from "../components/Skeleton";
 import "../styles/Dashboard.css";
 import DashboardIcon from "../components/DashboardIcon";
+import { GoldCoinIcon, CashbackIcon } from "../components/RewardIcons";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
@@ -264,7 +265,7 @@ export default function DashboardPage() {
                                     <strong className="dashboard-wallet-balance" aria-live="polite">{wallet ? walletMoney(Number.isSafeInteger(wallet.availableBalanceCents) ? wallet.availableBalanceCents : wallet.balanceCents) : walletFailed ? 'Unavailable' : '…'}</strong>
                                 </div>
                                 <Link to="/account/loyalty" className="dashboard-wallet-gold">
-                                    <span className="dashboard-wallet-coin" aria-hidden="true">🪙</span>
+                                    <span className="dashboard-wallet-coin" aria-hidden="true"><GoldCoinIcon /></span>
                                     <span>Gold Balance</span>
                                     <strong>{Math.max(0, Number(loyalty?.totalGold || 0)).toLocaleString()}</strong>
                                     <span className="dashboard-wallet-chevron" aria-hidden="true">›</span>
@@ -301,8 +302,8 @@ export default function DashboardPage() {
                                     <p className="dashboard-loyalty-benefits-heading">
                                         {tierInfo.nextTier ? `Next tier: ${tierInfo.nextTier}` : `${tierInfo.name} benefits`}
                                     </p>
-                                    <div><span className="dashboard-benefit-icon gold" aria-hidden="true">🪙</span><div><strong>+{benefitTier.bonusCoins} Gold</strong><small>{tierInfo.nextTier ? `On reaching ${tierInfo.nextTier}` : "Tier reward"}</small></div></div>
-                                    <div><span className="dashboard-benefit-icon blue" aria-hidden="true">↩</span><div><strong>{benefitCashBackPercent}% Cash Back</strong><small>{tierInfo.nextTier ? `To your wallet at ${tierInfo.nextTier}` : 'To your wallet on completed orders'}</small></div></div>
+                                    <div><span className="dashboard-benefit-icon gold" aria-hidden="true"><GoldCoinIcon /></span><div><strong>+{benefitTier.bonusCoins} Gold</strong><small>{tierInfo.nextTier ? `On reaching ${tierInfo.nextTier}` : "Tier reward"}</small></div></div>
+                                    <div><span className="dashboard-benefit-icon blue" aria-hidden="true"><CashbackIcon /></span><div><strong>{benefitCashBackPercent}% Cash Back</strong><small>{tierInfo.nextTier ? `To your wallet at ${tierInfo.nextTier}` : 'To your wallet on completed orders'}</small></div></div>
                                 </div>}
                             </Link>
 
