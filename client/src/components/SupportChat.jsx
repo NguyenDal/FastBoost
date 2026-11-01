@@ -208,12 +208,23 @@ function CustomerSupport({ user }) {
         if (user && new URLSearchParams(location.search).get('support') === 'open') setOpen(true);
     }, [location.key, location.search, user]);
     useEffect(() => {
-        const observer = new ResizeObserver(() => setFooterHeight(document.querySelector('.sale-footer-dock')?.getBoundingClientRect().height || 0));
-        observer.observe(document.body);
-        const footer = document.querySelector('.sale-footer-dock');
-        if (footer) observer.observe(footer);
-        setFooterHeight(footer?.getBoundingClientRect().height || 0);
-        return () => observer.disconnect();
+        let footer = null;
+        const measureFooter = () => setFooterHeight(footer?.getBoundingClientRect().height || 0);
+        const resizeObserver = new ResizeObserver(measureFooter);
+        const observeFooter = () => {
+            const nextFooter = document.querySelector('.sale-footer-dock');
+            if (nextFooter === footer) return;
+            if (footer) resizeObserver.unobserve(footer);
+            footer = nextFooter;
+            if (footer) resizeObserver.observe(footer);
+            measureFooter();
+        };
+        // Order routes can mount the sale dock after the service lookup finishes.
+        const mountObserver = new MutationObserver(observeFooter);
+        mountObserver.observe(document.body, { childList: true, subtree: true });
+        observeFooter();
+        measureFooter();
+        return () => { resizeObserver.disconnect(); mountObserver.disconnect(); };
     }, [location.pathname]);
     useEffect(() => {
         if (!user) return;
@@ -253,7 +264,7 @@ function CustomerSupport({ user }) {
     useEffect(() => { if (open) { closeButton.current?.focus(); setUnread(false); } }, [open]);
     const close = () => { setOpen(false); requestAnimationFrame(() => trigger.current?.focus()); };
     const online = admins === null ? null : admins.length > 0;
-    return <div className="support-widget" style={{ '--support-bottom': `${footerHeight + 20}px` }}>
+    return <div className={`support-widget${footerHeight > 0 ? ' has-sale-footer' : ''}${open ? ' is-expanded' : ''}`} style={{ '--support-bottom': `${footerHeight + 20}px` }}>
         <section className={`support-panel ${open ? 'is-open' : ''}`} inert={!open} aria-hidden={!open} role="dialog" aria-label="FastBoost support chat" onKeyDown={e => { if (e.key === 'Escape') close(); }}>
             <header className="support-header"><div><span className="support-eyebrow">FASTBOOST SUPPORT</span><h2>Let’s talk<span> ✦</span></h2></div><button ref={closeButton} className="support-icon-button" aria-label="Close support chat" onClick={close}><SupportIcon type="close" /></button></header>
             {user ? <><div className="support-presence"><div className="support-avatar-stack">{admins?.length ? admins.slice(0, 3).map(admin => <SupportAvatar key={admin.id} user={admin} />) : <span className="support-team-icon"><SupportIcon /></span>}</div><div><strong>{admins?.length ? admins.map(nameOf).join(', ') : 'Your support team'}</strong><span><i className={online ? 'online' : ''} />{online === null ? 'Checking availability…' : online ? 'Online · Ready to help' : 'No one is online'}</span></div></div>{thread ? <SupportConversation key={`${thread.id}:${targetMessageId || ""}`} threadId={thread.id} targetMessageId={targetMessageId} user={user} active={open} online={online} /> : <div className="support-welcome">{error ? <><p role="alert">{error}</p><button className="support-primary" onClick={() => { setOpen(false); trigger.current?.focus(); }}>Close and try again</button></> : <p>Opening your conversation…</p>}</div>}</> : <div className="support-signin"><span className="support-welcome-icon"><SupportIcon /></span><h3>A helping hand, right here.</h3><p>Sign in to message our team and keep your conversation in one place.</p><Link className="support-primary" to={location.pathname === '/support' ? '/support' + location.search : '/'} state={{ openAuthModal: true, authMode: 'login' }} onClick={() => setOpen(false)}>Sign in to chat <span><ArrowUpRightIcon /></span></Link><Link to="/faq" onClick={() => setOpen(false)}>Browse quick answers</Link></div>}
