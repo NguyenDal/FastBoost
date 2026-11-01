@@ -43,14 +43,20 @@ export function SaleBanner({ promotion, now, preview = false }) {
     const timer = promotion.footerTimer !== false && end !== null;
     const seconds = timer ? Math.max(0, Math.ceil((end - currentTime) / 1000)) : 0;
     const parts = [Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24, Math.floor(seconds / 60) % 60, seconds % 60];
+    const mobileSeconds = timer ? Math.max(0, Math.floor((end - currentTime) / 1000)) : 0;
+    const mobileParts = [Math.floor(mobileSeconds / 86400), Math.floor(mobileSeconds / 3600) % 24, Math.floor(mobileSeconds / 60) % 60, mobileSeconds % 60];
+    const mobileUnitStart = mobileSeconds >= 86400 ? 0 : mobileSeconds >= 3600 ? 1 : 2;
     return <aside className={`sale-footer-bar${timer ? "" : " sale-footer-no-timer"}${preview ? " sale-footer-preview" : ""}`} aria-label="Current sale">
-        <strong className="sale-footer-title sale-footer-mobile-detail">{promotion.title}</strong>
+        <strong className="sale-footer-title" title={promotion.title}>{promotion.title}</strong>
         <div className="sale-footer-offer">
             <span className="sale-footer-discount">{Number(promotion.discountPercent)}% OFF<span className="sale-footer-mobile-detail"> {promotion.scope === "GLOBAL" ? "ALL SERVICES" : promotion.service?.title || "THIS SERVICE"}</span></span>
             {promotion.couponCode && <CouponCode key={promotion.couponCode} code={promotion.couponCode} />}
         </div>
-        {timer && <div className="sale-footer-timer" role="timer" aria-label="Time until sale ends">
-            {parts.map((value, index) => <span className="sale-footer-time" key={index}><b>{String(value).padStart(2, "0")}</b><small className="sale-footer-time-label">{["DAYS", "HRS", "MIN", "SEC"][index]}</small><small className="sale-footer-time-short" aria-hidden="true">{["d", "h", "m", "s"][index]}</small></span>)}
+        {timer && <div className="sale-footer-timer" role="timer" aria-label={`Time until sale ends: ${parts[0]} days, ${parts[1]} hours, ${parts[2]} minutes, ${parts[3]} seconds`}>
+            {parts.map((value, index) => <span className="sale-footer-time sale-footer-time-desktop" key={index} aria-hidden="true"><b>{String(value).padStart(2, "0")}</b><small>{["DAYS", "HRS", "MIN", "SEC"][index]}</small></span>)}
+            <span className="sale-footer-mobile-timer" aria-hidden="true">
+                {mobileParts.slice(mobileUnitStart, mobileUnitStart + 2).map((value, index) => <span className="sale-footer-time" key={index}><b>{String(value).padStart(2, "0")}</b><small className="sale-footer-time-short">{["d", "h", "m", "s"][mobileUnitStart + index]}</small></span>)}
+            </span>
         </div>}
     </aside>;
 }
