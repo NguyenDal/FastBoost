@@ -1068,7 +1068,7 @@ function OrderPage() {
       if (!token) {
         setSubmitError("");
         setAuthMode("login");
-        setAuthMessage("Please log in to place your order.");
+        setAuthMessage("");
         setAuthSuccess(false);
         setLoginErrors({ email: false, password: false });
         setRegisterErrors({ email: false, password: false });
