@@ -1,5 +1,4 @@
-import ArrowUpRightIcon from './ArrowUpRightIcon';
-import { useLayoutEffect, useRef } from "react";
+import { useId, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import CleanIcon from "./CleanIcon";
 import "../styles/GameServiceDialog.css";
@@ -55,6 +54,7 @@ function GameServiceDialog({
   onExited,
   sourceElement,
 }) {
+  const cardIdPrefix = useId();
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
   const closeRef = useRef(null);
@@ -229,18 +229,25 @@ function GameServiceDialog({
               const tone = serviceTone(service.title);
               const image = imageMap?.[service.title] || fallbackImages[index % fallbackImages.length] || "";
               const unavailable = service.active === false;
+              const titleId = `${cardIdPrefix}-${index}-title`;
+              const descriptionId = `${cardIdPrefix}-${index}-description`;
               return <article className={`game-service-dialog-card game-service-dialog-card-${tone}${unavailable ? " is-unavailable" : ""}`} key={service.id || `${service.title}-${index}`}>
                 <div className="game-service-dialog-art" aria-hidden="true">
                   {image && <CleanIcon src={image} alt="" className="game-service-dialog-icon" />}
                 </div>
                 <div className="game-service-dialog-card-copy">
-                  <h3>{service.title}</h3>
-                  <p>{SERVICE_SUMMARIES[service.title] || service.description || "Find the right boost for your game."}</p>
-                  <button type="button" disabled={unavailable} onClick={() => onChoose?.(service)}>
-                    {unavailable ? "Currently unavailable" : "Buy now"}
-                    {!unavailable && <span aria-hidden="true"><ArrowUpRightIcon /></span>}
-                  </button>
+                  <h3 id={titleId}>{service.title}</h3>
+                  <p id={descriptionId}>{SERVICE_SUMMARIES[service.title] || service.description || "Find the right boost for your game."}</p>
+                  {unavailable && <span className="game-service-dialog-unavailable">Currently unavailable</span>}
                 </div>
+                <button
+                  type="button"
+                  className="game-service-dialog-card-action"
+                  disabled={unavailable}
+                  aria-labelledby={titleId}
+                  aria-describedby={descriptionId}
+                  onClick={() => onChoose?.(service)}
+                />
               </article>;
             })}
           </div>}
