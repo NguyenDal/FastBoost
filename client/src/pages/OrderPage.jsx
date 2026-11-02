@@ -12,6 +12,7 @@ import { getSecondRoleOptions, roleIconMap, roleNames } from "../data/championRo
 import { orderPathForService, serviceTitleFromOrderRoute, uniqueServiceForTitle } from "../utils/productRoutes";
 import Navbar from "../components/Navbar";
 import { GoldCoinIcon } from "../components/RewardIcons";
+import { googleAdsMeasurement } from '../utils/googleAdsMeasurement';
 import RegisterPage from "./RegisterPage";
 import "../styles/OrderPage.css";
 
@@ -351,6 +352,13 @@ function OrderPage() {
     if (canonical !== location.pathname) navigate(canonical, { replace: true });
   }, [serviceId, service, serviceCatalog, location.pathname, navigate]);
   const serviceUnavailable = (serviceAvailability[serviceType] ?? service?.active) === false;
+  useEffect(() => {
+    // Let legacy IDs redirect first; otherwise a single page visit could count
+    // both the legacy and canonical path. Duplicate-title legacy routes remain valid.
+    const ready = !loading && !loadError && !serviceUnavailable && service && String(service.id) === String(resolvedServiceId)
+      && (!serviceId || (serviceCatalog.length > 0 && orderPathForService(service, serviceCatalog) === location.pathname));
+    void googleAdsMeasurement.recordServiceView({ pathname: location.pathname, service: ready ? service : null });
+  }, [location.pathname, loading, loadError, serviceUnavailable, service, resolvedServiceId, serviceId, serviceCatalog]);
   const isTftService = serviceType.startsWith("TFT ");
   const normalizedServiceType = serviceType.replace("TFT ", "");
 

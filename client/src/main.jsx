@@ -10,9 +10,9 @@ import "./styles/Auth.css";
 import "./styles/Layout.css";
 import "./styles/ContactPage.css";
 import "./styles/Skeleton.css";
-import { googleAdsPurchase } from './utils/googleAdsPurchase';
+import { googleAdsMeasurement } from './utils/googleAdsMeasurement';
 
-googleAdsPurchase.start();
+googleAdsMeasurement.start();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

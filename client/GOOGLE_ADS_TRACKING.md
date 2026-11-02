@@ -1,63 +1,57 @@
-# Google Ads purchase measurement
+# Google Ads service pricing page measurement
 
 The integration stays disabled unless both public build variables are valid:
 
 ```dotenv
 VITE_GOOGLE_ADS_ID=AW-18504395858
-VITE_GOOGLE_ADS_PURCHASE_LABEL=N3xzCMW0p7AdENLYyvdE
+VITE_GOOGLE_ADS_SERVICE_PRICE_VIEW_LABEL=<label from Service Price View action>
 ```
 
-These identify the manually created FastBoost purchase action verified in Google
-Ads. They are public tag identifiers, not API credentials. Add them to the
-frontend build environment and rebuild only after review/approval. Creating the
-Google Ads action alone does not install this integration.
-`google-ads.env.example` contains blank defaults and commented verified values;
-it is a reference file and Vite does not load it automatically.
+Use a manual Website conversion named **Service Price View**, category **Page
+view**, with a fixed value of **0** and Count **One**. The current wizard requires
+a value setting; zero records no revenue for a price-page visit. The event itself
+omits value and currency. Make it Primary and select its
+goal for this campaign. Count One means one attributed conversion per ad click,
+not one per visitor or a total site traffic counter. Remove the retired Purchase
+action from the campaign. The old purchase label is no longer read by the app.
+These are public identifiers, not credentials; creating an action does not
+install the integration. Set the frontend build environment and rebuild.
+`google-ads.env.example` is a reference file, not an automatically loaded env file.
 
-- There is no automatic popup or global privacy button. The Google tag loads only
-  after the visitor explicitly enables the optional ad measurement checkbox in
-  email/social registration, Profile Settings, or the public Privacy Policy page's
-  **Ad measurement preferences** section. Terms/Privacy Policy acceptance and
-  promotional email consent do not enable it. Registration and ordering remain
-  available without opting in.
-- Leaving the signup checkbox unchecked does not trigger reminders or later
-  consent prompts. Profile Settings and the Privacy Policy keep the preference
-  collapsed until the visitor deliberately opens it; there is no checkout or
-  login consent prompt.
-- Changing the checkbox takes effect immediately for this browser and is stored
-  locally, independently of account creation or profile saving. It is not synced
-  to an account or other devices. Existing users stay untracked until they opt in.
-  Turning it off blocks this site's conversion dispatch and removes its
-  first-party `_gcl_` cookies. The public privacy page allows withdrawal even
-  while signed out.
-- Enhanced conversions and ad personalization are disabled. The payload allows
-  only the public conversion destination, opaque order ID, persisted settled
-  service value, and currency. Page context excludes checkout/auth query strings.
-- The authenticated verification endpoint must return `paid: true` and
-  `purchaseConversion`. The client never derives a purchase from a page visit,
-  a button click, an unverified return URL or a checkout quote.
-- Purchase values include wallet plus card tender after discounts. Gold-only
-  service purchases have zero monetary value. Wallet funding is not sent as a
-  service purchase.
-- A current local payment attempt or a recent verified Stripe return is required.
-  Old receipt visits are excluded. Repeated events use the same transaction ID;
-  a dispatch with a completed processing callback is remembered in the browser. The callback
-  is not proof Google Ads attributed or reported the conversion.
-- Events can be missed when consent is declined, the browser is blocked/offline,
-  or the customer never returns. This is browser measurement, not a server-side
-  conversion import. No historical orders are backfilled.
-- Opting in later during signup can miss attribution if the original Google
-  click identifier is no longer in the URL. This integration does not preserve
-  advertising identifiers before permission to compensate for that gap.
+- The event fires when a valid, available LoL or TFT order configuration page
+  renders: Rank Boost, Placement Boost, Win Boost, or LoL Pro Duo. An invalid,
+  unavailable or failed service page does not count. Legacy service links resolve
+  first; measurement sends the canonical public service path, never a service ID.
+- There is one dispatch per continuous visit to a service page. Rerenders,
+  StrictMode effects, rank/price edits and query/hash changes do not count again.
+  Leaving and returning can dispatch a new view; Google applies Count One to
+  reporting. No visit history is persisted or backfilled. Checkout, payment
+  returns, receipts, accounts, auth pages and wallet funding do not fire this event.
+- There is no popup or global privacy button. The tag loads only after the
+  visitor explicitly enables the separate unchecked measurement checkbox during
+  email/social registration or in the collapsed Account Settings/Privacy Policy
+  preferences. Terms acceptance and promotional email consent do not enable it.
+  Registration and ordering remain available without opting in. Leaving it
+  unchecked causes no reminders or later prompts.
+- Permission is browser-local and takes effect immediately. First opt-in can
+  measure the current service page; denied or departed visits are never replayed.
+  Withdrawal blocks future events and removes first-party `_gcl_` cookies.
+- The event contains the public conversion destination, canonical service URL
+  and fixed page title. It contains no purchase value, currency, order ID, customer
+  details, game credentials, query string or fragment. Enhanced conversions and
+  ad personalization are disabled. Global page context is reduced to the origin,
+  with only validated Google click IDs retained for attribution after consent.
+- The payment verification API remains independent and sends no Ads conversion
+  payload. Stripe and wallet payment/receipt behavior is unchanged. Browser keys
+  holding old purchase deduplication and checkout attempts are removed on startup.
+- Missing consent, blockers or offline browsers can prevent measurement. Late
+  opt-in may lose original click attribution: we do not retain advertising IDs
+  before consent. A local dispatch does not prove Google received, attributed or
+  reported a conversion. Validate receipt separately using Tag Assistant and a
+  genuine permitted service page visit; no payment or fake purchase is needed.
 
-Before release, review the conversion's primary/secondary status, currency/value
-and counting settings, and existing actions to prevent duplicate purchase goals.
-Validate the tag with Google Tag Assistant in a safe non-production payment flow.
-Do not submit a live charge just to test measurement. A reported, attributable
-conversion must be verified separately after a genuine eligible paid order.
-
-Focused automated checks:
+Focused automated checks (from `client`):
 
 ```sh
-node --test test/googleAdsPurchase.test.js test/paymentVerification.test.js
+node --test test/googleAdsMeasurement.test.js test/paymentVerification.test.js
 ```

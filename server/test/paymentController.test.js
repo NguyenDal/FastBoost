@@ -144,9 +144,8 @@ test("verifyCheckoutSession reconciles a paid Stripe session", async (context) =
     assert.equal(responseBody.orderId, orderId);
     assert.equal(responseBody.paymentStatus, "PAID");
     assert.equal(responseBody.paid, true);
-    assert.deepEqual(responseBody.purchaseConversion, {
-        transaction_id: orderId, value: 25, currency: 'CAD', paidAt: paidAt.toISOString(),
-    });
+    assert.equal(Object.hasOwn(responseBody, 'purchaseConversion'), false);
+    assert.equal(responseBody.paidAt, paidAt);
     assert.equal(referralOrderId, orderId);
     assert.deepEqual(queued, [{ id: orderId, email: "edited-checkout@example.com" }]);
     await verifyCheckoutSession({ user: { id: customerId }, query: { sessionId } }, response);

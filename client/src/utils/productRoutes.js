@@ -10,6 +10,10 @@ const PRODUCT_PATHS = Object.freeze({
 
 const TITLES_BY_PATH = new Map(Object.entries(PRODUCT_PATHS).map(([title, path]) => [path, title]));
 
+export function canonicalOrderPathForTitle(title) {
+  return Object.hasOwn(PRODUCT_PATHS, title) ? PRODUCT_PATHS[title] : null;
+}
+
 const GAME_QUERY_VALUES = Object.freeze({
   lol: 'league-of-legends',
   tft: 'teamfight-tactics',

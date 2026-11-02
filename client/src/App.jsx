@@ -1,5 +1,5 @@
 import { authStorage } from "./utils/authStorage";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
@@ -7,6 +7,7 @@ import DynamicTitle from "./components/DynamicTitle";
 import SaleFooter from "./components/SaleFooter";
 import SessionActivity from "./components/SessionActivity";
 import PageLoadBoundary from './components/PageLoadBoundary';
+import { googleAdsMeasurement } from './utils/googleAdsMeasurement';
 // Public browsing does not need checkout, account or administration code.
 // React only requests each module when its authorized route is rendered.
 const LegalDocumentPage = lazy(() => import('./pages/LegalDocumentPage'));
@@ -73,6 +74,10 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    googleAdsMeasurement.setPage({ pathname: location.pathname });
+  }, [location.pathname]);
 
   useEffect(() => {
     const checkSession = () => {

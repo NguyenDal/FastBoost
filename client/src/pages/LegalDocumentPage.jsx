@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import AdMeasurementConsent from "../components/AdMeasurementConsent";
-import { googleAdsPurchase } from "../utils/googleAdsPurchase";
+import { googleAdsMeasurement } from "../utils/googleAdsMeasurement";
 import "../styles/LegalDocument.css";
 
 export default function LegalDocumentPage({ privacy = false }) {
@@ -8,7 +8,7 @@ export default function LegalDocumentPage({ privacy = false }) {
   const documentPath = privacy ? "privacy-policy" : "terms-and-conditions";
   return <div className="legal-document-page">
     <Navbar />
-    {privacy && googleAdsPurchase.enabled && <details className="legal-ad-preferences">
+    {privacy && googleAdsMeasurement.enabled && <details className="legal-ad-preferences">
       <summary>Ad measurement preferences</summary>
       <AdMeasurementConsent />
     </details>}

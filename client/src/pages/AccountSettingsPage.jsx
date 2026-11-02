@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import AvatarImage from '../components/AvatarImage';
 import LinkedSignInAccounts from "../components/LinkedSignInAccounts";
 import AdMeasurementConsent from "../components/AdMeasurementConsent";
-import { googleAdsPurchase } from "../utils/googleAdsPurchase";
+import { googleAdsMeasurement } from "../utils/googleAdsMeasurement";
 import { COUNTRIES, findCountry } from "../utils/countries";
 import { GenericPageSkeleton } from "../components/PageSkeletons";
 import {
@@ -733,7 +733,7 @@ export default function AccountSettingsPage() {
                                     {savingAccount ? "Saving..." : "Save Profile"}
                                 </button>
                             </form>
-                            {googleAdsPurchase.enabled && <details className="account-ad-preferences">
+                            {googleAdsMeasurement.enabled && <details className="account-ad-preferences">
                                 <summary>Ad measurement preferences</summary>
                                 <AdMeasurementConsent />
                             </details>}
