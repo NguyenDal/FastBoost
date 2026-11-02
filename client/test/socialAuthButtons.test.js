@@ -58,6 +58,10 @@ async function fixture(componentName, { blocked = false } = {}) {
     useEffect(effect) { effects.push(effect); },
     fetch: async (url, options) => {
       calls.push({ url, options });
+      if (url.endsWith('/auth/social/complete')) {
+        assert.equal(options.method, 'POST');
+        return { ok: true, json: async () => ({ token: 'synthetic-signup-result', user: { id: 'synthetic-new-user' } }) };
+      }
       assert.ok(url.endsWith('/providers') || url.endsWith('/connections'), 'fixture only loads provider availability');
       return { ok: true, json: async () => url.endsWith('/providers')
         ? { google: true, discord: true }
@@ -67,6 +71,7 @@ async function fixture(componentName, { blocked = false } = {}) {
     clearInterval: id => intervals.delete(id), clearTimeout: id => timeouts.delete(id),
     authStorage: { getItem(key) { assert.equal(key, 'token'); return token; } },
     SocialLinkConfirmation: 'social-link-confirmation', LegalAgreement: 'legal-agreement',
+    AdMeasurementConsent: 'ad-measurement-consent',
     PaymentErrorDialog: 'payment-error-dialog', ProviderLogo: 'provider-logo',
   });
   const render = () => { cursor = 0; refCursor = 0; return Component(props); };
@@ -138,6 +143,28 @@ test('a blocked sign-in popup shows feedback without leaving either provider bus
   const dialog = elements(f.render(), item => item.type === 'payment-error-dialog')[0];
   assert.equal(dialog.props.message, 'Please allow the sign-in popup and try again.');
   assertIdle(f);
+});
+
+test('social signup can finish without choosing optional browser ad measurement', async () => {
+  const f = await fixture('SocialAuthButtons');
+  const accepted = [];
+  await f.mount({ onSuccess: data => accepted.push(data) });
+  f.click('google');
+  f.message({ signupToken: 'synthetic-signup-token', termsAccepted: true, promotionalEmails: false });
+  let form = f.render();
+  assert.equal(elements(form, item => item.type === 'ad-measurement-consent').length, 1);
+  elements(form, item => item.type === 'input' && item.props.name === 'username')[0]
+    .props.onChange({ target: { value: 'new-player' } });
+  form = f.render();
+  form.props.onSubmit({ preventDefault() {} });
+  await nextTurn();
+  const submission = f.calls.find(call => call.url.endsWith('/auth/social/complete'));
+  assert.ok(submission, 'signup proceeds without interacting with ad measurement');
+  assert.deepEqual(JSON.parse(submission.options.body), {
+    signupToken: 'synthetic-signup-token', username: 'new-player', termsAccepted: true, promotionalEmails: false,
+  }, 'browser consent is separate from required terms and promotional email settings');
+  assert.equal(accepted[0]?.token, 'synthetic-signup-result');
+  f.unmount();
 });
 
 test('sign-in accepts only a message from its exact popup and API origin, then closes and cleans up', async () => {

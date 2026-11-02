@@ -8,6 +8,7 @@ const { withEarningsLedgerMutation } = require("../utils/boosterEarningsLedger")
 const { withBoosterOrderEmails } = require("../utils/boosterOrderEmail");
 const stripe = require("../utils/stripeClient");
 const { checkoutSummary, checkoutTenderSummary } = require("../utils/checkoutSummary");
+const { purchaseConversion } = require('../utils/purchaseConversion');
 const { lockCheckout, mutateCheckoutOrder, applyCheckoutCoupon, expireUnpaidSession, stripeOptions } = require("../utils/checkoutCoupon");
 const { validateHeldSession, recoverHeldSession, releaseHold, closeHeldCheckout, releaseExpiredWalletHolds,
     reserveWalletCheckout, walletError, isWalletOnlyHold } = require('../utils/checkoutWallet');
@@ -634,9 +635,12 @@ const verifyCheckoutSession = async (req, res) => {
                 paymentStatus: true,
                 status: true,
                 paidAt: true,
+                cashAmountCents: true,
+                currency: true,
             },
         });
 
+        const conversion = purchaseConversion(verifiedOrder);
         return res.json({
             ok: true,
             orderId: verifiedOrder.id,
@@ -644,6 +648,7 @@ const verifyCheckoutSession = async (req, res) => {
             paid: verifiedOrder.paymentStatus === "PAID",
             orderStatus: verifiedOrder.status,
             paidAt: verifiedOrder.paidAt,
+            ...(conversion ? { purchaseConversion: conversion } : {}),
         });
     } catch (error) {
         console.error("verifyCheckoutSession error:", error);

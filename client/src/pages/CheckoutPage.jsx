@@ -21,6 +21,7 @@ import { walletMoney } from "../utils/wallet";
 import { walletCardQuote, walletCheckoutAmounts, walletQuoteMatches } from '../utils/walletCheckout';
 import useCheckoutPresence from '../hooks/useCheckoutPresence';
 import { checkoutPresenceLost } from '../utils/checkoutPresence';
+import { googleAdsPurchase } from '../utils/googleAdsPurchase';
 import "../styles/Checkout.css";
 
 const publishableKey = import.meta.env.STRIPE_PUBLISHABLE_KEY?.trim();
@@ -222,7 +223,14 @@ function OrderCheckout({ orderId }) {
             if (result.paid) {
                 setData(result);
                 setPaid(true);
-                if (params.get("session_id")) setVerification({ orderId: result.orderId });
+                if (params.get("session_id")) setVerification({ orderId: result.orderId, session_id: params.get('session_id') });
+                else if (googleAdsPurchase.hasCheckoutAttempt(orderId)) {
+                    // Recovery after a completed payment lost its response. A
+                    // receipt visit alone must never become a new purchase.
+                    void verifyCheckoutSession({ orderId }).then(verified => {
+                        if (!cancelled && active.current) void googleAdsPurchase.recordPurchase(verified);
+                    }).catch(() => { /* Measurement must not block the paid receipt. */ });
+                }
             } else if (result.paidWithGoldOnly) {
                 confirmGoldPayment(result);
             } else if (result.completed) {
@@ -258,6 +266,7 @@ function OrderCheckout({ orderId }) {
                     const order = await verifyCheckoutSession({ orderId });
                     if (cancelled || !active.current) return;
                     if (order.paid) {
+                        void googleAdsPurchase.recordPurchase(order, { recentReturn: Boolean(params.get('session_id')) });
                         setError("");
                         setPaid(true);
                         return;
@@ -344,6 +353,7 @@ function OrderCheckout({ orderId }) {
             if (!await presence.protect()) return;
             if (!active.current) return;
             settlementStarted = true;
+            googleAdsPurchase.beginCheckout(orderId);
             const result = await createCheckoutSession(orderId, goldConfirmation, false, email, undefined, { walletToUseCents: 0, checkoutViewId });
             if (!active.current) return;
             if (result.couponNotice) setCouponNotice(result.couponNotice);
@@ -374,6 +384,7 @@ function OrderCheckout({ orderId }) {
         if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
         if (!await presence.protect()) throw new DOMException('Payment is being verified.', 'AbortError');
         if (!active.current) throw new DOMException('Checkout changed.', 'AbortError');
+        googleAdsPurchase.beginCheckout(orderId);
     };
     const payWithWallet = async () => {
         if (!active.current || walletSubmitting.current || paymentBusy || updatingPrice || priceRequest.current || priceUpdateError || walletConfirmation === null
@@ -389,6 +400,7 @@ function OrderCheckout({ orderId }) {
             if (!await presence.protect()) return;
             if (!active.current) return;
             settlementStarted = true;
+            googleAdsPurchase.beginCheckout(orderId);
             const confirmedTotal = fullWalletRef.current?.quote?.summary.orderTotalCents ?? walletConfirmation;
             const result = await payOrderWithWallet(orderId, email, confirmedTotal, { checkoutViewId });
             if (!active.current) return;

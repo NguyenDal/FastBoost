@@ -2,4 +2,7 @@
 .legal-document-page > .topbar { position:relative; flex-shrink:0; box-sizing:border-box; }
 .legal-document-frame { display:block; flex:1; min-height:0; width:100%; border:0; }
 .legal-document-status { padding:24px; margin:0; color:#d9d4e8; }
+.legal-ad-preferences { flex-shrink:0; padding:12px 20px; color:#d9d4e8; border-bottom:1px solid #39334b; }
+.legal-ad-preferences summary { cursor:pointer; font-size:14px; }
+.legal-ad-preferences > .ad-measurement-choice { max-width:720px; margin-top:12px; }
 @media print { .legal-document-page > .topbar { display:none; } }

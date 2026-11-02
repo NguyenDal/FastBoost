@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SocialAuthButtons from "../components/SocialAuthButtons";
 import LegalAgreement from "../components/LegalAgreement";
+import AdMeasurementConsent from "../components/AdMeasurementConsent";
 import AvatarImage from '../components/AvatarImage';
 import { API_BASE_URL } from "../api/config";
 import "../styles/ResetPasswordPage.css";
@@ -405,6 +406,7 @@ function RegisterPage({
                     <span><LegalAgreement /> <span className="auth-required" aria-hidden="true">*</span></span>
                   </label>
                   <label className="auth-check-row"><input type="checkbox" name="promotionalEmails" checked={Boolean(registerForm.promotionalEmails)} onChange={handleRegisterInputChange}/><span>I agree to receive promotional emails.</span></label>
+                  <AdMeasurementConsent disabled={authLoading} compact />
                 </div>
                 <button
                   type="submit"

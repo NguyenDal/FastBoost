@@ -6,6 +6,7 @@ import {
   deleteUnpaidCheckoutOrder,
 } from "../api/orders";
 import { pollPaymentVerification } from "../utils/paymentVerification";
+import { googleAdsPurchase } from '../utils/googleAdsPurchase';
 import "../styles/PaymentResultPage.css";
 
 function PaymentResultPage({ type, overlayOnly = false, verification, onVerified, onComplete }) {
@@ -62,6 +63,7 @@ function PaymentResultPage({ type, overlayOnly = false, verification, onVerified
         });
         if (!data || cancelled) return;
         if (data.paid) {
+          void googleAdsPurchase.recordPurchase(data, { recentReturn: Boolean(sessionId) });
           onVerified?.();
           setState({ loading: false, error: "", orderId: data.orderId, paid: true });
           return;

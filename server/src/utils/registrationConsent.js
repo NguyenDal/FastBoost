@@ -1,5 +1,5 @@
 // Version both documents in the combined signup agreement; historical records stay unchanged.
-const TERMS_VERSION = 'fastboost-terms-2026-09-22-v1.0-review;fastboost-privacy-2026-09-30-v1.0-review';
+const TERMS_VERSION = 'fastboost-terms-2026-09-22-v1.0-review;fastboost-privacy-2026-11-02-v1.1-review';
 function registrationConsent(body) {
   if (body.termsAccepted !== true) throw new Error('Please agree to the Privacy Policy and Terms and Conditions to create an account.');
   return { termsVersion: TERMS_VERSION, termsAcceptedAt: new Date(),

@@ -30,7 +30,7 @@ test('registration requires affirmative terms and records marketing only when ex
   for (const value of [undefined, false, 'true']) assert.throws(() => registrationConsent({ termsAccepted: value }), /agree/);
   const consent = registrationConsent(signup);
   assert.match(consent.termsVersion, /2026-09-22/);
-  assert.match(consent.termsVersion, /fastboost-privacy-2026-09-30-v1\.0-review/);
+  assert.match(consent.termsVersion, /fastboost-privacy-2026-11-02-v1\.1-review/);
   assert.ok(consent.termsAcceptedAt instanceof Date);
   assert.equal(consent.promotionalEmails, false);
   assert.equal(consent.promotionalConsentAt, null);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import SocialLinkConfirmation from './SocialLinkConfirmation';
 import LegalAgreement from './LegalAgreement';
+import AdMeasurementConsent from './AdMeasurementConsent';
 import PaymentErrorDialog from './PaymentErrorDialog';
 import { API_BASE_URL } from '../api/config';
 import { socialAuthPopupFeatures } from '../utils/socialAuthPopup';
@@ -91,6 +92,7 @@ export default function SocialAuthButtons({ mode = 'login', termsAccepted = fals
         <span><LegalAgreement /> <span className="auth-required" aria-hidden="true">*</span></span>
       </label>
       <label className="auth-check-row"><input type="checkbox" checked={signupMarketing} onChange={event => setSignupMarketing(event.target.checked)} disabled={busy}/><span>I agree to receive promotional emails.</span></label>
+      <AdMeasurementConsent disabled={busy} compact />
     </div>
     <button type="submit" className="primary-btn modal-submit-btn" disabled={busy}>{busy ? 'Creating account...' : 'Create account'}</button>
     <button type="button" className="auth-switch-btn auth-social-cancel" disabled={busy} onClick={() => { setPendingSignup(null); reportError(''); }}>Back to sign in</button>

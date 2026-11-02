@@ -1,0 +1,13 @@
+.ad-measurement-choice { min-width: 0; color: #cbd5e1; }
+.ad-measurement-check-row { display: flex; align-items: flex-start; gap: 10px; text-align: left; font-size: .88rem; line-height: 1.5; cursor: pointer; }
+.ad-measurement-choice .ad-measurement-checkbox { appearance: none; display: grid; place-content: center; box-sizing: border-box; width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; border: 1px solid #647087; border-radius: 4px; background: #171c2a; color: #fff; cursor: pointer; }
+.ad-measurement-choice .ad-measurement-checkbox:checked { background: #7c3aed; border-color: #a78bfa; }
+.ad-measurement-choice .ad-measurement-checkbox:checked::after { content: ""; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.ad-measurement-choice .ad-measurement-checkbox:disabled { opacity: .5; cursor: default; }
+.ad-measurement-choice .ad-measurement-description { margin: 4px 0 0 27px; color: #aeb6ca; font-size: .78rem; line-height: 1.5; }
+.ad-measurement-choice a { color: #c4b5fd; text-underline-offset: 3px; }
+.ad-measurement-choice .ad-measurement-checkbox:focus-visible, .ad-measurement-choice a:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 3px; }
+@media (forced-colors: active) {
+    .ad-measurement-choice .ad-measurement-checkbox { appearance: auto; }
+    .ad-measurement-choice .ad-measurement-checkbox::after { content: none; }
+}
